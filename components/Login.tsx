@@ -24,7 +24,6 @@ export const Login = ({ setAppsData, setLogged, setUrl, url }: any) => {
       }
     })
     const data = await callApps.json()
-    console.log(data)
     setAppsData(data.data)
     setLogged(true)
   };

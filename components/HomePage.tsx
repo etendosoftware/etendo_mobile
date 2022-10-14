@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Switch, TouchableOpacity, View, ScrollView, Text, Button } from 'react-native'
+import { StyleSheet, View, ScrollView } from 'react-native'
 import DynamicComponent from './DynamicComponent';
 
 const HomePage = ({ route, __id }: any) => {
-    const [showDynamicComponents, setShowDynamicComponents] = useState(false);
     const [appId, setAppId] = useState(__id);
     const [url, setUrl] = useState("");
     console.log(route)
@@ -13,8 +12,6 @@ const HomePage = ({ route, __id }: any) => {
             setUrl(route.params.url);
         }
     })
-
-
     const renderDynamicComponents = (appId: string, url: string) => (
         <>
             <View style={{ paddingVertical: 15 }}>
@@ -22,7 +19,6 @@ const HomePage = ({ route, __id }: any) => {
             </View>
         </>
     );
-
     return (
         <ScrollView
             contentInsetAdjustmentBehavior="automatic"

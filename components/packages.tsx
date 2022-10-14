@@ -10,7 +10,6 @@ const Packages = {
     "@react-navigation/native-stack": () => ReactNavigationNativeStack,
 }
 
-
 const fromPairs = (pairs) => Object.assign({}, ...pairs.map(([k, v]) => ({ [k]: v })));
 const AllPackages = fromPairs(
     Object.keys(Packages).map(k => [k, () => ({ exports: Packages[k]() })])

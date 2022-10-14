@@ -30,15 +30,7 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const App = ({ appsData, url }: any) => {
-  console.log(appsData)
-  const isDarkMode = useColorScheme() === 'dark';
-
   const dimensions = useWindowDimensions();
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -47,7 +39,6 @@ const App = ({ appsData, url }: any) => {
         }}
       >
         <Drawer.Screen name="Home" component={Home} />
-
         {appsData && appsData.map(app => {
           return (
             <Drawer.Screen name={app.etdappAppName} component={HomePage} initialParams={{ __id: app.path, url: url }} />
