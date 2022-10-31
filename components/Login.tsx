@@ -1,10 +1,12 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { Button, Text, TextInput, View } from "react-native"
+import { ContainerContext } from "../contexts/ContainerContext"
 
-export const Login = ({ setAppsData, setLogged, setUrl, url }: any) => {
-
+export const Login = ({ }) => {
+  const { state: { url }, dispatch } = useContext(ContainerContext);
   const [username, setUsername] = useState("admin")
   const [password, setPassword] = useState("admin")
+
   const onLogin = async () => {
     const callUrl = `${url}/sws/login`;
     const call = await fetch(callUrl, {
@@ -15,7 +17,6 @@ export const Login = ({ setAppsData, setLogged, setUrl, url }: any) => {
       })
     })
     const { token } = await call.json()
-
     const callUrlApps = `${url}/sws/com.etendoerp.dynamic.app.userApp`;
     const callApps = await fetch(callUrlApps, {
       method: "GET",
@@ -24,27 +25,30 @@ export const Login = ({ setAppsData, setLogged, setUrl, url }: any) => {
       }
     })
     const data = await callApps.json()
-    setAppsData(data.data)
-    setLogged(true)
+    dispatch({ appsData: data.data, logged: true })
   };
 
   return (
-    <View>
-      <View>
-        <Text>URL</Text>
-        <TextInput value={url} onChangeText={setUrl} style={{ borderWidth: 1 }} />
-      </View>
-      <View>
-        <Text>Username</Text>
-        <TextInput value={username} onChangeText={setUsername} style={{ borderWidth: 1 }} />
-      </View>
-      <View>
-        <Text>Password</Text>
-        <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={{ borderWidth: 1 }} />
-      </View>
-      <View>
-        <Button title="Login" onPress={() => onLogin()} />
-      </View>
-    </View>
+    <ContainerContext.Consumer >
+      {context => (
+        <View>
+          <View>
+            <Text>URL</Text>
+            <TextInput value={url} onChangeText={(text) => { dispatch({ url: text }) }} style={{ borderWidth: 1 }} />
+          </View>
+          <View>
+            <Text>Username</Text>
+            <TextInput value={username} onChangeText={setUsername} style={{ borderWidth: 1 }} />
+          </View>
+          <View>
+            <Text>Password</Text>
+            <TextInput value={password} onChangeText={setPassword} secureTextEntry={true} style={{ borderWidth: 1 }} />
+          </View>
+          <View>
+            <Button title="Login" onPress={() => onLogin()} />
+          </View>
+        </View>
+      )}
+    </ContainerContext.Consumer>
   )
 }

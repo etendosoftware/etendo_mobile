@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, { useState, type PropsWithChildren } from 'react';
+import React, { useContext, useState, type PropsWithChildren } from 'react';
 import {
   StyleSheet,
   Text,
@@ -24,13 +24,21 @@ import HomePage from './HomePage';
 import { useWindowDimensions } from 'react-native';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { ContainerContext } from '../contexts/ContainerContext';
+import { Etendo } from '../helpers/Etendo';
 
 const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
+export const DEV_URL = "http://10.0.2.2:3000"
 
-const App = ({ appsData, url }: any) => {
+const App = ({ }: any) => {
   const dimensions = useWindowDimensions();
+  const { state: { menuItems } } = useContext(ContainerContext);
+  const Screen = (props) => {
+    console.log("Screen props", props)
+    return Etendo.render(props.component)
+  }
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -39,9 +47,14 @@ const App = ({ appsData, url }: any) => {
         }}
       >
         <Drawer.Screen name="Home" component={Home} />
-        {appsData && appsData.map(app => {
+        {menuItems && menuItems.map((menuItem: any) => {
+          const mi = { ...menuItem }
+          delete mi.component;
           return (
-            <Drawer.Screen name={app.etdappAppName} component={HomePage} initialParams={{ __id: app.path, url: url }} />
+            <Drawer.Screen name={menuItem.name} component={menuItem.component ? (props: any) => { return (<Screen component={menuItem.component} />) } : HomePage}
+              initialParams={mi}
+              options={{}}
+            />
           )
         })}
       </Drawer.Navigator>

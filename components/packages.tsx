@@ -2,12 +2,15 @@ import * as React from "react";
 import * as ReactNative from "react-native";
 import * as ReactNavigationNative from "@react-navigation/native";
 import * as ReactNavigationNativeStack from "@react-navigation/native-stack";
+import { ContainerContext } from "../contexts/ContainerContext";
+import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
     "react": () => React,
     "react-native": () => ReactNative,
     "@react-navigation/native": () => ReactNavigationNative,
     "@react-navigation/native-stack": () => ReactNavigationNativeStack,
+    "Etendo": () => Etendo,
 }
 
 const fromPairs = (pairs) => Object.assign({}, ...pairs.map(([k, v]) => ({ [k]: v })));
