@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactNative from "react-native";
 import * as ReactNavigationNative from "@react-navigation/native";
 import * as ReactNavigationNativeStack from "@react-navigation/native-stack";
-import { ContainerContext } from "../contexts/ContainerContext";
+import * as ReactNavigationStack from "@react-navigation/stack";
 import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
@@ -10,6 +10,7 @@ const Packages = {
     "react-native": () => ReactNative,
     "@react-navigation/native": () => ReactNavigationNative,
     "@react-navigation/native-stack": () => ReactNavigationNativeStack,
+    "@react-navigation/stack": () => ReactNavigationStack,
     "Etendo": () => Etendo,
 }
 

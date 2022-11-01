@@ -8,18 +8,15 @@
  * @format
  */
 
-import React, { useContext, useState, type PropsWithChildren } from 'react';
+import React, { useContext } from 'react';
 import {
+  Button,
   StyleSheet,
-  Text,
-  useColorScheme,
+  Text
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+
 import HomePage from './HomePage';
 import { useWindowDimensions } from 'react-native';
 
@@ -35,10 +32,7 @@ export const DEV_URL = "http://10.0.2.2:3000"
 const App = ({ }: any) => {
   const dimensions = useWindowDimensions();
   const { state: { menuItems } } = useContext(ContainerContext);
-  const Screen = (props) => {
-    console.log("Screen props", props)
-    return Etendo.render(props.component)
-  }
+
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -46,13 +40,15 @@ const App = ({ }: any) => {
           drawerType: dimensions.width >= 768 ? 'permanent' : 'front',
         }}
       >
-        <Drawer.Screen name="Home" component={Home} />
+        <Drawer.Screen name="Home" component={StackedHome} options={{ headerShown: false }} />
         {menuItems && menuItems.map((menuItem: any) => {
-          const mi = { ...menuItem }
-          delete mi.component;
+          const params = { ...menuItem }
+          if (params.component) {
+            delete params.component
+          }
           return (
-            <Drawer.Screen name={menuItem.name} component={menuItem.component ? (props: any) => { return (<Screen component={menuItem.component} />) } : HomePage}
-              initialParams={mi}
+            <Drawer.Screen name={menuItem.name} component={menuItem.component ? menuItem.component : HomePage}
+              initialParams={params}
               options={{}}
             />
           )
@@ -62,17 +58,38 @@ const App = ({ }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: 'blue', borderColor: 'blue', borderWidth: 1, padding: 10, marginBottom: 10
-  },
-  buttonText: {
-    color: 'white'
-  }
-});
-
-const Home = () => {
-  return (<Text>Home</Text>)
+const StackedHome = () => {
+  return (
+    <Stack.Navigator >
+      <Stack.Screen name="Screen 1" component={Home} />
+      <Stack.Screen name="Screen 2" component={Home2} />
+    </Stack.Navigator>
+  )
 }
 
+const Home = (props: any) => {
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <Text>{"Home Screen 1"}</Text>
+      <Button title='Next' onPress={() => {
+        navigation.navigate('Screen 2')
+      }} />
+    </>
+  )
+}
+
+const Home2 = () => {
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <Text>{"Home Screen 2"}</Text>
+      <Button title='Previous' onPress={() => {
+        navigation.navigate('Screen 1')
+      }} />
+    </>
+  )
+}
 export default App;

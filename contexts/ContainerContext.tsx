@@ -1,3 +1,4 @@
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useReducer } from 'react';
 import { DEV_URL } from '../components/Container';
 import { Etendo, EtendoUtil } from '../helpers/Etendo';
@@ -33,6 +34,8 @@ const ContainerProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   Etendo.state = state;
   Etendo.dispatch = dispatch;
+  Etendo.Stack = createStackNavigator();
+
   return (
     <ContainerContext.Provider value={{ state, dispatch, Etendo }}>
       {children}

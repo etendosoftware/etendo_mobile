@@ -1,6 +1,5 @@
 import React from 'react';
 import {Text} from 'react-native';
-import {Etendo} from '../helpers/Etendo';
 import packages from './packages';
 
 function getParsedModule(code, moduleName, packages) {
@@ -34,7 +33,6 @@ export async function fetchComponent(id, url) {
     const component = {default: getParsedModule(text, id, packages)};
     console.log(component);
     //Object.keys(component.default).map(k => {
-    Etendo.register('appId', component);
     //});
     return component.default;
   } catch (error) {

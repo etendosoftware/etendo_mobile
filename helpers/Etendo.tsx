@@ -1,17 +1,19 @@
 import React, { useMemo } from 'react';
-import { useContext } from 'react';
-import { ContainerContext, globalState } from '../contexts/ContainerContext';
 
 export class EtendoUtil {
   private _state: any;
   private _dispatch: any;
   private _screens: any = [];
+  private _Stack: any;
 
   public set state(state: any) {
     this._state = state;
   }
   public set dispatch(dispatch: any) {
     this._dispatch = dispatch;
+  }
+  public set Stack(Stack: any) {
+    this._Stack = Stack;
   }
 
   public addMenuItem(menuItems: [{
@@ -50,6 +52,11 @@ export class EtendoUtil {
   }
 
   public screen = "Screen2"
+
+  public createStackNavigator() {
+    return this._Stack;
+  }
+
 }
 
 const Etendo = new EtendoUtil();

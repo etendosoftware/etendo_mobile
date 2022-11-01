@@ -1,13 +1,8 @@
-import { CommonActions } from '@react-navigation/native';
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 import { StyleSheet, View, ScrollView, Button } from 'react-native'
-import { ContainerContext } from '../contexts/ContainerContext';
-import { DEV_URL } from './Container';
 import DynamicComponent from './DynamicComponent';
 
 const HomePage = ({ route }: any) => {
-
-    const [refresh, setRefresh] = useState(1);
 
     const RenderDynamicComponents = (props: any) => {
         const appId = route.params.__id;
@@ -15,7 +10,7 @@ const HomePage = ({ route }: any) => {
         return (
             <>
                 <View style={{ paddingVertical: 15 }}>
-                    <DynamicComponent refresh={refresh} __id={appId} url={url} children={undefined} />
+                    <DynamicComponent __id={appId} url={url} children={undefined} />
                 </View>
             </>
         )
@@ -26,9 +21,9 @@ const HomePage = ({ route }: any) => {
             contentInsetAdjustmentBehavior="automatic"
             style={styles.backgroundStyle}>
             <View>
-                <RenderDynamicComponents refresh={refresh} />
+                <RenderDynamicComponents />
             </View>
-        </ScrollView>
+        </ScrollView >
     )
 }
 
