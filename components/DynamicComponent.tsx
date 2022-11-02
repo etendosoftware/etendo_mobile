@@ -6,7 +6,6 @@ const DynamicComponent = ({ __id, url, children, ...props }: any) => {
     const Component = useMemo(() => {
         return React.lazy(async () => fetchComponent(__id, url))
     }, [__id]);
-
     return (
         <Suspense fallback={<View><Text>Loading...</Text></View>}>
             <Component {...props}>{children}</Component>
@@ -14,4 +13,4 @@ const DynamicComponent = ({ __id, url, children, ...props }: any) => {
     )
 };
 
-export default React.memo(DynamicComponent);
+export default DynamicComponent;
