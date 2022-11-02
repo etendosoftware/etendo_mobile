@@ -25,11 +25,14 @@ export class EtendoUtil {
   }]) {
     const add: any[] = []
     menuItems.map(menuItem => {
-      if (
-        this._state.menuItems.filter(it => {
-          return it.name === menuItem.name;
-        }).length == 0
-      ) {
+      let replaced = false
+      for (let i = 0; i < this._state.menuItems.length; i++) {
+        if (menuItem.name === this._state.menuItems[i].name) {
+          this._state.menuItems[i] = menuItem
+          replaced = true
+        }
+      }
+      if (!replaced) {
         add.push(menuItem)
       }
     })
