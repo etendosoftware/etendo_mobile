@@ -40,7 +40,7 @@ const App = ({ }: any) => {
           drawerType: dimensions.width >= 768 ? 'permanent' : 'front',
         }}
       >
-        <Drawer.Screen name="Home" component={StackedHome} options={{ headerShown: false }} />
+        <Drawer.Screen name="Home" component={StackedHome} />
         {menuItems && menuItems.map((menuItem: any) => {
           const params = { ...menuItem }
           if (params.component) {
@@ -61,8 +61,8 @@ const App = ({ }: any) => {
 const StackedHome = () => {
   return (
     <Stack.Navigator >
-      <Stack.Screen name="Screen 1" component={Home} />
-      <Stack.Screen name="Screen 2" component={Home2} />
+      <Stack.Screen name="Screen 1" component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="Screen 2" component={Home2} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

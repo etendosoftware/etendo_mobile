@@ -23,10 +23,8 @@ export class EtendoUtil {
     isDev: boolean;
     component: any;
   }]) {
-    console.log('menuItems // PRE', this._state.menuItems);
     const add: any[] = []
     menuItems.map(menuItem => {
-      console.log('menuItems // ADD', menuItem);
       if (
         this._state.menuItems.filter(it => {
           return it.name === menuItem.name;
@@ -39,8 +37,6 @@ export class EtendoUtil {
   }
 
   public register(name: string, component: any) {
-    console.log('Etendo::register name', name);
-    console.log('Etendo::register component', component);
     this._screens = component;
   }
 

@@ -22,21 +22,15 @@ function getParsedModule(code, moduleName, packages) {
 export async function fetchComponent(id, url) {
   try {
     const urlToFetch = `${url}/${id}`;
-    console.log('urlToFetch', urlToFetch);
     const text = await fetch(urlToFetch).then(a => {
       if (!a.ok) {
         throw new Error('Network response was not ok');
       }
       return a.text();
     });
-    console.log(text);
     const component = {default: getParsedModule(text, id, packages)};
-    console.log(component);
-    //Object.keys(component.default).map(k => {
-    //});
     return component.default;
   } catch (error) {
-    console.log('fetchComponent', error);
     return {
       default() {
         return <Text>Failed to Render url "{url}"</Text>;
