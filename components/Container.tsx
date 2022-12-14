@@ -9,7 +9,7 @@
  */
 
 import React, {useContext} from 'react';
-import {Button, Dimensions, PixelRatio, StyleSheet, Text} from 'react-native';
+import {Button, Dimensions, PixelRatio, Text} from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -18,7 +18,6 @@ import {useWindowDimensions} from 'react-native';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {ContainerContext} from '../contexts/ContainerContext';
-import {Etendo} from '../helpers/Etendo';
 
 const Stack = createStackNavigator();
 

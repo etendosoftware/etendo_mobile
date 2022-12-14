@@ -1,9 +1,8 @@
+/* Imports */
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Dimensions,
   Image,
   Keyboard,
-  PixelRatio,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -11,46 +10,46 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
-  TouchableOpacity,
 } from 'react-native';
+
 import {ContainerContext} from '../contexts/ContainerContext';
+
+import Orientation from 'react-native-orientation-locker';
+import {useNavigation} from '@react-navigation/native';
+
+import {INTER_SEMIBOLD} from '../styles/fonts';
 import {
   BLACK,
   BLUE,
-  GREY_40,
+  GREY_10,
+  GREY_5,
   GREY_BLUE,
   GREY_BLUE_50,
+  GREY_PURPLE,
+  LIGHT_BLACK,
+  PURPLE_50,
   WHITE,
 } from '../styles/colors';
-import Orientation from 'react-native-orientation-locker';
-import {INTER_SEMIBOLD} from '../styles/fonts';
-import {useNavigation} from '@react-navigation/native';
+import {isTablet} from '../helpers/IsTablet';
 
-const width = Dimensions.get('screen').width;
-const height = Dimensions.get('screen').height;
-
+/* Export */
 export const LoginSettings = ({}) => {
+  // using React Native Navigation
   const navigation = useNavigation<any>();
 
+  // use of context
   const {
     state: {url},
     dispatch,
   } = useContext(ContainerContext);
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin');
 
-  const isTablet = () => {
-    let pixelDensity = PixelRatio.get();
-    const adjustedWidth = width * pixelDensity;
-    const adjustedHeight = height * pixelDensity;
-    if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
-      return true;
-    } else
-      return (
-        pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920)
-      );
-  };
+  // use of states
+  const [URL, setURL] = React.useState<string>(url);
+  const [currentLanguage, setCurrentLanguage] = useState('English');
+  const [isFocusedURL, setIsFocusedURL] = React.useState(false);
+  const [isFocusedChangeLanguage, setIsFocusedChangeLanguage] = useState(false);
 
+  // side effect not allowing to rotate the screen
   useEffect(() => {
     if (isTablet()) {
       Orientation.lockToLandscape();
@@ -59,40 +58,6 @@ export const LoginSettings = ({}) => {
     }
   }, []);
 
-  const onLogin = async () => {
-    const callUrl = `${url}/sws/login`;
-    const call = await fetch(callUrl, {
-      method: 'POST',
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
-    const {token} = await call.json();
-    const callUrlApps = `${url}/sws/com.etendoerp.dynamic.app.userApp`;
-    const callApps = await fetch(callUrlApps, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await callApps.json();
-    dispatch({appsData: data.data, logged: true});
-  };
-
-  const placeholderCurrentURL = 'https://etendo.demo.cloud/etendo/';
-  const [URL, setURL] = React.useState<string>('');
-
-  const [currentLanguage, setCurrentLanguage] = useState('English');
-
-  const [willBeRemembered, setWillBeRemembered] = useState(false);
-  const [isFocusedPassword, setIsFocusedPassword] = useState(false);
-
-  const [isFocusedURL, setIsFocusedURL] = React.useState(false);
-  const [isFocusedChangeLanguage, setIsFocusedChangeLanguage] = useState(false);
-
-  const [state, setState] = useState(false);
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView
@@ -100,11 +65,7 @@ export const LoginSettings = ({}) => {
         {isTablet() && (
           <Image
             source={require('../assets/background-login.png')}
-            style={{
-              resizeMode: 'contain',
-              width: '34.5%',
-              height: '100%',
-            }}
+            style={styles.backgroundLogin}
           />
         )}
         <View
@@ -115,47 +76,38 @@ export const LoginSettings = ({}) => {
           }>
           <View
             style={{
-              marginVertical: isTablet() ? 25 : 0,
-              marginHorizontal: isTablet() ? 80 : 0,
+              margin: isTablet() ? 80 : 0,
             }}>
-            <View
-              style={{
-                position: 'absolute',
-                right: 0,
-                height: 40,
-                width: 40,
-                borderRadius: 50,
-                justifyContent: 'center',
-              }}>
+            <View style={styles.buttonBackContainer}>
               <Pressable
-                style={{zIndex: 1}}
-                onPress={() => navigation.navigate('MainScreen')}>
+                style={styles.buttonBackContent}
+                onPress={() => {
+                  dispatch({
+                    appsData: [],
+                    menuItems: [],
+                    url: URL,
+                    logged: false,
+                  });
+                  navigation.navigate('MainScreen');
+                }}>
                 <Image
-                  source={require('../assets/user.png')}
-                  style={{
-                    resizeMode: 'contain',
-                    height: 30,
-                    width: 30,
-                    tintColor: BLUE,
-                    alignSelf: 'center',
-                  }}
+                  source={require('../assets/back.png')}
+                  style={styles.backImage}
                 />
               </Pressable>
             </View>
             <Text
               style={{
-                fontFamily: INTER_SEMIBOLD,
-                color: BLUE,
                 fontSize: isTablet() ? 28 : 24,
               }}>
               Settings
             </Text>
 
             <View
-              style={{
-                marginHorizontal: isTablet() ? 75 : 0,
-                marginVertical: 35,
-              }}>
+              style={[
+                styles.inputGeneralContainer,
+                {marginHorizontal: isTablet() ? 75 : 0},
+              ]}>
               <View style={styles.inputContainer}>
                 <Text
                   style={
@@ -169,7 +121,7 @@ export const LoginSettings = ({}) => {
                   onFocus={() => setIsFocusedURL(true)}
                   onBlur={() => setIsFocusedURL(false)}
                   placeholderTextColor={GREY_BLUE}
-                  placeholder={placeholderCurrentURL}
+                  placeholder={URL}
                   style={
                     isFocusedURL
                       ? isTablet()
@@ -195,11 +147,7 @@ export const LoginSettings = ({}) => {
                 </Text>
                 <Image
                   source={require('../assets/company-logo.png')}
-                  style={{
-                    resizeMode: 'contain',
-                    height: 45,
-                    width: 150,
-                  }}
+                  style={styles.companyLogo}
                 />
               </View>
               <View style={styles.inputContainer}>
@@ -228,158 +176,28 @@ export const LoginSettings = ({}) => {
                 <View>
                   <Image
                     source={require('../assets/dropdown.png')}
-                    style={
-                      !isFocusedChangeLanguage
-                        ? {
-                            resizeMode: 'contain',
-                            height: 12,
-                            width: 12,
-                            alignSelf: 'flex-end',
-                          }
-                        : {
-                            resizeMode: 'contain',
-                            height: 12,
-                            width: 12,
-                            alignSelf: 'flex-end',
-                            transform: [{rotate: '180deg'}],
-                          }
-                    }
+                    style={[
+                      styles.dropdownImage,
+                      isFocusedChangeLanguage
+                        ? {transform: [{rotate: '180deg'}]}
+                        : null,
+                    ]}
                   />
                 </View>
               </Pressable>
               {isFocusedChangeLanguage && (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: BLUE,
-                    borderTopWidth: 0,
-                    borderBottomLeftRadius: 5,
-                    borderBottomRightRadius: 5,
-                    marginTop: -8,
-                    backgroundColor: WHITE,
-                  }}>
+                <View style={styles.containerOption}>
                   <Text
-                    style={{
-                      borderBottomWidth: 1,
-                      borderTopWidth: 1,
-                      padding: 10,
-                      borderColor: GREY_BLUE_50,
-                    }}
+                    style={styles.textOption}
                     onPress={() => {
                       setCurrentLanguage('English');
                       setIsFocusedChangeLanguage(!isFocusedChangeLanguage);
                     }}>
                     English
                   </Text>
-                  <Text
-                    style={{
-                      padding: 10,
-                      borderColor: GREY_BLUE_50,
-                    }}
-                    onPress={() => {
-                      setCurrentLanguage('Spanish');
-                      setIsFocusedChangeLanguage(!isFocusedChangeLanguage);
-                    }}>
-                    Spanish
-                  </Text>
                 </View>
               )}
             </View>
-
-            {/* 
-            <View
-              style={{
-                justifyContent: 'space-between',
-                flexDirection: 'row',
-              }}>
-              <View style={{width: '60%'}}>
-                <Text style={styles.secondOptionTitle}>Etendo Mobile Demo</Text>
-                <Text
-                  style={
-                    isTablet()
-                      ? [styles.secondOptionDescription, {fontSize: 16}]
-                      : [styles.secondOptionDescription, {fontSize: 14}]
-                  }>
-                  You can connect to the Demo server to try the app
-                </Text>
-              </View>
-
-              <View style={styles.buttonDemoTryContainer}>
-                <Pressable
-                  style={styles.buttonDemoTryContent}
-                  onPress={() => onLogin()}>
-                  <Text style={styles.buttonDemoTryText}>Demo try</Text>
-                </Pressable>
-              </View>
-            </View> */}
-
-            {/* <View style={{marginBottom: 15}}>
-        <Text
-          style={{
-            color: 'rgba(0,0,0,0.5)',
-            fontFamily: 'Inter',
-            marginBottom: 2,
-            fontSize: 12,
-          }}>
-          URL
-        </Text>
-        <TextInput
-          style={{
-            height: 47.5,
-            borderWidth: 1,
-            borderColor: BLUE,
-            borderRadius: 10,
-            color: BLUE,
-            padding: 10,
-          }}
-          value={url}
-          onChangeText={text => {
-            dispatch({url: text});
-          }}
-        />
-      </View> */}
-
-            {/* <View>
-        <Text style={{color: BLACK}}>URL</Text>
-        <TextInput
-          value={url}
-          onChangeText={text => {
-            dispatch({url: text});
-          }}
-          style={{borderWidth: 1, color: BLACK}}
-        />
-      </View> */}
-
-            {/* <View>
-        <Text style={{color: BLACK}}>URL</Text>
-        <TextInput
-          value={url}
-          onChangeText={text => {
-            dispatch({url: text});
-          }}
-          style={{borderWidth: 1, color: BLACK}}
-        />
-      </View>
-      <View>
-        <Text style={{color: BLACK}}>Username</Text>
-        <TextInput
-          value={username}
-          onChangeText={setUsername}
-          style={{borderWidth: 1, color: BLACK}}
-        />
-      </View>
-      <View>
-        <Text style={{color: BLACK}}>Password</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-          style={{borderWidth: 1, color: BLACK}}
-        />
-      </View> */}
-            {/* <View style={styles.container}>
-        <Button title="Login" onPress={() => onLogin()} />
-      </View> */}
           </View>
         </View>
       </SafeAreaView>
@@ -387,15 +205,16 @@ export const LoginSettings = ({}) => {
   );
 };
 
+/* Styles */
 const styles = StyleSheet.create({
   containerMobile: {
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
     flex: 1,
     paddingHorizontal: 30,
     paddingVertical: 50,
   },
   containerTablet: {
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
     flex: 1,
     flexDirection: 'row',
   },
@@ -404,9 +223,45 @@ const styles = StyleSheet.create({
   },
   contentContainerTablet: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    // paddingVertical: 30,
-    // paddingHorizontal: 90,
+    backgroundColor: WHITE,
+  },
+  backgroundLogin: {
+    resizeMode: 'contain',
+    width: '34.5%',
+    height: '100%',
+  },
+  buttonBackContainer: {
+    position: 'absolute',
+    right: 0,
+    height: 40,
+    width: 40,
+    borderRadius: 50,
+    justifyContent: 'center',
+  },
+  buttonBackContent: {
+    zIndex: 1,
+    width: 40,
+    height: 40,
+    backgroundColor: PURPLE_50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  backImage: {
+    resizeMode: 'contain',
+    height: 20,
+    width: 20,
+    tintColor: BLUE,
+    alignSelf: 'center',
+  },
+  settingsText: {
+    fontFamily: INTER_SEMIBOLD,
+    color: BLUE,
+  },
+  companyLogo: {
+    resizeMode: 'contain',
+    height: 45,
+    width: 150,
   },
   etendoLogotypeMobile: {
     resizeMode: 'contain',
@@ -439,24 +294,27 @@ const styles = StyleSheet.create({
     marginRight: -30,
   },
   credentialsTextMobile: {
-    color: '#313236',
+    color: GREY_PURPLE,
     marginTop: 10,
     marginBottom: 20,
     fontFamily: 'Inter',
     fontSize: 14,
   },
   credentialsTextTablet: {
-    color: '#313236',
+    color: GREY_PURPLE,
     marginVertical: 7.5,
     fontSize: 19.5,
     textAlign: 'center',
     fontWeight: '500',
   },
+  inputGeneralContainer: {
+    marginVertical: 35,
+  },
   inputContainer: {
     marginBottom: 20,
   },
   credentialLabel: {
-    color: 'rgba(0,0,0,0.5)',
+    color: LIGHT_BLACK,
     fontFamily: 'Inter',
     marginBottom: 2,
   },
@@ -477,10 +335,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 47.5,
     borderWidth: 1,
-    borderColor: '#ececec',
+    borderColor: GREY_10,
     borderRadius: 10,
     color: BLUE,
     padding: 10,
+  },
+  containerOption: {
+    borderWidth: 1,
+    borderColor: BLUE,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    marginTop: -8,
+    backgroundColor: WHITE,
+  },
+  textOption: {
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    padding: 10,
+    borderColor: GREY_BLUE_50,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  dropdownImage: {
+    resizeMode: 'contain',
+    height: 12,
+    width: 12,
+    alignSelf: 'flex-end',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -519,7 +400,7 @@ const styles = StyleSheet.create({
   grayLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#d3d6e1',
+    backgroundColor: GREY_BLUE_50,
     borderRadius: 10,
   },
   secondOptionText: {
@@ -541,10 +422,10 @@ const styles = StyleSheet.create({
   },
   buttonDemoTryContent: {
     width: 100,
-    backgroundColor: '#F2F2F2',
+    backgroundColor: GREY_5,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#D3D6E1',
+    borderColor: GREY_BLUE_50,
     borderRadius: 8,
   },
   buttonDemoTryText: {

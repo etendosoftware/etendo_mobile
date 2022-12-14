@@ -1,10 +1,8 @@
 /* Imports */
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Dimensions,
   Image,
   Keyboard,
-  PixelRatio,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -13,17 +11,27 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+
 import {useNavigation} from '@react-navigation/native';
 import Orientation from 'react-native-orientation-locker';
 import {ContainerContext} from '../contexts/ContainerContext';
 
 import {INTER_SEMIBOLD} from '../styles/fonts';
-import {BLACK, BLUE, GREY_BLUE, WHITE} from '../styles/colors';
+import {
+  BLACK,
+  BLUE,
+  GREY_5,
+  GREY_BLUE,
+  GREY_BLUE_50,
+  GREY_PURPLE,
+  LIGHT_BLACK,
+  PURPLE_40,
+  WHITE,
+} from '../styles/colors';
 
-// getting screen width and height
-const width = Dimensions.get('screen').width;
-const height = Dimensions.get('screen').height;
+import {isTablet} from '../helpers/IsTablet';
 
+/* Export */
 export const Login = ({}) => {
   // using React Native Navigation
   const navigation = useNavigation<any>();
@@ -37,12 +45,12 @@ export const Login = ({}) => {
   // use of states
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin');
-  const [willBeRemembered, setWillBeRemembered] = useState(false);
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
 
   // functions
   const onLogin = async () => {
+    console.log(url);
     const callUrl = `${url}/sws/login`;
     const call = await fetch(callUrl, {
       method: 'POST',
@@ -61,20 +69,6 @@ export const Login = ({}) => {
     });
     const data = await callApps.json();
     dispatch({appsData: data.data, logged: true});
-  };
-
-  // function that allows to know if the screen of the device is a cell phone or a tablet
-  const isTablet = () => {
-    let pixelDensity = PixelRatio.get();
-    const adjustedWidth = width * pixelDensity;
-    const adjustedHeight = height * pixelDensity;
-    if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
-      return true;
-    } else {
-      return (
-        pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920)
-      );
-    }
   };
 
   // side effect not allowing to rotate the screen
@@ -105,8 +99,7 @@ export const Login = ({}) => {
           }>
           <View
             style={{
-              marginVertical: isTablet() ? 25 : 0,
-              marginHorizontal: isTablet() ? 80 : 0,
+              margin: isTablet() ? 80 : 0,
             }}>
             <Pressable onPress={() => navigation.navigate('LoginSettings')}>
               <View
@@ -165,7 +158,7 @@ export const Login = ({}) => {
                   }>
                   Username
                 </Text>
-                {/* <TextInput
+                <TextInput
                   onFocus={() => setIsFocusedUsername(true)}
                   onBlur={() => setIsFocusedUsername(false)}
                   style={
@@ -179,7 +172,7 @@ export const Login = ({}) => {
                   }
                   value={username}
                   onChangeText={setUsername}
-                /> */}
+                />
               </View>
               <View style={styles.inputContainer}>
                 <Text
@@ -207,20 +200,6 @@ export const Login = ({}) => {
                   secureTextEntry={true}
                 />
               </View>
-
-              <Pressable
-                style={styles.checkboxContainer}
-                onPress={() => setWillBeRemembered(!willBeRemembered)}>
-                <Image
-                  source={
-                    willBeRemembered
-                      ? require('../assets/active-checkbox.png')
-                      : require('../assets/disabled-checkbox.png')
-                  }
-                  style={styles.checkboxIconImage}
-                />
-                <Text style={styles.rememberText}>Recuérdame</Text>
-              </Pressable>
 
               <Pressable
                 style={styles.buttonContainer}
@@ -267,13 +246,21 @@ export const Login = ({}) => {
                 style={[
                   styles.buttonContainer,
                   {
-                    backgroundColor: '#f2f2f2',
+                    backgroundColor: GREY_5,
                     borderWidth: 1,
-                    borderColor: '#D3D6E1',
+                    borderColor: GREY_BLUE_50,
                     borderRadius: 8,
                   },
                 ]}
-                onPress={() => onLogin()}>
+                onPress={() => {
+                  dispatch({
+                    appsData: [],
+                    menuItems: [],
+                    url: 'https://demo.etendo.cloud/etendo/',
+                    logged: false,
+                  });
+                  onLogin();
+                }}>
                 <Text
                   style={
                     isTablet()
@@ -291,15 +278,16 @@ export const Login = ({}) => {
   );
 };
 
+/* Styles */
 const styles = StyleSheet.create({
   containerMobile: {
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
     flex: 1,
     paddingHorizontal: 30,
     paddingVertical: 50,
   },
   containerTablet: {
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
     flex: 1,
     flexDirection: 'row',
   },
@@ -308,7 +296,7 @@ const styles = StyleSheet.create({
   },
   contentContainerTablet: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
   },
   backgroundLoginImage: {
     resizeMode: 'contain',
@@ -332,7 +320,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   settingsImageContainer: {
-    backgroundColor: '#DCE1F7',
+    backgroundColor: PURPLE_40,
     position: 'absolute',
     height: 40,
     width: 40,
@@ -361,14 +349,14 @@ const styles = StyleSheet.create({
     marginRight: -30,
   },
   credentialsTextMobile: {
-    color: '#313236',
+    color: GREY_PURPLE,
     marginTop: 10,
     marginBottom: 20,
     fontFamily: 'Inter',
     fontSize: 14,
   },
   credentialsTextTablet: {
-    color: '#313236',
+    color: GREY_PURPLE,
     marginVertical: 7.5,
     fontSize: 19.5,
     textAlign: 'center',
@@ -378,7 +366,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   credentialLabel: {
-    color: 'rgba(0,0,0,0.5)',
+    color: LIGHT_BLACK,
     fontFamily: 'Inter',
     marginBottom: 2,
   },
