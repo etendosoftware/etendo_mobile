@@ -210,7 +210,7 @@ export const Login = ({}) => {
                       ? [styles.buttonText, {fontSize: 16}]
                       : [styles.buttonText, {fontSize: 14}]
                   }>
-                  Acceder
+                  Login
                 </Text>
               </Pressable>
 
