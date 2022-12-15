@@ -19,7 +19,10 @@ import {INTER_SEMIBOLD} from '../styles/fonts';
 import {
   BLACK,
   BLUE,
+  GREY_10,
+  GREY_5,
   GREY_BLUE,
+  GREY_BLUE_50,
   GREY_PURPLE,
   LIGHT_BLACK,
   PURPLE_40,
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
   isNotFocusedText: {
     height: 47.5,
     borderWidth: 1,
-    borderColor: '#ececec',
+    borderColor: GREY_10,
     borderRadius: 10,
     color: BLUE,
     padding: 10,
@@ -390,7 +393,7 @@ const styles = StyleSheet.create({
   grayLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#d3d6e1',
+    backgroundColor: GREY_BLUE_50,
     borderRadius: 10,
   },
   secondOptionText: {
@@ -412,10 +415,10 @@ const styles = StyleSheet.create({
   },
   buttonDemoTryContent: {
     width: 100,
-    backgroundColor: '#F2F2F2',
+    backgroundColor: GREY_5,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#D3D6E1',
+    borderColor: GREY_BLUE_50,
     borderRadius: 8,
   },
   buttonDemoTryText: {
