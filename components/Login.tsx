@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -20,9 +19,7 @@ import {INTER_SEMIBOLD} from '../styles/fonts';
 import {
   BLACK,
   BLUE,
-  GREY_5,
   GREY_BLUE,
-  GREY_BLUE_50,
   GREY_PURPLE,
   LIGHT_BLACK,
   PURPLE_40,
@@ -30,7 +27,7 @@ import {
 } from '../styles/colors';
 
 import {isTablet} from '../helpers/IsTablet';
-// import Button from '../node_modules/etendo-ui-library/components/button/Button';
+
 import Input from '../node_modules/etendo-ui-library/components/input/Input';
 import Button from '../node_modules/etendo-ui-library/components/button/Button';
 
@@ -79,8 +76,6 @@ export const Login = ({}) => {
       Orientation.lockToPortrait();
     }
   }, []);
-
-  const IS_NATIVE = true;
 
   // return login screen
   return (
