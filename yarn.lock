@@ -6439,9 +6439,9 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-"etendo-ui-library@git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#83090d03bbed0dede1d01392fe97f8a2f72ca937":
-  version "1.0.9"
-  resolved "git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#83090d03bbed0dede1d01392fe97f8a2f72ca937"
+"etendo-ui-library@git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68":
+  version "1.0.60"
+  resolved "git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68"
   dependencies:
     "@react-native-async-storage/async-storage" "^1.17.3"
     "@react-native-community/datetimepicker" "^6.1.2"
@@ -11021,6 +11021,13 @@ react-dev-utils@^11.0.3:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
+react-device-detect@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/react-device-detect/-/react-device-detect-2.2.2.tgz#dbabbce798ec359c83f574c3edb24cf1cca641a5"
+  integrity sha512-zSN1gIAztUekp5qUT/ybHwQ9fmOqVT1psxpSlTn1pe0CO+fnJHKRLOWWac5nKxOxvOpD/w84hk1I+EydrJp7SA==
+  dependencies:
+    ua-parser-js "^1.0.2"
+
 react-devtools-core@^4.23.0:
   version "4.26.0"
   resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.26.0.tgz#d3d0f59d62ccf1ac03017a7e92f0fe71455019cc"
@@ -12936,6 +12943,11 @@ ua-parser-js@^0.7.30:
   version "0.7.31"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.31.tgz#649a656b191dffab4f21d5e053e27ca17cbff5c6"
   integrity sha512-qLK/Xe9E2uzmYI3qLeOmI0tEOt+TBBQyUIAh4aAgU05FVYzeZrKUdkAZfBNVGRaHVgV0TDkdEngJSw/SyQchkQ==
+
+ua-parser-js@^1.0.2:
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.32.tgz#786bf17df97de159d5b1c9d5e8e9e89806f8a030"
+  integrity sha512-dXVsz3M4j+5tTiovFVyVqssXBu5HM47//YSOeZ9fQkdDKkfzv2v3PP1jmH6FUyPW+yCSn7aBVK1fGGKNhowdDA==
 
 uglify-es@^3.1.9:
   version "3.3.9"

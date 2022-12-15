@@ -31,6 +31,7 @@ import {
   WHITE,
 } from '../styles/colors';
 import {isTablet} from '../helpers/IsTablet';
+import {Input} from '../node_modules/etendo-ui-library/components/input';
 
 /* Export */
 export const LoginSettings = ({}) => {
@@ -46,7 +47,6 @@ export const LoginSettings = ({}) => {
   // use of states
   const [URL, setURL] = React.useState<string>(url);
   const [currentLanguage, setCurrentLanguage] = useState('English');
-  const [isFocusedURL, setIsFocusedURL] = React.useState(false);
   const [isFocusedChangeLanguage, setIsFocusedChangeLanguage] = useState(false);
 
   // side effect not allowing to rotate the screen
@@ -117,23 +117,15 @@ export const LoginSettings = ({}) => {
                   }>
                   Server URL
                 </Text>
-                <TextInput
-                  onFocus={() => setIsFocusedURL(true)}
-                  onBlur={() => setIsFocusedURL(false)}
-                  placeholderTextColor={GREY_BLUE}
-                  placeholder={URL}
-                  style={
-                    isFocusedURL
-                      ? isTablet()
-                        ? [styles.isFocusedText, {fontSize: 16}]
-                        : [styles.isFocusedText, {fontSize: 14}]
-                      : isTablet()
-                      ? [styles.isNotFocusedText, {fontSize: 16}]
-                      : [styles.isNotFocusedText, {fontSize: 14}]
-                  }
-                  value={URL}
-                  onChangeText={setURL}
-                />
+                <View style={{width: '100%', height: 50}}>
+                  <Input
+                    numberOfLines={2}
+                    typeField={'textInput'}
+                    value={URL}
+                    onChangeText={setURL}
+                    placeholder={URL}
+                  />
+                </View>
               </View>
 
               <View style={styles.inputContainer}>

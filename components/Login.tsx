@@ -30,6 +30,9 @@ import {
 } from '../styles/colors';
 
 import {isTablet} from '../helpers/IsTablet';
+// import Button from '../node_modules/etendo-ui-library/components/button/Button';
+import Input from '../node_modules/etendo-ui-library/components/input/Input';
+import Button from '../node_modules/etendo-ui-library/components/button/Button';
 
 /* Export */
 export const Login = ({}) => {
@@ -45,12 +48,9 @@ export const Login = ({}) => {
   // use of states
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin');
-  const [isFocusedUsername, setIsFocusedUsername] = useState(false);
-  const [isFocusedPassword, setIsFocusedPassword] = useState(false);
 
   // functions
   const onLogin = async () => {
-    console.log(url);
     const callUrl = `${url}/sws/login`;
     const call = await fetch(callUrl, {
       method: 'POST',
@@ -79,6 +79,8 @@ export const Login = ({}) => {
       Orientation.lockToPortrait();
     }
   }, []);
+
+  const IS_NATIVE = true;
 
   // return login screen
   return (
@@ -158,21 +160,15 @@ export const Login = ({}) => {
                   }>
                   Username
                 </Text>
-                <TextInput
-                  onFocus={() => setIsFocusedUsername(true)}
-                  onBlur={() => setIsFocusedUsername(false)}
-                  style={
-                    isFocusedUsername
-                      ? isTablet()
-                        ? [styles.isFocusedText, {fontSize: 16}]
-                        : [styles.isFocusedText, {fontSize: 14}]
-                      : isTablet()
-                      ? [styles.isNotFocusedText, {fontSize: 16}]
-                      : [styles.isNotFocusedText, {fontSize: 14}]
-                  }
-                  value={username}
-                  onChangeText={setUsername}
-                />
+
+                <View style={{width: '100%', height: 50}}>
+                  <Input
+                    numberOfLines={2}
+                    typeField={'textInput'}
+                    value={username}
+                    onChangeText={(text: string) => setUsername(text)}
+                  />
+                </View>
               </View>
               <View style={styles.inputContainer}>
                 <Text
@@ -183,36 +179,24 @@ export const Login = ({}) => {
                   }>
                   Password
                 </Text>
-                <TextInput
-                  onFocus={() => setIsFocusedPassword(true)}
-                  onBlur={() => setIsFocusedPassword(false)}
-                  style={
-                    isFocusedPassword
-                      ? isTablet()
-                        ? [styles.isFocusedText, {fontSize: 16}]
-                        : [styles.isFocusedText, {fontSize: 14}]
-                      : isTablet()
-                      ? [styles.isNotFocusedText, {fontSize: 16}]
-                      : [styles.isNotFocusedText, {fontSize: 14}]
-                  }
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={true}
-                />
+                <View style={{width: '100%', height: 50}}>
+                  <Input
+                    numberOfLines={2}
+                    typeField={'textInput'}
+                    value={password}
+                    onChangeText={setPassword}
+                  />
+                </View>
               </View>
 
-              <Pressable
-                style={styles.buttonContainer}
-                onPress={() => onLogin()}>
-                <Text
-                  style={
-                    isTablet()
-                      ? [styles.buttonText, {fontSize: 16}]
-                      : [styles.buttonText, {fontSize: 14}]
-                  }>
-                  Login
-                </Text>
-              </Pressable>
+              <View style={{alignSelf: 'center'}}>
+                <Button
+                  onPress={() => onLogin()}
+                  text={'Login'}
+                  typeStyle={'primary'}
+                  typeSize={'medium'}
+                />
+              </View>
 
               <View
                 style={[
@@ -242,34 +226,22 @@ export const Login = ({}) => {
                 Demo server to try app
               </Text>
 
-              <Pressable
-                style={[
-                  styles.buttonContainer,
-                  {
-                    backgroundColor: GREY_5,
-                    borderWidth: 1,
-                    borderColor: GREY_BLUE_50,
-                    borderRadius: 8,
-                  },
-                ]}
-                onPress={() => {
-                  dispatch({
-                    appsData: [],
-                    menuItems: [],
-                    url: 'https://demo.etendo.cloud/etendo/',
-                    logged: false,
-                  });
-                  onLogin();
-                }}>
-                <Text
-                  style={
-                    isTablet()
-                      ? [styles.buttonText, {fontSize: 16, color: BLUE}]
-                      : [styles.buttonText, {fontSize: 14, color: BLUE}]
-                  }>
-                  Etendo Mobile Demo
-                </Text>
-              </Pressable>
+              <View style={{alignSelf: 'center'}}>
+                <Button
+                  onPress={() => {
+                    dispatch({
+                      appsData: [],
+                      menuItems: [],
+                      url: 'https://demo.etendo.cloud/etendo/',
+                      logged: false,
+                    });
+                    onLogin();
+                  }}
+                  text={'Etendo Mobile Demo'}
+                  typeStyle={'terciary'}
+                  typeSize={'medium'}
+                />
+              </View>
             </View>
           </View>
         </View>
