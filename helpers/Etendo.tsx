@@ -5,6 +5,10 @@ export class EtendoUtil {
   private _dispatch: any;
   private _screens: any = [];
   private _Stack: any;
+  private _url: string = '';
+  private _token: string = 'token';
+  private _navigation = [];
+  private _globalNav: any;
 
   public set state(state: any) {
     this._state = state;
@@ -15,47 +19,79 @@ export class EtendoUtil {
   public set Stack(Stack: any) {
     this._Stack = Stack;
   }
-
-  public addMenuItem(menuItems: [{
-    name: string;
-    __id: string;
-    url: string;
-    isDev: boolean;
-    component: any;
-  }]) {
-    const add: any[] = []
+  public set url(url: string) {
+    this._url = url;
+  }
+  public get url() {
+    return this._url;
+  }
+  public set token(token: string) {
+    this._token = token;
+  }
+  public get token() {
+    return this._token;
+  }
+  public get navigation() {
+    return this._navigation;
+  }
+  public get globalNav() {
+    return this._globalNav;
+  }
+  public set globalNav(globalNav: any) {
+    this._globalNav = globalNav;
+  }
+  public addMenuItem(
+    menuItems: [
+      {
+        name: string;
+        __id: string;
+        url: string;
+        isDev: boolean;
+        component: any;
+      },
+    ],
+  ) {
+    const add: any[] = [];
     menuItems.map(menuItem => {
-      let replaced = false
+      let replaced = false;
       for (let i = 0; i < this._state.menuItems.length; i++) {
         if (menuItem.name === this._state.menuItems[i].name) {
-          this._state.menuItems[i] = menuItem
-          replaced = true
+          this._state.menuItems[i] = menuItem;
+          replaced = true;
         }
       }
       if (!replaced) {
-        add.push(menuItem)
+        add.push(menuItem);
       }
-    })
-    this._dispatch({ menuItems: [...this._state.menuItems, ...add] });
+    });
+    this._dispatch({menuItems: [...this._state.menuItems, ...add]});
   }
-
+  
   public register(name: string, component: any) {
     this._screens = component;
   }
 
   public render(name: string) {
     const Component = useMemo(() => {
-      return React.lazy(async () => { return this._screens.default })
+      return React.lazy(async () => {
+        return this._screens.default;
+      });
     }, [name]);
-    return (<Component />);
+    return <Component />;
   }
 
-  public screen = "Screen2"
+  public screen = 'Screen2';
 
   public createStackNavigator() {
     return this._Stack;
   }
 
+  public async closeDrawer() {
+    this._globalNav.closeDrawer();
+  }
+  public async toggleDrawer() {
+    this._globalNav.toggleDrawer();
+  }
 }
 
 const Etendo = new EtendoUtil();

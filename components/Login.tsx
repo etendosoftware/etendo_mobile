@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Button, Dimensions, StyleSheet, Text, TextInput, View } from "react-native"
 import { ContainerContext } from "../contexts/ContainerContext"
+import { Etendo } from "../helpers/Etendo";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -9,7 +10,14 @@ export const Login = ({ }) => {
   const { state: { url }, dispatch } = useContext(ContainerContext);
   const [username, setUsername] = useState("admin")
   const [password, setPassword] = useState("admin")
-
+  const [token, setToken] = useState("")
+  useEffect(() => {
+    Etendo.url = url;
+  }, [url])
+  useEffect(() => {
+    Etendo.token = token;
+  }, [token])
+  
   const onLogin = async () => {
     const callUrl = `${url}/sws/login`;
     const call = await fetch(callUrl, {
@@ -20,6 +28,7 @@ export const Login = ({ }) => {
       })
     })
     const { token } = await call.json()
+    setToken(token);
     const callUrlApps = `${url}/sws/com.etendoerp.dynamic.app.userApp`;
     const callApps = await fetch(callUrlApps, {
       method: "GET",

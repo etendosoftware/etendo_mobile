@@ -28,7 +28,7 @@ const ContainerProvider = ({ children }: any) => {
     appsData: [],
     menuItems: [],
     url: 'http://10.0.2.2:8080/etendo',
-    logged: false
+    logged: false,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
