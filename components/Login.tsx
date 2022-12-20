@@ -230,7 +230,7 @@ export const Login = ({}) => {
                 </Text>
                 <Button
                   onPress={() => {}}
-                  text={'Etendo Mobile Demo'}
+                  text={'Demo Try'}
                   typeStyle={'terciary'}
                   typeSize={'medium'}
                 />
