@@ -87,7 +87,7 @@ export const LoginSettings = ({}) => {
                     url: URL,
                     logged: false,
                   });
-                  navigation.navigate('MainScreen');
+                  navigation.navigate('Login');
                 }}>
                 <Image
                   source={require('../assets/back.png')}
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   backgroundLogin: {
     resizeMode: 'contain',
-    width: '34.5%',
+    width: 444,
     height: '100%',
   },
   buttonBackContainer: {

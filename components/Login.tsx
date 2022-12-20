@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {
   Image,
   Keyboard,
+  LogBox,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -11,7 +12,6 @@ import {
   View,
 } from 'react-native';
 
-import {useNavigation} from '@react-navigation/native';
 import Orientation from 'react-native-orientation-locker';
 import {ContainerContext} from '../contexts/ContainerContext';
 
@@ -31,8 +31,11 @@ import {
 
 import {isTablet} from '../helpers/IsTablet';
 
-import Input from '../node_modules/etendo-ui-library/components/input/Input';
+import {Input} from '../node_modules/etendo-ui-library/components/input';
 import Button from '../node_modules/etendo-ui-library/components/button/Button';
+import {useNavigation} from '@react-navigation/native';
+
+LogBox.ignoreLogs(['Require cycle: ']);
 
 /* Export */
 export const Login = ({}) => {
@@ -51,6 +54,8 @@ export const Login = ({}) => {
 
   // functions
   const onLogin = async () => {
+    await url;
+    console.log('URL onLogin: ', url);
     const callUrl = `${url}/sws/login`;
     const call = await fetch(callUrl, {
       method: 'POST',
@@ -215,26 +220,16 @@ export const Login = ({}) => {
                 <View style={styles.grayLine} />
               </View>
 
-              <Text
-                style={{
-                  fontSize: isTablet() ? 16 : 14,
-                  color: BLACK,
-                  marginBottom: 10,
-                }}>
-                Demo server to try app
-              </Text>
-
-              <View style={{alignSelf: 'center'}}>
+              <View style={styles.sectionBottomContainer}>
+                <Text
+                  style={{
+                    fontSize: isTablet() ? 16 : 14,
+                    color: BLACK,
+                  }}>
+                  Demo server to try app
+                </Text>
                 <Button
-                  onPress={() => {
-                    dispatch({
-                      appsData: [],
-                      menuItems: [],
-                      url: 'https://demo.etendo.cloud/etendo/',
-                      logged: false,
-                    });
-                    onLogin();
-                  }}
+                  onPress={() => {}}
                   text={'Etendo Mobile Demo'}
                   typeStyle={'terciary'}
                   typeSize={'medium'}
@@ -270,7 +265,7 @@ const styles = StyleSheet.create({
   },
   backgroundLoginImage: {
     resizeMode: 'contain',
-    width: '34.5%',
+    width: 444,
     height: '100%',
   },
   etendoLogotypeMobile: {
@@ -426,5 +421,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: BLUE,
     textTransform: 'uppercase',
+  },
+  sectionBottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
