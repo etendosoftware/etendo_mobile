@@ -10,7 +10,12 @@ export const GREY_BLUE_10 = '#F2F5F9';
 
 export const PURPLE = '#7182FF';
 export const PURPLE_50 = '#DDDFF6';
+export const PURPLE_40 = '#DCE1F7';
 export const PURPLE_10 = '#F5F5FC';
+
+export const GREY_PURPLE = '#313236';
+
+export const LIGHT_BLACK = 'rgba(0,0,0,0.5)';
 
 export const WHITE = '#FFFFFF';
 

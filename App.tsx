@@ -9,9 +9,9 @@
  */
 
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ContainerProvider } from './contexts/ContainerContext';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import MainScreen from './components/MainScreen';
+import {ContainerProvider} from './contexts/ContainerProvider';
 
 const App = () => {
   return (
