@@ -10,6 +10,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  useWindowDimensions,
 } from 'react-native';
 
 import Orientation from 'react-native-orientation-locker';
@@ -85,16 +86,20 @@ export const Login = ({}) => {
     }
   }, []);
 
+  const {width} = useWindowDimensions();
+
   // return login screen
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView
         style={isTablet() ? styles.containerTablet : styles.containerMobile}>
         {isTablet() && (
-          <Image
-            source={require('../assets/background-login.png')}
-            style={styles.backgroundLoginImage}
-          />
+          <View style={{position: 'relative', width: '34.5%'}}>
+            <Image
+              source={require('../assets/background-login.png')}
+              style={styles.backgroundLoginImage}
+            />
+          </View>
         )}
         <View
           style={
@@ -264,8 +269,9 @@ const styles = StyleSheet.create({
     backgroundColor: WHITE,
   },
   backgroundLoginImage: {
-    resizeMode: 'contain',
-    width: 444,
+    position: 'absolute',
+    left: 0,
+    width: '100%',
     height: '100%',
   },
   etendoLogotypeMobile: {
