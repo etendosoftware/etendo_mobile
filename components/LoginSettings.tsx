@@ -1,5 +1,5 @@
 /* Imports */
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Image,
   Keyboard,
@@ -13,7 +13,6 @@ import {
 
 import {ContainerContext} from '../contexts/ContainerContext';
 
-import Orientation from 'react-native-orientation-locker';
 import {useNavigation} from '@react-navigation/native';
 
 import {INTER_SEMIBOLD} from '../styles/fonts';
@@ -31,6 +30,7 @@ import {
 } from '../styles/colors';
 import {isTablet} from '../helpers/IsTablet';
 import {Input} from '../node_modules/etendo-ui-library/components/input';
+import {useNonRotationScreen} from '../helpers/useNonRotationScreen';
 
 /* Export */
 export const LoginSettings = ({}) => {
@@ -49,13 +49,7 @@ export const LoginSettings = ({}) => {
   const [isFocusedChangeLanguage, setIsFocusedChangeLanguage] = useState(false);
 
   // side effect not allowing to rotate the screen
-  useEffect(() => {
-    if (isTablet()) {
-      Orientation.lockToLandscape();
-    } else {
-      Orientation.lockToPortrait();
-    }
-  }, []);
+  useNonRotationScreen();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

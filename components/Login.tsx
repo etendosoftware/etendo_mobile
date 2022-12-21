@@ -1,5 +1,5 @@
 /* Imports */
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Image,
   Keyboard,
@@ -13,7 +13,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-import Orientation from 'react-native-orientation-locker';
 import {ContainerContext} from '../contexts/ContainerContext';
 
 import {INTER_SEMIBOLD} from '../styles/fonts';
@@ -35,6 +34,7 @@ import {isTablet} from '../helpers/IsTablet';
 import {Input} from '../node_modules/etendo-ui-library/components/input';
 import Button from '../node_modules/etendo-ui-library/components/button/Button';
 import {useNavigation} from '@react-navigation/native';
+import {useNonRotationScreen} from '../helpers/useNonRotationScreen';
 
 LogBox.ignoreLogs(['Require cycle: ']);
 
@@ -78,13 +78,7 @@ export const Login = ({}) => {
   };
 
   // side effect not allowing to rotate the screen
-  useEffect(() => {
-    if (isTablet()) {
-      Orientation.lockToLandscape();
-    } else {
-      Orientation.lockToPortrait();
-    }
-  }, []);
+  useNonRotationScreen();
 
   const {width} = useWindowDimensions();
 
