@@ -62,10 +62,12 @@ export const LoginSettings = ({}) => {
       <SafeAreaView
         style={isTablet() ? styles.containerTablet : styles.containerMobile}>
         {isTablet() && (
-          <Image
-            source={require('../assets/background-login.png')}
-            style={styles.backgroundLogin}
-          />
+          <View style={styles.backgroundLoginImageContainer}>
+            <Image
+              source={require('../assets/background-login.png')}
+              style={styles.backgroundLoginImage}
+            />
+          </View>
         )}
         <View
           style={
@@ -216,9 +218,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: WHITE,
   },
-  backgroundLogin: {
-    resizeMode: 'contain',
-    width: 444,
+  backgroundLoginImageContainer: {
+    position: 'relative',
+    width: '34.5%',
+  },
+  backgroundLoginImage: {
+    position: 'absolute',
+    left: 0,
+    width: '100%',
     height: '100%',
   },
   buttonBackContainer: {
