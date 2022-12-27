@@ -49,7 +49,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -72,6 +72,15 @@
 		<string>Poppins-Medium.ttf</string>
 		<string>Poppins-Regular.ttf</string>
 		<string>Poppins-Thin.ttf</string>
+		<string>Inter-Black.ttf</string>
+		<string>Inter-Bold.ttf</string>
+		<string>Inter-ExtraBold.ttf</string>
+		<string>Inter-ExtraLight.ttf</string>
+		<string>Inter-Light.ttf</string>
+		<string>Inter-Medium.ttf</string>
+		<string>Inter-Regular.ttf</string>
+		<string>Inter-SemiBold.ttf</string>
+		<string>Inter-Thin.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>BootSplash</string>
@@ -92,9 +101,9 @@
 	<false/>
 	<key>CodePushDeploymentKey</key>
 	<string>bEm30QfySeImEkOlq8Wo_DNlMUAiKMbKOXct2</string>
-    <key>NSCameraUsageDescription</key>
+	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to scan barcodes.</string>
 	<key>NSMicrophoneUsageDescription</key>
-    <string>Microphone is not used to scan barcodes, only the camera.</string>
+	<string>Microphone is not used to scan barcodes, only the camera.</string>
 </dict>
 </plist>
