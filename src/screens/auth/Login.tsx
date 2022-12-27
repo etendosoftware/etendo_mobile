@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   Dimensions,
@@ -16,7 +16,6 @@ import { logout, User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
 import {
   TextInput,
-  Appbar,
   Dialog,
   Text,
   Divider,
@@ -37,20 +36,11 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Input } from "../../../ui/components/input";
 import ButtonUI from "../../../ui/components/button/Button";
 
-import { useNonRotationScreen } from "../../helpers/useNonRotationScreen";
 import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
-import {
-  BLACK,
-  BLUE,
-  GREY_40,
-  GREY_60,
-  GREY_BLUE_50,
-  WHITE
-} from "../../../ui/styles/colors";
+import { BLACK, BLUE, GREY_60, WHITE } from "../../../ui/styles/colors";
 import { GREY_PURPLE } from "../../styles/colors";
 
-const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const MIN_CORE_VERSION = "3.0.202201";
 
 interface Props {
@@ -87,7 +77,6 @@ interface State {
 }
 
 const win = Dimensions.get("window");
-const ratio = win.width / 1080; //541 is actual image width
 const deviceIsATablet = isTablet();
 
 @observer
@@ -454,20 +443,6 @@ class Login extends React.Component<Props, State> {
               />
               <View style={styles.generalView}>
                 <View style={styles.viewStyle}>
-                  {/* <View style={styles.appbarStyle}>
-                <Appbar.Action
-                  icon="cog"
-                  onPress={() => this.props.navigation.navigate("Settings")}
-                />
-              </View> */}
-                  {/* <View style={styles.containerLogo}>
-                  <Image
-                    style={styles.logo}
-                    resizeMode={"contain"}
-                    source={require("../../img/etendo-logo-1.png")}
-                  />
-                </View> */}
-
                   <View style={styles.welcomeTitleContainer}>
                     <Text
                       style={[
@@ -513,16 +488,6 @@ class Login extends React.Component<Props, State> {
                         placeholder={locale.t("User")}
                       />
                     </View>
-                    {/* <TextInput
-              allowFontScaling={false}
-              style={styles.textInputStyle}
-              mode="outlined"
-              label={locale.t("User")}
-              value={this.state.username}
-              onChangeText={username => this.setState({ username })}
-              textContentType="username"
-              onSubmitEditing={() => this.secondTextInput.focus()}
-            /> */}
 
                     <View style={styles.textInputStyle}>
                       <Input
@@ -533,53 +498,8 @@ class Login extends React.Component<Props, State> {
                         placeholder={locale.t("Password")}
                       />
                     </View>
-
-                    {/* <TextInput
-              allowFontScaling={false}
-              style={styles.textInputStyle}
-              mode="outlined"
-              label={locale.t("Password")}
-              textContentType="password"
-              value={this.state.password}
-              onChangeText={password => this.setState({ password })}
-              ref={input => {
-                this.secondTextInput = input;
-              }}
-              onSubmitEditing={this.submitLogin}
-              secureTextEntry={!this.state.showPassword}
-              right={
-                <TextInput.Icon
-                  style={styles.textInputIconStyle}
-                  name={this.state.showPassword ? "eye-off" : "eye"}
-                  color={
-                    this.state.showPassword
-                      ? defaultTheme.colors.primary
-                      : defaultTheme.colors.disabled
-                  }
-                  onPress={() => {
-                    this.setState({ showPassword: !this.state.showPassword });
-                  }}
-                  forceTextInputFocus={false}
-                />
-              }
-            /> */}
                   </View>
                   <View style={styles.containerLogin}>
-                    {/* <Button
-              style={styles.buttonLogin}
-              mode="contained"
-              loading={User.loading || Windows.loading}
-              disabled={User.loading || Windows.loading}
-              onPress={this.submitLogin}
-            >
-              <Text
-                style={{ fontSize: 15, color: defaultTheme.colors.background }}
-                allowFontScaling={false}
-              >
-                {locale.t("Log in")}
-              </Text>
-            </Button> */}
-
                     <View style={{ alignSelf: "center" }}>
                       <ButtonUI
                         onPress={this.submitLogin}
@@ -669,7 +589,6 @@ class Login extends React.Component<Props, State> {
                   }}
                   onPress={() => this.setState({ showAddUrl: true })}
                 >
-                  {" "}
                   {locale.t("ShowLoadUrl:Add")}
                 </Button>
                 <Button
@@ -886,13 +805,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     paddingBottom: 16
-    // backgroundColor: defaultTheme.colors.background
   },
   viewStyle: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
-    // backgroundColor: defaultTheme.colors.background,
     height: "100%"
   },
   appbarStyle: {
