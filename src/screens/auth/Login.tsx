@@ -719,7 +719,7 @@ const styles = StyleSheet.create({
     width: win.width,
     textAlign: "center",
     color: defaultTheme.colors.primary,
-    fontFamily: "poppins-medium",
+    //fontFamily: "poppins-medium",
     fontSize: 12,
     backgroundColor: defaultTheme.colors.background
   },
