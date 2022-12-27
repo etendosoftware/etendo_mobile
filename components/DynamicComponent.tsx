@@ -5,14 +5,14 @@ import { fetchComponent } from "./utils";
 const DynamicComponent = ({ __id, url, children, ...props }: any) => {
     const Component = useMemo(() => {
         const component = async () => {
-          const c = fetchComponent(__id, url);
-          c.catch(e => {
-            console.error(e)
-          })
-          c.finally( () => {
-            console.log("fetch done !!!")
-          })
-          return c;
+          const componentPromise = fetchComponent(__id, url);
+          componentPromise.catch(e => {
+            console.error(e);
+          });
+          componentPromise.finally(() => {
+            console.info('fetch done !!!');
+          });
+          return componentPromise;
         };
         return React.lazy(component)
     }, [__id]);

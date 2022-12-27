@@ -16,10 +16,8 @@ const HomePage = ({ route }: any) => {
         Etendo.navigation[route.params.name] = childNavigation;
 
         useEffect(() => {
-            console.log('childNavigation', childNavigation);
             return () => {
-
-                console.log("umount")
+                // Umount
             }
         })
         return (
@@ -28,7 +26,7 @@ const HomePage = ({ route }: any) => {
               <NavigationContainer
                 independent={true}
                 onReady={() => {
-                  console.log('onReady');
+                  // On ready
                 }}
                 ref={childNavigation}>
                 <View
