@@ -13,6 +13,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { defaultTheme } from "./src/themes";
 import Languages from "./src/ob-api/objects/Languages";
 import { supportedLocales } from "./src/i18n/config";
+import { ContainerProvider } from "./src/contexts/ContainerContext";
 
 interface Props {}
 
@@ -186,11 +187,13 @@ export default class App extends React.Component<Props, State> {
         >
           {this.state && this.state.fontLoaded && (
             <>
+              <ContainerProvider>
               <LoadingScreen visible={User.loading || Windows.loading} />
               <NavigationContainer>
                 {User.token ? <AppHome /> : <AppLogin />}
               </NavigationContainer>
               <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
+              </ContainerProvider>
             </>
           )}
         </MainAppContext.Provider>

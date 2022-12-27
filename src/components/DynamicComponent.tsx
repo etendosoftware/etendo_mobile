@@ -4,7 +4,17 @@ import { fetchComponent } from "./utils";
 
 const DynamicComponent = ({ __id, url, children, ...props }: any) => {
     const Component = useMemo(() => {
-        return React.lazy(async () => fetchComponent(__id, url))
+        const component = async () => {
+          const c = fetchComponent(__id, url);
+          c.catch(e => {
+            console.error(e)
+          })
+          c.finally( () => {
+            console.log("fetch done !!!")
+          })
+          return c;
+        };
+        return React.lazy(component)
     }, [__id]);
     return (
         <Suspense fallback={<View><Text>Loading...</Text></View>}>

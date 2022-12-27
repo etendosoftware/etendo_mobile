@@ -1,34 +1,55 @@
-import React from 'react'
-import { StyleSheet, View, ScrollView, Button } from 'react-native'
+import React, { useContext, useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
 import DynamicComponent from './DynamicComponent';
+import { Etendo } from '../helpers/Etendo';
+import { ContainerContext } from '../contexts/ContainerContext';
 
-const MainScreen = ({ route }: any) => {
+const HomePage = ({ route }: any) => {
 
     const RenderDynamicComponents = (props: any) => {
+        const context = useContext(ContainerContext)
         const appId = route.params.__id;
         const url = route.params.url;
-        console.log("URL", route.params)
+        const childNavigation = useNavigationContainerRef();
+        console.log("RenderDynamicComponents navigation", route.params.name, childNavigation);
+        Etendo.navigation[route.params.name] = childNavigation;
+        console.log("Etendo.navigation", Etendo.navigation)
+        
+        useEffect(() => {
+            console.log('childNavigation', childNavigation);
+            return () => {
+                console.log("umount")
+            }
+        })
         return (
-            <>
-                <View style={{ paddingVertical: 15 }}>
+          <>
+            <View style={{flex: 1}}>
+              <NavigationContainer
+                independent={true}
+                onReady={() => {
+                  console.log('onReady');
+                }}
+                ref={childNavigation}>
+                <View
+                  style={{flex: 1}}
+                  >
                     <DynamicComponent __id={appId} url={url} children={undefined} />
                 </View>
-            </>
-        )
+              </NavigationContainer>
+            </View>
+          </>
+        );
     };
 
     return (
-        <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.backgroundStyle}>
-            <View>
-                <RenderDynamicComponents />
-            </View>
-        </ScrollView >
+        <View style={{flex: 1}}>
+            <RenderDynamicComponents />
+        </View>
     )
 }
 
-export default MainScreen
+export default HomePage
 
 const styles = StyleSheet.create({
     button: {

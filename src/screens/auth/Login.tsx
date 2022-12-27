@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Dimensions, Image, StyleSheet, AsyncStorage } from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
@@ -23,6 +23,7 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { ContainerContext } from "../../contexts/ContainerContext";
 
 const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const MIN_CORE_VERSION = "3.0.202201";
@@ -64,7 +65,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
 
 @observer
-class Login extends React.Component<Props, State> {
+class LoginClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
 
   secondTextInput: any;
@@ -152,10 +153,8 @@ class Login extends React.Component<Props, State> {
   };
 
   loadDynamic = async () => {
+
       let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
-      
-
-
       const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
       console.log("callUrlApps", callUrlApps);
       fetch(callUrlApps, {
@@ -168,6 +167,9 @@ class Login extends React.Component<Props, State> {
       }).then(async(callApps) => {
       const data = await callApps.json();
       console.log("data", data)
+      console.log("props", this.props)
+      this.props.dispatch({ appsData: data.data, logged: true });
+
     }).catch(err => console.error(err));
   }
 
@@ -642,6 +644,13 @@ class Login extends React.Component<Props, State> {
   }
 }
 
+const Login = (props) => {
+  const { dispatch } = useContext(ContainerContext);
+
+  return (
+    <LoginClass {...props} dispatch={dispatch} />
+  )
+}
 export default Login;
 
 const styles = StyleSheet.create({
