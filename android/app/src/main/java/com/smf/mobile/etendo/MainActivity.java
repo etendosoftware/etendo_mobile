@@ -19,7 +19,7 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "Etendo_Main";
+        return "Etendo_Mobile";
     }
 
 }
