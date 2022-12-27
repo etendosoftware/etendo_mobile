@@ -1,17 +1,57 @@
-# Test
+# Installation
 
-To test this component in Storybook mobile, the following commands must be executed via console.
+## Configure NPM authentication
+Edit your local `.npmrc` file to include authenticate always:
+```
+vi ~/.npmrc
+```
+Add the following lines to the bottom of the file:
+```
+registry=https://repo.futit.cloud/repository/npm-group/
+always-auth=true
+_auth=<the encoding in base64 of: <your Nexus user>:<your Nexus password>>
+```
+You can encode the auth [here](https://www.base64encode.org/)
+## Adding Important files
+You'll need to add the `debug.keystore` and `mobile-openbravo.jks` files to the `android/app` folder of your Etendo Mobile repository. Ask your Etendo Mobile manager for them.
+## Installing dependencies and running
+### iOS
+```
+yarn install
+cd ios && pod install && cd ..
+yarn run ios
+```
+### Android
+```
+yarn install
+yarn start
+yarn run android
+```
 
-`yarn install && npx react-native run-android && npx react-native start`
+## Etendo server
+Make sure the following modules are installed in your Etendo server:
+- com.smf.securewebservices
+- com.smf.mobile.utils
+- com.smf.mobile.scan (when using the inventory scan process)
+- com.smf.ean128 (when using the inventory scan process)
 
-In turn, to test it in Storybook web, the following command will open a window in your browser rendering it.
+## Code formatting
+1. Make sure to have the 'Prettier' and 'Prettier ESLint' extensions installed in your VS Code:
+```
+Name: Prettier - Code formatter
+Id: esbenp.prettier-vscode
+Description: Code formatter using prettier
+Publisher: Prettier
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+```
+```
+Name: Prettier ESLint
+Id: rvest.vs-code-prettier-eslint
+Description: A Visual Studio Extension to format JavaScript and Typescript code using prettier-eslint package
+Publisher: Rebecca Vest
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=rvest.vs-code-prettier-eslint
+```
 
-`yarn storybook`
+2. Allow auto-format on save: 
 
-# Notes:
-
-This component presents a horizontal scroll view in order to cover the case in which the number of TabItems containing Tabs is wider than the width of the screen on which they will be rendered.
-
-It is possible that when typing the two commands described in "When", the screen may have to be reloaded by pressing the "R" key on the keyboard.
-
-It is worth mentioning that in this first instance this component is made up of two styles, which are primary and secondary. However, each new Tab design that is presented I will add it to this component so that it can be used in any Etendo project.
+Open VS Code's Settings (File > Preferences > Settings) and check the box that says "Editor: Format on save"
