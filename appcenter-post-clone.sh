@@ -7,6 +7,4 @@ always-auth=true
 _auth=${NPM_TOKEN}
 """ > .npmrc
 
-#yarn config set registry https://repo.futit.cloud/repository/npm-group/
-
 exit 0
