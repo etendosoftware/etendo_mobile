@@ -5,12 +5,12 @@ import { logout, User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
 import {
   TextInput,
-  Button,
   Appbar,
   Dialog,
   Text,
   Divider,
-  List
+  List,
+  Button
 } from "react-native-paper";
 import { Snackbar } from "../../globals";
 import { UpdateDialog } from "../../components";
@@ -23,6 +23,8 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { Input } from "../../../ui/components/input";
+import ButtonUI from "../../../ui/components/button/Button";
 
 const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const MIN_CORE_VERSION = "3.0.202201";
@@ -132,7 +134,7 @@ class Login extends React.Component<Props, State> {
       changeLanguage("en_US");
     } else {
       if (!Windows.hydrated || !token) {
-        // await Windows.loadWindows(selectedLanguage);
+        await Windows.loadWindows(selectedLanguage);
       }
     }
   };
@@ -153,8 +155,6 @@ class Login extends React.Component<Props, State> {
 
   loadDynamic = async () => {
       let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
-      
-
 
       const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
       console.log("callUrlApps", callUrlApps);
@@ -382,7 +382,17 @@ class Login extends React.Component<Props, State> {
             <Button style={styles.buttonDemo} onPress={() => this.demo()}>
               {locale.t("DemoTry")}
             </Button>
-            <TextInput
+
+            <View style={styles.textInputStyle}>
+              <Input
+                numberOfLines={2}
+                typeField={"textInput"}
+                value={this.state.username}
+                onChangeText={username => this.setState({ username })}
+                placeholder={locale.t("User")}
+              />
+            </View>
+            {/* <TextInput
               allowFontScaling={false}
               style={styles.textInputStyle}
               mode="outlined"
@@ -391,8 +401,19 @@ class Login extends React.Component<Props, State> {
               onChangeText={username => this.setState({ username })}
               textContentType="username"
               onSubmitEditing={() => this.secondTextInput.focus()}
-            />
-            <TextInput
+            /> */}
+
+            <View style={styles.textInputStyle}>
+              <Input
+                numberOfLines={2}
+                typeField={"textInput"}
+                value={this.state.password}
+                onChangeText={password => this.setState({ password })}
+                placeholder={locale.t("Password")}
+              />
+            </View>
+
+            {/* <TextInput
               allowFontScaling={false}
               style={styles.textInputStyle}
               mode="outlined"
@@ -420,10 +441,10 @@ class Login extends React.Component<Props, State> {
                   forceTextInputFocus={false}
                 />
               }
-            />
+            /> */}
           </View>
           <View style={styles.containerLogin}>
-            <Button
+            {/* <Button
               style={styles.buttonLogin}
               mode="contained"
               loading={User.loading || Windows.loading}
@@ -436,7 +457,16 @@ class Login extends React.Component<Props, State> {
               >
                 {locale.t("Log in")}
               </Text>
-            </Button>
+            </Button> */}
+
+            <View style={{alignSelf:"center"}}>
+              <ButtonUI
+                onPress={this.submitLogin}
+                text={locale.t("Log in")}
+                typeStyle={"primary"}
+                typeSize={"medium"}
+              />
+            </View>
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => [this.setState({ showChangePassword: true })]}
