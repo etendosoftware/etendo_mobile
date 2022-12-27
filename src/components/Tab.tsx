@@ -231,7 +231,6 @@ class Tab extends React.Component<Props, State> {
     this.reload(this.props.parentRecordId).then(() => {
       if (!this.context.currentRecord) {
         this.context.eventSubscribe(APP_EVENT, NEW_RECORD, newRecord => {
-          console.log("Event propagated");
           this.setState({ records: [newRecord].concat(this.state.records) });
         });
       }
@@ -606,8 +605,6 @@ class Tab extends React.Component<Props, State> {
   };
 
   onEntityUpdated = entity => {
-    console.log("setCurrentEntity");
-    console.log(entity);
   };
 
   onCardNavigation: OnCardNavigation = (
@@ -617,8 +614,6 @@ class Tab extends React.Component<Props, State> {
     let currentRecord = this.state.records.find(
       entity => entity?.id === cardData.currentRecordId
     ) as IRecord;
-    console.log("onCardNavigation");
-    console.log(this.state.records.indexOf(currentRecord));
     cardData.currentRecord = currentRecord;
     this.props.navigation.push(cardData.windowId, cardData);
   };

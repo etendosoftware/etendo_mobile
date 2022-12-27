@@ -39,7 +39,6 @@ export function AppLogin() {
 }
 export function AppHome() {
   const context = useContext(ContainerContext);
-  console.log("context.state", context.state);
 
   return (
     <DrawerNav.Navigator
@@ -85,7 +84,6 @@ export function AppHome() {
 
       <DrawerNav.Screen name="CardView1" component={CardViewStackNavigator} />
       {context?.state?.menuItems.map((menuItem: any) => {
-        console.log("Render menu", menuItem);
         const params = { ...menuItem };
         if (params.component) {
           delete params.component;

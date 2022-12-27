@@ -176,9 +176,6 @@ export class DrawerClass extends React.Component<Props, State> {
           labelStyle={styles.drawerText}
           style={styles.drawerItem}
           onPress={async() => {
-            console.log("menuItem", menuItem)
-            console.log("Etendo.navigation", Etendo.navigation);
-
             if (menuItem.app) {
               Etendo.navigation[menuItem.app].navigate(
                 menuItem.route,

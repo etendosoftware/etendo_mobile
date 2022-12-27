@@ -51,7 +51,6 @@ export class EtendoUtil {
       }
     ]
   ) {
-    console.log("addMenuItem", menuItems);
     const add: any[] = [];
     menuItems.map(menuItem => {
       let replaced = false;

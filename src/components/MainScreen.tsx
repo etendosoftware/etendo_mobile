@@ -12,14 +12,11 @@ const HomePage = ({ route }: any) => {
         const appId = route.params.__id;
         const url = route.params.url;
         const childNavigation = useNavigationContainerRef();
-        console.log("RenderDynamicComponents navigation", route.params.name, childNavigation);
         Etendo.navigation[route.params.name] = childNavigation;
-        console.log("Etendo.navigation", Etendo.navigation)
         
         useEffect(() => {
-            console.log('childNavigation', childNavigation);
             return () => {
-                console.log("umount")
+                // unmount
             }
         })
         return (
@@ -28,7 +25,7 @@ const HomePage = ({ route }: any) => {
               <NavigationContainer
                 independent={true}
                 onReady={() => {
-                  console.log('onReady');
+                  // onReady
                 }}
                 ref={childNavigation}>
                 <View

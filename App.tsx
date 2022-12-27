@@ -93,7 +93,6 @@ export default class App extends React.Component<Props, State> {
   };
 
   eventUnsubscribe = async (appEvent: APP_EVENT, key) => {
-    console.log("unsubscribed", { appEvent, key });
     if (this.eventsPool[appEvent][key]) {
       delete this.eventsPool[appEvent][key];
     }
@@ -162,7 +161,6 @@ export default class App extends React.Component<Props, State> {
   };
 
   getBreadcrumbs = (windowId: string): string[] => {
-    console.log("getBreadcrumbs", windowId);
     if (!this.state.breadcrumbs[windowId]) {
       this.state.breadcrumbs[windowId] = [];
     }
