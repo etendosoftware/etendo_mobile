@@ -85,27 +85,11 @@ export class DrawerClass extends React.Component<Props, State> {
     
     const organization = await this.getOrganizationName();
     this.setState({ organization });
-    /*
     if (this.state.menuItems === []) {
       this.setState({ loadingMenu: true });
     } else {
       this.setState({ loadingMenu: false });
-    }*/
-  };
-
-  componentDidUpdate = (_, prevState) => {
-    /*
-    let newMenuItems = Windows.menuItems;
-    if (
-      !Windows.loading &&
-      !User.loading &&
-      User.token &&
-      prevState.menuItems != newMenuItems
-    ) {
-      // not loading but logged in, and menus are not loaded
-      this.setState({ menuItems: this.props.menuItems, userName: User.data.username });
     }
-    */
   };
 
   handleLogout = async () => {
@@ -179,7 +163,6 @@ export class DrawerClass extends React.Component<Props, State> {
         </View>
                  
         {this.props.context?.state?.menuItems.map((menuItem: any) => {
-console.log("menuItem", menuItem)
           const params = { ...menuItem };
           if (params.component) {
             delete params.component;
@@ -205,39 +188,8 @@ console.log("menuItem", menuItem)
             } else {
               Etendo.globalNav.navigate(menuItem.name, menuItem.params);
             }
-            // this.props.navigation.closeDrawer();
-            // const data = {
-            //   etdappApp: "70EC2AC311CE4F16B0DEFC8CACF53A1E",
-            //   etdappAppName: "Hello",
-            //   etdappAppVersion: "018AB1E6119F4D66AA54967E49A60CEC",
-            //   etdappAppVersionName: "1.0",
-            //   id: "30353D23663149E7A27584296EC0E19E",
-            //   path: "web/com.etendoerp.dynamic.app/assets/etendoerp.js",
-            //   etdappAppVersionIsDev: false
-            // };
-            // const path = data.path.split('/');
-            // const url = await AsyncStorage.getItem("baseUrl");
-            // console.log("URL-CONSOLE", url)
-            // const DEV_URL = "http://10.0.2.2:8080/etendo"
-            // const m = {
-            //   name: data.etdappAppName,
-            //   __id: data.etdappAppVersionIsDev
-            //     ? path[path.length - 1]
-            //     : data.path,
-            //   url: data.etdappAppVersionIsDev ? `${DEV_URL}` : url,
-            //   isDev: data.etdappAppVersionIsDev
-            // };
-            // this.props.navigation.navigate(menuItem.name, menuItem);
           }}
-        /> 
-        /*
-        <Drawer.Screen
-          name={menuItem.name}
-          component={menuItem.component ? menuItem.component : MainScreen}
-          initialParams={params}
-          options={{}}
         />
-        */
         ); })}
         <View style={styles.constantItems}></View>
         <View style={styles.drawerItemsContainer}>
