@@ -1,19 +1,20 @@
-import { Etendo } from "../helpers/Etendo";
 /* Imports */
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Image,
   Keyboard,
-  LogBox,
   Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  useWindowDimensions,
 } from 'react-native';
+
 import {ContainerContext} from '../contexts/ContainerContext';
+
+import {useNavigation} from '@react-navigation/native';
+
 import {INTER_SEMIBOLD} from '../styles/fonts';
 import {
   BLACK,
@@ -24,59 +25,32 @@ import {
   GREY_BLUE_50,
   GREY_PURPLE,
   LIGHT_BLACK,
-  PURPLE_40,
+  PURPLE_50,
   WHITE,
 } from '../styles/colors';
-
 import {isTablet} from '../helpers/IsTablet';
 import {Input} from '../node_modules/etendo-ui-library/components/input';
-import Button from '../node_modules/etendo-ui-library/components/button/Button';
 import {useNonRotationScreen} from '../helpers/useNonRotationScreen';
 
-LogBox.ignoreLogs(['Require cycle: ']);
+/* Export */
+export const LoginSettings = ({}) => {
+  // using React Native Navigation
+  const navigation = useNavigation<any>();
 
-export const Login = ({ }) => {
-  const { state: { url }, dispatch } = useContext(ContainerContext);
-  const [username, setUsername] = useState("admin")
-  const [password, setPassword] = useState("admin")
-  const [token, setToken] = useState("")
-  useEffect(() => {
-    Etendo.url = url;
-  }, [url])
-  useEffect(() => {
-    Etendo.token = token;
-  }, [token])
-  
-  const onLogin = async () => {
-    await url;
-    console.log('URL onLogin: ', url);
-    const callUrl = `${url}/sws/login`;
-    const call = await fetch(callUrl, {
-      method: 'POST',
-      body: JSON.stringify({
-        username: username,
-        password: password
-      })
-    })
-    const { token } = await call.json()
-    setToken(token);
-    const callUrlApps = `${url}/sws/com.etendoerp.dynamic.app.userApp`;
-    const callApps = await fetch(callUrlApps, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await callApps.json();
-    dispatch({appsData: data.data, logged: true});
-  };
+  // use of context
+  const {
+    state: {url},
+    dispatch,
+  } = useContext(ContainerContext);
+
+  // use of states
+  const [URL, setURL] = React.useState<string>(url);
+  const [currentLanguage, setCurrentLanguage] = useState('English');
+  const [isFocusedChangeLanguage, setIsFocusedChangeLanguage] = useState(false);
 
   // side effect not allowing to rotate the screen
   useNonRotationScreen();
 
-  const {width} = useWindowDimensions();
-
-  // return login screen
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView
@@ -99,54 +73,36 @@ export const Login = ({ }) => {
             style={{
               margin: isTablet() ? 80 : 0,
             }}>
-            <Pressable onPress={() => navigation.navigate('LoginSettings')}>
-              <View
-                style={[
-                  styles.settingsImageContainer,
-                  {right: isTablet() ? 0 : undefined},
-                ]}>
+            <View style={styles.buttonBackContainer}>
+              <Pressable
+                style={styles.buttonBackContent}
+                onPress={() => {
+                  dispatch({
+                    appsData: [],
+                    menuItems: [],
+                    url: URL,
+                    logged: false,
+                  });
+                  navigation.navigate('Login');
+                }}>
                 <Image
-                  source={require('../assets/settings.png')}
-                  style={styles.settingsImage}
+                  source={require('../assets/back.png')}
+                  style={styles.backImage}
                 />
-              </View>
-            </Pressable>
-            <Image
-              source={
-                isTablet()
-                  ? require('../assets/etendo-logotype-standard.png')
-                  : require('../assets/etendo-logotype.png')
-              }
-              style={
-                isTablet()
-                  ? styles.etendoLogotypeTablet
-                  : styles.etendoLogotypeMobile
-              }
-            />
-            <View
-              style={[
-                styles.welcomeTitleContainer,
-                {marginTop: isTablet() ? -15 : 10},
-              ]}>
-              <Text
-                style={[styles.welcomeTitle, {fontSize: isTablet() ? 40 : 30}]}>
-                Welcome!
-              </Text>
-              <Image
-                source={require('../assets/stars.png')}
-                style={styles.starsImage}
-              />
+              </Pressable>
             </View>
             <Text
-              style={
-                isTablet()
-                  ? styles.credentialsTextTablet
-                  : styles.credentialsTextMobile
-              }>
-              Enter your credentials to access your account.
+              style={{
+                fontSize: isTablet() ? 28 : 24,
+              }}>
+              Settings
             </Text>
 
-            <View style={{marginHorizontal: isTablet() ? 75 : 0}}>
+            <View
+              style={[
+                styles.inputGeneralContainer,
+                {marginHorizontal: isTablet() ? 75 : 0},
+              ]}>
               <View style={styles.inputContainer}>
                 <Text
                   style={
@@ -154,18 +110,19 @@ export const Login = ({ }) => {
                       ? [styles.credentialLabel, {fontSize: 14}]
                       : [styles.credentialLabel, {fontSize: 12}]
                   }>
-                  Username
+                  Server URL
                 </Text>
-
                 <View style={{width: '100%', height: 50}}>
                   <Input
                     numberOfLines={2}
                     typeField={'textInput'}
-                    value={username}
-                    onChangeText={(text: string) => setUsername(text)}
+                    value={URL}
+                    onChangeText={setURL}
+                    placeholder={URL}
                   />
                 </View>
               </View>
+
               <View style={styles.inputContainer}>
                 <Text
                   style={
@@ -173,61 +130,60 @@ export const Login = ({ }) => {
                       ? [styles.credentialLabel, {fontSize: 14}]
                       : [styles.credentialLabel, {fontSize: 12}]
                   }>
-                  Password
+                  Logo
                 </Text>
-                <View style={{width: '100%', height: 50}}>
-                  <Input
-                    numberOfLines={2}
-                    typeField={'textInput'}
-                    value={password}
-                    onChangeText={setPassword}
-                  />
-                </View>
-              </View>
-
-              <View style={{alignSelf: 'center'}}>
-                <Button
-                  onPress={() => onLogin()}
-                  text={'Login'}
-                  typeStyle={'primary'}
-                  typeSize={'medium'}
+                <Image
+                  source={require('../assets/company-logo.png')}
+                  style={styles.companyLogo}
                 />
               </View>
+              <View style={styles.inputContainer}>
+                <Text
+                  style={
+                    isTablet()
+                      ? [styles.credentialLabel, {fontSize: 14}]
+                      : [styles.credentialLabel, {fontSize: 12}]
+                  }>
+                  Language
+                </Text>
+              </View>
 
-              <View
-                style={[
-                  styles.secondOptionContainer,
-                  {marginVertical: isTablet() ? 30 : 35},
-                ]}>
-                <View style={styles.grayLine} />
+              <Pressable
+                style={
+                  isFocusedChangeLanguage
+                    ? styles.isFocusedText
+                    : styles.isNotFocusedText
+                }
+                onPress={() =>
+                  setIsFocusedChangeLanguage(!isFocusedChangeLanguage)
+                }>
                 <View>
+                  <Text>{currentLanguage}</Text>
+                </View>
+                <View>
+                  <Image
+                    source={require('../assets/dropdown.png')}
+                    style={[
+                      styles.dropdownImage,
+                      isFocusedChangeLanguage
+                        ? {transform: [{rotate: '180deg'}]}
+                        : null,
+                    ]}
+                  />
+                </View>
+              </Pressable>
+              {isFocusedChangeLanguage && (
+                <View style={styles.containerOption}>
                   <Text
-                    style={
-                      isTablet()
-                        ? [styles.secondOptionText, {fontSize: 15}]
-                        : [styles.secondOptionText, {fontSize: 13}]
-                    }>
-                    Or Login with
+                    style={styles.textOption}
+                    onPress={() => {
+                      setCurrentLanguage('English');
+                      setIsFocusedChangeLanguage(!isFocusedChangeLanguage);
+                    }}>
+                    English
                   </Text>
                 </View>
-                <View style={styles.grayLine} />
-              </View>
-
-              <View style={styles.sectionBottomContainer}>
-                <Text
-                  style={{
-                    fontSize: isTablet() ? 16 : 14,
-                    color: BLACK,
-                  }}>
-                  Demo server to try app
-                </Text>
-                <Button
-                  onPress={() => {}}
-                  text={'Demo Try'}
-                  typeStyle={'terciary'}
-                  typeSize={'medium'}
-                />
-              </View>
+              )}
             </View>
           </View>
         </View>
@@ -266,6 +222,39 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  buttonBackContainer: {
+    position: 'absolute',
+    right: 0,
+    height: 40,
+    width: 40,
+    borderRadius: 50,
+    justifyContent: 'center',
+  },
+  buttonBackContent: {
+    zIndex: 1,
+    width: 40,
+    height: 40,
+    backgroundColor: PURPLE_50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  backImage: {
+    resizeMode: 'contain',
+    height: 20,
+    width: 20,
+    tintColor: BLUE,
+    alignSelf: 'center',
+  },
+  settingsText: {
+    fontFamily: INTER_SEMIBOLD,
+    color: BLUE,
+  },
+  companyLogo: {
+    resizeMode: 'contain',
+    height: 45,
+    width: 150,
+  },
   etendoLogotypeMobile: {
     resizeMode: 'contain',
     width: 90,
@@ -281,21 +270,6 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
     alignSelf: 'flex-start',
-  },
-  settingsImageContainer: {
-    backgroundColor: PURPLE_40,
-    position: 'absolute',
-    height: 40,
-    width: 40,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  settingsImage: {
-    resizeMode: 'contain',
-    height: 25,
-    width: 25,
-    tintColor: BLUE,
-    alignSelf: 'center',
   },
   welcomeTitleContainer: {
     flexDirection: 'row',
@@ -325,6 +299,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
   },
+  inputGeneralContainer: {
+    marginVertical: 35,
+  },
   inputContainer: {
     marginBottom: 20,
   },
@@ -334,6 +311,9 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   isFocusedText: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 47.5,
     borderWidth: 1,
     borderColor: BLUE,
@@ -342,12 +322,38 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   isNotFocusedText: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 47.5,
     borderWidth: 1,
     borderColor: GREY_10,
     borderRadius: 10,
     color: BLUE,
     padding: 10,
+  },
+  containerOption: {
+    borderWidth: 1,
+    borderColor: BLUE,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    marginTop: -8,
+    backgroundColor: WHITE,
+  },
+  textOption: {
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    padding: 10,
+    borderColor: GREY_BLUE_50,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  dropdownImage: {
+    resizeMode: 'contain',
+    height: 12,
+    width: 12,
+    alignSelf: 'flex-end',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -419,10 +425,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: BLUE,
     textTransform: 'uppercase',
-  },
-  sectionBottomContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

@@ -1,26 +1,27 @@
 import React from 'react';
-import {EtendoUtil} from '../helpers/Etendo';
+import {createStackNavigator} from '@react-navigation/stack';
+import {useReducer} from 'react';
+import {DEV_URL} from '../components/Container';
+import {Etendo} from '../helpers/Etendo';
+import {ContainerContext} from './ContainerContext';
 
-const ContainerContext = React.createContext<{ state: any, dispatch: any, Etendo: EtendoUtil }>({});
-
-const ContainerProvider = ({ children }: any) => {
+export const ContainerProvider = ({children}: any) => {
   const reducer = (state: any, action: any) => {
     if (action.appsData) {
-
       /* For each app added, add a new menu item */
       const mi = action.appsData.map((app: any) => {
-        const path = app.path.split("/")
+        const path = app.path.split('/');
         return {
           name: app.etdappAppName,
           __id: app.etdappAppVersionIsDev ? path[path.length - 1] : app.path,
           url: app.etdappAppVersionIsDev ? `${DEV_URL}` : state.url,
-          isDev: app.etdappAppVersionIsDev
-        }
-      })
-      action.menuItems = [...state.menuItems, ...mi]
+          isDev: app.etdappAppVersionIsDev,
+        };
+      });
+      action.menuItems = [...state.menuItems, ...mi];
     }
-    return { ...state, ...action }
-  }
+    return {...state, ...action};
+  };
 
   const initialState = {
     appsData: [],
@@ -35,10 +36,8 @@ const ContainerProvider = ({ children }: any) => {
   Etendo.Stack = createStackNavigator();
 
   return (
-    <ContainerContext.Provider value={{ state, dispatch, Etendo }}>
+    <ContainerContext.Provider value={{state, dispatch, Etendo}}>
       {children}
     </ContainerContext.Provider>
   );
 };
-
-export { ContainerContext, ContainerProvider }
