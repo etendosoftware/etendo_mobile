@@ -1,0 +1,6 @@
+{
+  "sonarlint.connectedMode.project": {
+    "connectionId": "https-sonar-etendo-cloud",
+    "projectKey": "koodu_software_com.etendoerp.dynamic.app_AYPxPwTRqA5bztrYG53E"
+  }
+}

@@ -8,16 +8,17 @@
  * @format
  */
 
-import React, {useContext} from 'react';
-import {Button, Dimensions, PixelRatio, Text} from 'react-native';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import React, { useContext } from 'react';
+import { Button, Text, Dimensions, PixelRatio } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import HomePage from './HomePage';
 import {useWindowDimensions} from 'react-native';
 
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {ContainerContext} from '../contexts/ContainerContext';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { ContainerContext } from '../contexts/ContainerContext';
+import { Etendo } from '../helpers/Etendo';
 
 const Stack = createStackNavigator();
 
@@ -29,9 +30,7 @@ export const DEV_URL = 'http://10.0.2.2:3000';
 
 const App = ({}: any) => {
   const dimensions = useWindowDimensions();
-  const {
-    state: {menuItems},
-  } = useContext(ContainerContext);
+  const context = useContext(ContainerContext);
 
   const isTablet = () => {
     let pixelDensity = PixelRatio.get();
@@ -48,29 +47,63 @@ const App = ({}: any) => {
   return (
     <NavigationContainer>
       <Drawer.Navigator
+        drawerContent={props => <CustomDrawerContent {...props} />}
         screenOptions={{
-          drawerType: isTablet() ? 'permanent' : 'front',
+          headerShown: false,
         }}>
         <Drawer.Screen name="Home" component={StackedHome} />
-        {menuItems &&
-          menuItems.map((menuItem: any) => {
-            const params = {...menuItem};
-            if (params.component) {
-              delete params.component;
-            }
-            return (
-              <Drawer.Screen
-                name={menuItem.name}
-                component={menuItem.component ? menuItem.component : HomePage}
-                initialParams={params}
-                options={{}}
-              />
-            );
-          })}
+        {context?.state?.menuItems.map((menuItem: any) => {
+          const params = {...menuItem};
+          if (params.component) {
+            delete params.component;
+          }
+          return (
+            <Drawer.Screen
+              name={menuItem.name}
+              component={menuItem.component ? menuItem.component : HomePage}
+              initialParams={params}
+              options={{}}
+            />
+          );
+        })}
       </Drawer.Navigator>
     </NavigationContainer>
   );
 };
+
+const CustomDrawerContent = (props) => {
+  Etendo.globalNav = props.navigation;
+  return (
+    <DrawerContentScrollView {...props}>
+        {props.state.routes.map(route => {
+          let style = {}
+          if (route.params && route.params.app) {
+            style = {
+              marginLeft: 40,
+            };
+          }
+          return (
+            <DrawerItem
+              label={route.name}
+              labelStyle={{}}
+              style={style}
+              onPress={() => {
+                if (route.params && route.params.app) {
+                  Etendo.navigation[route.params.app].navigate(
+                    route.params.app,
+                    route.params,
+                  );
+                  Etendo.toggleDrawer();
+                } else {
+                  props.navigation.navigate(route.name, route.params);
+                }
+              }}
+            />
+          );
+        })}
+    </DrawerContentScrollView>
+  );
+}
 
 const StackedHome = () => {
   return (

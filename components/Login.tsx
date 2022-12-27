@@ -1,5 +1,6 @@
+import { Etendo } from "../helpers/Etendo";
 /* Imports */
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Image,
   Keyboard,
@@ -12,9 +13,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-
 import {ContainerContext} from '../contexts/ContainerContext';
-
 import {INTER_SEMIBOLD} from '../styles/fonts';
 import {
   BLACK,
@@ -30,30 +29,24 @@ import {
 } from '../styles/colors';
 
 import {isTablet} from '../helpers/IsTablet';
-
 import {Input} from '../node_modules/etendo-ui-library/components/input';
 import Button from '../node_modules/etendo-ui-library/components/button/Button';
-import {useNavigation} from '@react-navigation/native';
 import {useNonRotationScreen} from '../helpers/useNonRotationScreen';
 
 LogBox.ignoreLogs(['Require cycle: ']);
 
-/* Export */
-export const Login = ({}) => {
-  // using React Native Navigation
-  const navigation = useNavigation<any>();
-
-  // use of context
-  const {
-    state: {url},
-    dispatch,
-  } = useContext(ContainerContext);
-
-  // use of states
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin');
-
-  // functions
+export const Login = ({ }) => {
+  const { state: { url }, dispatch } = useContext(ContainerContext);
+  const [username, setUsername] = useState("admin")
+  const [password, setPassword] = useState("admin")
+  const [token, setToken] = useState("")
+  useEffect(() => {
+    Etendo.url = url;
+  }, [url])
+  useEffect(() => {
+    Etendo.token = token;
+  }, [token])
+  
   const onLogin = async () => {
     await url;
     console.log('URL onLogin: ', url);
@@ -62,10 +55,11 @@ export const Login = ({}) => {
       method: 'POST',
       body: JSON.stringify({
         username: username,
-        password: password,
-      }),
-    });
-    const {token} = await call.json();
+        password: password
+      })
+    })
+    const { token } = await call.json()
+    setToken(token);
     const callUrlApps = `${url}/sws/com.etendoerp.dynamic.app.userApp`;
     const callApps = await fetch(callUrlApps, {
       method: 'GET',
