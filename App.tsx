@@ -186,11 +186,11 @@ export default class App extends React.Component<Props, State> {
           {this.state && this.state.fontLoaded && (
             <>
               <ContainerProvider>
-              <LoadingScreen visible={User.loading || Windows.loading} />
-              <NavigationContainer>
-                {User.token ? <AppHome /> : <AppLogin />}
-              </NavigationContainer>
-              <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
+                <LoadingScreen visible={User.loading || Windows.loading} />
+                <NavigationContainer>
+                  {User.token ? <AppHome /> : <AppLogin />}
+                </NavigationContainer>
+                <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
               </ContainerProvider>
             </>
           )}
