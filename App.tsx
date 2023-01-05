@@ -35,20 +35,7 @@ export default class App extends React.Component<Props, State> {
 
   componentDidMount = async () => {
     StatusBar.setBarStyle("light-content", true);
-    /*
-    await Font.loadAsync({
-      poppins: require("./assets/Poppins-Regular.ttf")
-    });
-    await Font.loadAsync({
-      "poppins-light": require("./assets/Poppins-Light.ttf")
-    });
-    await Font.loadAsync({
-      "poppins-medium": require("./assets/Poppins-Medium.ttf")
-    });
-    await Font.loadAsync({
-      "poppins-thin": require("./assets/Poppins-Thin.ttf")
-    });
-*/
+
     locale.init();
     const storagedLanguage = await User.loadLanguage();
     await this.updateLanguageList();
