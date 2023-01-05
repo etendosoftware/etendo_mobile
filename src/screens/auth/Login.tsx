@@ -180,7 +180,6 @@ class Login extends React.Component<Props, State> {
     let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
 
     const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-    console.log("callUrlApps", callUrlApps);
     fetch(callUrlApps, {
       method: "GET",
       headers: {
@@ -191,7 +190,6 @@ class Login extends React.Component<Props, State> {
     })
       .then(async callApps => {
         const data = await callApps.json();
-        console.log("data", data);
       })
       .catch(err => console.error(err));
   };
@@ -211,7 +209,7 @@ class Login extends React.Component<Props, State> {
           this.props.navigation.navigate("Tutorial");
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         await User.logout();
         if (e.message.includes("Request failed with status code 404")) {
           Snackbar.showError(locale.t("LoginScreen:URLNotFound"));
@@ -223,7 +221,7 @@ class Login extends React.Component<Props, State> {
       }
     } catch (e) {
       Snackbar.showError(e.message);
-      console.log(e);
+      console.error(e);
     } finally {
       User.loading = false;
       Windows.loading = false;
@@ -428,7 +426,6 @@ class Login extends React.Component<Props, State> {
                   />
                 </View>
               </Pressable>
-              {/* {console.log(Languages.getLanguages())} */}
               <Image
                 source={
                   deviceIsATablet
