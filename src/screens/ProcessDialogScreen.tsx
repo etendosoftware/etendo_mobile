@@ -90,7 +90,8 @@ class ProcessDialogScreen extends React.Component<Props, State> {
     } = this.getParams();
     return (
       <View key={processDef.id} style={{ height: win.height, width: "100%" }}>
-        {processDef.smfmuScan === true ? (
+        <></>
+        {/* {processDef.smfmuScan === true ? (
           <ScanDialog
             key={"scandialog-" + processDef.id}
             hideDialog={() => this.props.navigation.goBack()}
@@ -101,7 +102,6 @@ class ProcessDialogScreen extends React.Component<Props, State> {
             isFAB={isFAB}
             qtyReturnKeyType={SCAN_QTY_KEY_TYPE}
             selectedRecordsIds={this.getParams().selectedRecordsIds}
-          />
         ) : (
           <ProcessDialog
             key={"dialog-" + processDef.id}
@@ -124,7 +124,7 @@ class ProcessDialogScreen extends React.Component<Props, State> {
             onDone={() => this.props.navigation.goBack()}
             selectedRecordsIds={this.getParams().selectedRecordsIds}
           />
-        )}
+        )} */}
       </View>
     );
   };

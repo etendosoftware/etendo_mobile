@@ -864,10 +864,9 @@ const styles = StyleSheet.create({
   },
   copyrightStyle: {
     textAlign: "center",
-    color: BLACK,
-    fontFamily: "poppins-medium",
-    fontSize: 14,
-    fontWeight: "700"
+    color: defaultTheme.colors.primary,
+    fontSize: 12,
+    backgroundColor: defaultTheme.colors.background
   },
   picker: {
     height: 44,
