@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useReducer } from 'react';
 import {Etendo, EtendoUtil} from '../helpers/Etendo';
 
+export const DEV_URL = "http://10.0.2.2:3000"
 const ContainerContext = React.createContext<{ state: any, dispatch: any, Etendo: EtendoUtil }>({});
 
 const ContainerProvider = ({ children }: any) => {

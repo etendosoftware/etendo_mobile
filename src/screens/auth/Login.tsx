@@ -90,14 +90,11 @@ class LoginClass extends React.Component<Props, State> {
 
   componentDidMount = async () => {
     try {
-      if (__DEV__) {
-        //this.setState({ url: "http://localhost:8080/etendo" });
-      }
       User.loading = true;
       await User.loadToken();
       if (User.token) {
         await User.reloadUserData(User.token);
-        // this.loadWindows(true);
+        this.loadDynamic();
         this.props.navigation.navigate("Home");
       } else {
         this.props.navigation.navigate("Login");

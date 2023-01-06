@@ -1,9 +1,8 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useReducer} from 'react';
-import {DEV_URL} from '../components/Container';
 import {Etendo} from '../helpers/Etendo';
-import {ContainerContext} from './ContainerContext';
+import {ContainerContext, DEV_URL} from './ContainerContext';
 
 export const ContainerProvider = ({children}: any) => {
   const reducer = (state: any, action: any) => {
