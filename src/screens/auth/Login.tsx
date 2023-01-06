@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Dimensions,
@@ -40,6 +40,7 @@ import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
 import { BLACK, BLUE, GREY_60, WHITE } from "../../../ui/styles/colors";
 import { GREY_PURPLE } from "../../styles/colors";
+import { ContainerContext } from "../../contexts/ContainerContext";
 
 const MIN_CORE_VERSION = "3.0.202201";
 
@@ -80,7 +81,7 @@ const win = Dimensions.get("window");
 const deviceIsATablet = isTablet();
 
 @observer
-class Login extends React.Component<Props, State> {
+class LoginClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
 
   secondTextInput: any;
@@ -114,14 +115,11 @@ class Login extends React.Component<Props, State> {
     }
 
     try {
-      if (__DEV__) {
-        //this.setState({ url: "http://localhost:8080/etendo" });
-      }
       User.loading = true;
       await User.loadToken();
       if (User.token) {
         await User.reloadUserData(User.token);
-        // this.loadWindows(true);
+        this.loadDynamic();
         this.props.navigation.navigate("Home");
       } else {
         this.props.navigation.navigate("Login");
@@ -177,22 +175,20 @@ class Login extends React.Component<Props, State> {
   };
 
   loadDynamic = async () => {
-    let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
-
-    const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-    fetch(callUrlApps, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${User.token}`
-      },
-      mode: "no-cors"
-    })
-      .then(async callApps => {
-        const data = await callApps.json();
-      })
-      .catch(err => console.error(err));
-  };
+      let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
+      const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
+      fetch(callUrlApps, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${User.token}`
+        },
+        mode: "no-cors"
+      }).then(async(callApps) => {
+      const data = await callApps.json();
+      this.props.dispatch({ appsData: data.data, logged: true });
+    }).catch(err => console.error(err));
+  }
 
   submitLogin = async () => {
     const { username, password } = this.state;
@@ -711,6 +707,13 @@ class Login extends React.Component<Props, State> {
   }
 }
 
+const Login = (props) => {
+  const { dispatch } = useContext(ContainerContext);
+
+  return (
+    <LoginClass {...props} dispatch={dispatch} />
+  )
+}
 export default Login;
 
 const styles = StyleSheet.create({

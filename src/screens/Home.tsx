@@ -17,6 +17,8 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import { Platform } from "react-native";
 import { BackHandler } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Etendo } from "../helpers/Etendo";
 
 interface Props {
   navigation: INavigation;
@@ -30,7 +32,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
 
 @observer
-class Home extends React.Component<Props, State> {
+class HomeClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
   render() {
     return (
@@ -113,7 +115,14 @@ class Home extends React.Component<Props, State> {
     );
   }
 }
+const Home = (props) => {
+  const navigation = useNavigation();
+  Etendo.globalNav = navigation;
 
+  return (
+    <HomeClass {...props} />
+  )
+}
 export default withAuthentication(Home);
 
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Image,
@@ -21,6 +21,10 @@ import { observe } from "mobx";
 import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import ShowProfilePicture from "./ShowProfilePicture";
+import { ContainerContext } from "../contexts/ContainerContext";
+import MainScreen from "./MainScreen";
+import { useNavigation } from "@react-navigation/native";
+import { Etendo } from "../helpers/Etendo";
 
 const NOAUTH_SCREENS = ["Settings", "Login"];
 
@@ -57,7 +61,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
 
 @observer
-export default class Drawer extends React.Component<Props, State> {
+export class DrawerClass extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,25 +82,13 @@ export default class Drawer extends React.Component<Props, State> {
   }
 
   componentDidMount = async () => {
+    
     const organization = await this.getOrganizationName();
     this.setState({ organization });
     if (this.state.menuItems === []) {
       this.setState({ loadingMenu: true });
     } else {
       this.setState({ loadingMenu: false });
-    }
-  };
-
-  componentDidUpdate = (_, prevState) => {
-    let newMenuItems = Windows.menuItems;
-    if (
-      !Windows.loading &&
-      !User.loading &&
-      User.token &&
-      prevState.menuItems != newMenuItems
-    ) {
-      // not loading but logged in, and menus are not loaded
-      this.setState({ menuItems: newMenuItems, userName: User.data.username });
     }
   };
 
@@ -169,78 +161,33 @@ export default class Drawer extends React.Component<Props, State> {
             onPress={() => this.props.navigation.navigate("Home")}
           />
         </View>
-
-        {this.state.loadingMenu && (
-          <View style={styles.viewPlaceholder}>
-            <Placeholder Animation={Fade}>
-              <PlaceholderLine width={70} style={{ marginTop: 5 }} />
-              {/* <PlaceholderLine width={45} style={{ marginTop: 25 }} />
-              <PlaceholderLine width={70} style={{ marginTop: 25 }} />
-              <PlaceholderLine width={60} style={{ marginTop: 25 }} />
-              <PlaceholderLine width={30} style={{ marginTop: 25 }} />
-              <PlaceholderLine width={40} style={{ marginTop: 25 }} /> */}
-            </Placeholder>
-          </View>
-        )}
-        <DrawerItem
+                 
+        {this.props.context?.state?.menuItems.map((menuItem: any) => {
+          const params = { ...menuItem };
+          if (params.component) {
+            delete params.component;
+          }
+          return (
+                <DrawerItem
           activeTintColor={"black"}
           inactiveTintColor={"black"}
-          key={"key"}
-          label={"label"}
+          key={menuItem.__id}
+          label={menuItem.name}
           labelStyle={styles.drawerText}
           style={styles.drawerItem}
           onPress={async() => {
-            this.props.navigation.closeDrawer();
-            const data = {
-              etdappApp: "70EC2AC311CE4F16B0DEFC8CACF53A1E",
-              etdappAppName: "Hello",
-              etdappAppVersion: "018AB1E6119F4D66AA54967E49A60CEC",
-              etdappAppVersionName: "1.0",
-              id: "30353D23663149E7A27584296EC0E19E",
-              path: "web/com.etendoerp.dynamic.app/assets/hello.js",
-              etdappAppVersionIsDev: false
-            };
-            const path = data.path.split('/');
-            const url = await AsyncStorage.getItem("baseUrl");
-            console.log("URL-CONSOLE", url)
-            const DEV_URL = "http://10.0.2.2:8080/etendo"
-            const m = {
-              name: data.etdappAppName,
-              __id: data.etdappAppVersionIsDev
-                ? path[path.length - 1]
-                : data.path,
-              url: data.etdappAppVersionIsDev ? `${DEV_URL}` : url,
-              isDev: data.etdappAppVersionIsDev
-            };
-            this.props.navigation.navigate("MainScreen", m);
+            if (menuItem.app) {
+              Etendo.navigation[menuItem.app].navigate(
+                menuItem.route,
+                menuItem
+              );
+              Etendo.toggleDrawer();
+            } else {
+              Etendo.globalNav.navigate(menuItem.name, menuItem.params);
+            }
           }}
         />
-
-        {!this.state.loadingMenu &&
-          this.state.menuItems.map(m => {
-            let m2: IRoute = { ...m };
-            m2.reset = true;
-
-            return (
-              <>
-                <View style={styles.drawerItemsContainer}>
-                  <Icon name="md-folder" size={20} style={styles.iconColor} />
-                  <DrawerItem
-                    activeTintColor={DefaultTheme.colors.textSecondary}
-                    inactiveTintColor={DefaultTheme.colors.textSecondary}
-                    key={m.key}
-                    label={m.label}
-                    labelStyle={styles.drawerText}
-                    style={styles.drawerItem}
-                    onPress={() => {
-                      this.props.navigation.closeDrawer();
-                      this.props.navigation.navigate("CardView1", m2);
-                    }}
-                  />
-                </View>
-              </>
-            );
-          })}
+        ); })}
         <View style={styles.constantItems}></View>
         <View style={styles.drawerItemsContainer}>
           <Icon name="md-settings" size={20} style={styles.iconColor} />
@@ -268,6 +215,15 @@ export default class Drawer extends React.Component<Props, State> {
     );
   }
 }
+
+export const Drawer = (props) => {
+  const context = useContext(ContainerContext)
+
+  return (
+    <DrawerClass {...props} context={context} />
+  )
+}
+export default Drawer;
 
 const styles = StyleSheet.create({
   image: {
