@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import locale from "../i18n/locale";
 import { Appbar, Button, Dialog, FAB, List, Text } from "react-native-paper";
 import { User } from "../stores";
@@ -10,6 +10,9 @@ import { IRecord } from "../types/Record";
 import { INavigation } from "../components/Card";
 import { defaultTheme } from "../themes";
 import { ShowProfilePicture } from "../components";
+import { isTablet } from "../../hook/isTablet";
+
+const settings = require("../img/settings-profile.png")
 
 interface Props {
   navigation: INavigation;
@@ -55,6 +58,20 @@ class Profile extends React.Component<Props, State> {
         });
     }
   };
+
+  getStyleItemList = () => {
+    return {width:isTablet() ? '50%': '100%'}
+  }
+  
+  getStyleList = () => {
+    return { width: isTablet()? "50%":"80%",alignItems:'center'}
+  }
+  getStyleContainer = () => {
+   return isTablet() ? styles.containerTablet :styles.containerMobile
+  }
+  getStyleImageBackground = () => {
+    return isTablet() ? styles.backgroundTablet: styles.backgroundMobile
+  }
 
   getOrganizationName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Organization");
@@ -111,7 +128,7 @@ class Profile extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={{ backgroundColor: defaultTheme.colors.background }}>
+      <View style={{ backgroundColor: defaultTheme.colors.background,height: '100%' }}>
         <Appbar.Header dark={true}>
           {!User.token && (
             <Appbar.BackAction
@@ -126,25 +143,39 @@ class Profile extends React.Component<Props, State> {
           )}
           <Appbar.Content title={locale.t("Profile:Title")} />
         </Appbar.Header>
-        <View style={{ flexDirection: "column" }}>
-          <View style={{ height: "25%", alignItems: "center", marginTop: 30 }}>
-            <ShowProfilePicture
-              size={140}
-              username={User.data.username}
-            ></ShowProfilePicture>
-            <View style={{ justifyContent: "center", marginTop: "20%" }}>
-              <Text
-                allowFontScaling={false}
-                style={{ fontWeight: "bold", fontSize: 20 }}
-              >
-                {" "}
-                {User.data.username}{" "}
-              </Text>
+        <View style={this.getStyleContainer()}>
+            <View style={{alignItems:'center',marginTop: 20,width:'50%'}}>
+              <View style={{height: 140, alignItems: "center"}}>
+                <ShowProfilePicture
+                  size={140}
+                  username={User.data.username}
+                ></ShowProfilePicture>
+                <FAB
+                  icon={"camera-plus-outline"}
+                  small={true}
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      bottom: 0,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary
+                  }}
+                  color={defaultTheme.colors.text}
+                  onPress={() => [this.setState({ showChangePicture: true })]}
+                  visible={this.state.showChangePicture === false}
+                />
+              </View>
+              <View style={{ justifyContent: "center", height: 40 }}>
+                <Text
+                  allowFontScaling={false}
+                  style={{ fontWeight: "bold", fontSize: 20 }}
+                >
+                  {User.data.username}
+                </Text>
+              </View>
             </View>
-          </View>
 
           <List.Section
-            style={{ width: "80%", alignSelf: "center", marginTop: "10%" }}
+            style={this.getStyleList()}
           >
             <List.Item
               title={locale.t("Profile:Role")}
@@ -153,6 +184,7 @@ class Profile extends React.Component<Props, State> {
                   ? "*"
                   : this.state.role
               }
+              style={this.getStyleItemList()}
               descriptionStyle={{ paddingTop: 5 }}
               descriptionNumberOfLines={3}
             />
@@ -163,6 +195,7 @@ class Profile extends React.Component<Props, State> {
                   ? "*"
                   : this.state.org
               }
+              style={this.getStyleItemList()}
               descriptionStyle={{ paddingTop: 5 }}
               descriptionNumberOfLines={3}
             />
@@ -173,6 +206,7 @@ class Profile extends React.Component<Props, State> {
                   ? "*"
                   : this.state.org
               }
+              style={this.getStyleItemList()}
               descriptionStyle={{ paddingTop: 5 }}
               descriptionNumberOfLines={3}
             />
@@ -184,33 +218,50 @@ class Profile extends React.Component<Props, State> {
                   ? "*"
                   : this.state.warehouse
               }
+              style={this.getStyleItemList()}
               descriptionStyle={{ paddingTop: 5 }}
               descriptionNumberOfLines={3}
             />
           </List.Section>
         </View>
-        <Image
-          style={{ width: "100%", height: 350, marginTop: -60 }}
-          resizeMode={"cover"}
-          source={require("../img/settings-profile.png")}
-        />
+          <Image
+            style={this.getStyleImageBackground()}
+            source={settings}
+          />
         {this.ChangedImagProfile()}
-        <FAB
-          icon={"camera-plus-outline"}
-          small={true}
-          style={{
-            position: "absolute",
-            top: "20%",
-            left: "55%",
-            backgroundColor: defaultTheme.colors.backgroundSecondary
-          }}
-          color={defaultTheme.colors.text}
-          onPress={() => [this.setState({ showChangePicture: true })]}
-          visible={this.state.showChangePicture === false}
-        />
       </View>
     );
   }
 }
 
 export default withAuthentication(Profile);
+
+const styles = StyleSheet.create({ 
+  backgroundMobile: {
+    width: '100%',
+    height: '50%', 
+    position:'absolute',
+    top:'70%' , 
+    zIndex: -1 
+  },
+  backgroundTablet: {
+    width: '70%',
+    height: '100%', 
+    position:'absolute',
+    top:'70%',
+    left: '0%', 
+    zIndex: -1 
+  },
+  containerMobile:{
+    flexDirection: "column",
+    justifyContent: "center", 
+    alignItems:'center', 
+    height:'auto'
+  },
+  containerTablet:{
+    flexDirection:"row-reverse",
+    height:'100%',
+    justifyContent: "center", 
+    alignItems:'center', 
+  }
+})

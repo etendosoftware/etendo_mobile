@@ -6,6 +6,7 @@ import { LoadingScreen, Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import MainScreen from "../components/MainScreen";
+import { isTablet } from "../../hook/isTablet";
 
 export const DrawerNav = createDrawerNavigator();
 
@@ -41,7 +42,7 @@ export function AppHome() {
       drawerContent={props => {
         return <Drawer {...props} />;
       }}
-      drawerStyle={{ width: User.token ? "65%" : 0 }}
+      drawerStyle={{ width: User.token ? isTablet() ? "30%"  : "65%": 0 }}
     >
       <DrawerNav.Screen
         name="Home"

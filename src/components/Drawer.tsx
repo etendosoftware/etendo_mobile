@@ -5,8 +5,7 @@ import {
   Dimensions,
   StyleSheet,
   Text,
-  Pressable,
-  AsyncStorage
+  Pressable
 } from "react-native";
 import { User, Windows, logout } from "../stores";
 import { DefaultTheme } from "react-native-paper";

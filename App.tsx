@@ -13,6 +13,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { defaultTheme } from "./src/themes";
 import Languages from "./src/ob-api/objects/Languages";
 import { supportedLocales } from "./src/i18n/config";
+import Orientation from 'react-native-orientation-locker'
+import { isTablet } from "./hook/isTablet";
+
 
 interface Props {}
 
@@ -36,6 +39,12 @@ export default class App extends React.Component<Props, State> {
   componentDidMount = async () => {
     StatusBar.setBarStyle("light-content", true);
 
+    if (isTablet()) {
+      Orientation.lockToLandscape();
+    } else {
+      Orientation.lockToPortrait();
+    }
+    
     locale.init();
     const storagedLanguage = await User.loadLanguage();
     await this.updateLanguageList();
