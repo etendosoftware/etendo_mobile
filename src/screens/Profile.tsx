@@ -66,9 +66,11 @@ class Profile extends React.Component<Props, State> {
   getStyleList = () => {
     return { width: isTablet()? "50%":"80%",alignItems:'center'}
   }
+
   getStyleContainer = () => {
-   return isTablet() ? styles.containerTablet :styles.containerMobile
+   return isTablet() ? styles.containerTablet : styles.containerMobile
   }
+
   getStyleImageBackground = () => {
     return isTablet() ? styles.backgroundTablet: styles.backgroundMobile
   }
@@ -86,6 +88,7 @@ class Profile extends React.Component<Props, State> {
     let client: IRecord = await criteria.uniqueResult();
     return client.name;
   };
+  
   getWarehouseName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Warehouse");
     criteria.add(Restrictions.equals("id", User.data.warehouseId));

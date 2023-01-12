@@ -107,7 +107,6 @@ class Home extends React.Component<Props, State> {
         <Image
             style={styles.image}
             source={etendoBoyImg}
-     
           />
       </View>
     );
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 342,
-    width: 364  ,
+    width: 364,
     right:0,
     bottom:0,
     position: "absolute"
