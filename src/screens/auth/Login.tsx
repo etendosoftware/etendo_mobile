@@ -1,16 +1,26 @@
 import React, { useContext } from "react";
-import { View, Dimensions, Image, StyleSheet, AsyncStorage } from "react-native";
+import {
+  View,
+  Dimensions,
+  Image,
+  StyleSheet,
+  AsyncStorage,
+  LogBox,
+  Keyboard,
+  TouchableWithoutFeedback,
+  SafeAreaView,
+  Pressable
+} from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
 import {
   TextInput,
-  Button,
-  Appbar,
   Dialog,
   Text,
   Divider,
-  List
+  List,
+  Button
 } from "react-native-paper";
 import { Snackbar } from "../../globals";
 import { UpdateDialog } from "../../components";
@@ -23,9 +33,15 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { Input } from "../../../ui/components/input";
+import ButtonUI from "../../../ui/components/button/Button";
+
+import { isTablet } from "../../helpers/IsTablet";
+import Orientation from "react-native-orientation-locker";
+import { BLACK, BLUE, GREY_60, WHITE } from "../../../ui/styles/colors";
+import { GREY_PURPLE } from "../../styles/colors";
 import { ContainerContext } from "../../contexts/ContainerContext";
 
-const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const MIN_CORE_VERSION = "3.0.202201";
 
 interface Props {
@@ -62,7 +78,7 @@ interface State {
 }
 
 const win = Dimensions.get("window");
-const ratio = win.width / 1080; //541 is actual image width
+const deviceIsATablet = isTablet();
 
 @observer
 class LoginClass extends React.Component<Props, State> {
@@ -89,6 +105,15 @@ class LoginClass extends React.Component<Props, State> {
   }
 
   componentDidMount = async () => {
+    // FIXME: For the Input component of the UI Library
+    LogBox.ignoreLogs(["Require cycle: "]);
+
+    if (deviceIsATablet) {
+      Orientation.lockToLandscape();
+    } else {
+      Orientation.lockToPortrait();
+    }
+
     try {
       User.loading = true;
       await User.loadToken();
@@ -130,7 +155,7 @@ class LoginClass extends React.Component<Props, State> {
       changeLanguage("en_US");
     } else {
       if (!Windows.hydrated || !token) {
-        // await Windows.loadWindows(selectedLanguage);
+        await Windows.loadWindows(selectedLanguage);
       }
     }
   };
@@ -163,7 +188,6 @@ class LoginClass extends React.Component<Props, State> {
       }).then(async(callApps) => {
       const data = await callApps.json();
       this.props.dispatch({ appsData: data.data, logged: true });
-
     }).catch(err => console.error(err));
   }
 
@@ -177,7 +201,7 @@ class LoginClass extends React.Component<Props, State> {
         const isCoreVersionBeingChecked = await this.checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
           // await this.loadWindows(false);
-          this.loadDynamic()
+          this.loadDynamic();
           this.props.navigation.closeDrawer();
           this.props.navigation.navigate("Tutorial");
         }
@@ -277,9 +301,9 @@ class LoginClass extends React.Component<Props, State> {
     this.setState({ showSetUrl: false });
   };
 
-  renderUrlItems = items => {
+  renderUrlItems = (items: any) => {
     if (items.length !== 0) {
-      return items.map(item => {
+      return items.map((item: any) => {
         return (
           <>
             <List.Item
@@ -335,7 +359,13 @@ class LoginClass extends React.Component<Props, State> {
     return (
       <Dialog
         visible={this.state.showChangePassword}
-        style={{ height: "25%", justifyContent: "center" }}
+        style={{
+          height: "25%",
+          width: deviceIsATablet ? "50%" : "90%",
+          justifyContent: "center",
+          alignItems: "center",
+          alignSelf: "center"
+        }}
       >
         <Dialog.Content>
           <Text allowFontScaling={false}>{locale.t("Recover_password")}</Text>
@@ -359,281 +389,321 @@ class LoginClass extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.generalView}>
-        <View style={styles.viewStyle}>
-          <View style={styles.appbarStyle}>
-            <Appbar.Action
-              icon="cog"
-              onPress={() => this.props.navigation.navigate("Settings")}
-            />
-          </View>
-          <View style={styles.containerLogo}>
-            <Image
-              style={styles.logo}
-              resizeMode={"contain"}
-              source={require("../../img/etendo-logo-1.png")}
-            />
-          </View>
-          <View style={styles.containerInputs}>
-            <Button style={styles.buttonDemo} onPress={() => this.demo()}>
-              {locale.t("DemoTry")}
-            </Button>
-            <TextInput
-              allowFontScaling={false}
-              style={styles.textInputStyle}
-              mode="outlined"
-              label={locale.t("User")}
-              value={this.state.username}
-              onChangeText={username => this.setState({ username })}
-              textContentType="username"
-              onSubmitEditing={() => this.secondTextInput.focus()}
-            />
-            <TextInput
-              allowFontScaling={false}
-              style={styles.textInputStyle}
-              mode="outlined"
-              label={locale.t("Password")}
-              textContentType="password"
-              value={this.state.password}
-              onChangeText={password => this.setState({ password })}
-              ref={input => {
-                this.secondTextInput = input;
-              }}
-              onSubmitEditing={this.submitLogin}
-              secureTextEntry={!this.state.showPassword}
-              right={
-                <TextInput.Icon
-                  style={styles.textInputIconStyle}
-                  name={this.state.showPassword ? "eye-off" : "eye"}
-                  color={
-                    this.state.showPassword
-                      ? defaultTheme.colors.primary
-                      : defaultTheme.colors.disabled
-                  }
-                  onPress={() => {
-                    this.setState({ showPassword: !this.state.showPassword });
-                  }}
-                  forceTextInputFocus={false}
-                />
-              }
-            />
-          </View>
-          <View style={styles.containerLogin}>
-            <Button
-              style={styles.buttonLogin}
-              mode="contained"
-              loading={User.loading || Windows.loading}
-              disabled={User.loading || Windows.loading}
-              onPress={this.submitLogin}
-            >
-              <Text
-                style={{ fontSize: 15, color: defaultTheme.colors.background }}
-                allowFontScaling={false}
-              >
-                {locale.t("Log in")}
-              </Text>
-            </Button>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => [this.setState({ showChangePassword: true })]}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  fontSize: 13,
-                  textAlign: "right",
-                  marginTop: 5,
-                  color: defaultTheme.colors.textSecondary,
-                  marginRight: 3
-                }}
-              >
-                {locale.t("Forgot_password")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.containerImage}>
-            <Image
-              source={require("../../img/login-etendo.png")}
-              style={styles.image}
-              resizeMode={"cover"}
-            />
-          </View>
-          <View style={styles.containerCopyright}>
-            <Text allowFontScaling={false} style={styles.copyrightStyle}>
-              @ Copyright Etendo 2020-2021
-            </Text>
-          </View>
-        </View>
-        {this.ChangedPassword()}
-
-        {/* Pop up that appears when you first log in */}
-        <UpdateDialog
-          visible={this.state.showUpdateDialog}
-          coreVersion={this.state.coreVersion}
-          appMinCoreVersion={MIN_CORE_VERSION}
-          onConfirm={this.onConfirmVersionUpdate}
-        ></UpdateDialog>
-
-        <Dialog visible={this.state.showSetUrl}>
-          <Dialog.Title>
-            <Text allowFontScaling={false}>
-              {locale.t("ShowLoadUrl:Title")}
-            </Text>
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text allowFontScaling={false}>
-              {locale.t("ShowLoadUrl:Content")}
-            </Text>
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: defaultTheme.colors.primary,
-                borderRadius: 4
-              }}
-            >
-              <Picker
-                selectedValue={this.state.url}
-                onValueChange={url => this.setState({ url })}
-                style={[styles.picker]}
-                itemStyle={styles.pickerItem}
-              >
-                <Picker.Item
-                  key="disabled"
-                  label={locale.t("ShowLoadUrl:PickerLabel")}
-                  value=""
-                />
-                {this.renderPickerItems(this.state.storedDataUrl)}
-              </Picker>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <SafeAreaView
+          style={{ flex: 1, flexDirection: deviceIsATablet ? "row" : "column" }}
+        >
+          {deviceIsATablet && (
+            <View style={styles.backgroundLoginImageContainer}>
+              <Image
+                source={require("../../../assets/background-login.png")}
+                style={styles.backgroundLoginImage}
+              />
             </View>
-          </Dialog.Content>
+          )}
 
-          <Dialog.Actions style={{ marginRight: 20 }}>
-            <Button
-              style={{
-                width: 110,
-                backgroundColor: defaultTheme.colors.accent,
-                marginRight: 10
-              }}
-              onPress={() => this.setState({ showAddUrl: true })}
-            >
-              {" "}
-              {locale.t("ShowLoadUrl:Add")}
-            </Button>
-            <Button
-              style={{
-                width: 110,
-                backgroundColor: defaultTheme.colors.backgroundSecondary
-              }}
-              onPress={() => this.saveUrl()}
-            >
-              {" "}
-              {locale.t("Save")}
-            </Button>
-          </Dialog.Actions>
           <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              alignItems: "center"
-            }}
+            style={
+              deviceIsATablet ? styles.containerTablet : styles.containerMobile
+            }
           >
-            <Divider style={{ padding: 1, flexGrow: 1 }} />
-            <Text
-              allowFontScaling={false}
-              style={{ textAlignVertical: "center", margin: 20 }}
-            >
-              {locale.t("Or")}
-            </Text>
-            <Divider style={{ padding: 1, flexGrow: 1 }} />
+            <View style={{ margin: deviceIsATablet ? 80 : 0, flex: 1 }}>
+              <Pressable
+                onPress={() => this.props.navigation.navigate("Settings")}
+              >
+                <View
+                  style={[
+                    styles.settingsImageContainer,
+                    { right: deviceIsATablet ? 0 : undefined }
+                  ]}
+                >
+                  <Image
+                    source={require("../../../assets/settings.png")}
+                    style={styles.settingsImage}
+                  />
+                </View>
+              </Pressable>
+              <Image
+                source={
+                  deviceIsATablet
+                    ? require("../../../assets/etendo-logotype-standard.png")
+                    : require("../../../assets/etendo-logotype.png")
+                }
+                style={
+                  deviceIsATablet
+                    ? styles.etendoLogotypeTablet
+                    : styles.etendoLogotypeMobile
+                }
+              />
+              <View style={styles.generalView}>
+                <View style={styles.viewStyle}>
+                  <View style={styles.welcomeTitleContainer}>
+                    <Text
+                      style={[
+                        styles.welcomeTitle,
+                        { fontSize: deviceIsATablet ? 40 : 30 }
+                      ]}
+                    >
+                      {locale.t("Welcome")}
+                    </Text>
+                    <Image
+                      source={require("../../img/stars.png")}
+                      style={styles.starsImage}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      deviceIsATablet
+                        ? styles.credentialsTextTablet
+                        : styles.credentialsTextMobile,
+                      {
+                        marginTop: deviceIsATablet ? -45 : -90,
+                        fontWeight: "500"
+                      }
+                    ]}
+                  >
+                    {locale.t("EnterCredentials")}
+                  </Text>
+
+                  <View style={styles.containerInputs}>
+                    <Button
+                      style={styles.buttonDemo}
+                      onPress={() => this.demo()}
+                    >
+                      {locale.t("DemoTry")}
+                    </Button>
+
+                    <View style={styles.textInputStyle}>
+                      <Input
+                        numberOfLines={2}
+                        typeField={"textInput"}
+                        value={this.state.username}
+                        onChangeText={username => this.setState({ username })}
+                        placeholder={locale.t("User")}
+                      />
+                    </View>
+
+                    <View style={styles.textInputStyle}>
+                      <Input
+                        numberOfLines={2}
+                        typeField={"textInput"}
+                        value={this.state.password}
+                        onChangeText={password => this.setState({ password })}
+                        placeholder={locale.t("Password")}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.containerLogin}>
+                    <View style={{ alignSelf: "center" }}>
+                      <ButtonUI
+                        onPress={this.submitLogin}
+                        text={locale.t("Log in")}
+                        typeStyle={"primary"}
+                        typeSize={"medium"}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      style={{ marginTop: deviceIsATablet ? 0 : 25 }}
+                      onPress={() => [
+                        this.setState({ showChangePassword: true })
+                      ]}
+                    >
+                      <Text
+                        allowFontScaling={false}
+                        style={{
+                          fontSize: 13,
+                          textAlign: "right",
+                          marginTop: 5,
+                          color: defaultTheme.colors.textSecondary,
+                          marginRight: 3
+                        }}
+                      >
+                        {locale.t("Forgot_password")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.containerCopyright}>
+                    <Text style={styles.copyrightStyle}>
+                      @ Copyright Etendo 2020-2023
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Pop up that appears when you first log in */}
+            <UpdateDialog
+              visible={this.state.showUpdateDialog}
+              coreVersion={this.state.coreVersion}
+              appMinCoreVersion={MIN_CORE_VERSION}
+              onConfirm={this.onConfirmVersionUpdate}
+            ></UpdateDialog>
+
+            <Dialog visible={this.state.showSetUrl}>
+              <Dialog.Title>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:Title")}
+                </Text>
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:Content")}
+                </Text>
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: defaultTheme.colors.primary,
+                    borderRadius: 4
+                  }}
+                >
+                  <Picker
+                    selectedValue={this.state.url}
+                    onValueChange={url => this.setState({ url })}
+                    style={[styles.picker]}
+                    itemStyle={styles.pickerItem}
+                  >
+                    <Picker.Item
+                      key="disabled"
+                      label={locale.t("ShowLoadUrl:PickerLabel")}
+                      value=""
+                    />
+                    {this.renderPickerItems(this.state.storedDataUrl)}
+                  </Picker>
+                </View>
+              </Dialog.Content>
+
+              <Dialog.Actions style={{ marginRight: 20 }}>
+                <Button
+                  style={{
+                    width: 110,
+                    backgroundColor: defaultTheme.colors.accent,
+                    marginRight: 10
+                  }}
+                  onPress={() => this.setState({ showAddUrl: true })}
+                >
+                  {locale.t("ShowLoadUrl:Add")}
+                </Button>
+                <Button
+                  style={{
+                    width: 110,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary
+                  }}
+                  onPress={() => this.saveUrl()}
+                >
+                  {" "}
+                  {locale.t("Save")}
+                </Button>
+              </Dialog.Actions>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 20,
+                  alignItems: "center"
+                }}
+              >
+                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Text
+                  allowFontScaling={false}
+                  style={{ textAlignVertical: "center", margin: 20 }}
+                >
+                  {locale.t("Or")}
+                </Text>
+                <Divider style={{ padding: 1, flexGrow: 1 }} />
+              </View>
+              <Dialog.Title>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:DemoTitle")}
+                </Text>
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text>{locale.t("ShowLoadUrl:Demo")}</Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  style={{
+                    width: 150,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary,
+                    margin: 10
+                  }}
+                  onPress={() => this.demo()}
+                >
+                  {locale.t("DemoTry")}
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
           </View>
-          <Dialog.Title>
-            <Text allowFontScaling={false}>
-              {locale.t("ShowLoadUrl:DemoTitle")}
-            </Text>
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text>{locale.t("ShowLoadUrl:Demo")}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              style={{
-                width: 150,
-                backgroundColor: defaultTheme.colors.backgroundSecondary,
-                margin: 10
-              }}
-              onPress={() => this.demo()}
-            >
-              {locale.t("DemoTry")}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-        <Dialog visible={this.state.showAddUrl}>
-          <Dialog.Title>
-            <Text allowFontScaling={false}>
-              {locale.t("ShowLoadUrl:AddUrl")}
-            </Text>
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              allowFontScaling={false}
-              mode="outlined"
-              placeholder={locale.t("ShowLoadUrl:Example")}
-              value={this.state.currentAddUrl}
-              onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
-              textContentType="URL"
-              label={locale.t("ShowLoadUrl:EnvironmentUrl")}
-            />
-            <Dialog.Actions style={{ marginTop: 20 }}>
-              <Button
-                style={{
-                  backgroundColor: defaultTheme.colors.accent,
-                  width: 120,
-                  marginRight: 10
-                }}
-                onPress={() => this.addUrl()}
-              >
-                {locale.t("ShowLoadUrl:Add")}
-              </Button>
-              <Button
-                style={{
-                  width: 120,
-                  backgroundColor: defaultTheme.colors.backgroundSecondary
-                }}
-                onPress={() => this.setState({ showAddUrl: false })}
-              >
-                {locale.t("ShowLoadUrl:Close")}
-              </Button>
-            </Dialog.Actions>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 10
-              }}
-            >
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-              <Text
-                allowFontScaling={false}
-                style={{
-                  textAlignVertical: "center",
-                  margin: 10,
-                  fontSize: 15
-                }}
-              >
-                {locale.t("ShowLoadUrl:ItemList")}
+          <Dialog visible={this.state.showAddUrl}>
+            <Dialog.Title>
+              <Text allowFontScaling={false}>
+                {locale.t("ShowLoadUrl:AddUrl")}
               </Text>
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-            </View>
-            <View style={{ height: 200 }}>
-              <ScrollView>
-                {this.renderUrlItems(this.state.storedDataUrl)}
-              </ScrollView>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </View>
+            </Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                allowFontScaling={false}
+                mode="outlined"
+                placeholder={locale.t("ShowLoadUrl:Example")}
+                value={this.state.currentAddUrl}
+                onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
+                textContentType="URL"
+                label={locale.t("ShowLoadUrl:EnvironmentUrl")}
+              />
+              <Dialog.Actions style={{ marginTop: 20 }}>
+                <Button
+                  style={{
+                    backgroundColor: defaultTheme.colors.accent,
+                    width: 120,
+                    marginRight: 10
+                  }}
+                  onPress={() => this.addUrl()}
+                >
+                  {locale.t("ShowLoadUrl:Add")}
+                </Button>
+                <Button
+                  style={{
+                    width: 120,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary
+                  }}
+                  onPress={() => this.setState({ showAddUrl: false })}
+                >
+                  {locale.t("ShowLoadUrl:Close")}
+                </Button>
+              </Dialog.Actions>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: 10
+                }}
+              >
+                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    textAlignVertical: "center",
+                    margin: 10,
+                    fontSize: 15
+                  }}
+                >
+                  {locale.t("ShowLoadUrl:ItemList")}
+                </Text>
+                <Divider style={{ padding: 1, flexGrow: 1 }} />
+              </View>
+              <View style={{ height: 200 }}>
+                <ScrollView>
+                  {this.renderUrlItems(this.state.storedDataUrl)}
+                </ScrollView>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+
+          {this.ChangedPassword()}
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -648,17 +718,99 @@ const Login = (props) => {
 export default Login;
 
 const styles = StyleSheet.create({
+  // Mobile Styles
+  containerMobile: {
+    backgroundColor: WHITE,
+    flex: 1,
+    paddingHorizontal: 30,
+    paddingVertical: 100
+  },
+  etendoLogotypeMobile: {
+    resizeMode: "contain",
+    width: 90,
+    height: 90,
+    margin: 0,
+    padding: 0,
+    alignSelf: "center"
+  },
+  credentialsTextMobile: {
+    color: GREY_PURPLE,
+    fontSize: 19.5,
+    fontWeight: "700"
+  },
+  // Tablet Styles
+  containerTablet: {
+    backgroundColor: WHITE,
+    flex: 1
+  },
+  backgroundLoginImageContainer: {
+    position: "relative",
+    width: "34.5%"
+  },
+  backgroundLoginImage: {
+    position: "absolute",
+    left: 0,
+    width: "100%",
+    height: "100%"
+  },
+  settingsImageContainer: {
+    position: "absolute",
+    height: 40,
+    width: 40,
+    borderRadius: 8,
+    justifyContent: "center"
+  },
+  settingsImage: {
+    resizeMode: "contain",
+    height: 24,
+    width: 24,
+    tintColor: GREY_60,
+    alignSelf: "center"
+  },
+  etendoLogotypeTablet: {
+    resizeMode: "contain",
+    width: 150,
+    height: 40,
+    margin: 0,
+    padding: 0,
+    alignSelf: "flex-start"
+  },
+  credentialsTextTablet: {
+    color: GREY_PURPLE,
+    fontSize: 19.5,
+    textAlign: "center",
+    fontWeight: "500"
+  },
+
+  // Same Styles
+  welcomeTitleContainer: {
+    flexDirection: "row",
+    alignSelf: "center",
+    marginTop: 10
+  },
+  welcomeTitle: {
+    color: BLUE,
+    fontWeight: "700",
+    fontSize: 30
+  },
+  starsImage: {
+    position: "absolute",
+    resizeMode: "contain",
+    right: 0,
+    width: 27,
+    height: 27,
+    marginRight: -30
+  },
+
   generalView: {
     flex: 1,
     flexDirection: "column",
-    paddingBottom: 16,
-    backgroundColor: defaultTheme.colors.background
+    paddingBottom: 16
   },
   viewStyle: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
-    backgroundColor: defaultTheme.colors.background,
     height: "100%"
   },
   appbarStyle: {
@@ -706,20 +858,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     fontSize: 1
   },
-  containerImage: {
-    height: "30%"
-  },
-  image: {
-    flex: 1,
-    alignSelf: "stretch",
-    width: win.width,
-    height: win.height
-  },
+
   containerCopyright: {
-    alignSelf: "flex-end"
+    width: "100%",
+    alignItems: "center"
   },
   copyrightStyle: {
-    width: win.width,
     textAlign: "center",
     color: defaultTheme.colors.primary,
     fontSize: 12,

@@ -25,7 +25,7 @@ export const ContainerProvider = ({children}: any) => {
   const initialState = {
     appsData: [],
     menuItems: [],
-    url: 'http://10.0.2.2:8080/etendo',
+    url: 'http://demo.etendo.cloud/etendo',
     logged: false,
   };
 

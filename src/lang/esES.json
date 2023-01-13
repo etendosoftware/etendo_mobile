@@ -109,5 +109,7 @@
   "Forgot_password": "¿Olvidó su contraseña?",
   "NoResult": "No se encontraron resultados",
   "Cadena": "String",
-  "Texto": "Text"
+  "Texto": "Text",
+  "Welcome": "Bienvenido",
+  "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta."
 }
