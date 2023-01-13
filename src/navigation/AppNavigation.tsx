@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
 import { CardViewStackNavigator } from "./CardViewNavigator";
-import { LoadingScreen, Drawer } from "../components";
+import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import MainScreen from "../components/MainScreen";
 import { isTablet } from "../../hook/isTablet";
+import { ContainerContext } from "../contexts/ContainerContext";
 
 export const DrawerNav = createDrawerNavigator();
 
 export function AppLogin() {
+
   return (
     <DrawerNav.Navigator
       initialRouteName={"Login"}
-      screenOptions={{ unmountOnBlur: true }}
+      screenOptions={{ unmountOnBlur: true, headerShown: false }}
       drawerStyle={{ width: User.token ? "65%" : 0 }}
     >
       <DrawerNav.Screen
@@ -35,10 +37,12 @@ export function AppLogin() {
   );
 }
 export function AppHome() {
+  const context = useContext(ContainerContext);
+
   return (
     <DrawerNav.Navigator
       initialRouteName={"Home"}
-      screenOptions={{ unmountOnBlur: true }}
+      screenOptions={{ unmountOnBlur: true, headerShown: false }}
       drawerContent={props => {
         return <Drawer {...props} />;
       }}
@@ -78,7 +82,20 @@ export function AppHome() {
       />
 
       <DrawerNav.Screen name="CardView1" component={CardViewStackNavigator} />
-      <DrawerNav.Screen name="MainScreen" component={MainScreen} />
+      {context?.state?.menuItems.map((menuItem: any) => {
+        const params = { ...menuItem };
+        if (params.component) {
+          delete params.component;
+        }
+        return (
+          <DrawerNav.Screen
+            name={menuItem.name}
+            component={menuItem.component ? menuItem.component : MainScreen}
+            initialParams={params}
+            options={{}}
+          />
+        );
+      })}
     </DrawerNav.Navigator>
   );
 }

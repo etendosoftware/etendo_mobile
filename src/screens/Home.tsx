@@ -19,6 +19,8 @@ import { defaultTheme } from "../themes";
 import { isTablet } from '../../hook/isTablet';
 
 const etendoBoyImg = require("../img/etendo_boy_back.png")
+import { useNavigation } from "@react-navigation/native";
+import { Etendo } from "../helpers/Etendo";
 
 interface Props {
   navigation: INavigation;
@@ -32,7 +34,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
 
 @observer
-class Home extends React.Component<Props, State> {
+class HomeClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
   render() {
     return (
@@ -112,7 +114,14 @@ class Home extends React.Component<Props, State> {
     );
   }
 }
+const Home = (props) => {
+  const navigation = useNavigation();
+  Etendo.globalNav = navigation;
 
+  return (
+    <HomeClass {...props} />
+  )
+}
 export default withAuthentication(Home);
 
 const styles = StyleSheet.create({

@@ -15,7 +15,7 @@ import Languages from "./src/ob-api/objects/Languages";
 import { supportedLocales } from "./src/i18n/config";
 import Orientation from 'react-native-orientation-locker'
 import { isTablet } from "./hook/isTablet";
-
+import { ContainerProvider } from "./src/contexts/ContainerContext";
 
 interface Props {}
 
@@ -88,7 +88,6 @@ export default class App extends React.Component<Props, State> {
   };
 
   eventUnsubscribe = async (appEvent: APP_EVENT, key) => {
-    console.log("unsubscribed", { appEvent, key });
     if (this.eventsPool[appEvent][key]) {
       delete this.eventsPool[appEvent][key];
     }
@@ -157,7 +156,6 @@ export default class App extends React.Component<Props, State> {
   };
 
   getBreadcrumbs = (windowId: string): string[] => {
-    console.log("getBreadcrumbs", windowId);
     if (!this.state.breadcrumbs[windowId]) {
       this.state.breadcrumbs[windowId] = [];
     }
@@ -182,11 +180,13 @@ export default class App extends React.Component<Props, State> {
         >
           {this.state && this.state.fontLoaded && (
             <>
-              <LoadingScreen visible={User.loading || Windows.loading} />
-              <NavigationContainer>
-                {User.token ? <AppHome /> : <AppLogin />}
-              </NavigationContainer>
-              <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
+              <ContainerProvider>
+                <LoadingScreen visible={User.loading || Windows.loading} />
+                <NavigationContainer>
+                  {User.token ? <AppHome /> : <AppLogin />}
+                </NavigationContainer>
+                <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
+              </ContainerProvider>
             </>
           )}
         </MainAppContext.Provider>
