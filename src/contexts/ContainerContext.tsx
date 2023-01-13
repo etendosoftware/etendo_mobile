@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useReducer } from 'react';
 import {Etendo, EtendoUtil} from '../helpers/Etendo';
+import { getUrl } from '../ob-api/ob';
 
 export const DEV_URL = "http://10.0.2.2:3000"
 const ContainerContext = React.createContext<{ state: any, dispatch: any, Etendo: EtendoUtil }>({});
@@ -23,13 +24,14 @@ const ContainerProvider = ({ children }: any) => {
     }
     return { ...state, ...action }
   }
-
+  
   const initialState = {
     appsData: [],
     menuItems: [],
-    url: 'http://demo.etendo.cloud/etendo',
+    url: "",
     logged: false,
   };
+  getUrl().then(url => {dispatch({url: url})});
 
   const [state, dispatch] = useReducer(reducer, initialState);
   Etendo.state = state;

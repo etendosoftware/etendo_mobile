@@ -175,7 +175,8 @@ class LoginClass extends React.Component<Props, State> {
   };
 
   loadDynamic = async () => {
-      let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
+
+      let storedEnviromentsUrl = await getUrl();
       const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
       fetch(callUrlApps, {
         method: "GET",
