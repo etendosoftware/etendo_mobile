@@ -181,7 +181,6 @@ class Card extends React.Component<Props, State> {
         this.context.selectRecords(this.props.currentRecord);
       } else {
         eventSubscribe(APP_EVENT, cardData.currentRecordId, newRecord => {
-          console.log("Event propagated");
           this.loadFields(newRecord);
           this.context.setCurrentRecord(newRecord);
         });

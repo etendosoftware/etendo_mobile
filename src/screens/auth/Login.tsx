@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Dimensions, Image, StyleSheet, AsyncStorage } from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
@@ -23,6 +23,7 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { ContainerContext } from "../../contexts/ContainerContext";
 
 const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const MIN_CORE_VERSION = "3.0.202201";
@@ -64,7 +65,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
 
 @observer
-class Login extends React.Component<Props, State> {
+class LoginClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
 
   secondTextInput: any;
@@ -89,14 +90,11 @@ class Login extends React.Component<Props, State> {
 
   componentDidMount = async () => {
     try {
-      if (__DEV__) {
-        //this.setState({ url: "http://localhost:8080/etendo" });
-      }
       User.loading = true;
       await User.loadToken();
       if (User.token) {
         await User.reloadUserData(User.token);
-        // this.loadWindows(true);
+        this.loadDynamic();
         this.props.navigation.navigate("Home");
       } else {
         this.props.navigation.navigate("Login");
@@ -152,12 +150,9 @@ class Login extends React.Component<Props, State> {
   };
 
   loadDynamic = async () => {
-      let storedEnviromentsUrl = await AsyncStorage.getItem("baseUrl");
-      
 
-
+      let storedEnviromentsUrl = await getUrl();
       const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-      console.log("callUrlApps", callUrlApps);
       fetch(callUrlApps, {
         method: "GET",
         headers: {
@@ -167,7 +162,8 @@ class Login extends React.Component<Props, State> {
         mode: "no-cors"
       }).then(async(callApps) => {
       const data = await callApps.json();
-      console.log("data", data)
+      this.props.dispatch({ appsData: data.data, logged: true });
+
     }).catch(err => console.error(err));
   }
 
@@ -186,7 +182,7 @@ class Login extends React.Component<Props, State> {
           this.props.navigation.navigate("Tutorial");
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         await User.logout();
         if (e.message.includes("Request failed with status code 404")) {
           Snackbar.showError(locale.t("LoginScreen:URLNotFound"));
@@ -198,7 +194,7 @@ class Login extends React.Component<Props, State> {
       }
     } catch (e) {
       Snackbar.showError(e.message);
-      console.log(e);
+      console.error(e);
     } finally {
       User.loading = false;
       Windows.loading = false;
@@ -642,6 +638,13 @@ class Login extends React.Component<Props, State> {
   }
 }
 
+const Login = (props) => {
+  const { dispatch } = useContext(ContainerContext);
+
+  return (
+    <LoginClass {...props} dispatch={dispatch} />
+  )
+}
 export default Login;
 
 const styles = StyleSheet.create({
