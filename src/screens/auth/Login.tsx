@@ -1,48 +1,48 @@
-import React, { useContext } from "react";
+import React, {useContext} from 'react';
 import {
   View,
   Dimensions,
   Image,
   StyleSheet,
-  AsyncStorage,
   LogBox,
   Keyboard,
   TouchableWithoutFeedback,
   SafeAreaView,
-  Pressable
-} from "react-native";
-import { observer } from "mobx-react";
-import { logout, User, Windows } from "../../stores";
-import locale from "../../i18n/locale";
+  Pressable,
+  Platform,
+} from 'react-native';
+import {observer} from 'mobx-react';
+import {logout, User, Windows} from '../../stores';
+import locale from '../../i18n/locale';
 import {
   TextInput,
   Dialog,
   Text,
   Divider,
   List,
-  Button
-} from "react-native-paper";
-import { Snackbar } from "../../globals";
-import { UpdateDialog } from "../../components";
-import { Version } from "../../ob-api/objects";
-import { INavigation } from "../../components/Card";
-import MainAppContext from "../../contexts/MainAppContext";
-import Languages from "../../ob-api/objects/Languages";
-import { getUrl, setUrl, formatUrl } from "../../ob-api/ob";
-import { defaultTheme } from "../../themes";
-import { Picker } from "@react-native-picker/picker";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { Input } from "../../../ui/components/input";
-import ButtonUI from "../../../ui/components/button/Button";
+  Button,
+} from 'react-native-paper';
+import {Snackbar} from '../../globals';
+import {UpdateDialog} from '../../components';
+import {Version} from '../../ob-api/objects';
+import {INavigation} from '../../components/Card';
+import MainAppContext from '../../contexts/MainAppContext';
+import Languages from '../../ob-api/objects/Languages';
+import {getUrl, setUrl, formatUrl} from '../../ob-api/ob';
+import {defaultTheme} from '../../themes';
+import {Picker} from '@react-native-picker/picker';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import Input from '../../../ui/components/input/Input';
+import ButtonUI from '../../../ui/components/button/Button';
 
-import { isTablet } from "../../helpers/IsTablet";
-import Orientation from "react-native-orientation-locker";
-import { BLACK, BLUE, GREY_60, WHITE } from "../../../ui/styles/colors";
-import { GREY_PURPLE } from "../../styles/colors";
-import { ContainerContext } from "../../contexts/ContainerContext";
+import {isTablet} from '../../helpers/IsTablet';
+import Orientation from 'react-native-orientation-locker';
+import {BLUE, GREY_60, WHITE} from '../../../ui/styles/colors';
+import {GREY_PURPLE} from '../../styles/colors';
+import {ContainerContext} from '../../contexts/ContainerContext';
 
-const MIN_CORE_VERSION = "3.0.202201";
+const MIN_CORE_VERSION = '3.0.202201';
 
 interface Props {
   navigation: INavigation;
@@ -77,7 +77,7 @@ interface State {
   showChangePassword: boolean;
 }
 
-const win = Dimensions.get("window");
+const win = Dimensions.get('window');
 const deviceIsATablet = isTablet();
 
 @observer
@@ -89,24 +89,24 @@ class LoginClass extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
-      username: "",
-      password: "",
-      error: "",
-      coreVersion: "",
+      username: '',
+      password: '',
+      error: '',
+      coreVersion: '',
       showUpdateDialog: false,
-      url: "",
+      url: '',
       showPassword: false,
       showSetUrl: false,
       showAddUrl: false,
-      currentAddUrl: "",
+      currentAddUrl: '',
       storedDataUrl: [],
-      showChangePassword: false
+      showChangePassword: false,
     };
   }
 
   componentDidMount = async () => {
     // FIXME: For the Input component of the UI Library
-    LogBox.ignoreLogs(["Require cycle: "]);
+    LogBox.ignoreLogs(['Require cycle: ']);
 
     if (deviceIsATablet) {
       Orientation.lockToLandscape();
@@ -120,18 +120,18 @@ class LoginClass extends React.Component<Props, State> {
       if (User.token) {
         await User.reloadUserData(User.token);
         this.loadDynamic();
-        this.props.navigation.navigate("Home");
+        this.props.navigation.navigate('Home');
       } else {
-        this.props.navigation.navigate("Login");
+        this.props.navigation.navigate('Login');
       }
 
       let storedEnviromentsUrl = await User.loadEnviromentsUrl();
 
       if (storedEnviromentsUrl) {
-        this.setState({ storedDataUrl: storedEnviromentsUrl });
+        this.setState({storedDataUrl: storedEnviromentsUrl});
       }
 
-      this.setState({ showSetUrl: (await getUrl()) === null });
+      this.setState({showSetUrl: (await getUrl()) === null});
     } catch (e) {
       Snackbar.showError(e.message);
     } finally {
@@ -141,18 +141,14 @@ class LoginClass extends React.Component<Props, State> {
   };
 
   loadWindows = async token => {
-    const {
-      selectedLanguage,
-      changeLanguage,
-      updateLanguageList
-    } = this.context;
+    const {selectedLanguage, changeLanguage, updateLanguageList} = this.context;
     updateLanguageList();
     const etendoLanguages = (await Languages.getLanguages()) as EtendoLanguage[];
     if (
       etendoLanguages.filter(lang => lang.language === selectedLanguage)
         .length === 0
     ) {
-      changeLanguage("en_US");
+      changeLanguage('en_US');
     } else {
       if (!Windows.hydrated || !token) {
         await Windows.loadWindows(selectedLanguage);
@@ -162,37 +158,38 @@ class LoginClass extends React.Component<Props, State> {
 
   resetState = () => {
     this.setState({
-      username: "",
-      password: "",
-      error: "",
-      coreVersion: "",
+      username: '',
+      password: '',
+      error: '',
+      coreVersion: '',
       showUpdateDialog: false,
       showPassword: false,
       showAddUrl: false,
-      currentAddUrl: "",
-      storedDataUrl: []
+      currentAddUrl: '',
+      storedDataUrl: [],
     });
   };
 
   loadDynamic = async () => {
-
-      let storedEnviromentsUrl = await getUrl();
-      const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-      fetch(callUrlApps, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${User.token}`
-        },
-        mode: "no-cors"
-      }).then(async(callApps) => {
-      const data = await callApps.json();
-      this.props.dispatch({ appsData: data.data, logged: true });
-    }).catch(err => console.error(err));
-  }
+    let storedEnviromentsUrl = await getUrl();
+    const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
+    fetch(callUrlApps, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${User.token}`,
+      },
+      mode: 'no-cors',
+    })
+      .then(async callApps => {
+        const data = await callApps.json();
+        this.props.dispatch({appsData: data.data, logged: true});
+      })
+      .catch(err => console.error(err));
+  };
 
   submitLogin = async () => {
-    const { username, password } = this.state;
+    const {username, password} = this.state;
     try {
       User.loading = true;
       Windows.loading = true;
@@ -200,18 +197,17 @@ class LoginClass extends React.Component<Props, State> {
         await User.login(username, password);
         const isCoreVersionBeingChecked = await this.checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
-          // await this.loadWindows(false);
           this.loadDynamic();
           this.props.navigation.closeDrawer();
-          this.props.navigation.navigate("Tutorial");
+          this.props.navigation.navigate('Tutorial');
         }
       } catch (e) {
         console.error(e);
         await User.logout();
-        if (e.message.includes("Request failed with status code 404")) {
-          Snackbar.showError(locale.t("LoginScreen:URLNotFound"));
-        } else if (e.message.includes("Network Error")) {
-          Snackbar.showError(locale.t("LoginScreen:NetworkError"));
+        if (e.message.includes('Request failed with status code 404')) {
+          Snackbar.showError(locale.t('LoginScreen:URLNotFound'));
+        } else if (e.message.includes('Network Error')) {
+          Snackbar.showError(locale.t('LoginScreen:NetworkError'));
         } else {
           Snackbar.showError(e.message);
         }
@@ -226,24 +222,24 @@ class LoginClass extends React.Component<Props, State> {
   };
 
   onConfirmVersionUpdate = option => {
-    if (option === "logout") logout();
-    this.setState({ showUpdateDialog: false });
+    if (option === 'logout') logout();
+    this.setState({showUpdateDialog: false});
   };
 
   checkCoreCompatibility = async () => {
     const coreVersion = (await Version.getVersion()).data[0].coreVersion;
     const shouldShowUpdateDialog =
       this.versionCompare(MIN_CORE_VERSION, coreVersion) > 0;
-    this.setState({ coreVersion });
-    this.setState({ showUpdateDialog: shouldShowUpdateDialog });
+    this.setState({coreVersion});
+    this.setState({showUpdateDialog: shouldShowUpdateDialog});
     return shouldShowUpdateDialog;
   };
 
   versionCompare(v1, v2, options?) {
     var lexicographical = options && options.lexicographical,
       zeroExtend = options && options.zeroExtend,
-      v1parts = v1.split("."),
-      v2parts = v2.split(".");
+      v1parts = v1.split('.'),
+      v2parts = v2.split('.');
     function isValidPart(x) {
       return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
     }
@@ -251,8 +247,8 @@ class LoginClass extends React.Component<Props, State> {
       return NaN;
     }
     if (zeroExtend) {
-      while (v1parts.length < v2parts.length) v1parts.push("0");
-      while (v2parts.length < v1parts.length) v2parts.push("0");
+      while (v1parts.length < v2parts.length) v1parts.push('0');
+      while (v2parts.length < v1parts.length) v2parts.push('0');
     }
     if (!lexicographical) {
       v1parts = v1parts.map(Number);
@@ -277,28 +273,28 @@ class LoginClass extends React.Component<Props, State> {
   }
 
   saveUrl = async () => {
-    if (!this.state.url || this.state.url == "") return;
+    if (!this.state.url || this.state.url == '') return;
     await setUrl(this.state.url);
     await User.saveEnviromentsUrl(this.state.storedDataUrl);
-    this.setState({ showSetUrl: false });
+    this.setState({showSetUrl: false});
   };
 
   addUrl = async () => {
     let currentValue = this.state.currentAddUrl;
-    if (!currentValue || currentValue == "") return;
+    if (!currentValue || currentValue == '') return;
     currentValue = formatUrl(currentValue);
     this.setState({
       storedDataUrl: [...this.state.storedDataUrl, currentValue],
-      currentAddUrl: ""
+      currentAddUrl: '',
     });
   };
 
   demo = async () => {
-    await setUrl("https://demo.etendo.cloud/etendo");
-    this.setState({ username: "admin", password: "admin" });
+    await setUrl('https://demo.etendo.cloud/etendo');
+    this.setState({username: 'admin', password: 'admin'});
     this.submitLogin();
     this.props.navigation.closeDrawer();
-    this.setState({ showSetUrl: false });
+    this.setState({showSetUrl: false});
   };
 
   renderUrlItems = (items: any) => {
@@ -315,9 +311,9 @@ class LoginClass extends React.Component<Props, State> {
                 <TouchableOpacity
                   onPress={() => {
                     let filteredItems = this.state.storedDataUrl.filter(
-                      url => url !== item
+                      url => url !== item,
                     );
-                    this.setState({ storedDataUrl: filteredItems });
+                    this.setState({storedDataUrl: filteredItems});
                   }}
                 >
                   <Icon
@@ -338,12 +334,12 @@ class LoginClass extends React.Component<Props, State> {
           style={{
             color: defaultTheme.colors.textSecondary,
             fontSize: 15,
-            textAlign: "center",
-            textAlignVertical: "center",
-            height: 150
+            textAlign: 'center',
+            textAlignVertical: 'center',
+            height: 150,
           }}
         >
-          {locale.t("ShowLoadUrl:NotItemList")}
+          {locale.t('ShowLoadUrl:NotItemList')}
         </Text>
       );
     }
@@ -360,27 +356,27 @@ class LoginClass extends React.Component<Props, State> {
       <Dialog
         visible={this.state.showChangePassword}
         style={{
-          height: "25%",
-          width: deviceIsATablet ? "50%" : "90%",
-          justifyContent: "center",
-          alignItems: "center",
-          alignSelf: "center"
+          height: '25%',
+          width: deviceIsATablet ? '50%' : '90%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          alignSelf: 'center',
         }}
       >
         <Dialog.Content>
-          <Text allowFontScaling={false}>{locale.t("Recover_password")}</Text>
+          <Text allowFontScaling={false}>{locale.t('Recover_password')}</Text>
         </Dialog.Content>
-        <View style={{ width: "100%", alignSelf: "center" }}>
+        <View style={{width: '100%', alignSelf: 'center'}}>
           <TouchableOpacity
-            onPress={() => this.setState({ showChangePassword: false })}
+            onPress={() => this.setState({showChangePassword: false})}
             style={{
               backgroundColor: defaultTheme.colors.accent,
-              width: "20%",
-              alignSelf: "flex-end",
-              marginRight: 20
+              width: '20%',
+              alignSelf: 'flex-end',
+              marginRight: 20,
             }}
           >
-            <Button style={{ width: "100%", alignItems: "center" }}>Ok</Button>
+            <Button style={{width: '100%', alignItems: 'center'}}>Ok</Button>
           </TouchableOpacity>
         </View>
       </Dialog>
@@ -391,12 +387,12 @@ class LoginClass extends React.Component<Props, State> {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <SafeAreaView
-          style={{ flex: 1, flexDirection: deviceIsATablet ? "row" : "column" }}
+          style={{flex: 1, flexDirection: deviceIsATablet ? 'row' : 'column'}}
         >
           {deviceIsATablet && (
             <View style={styles.backgroundLoginImageContainer}>
               <Image
-                source={require("../../../assets/background-login.png")}
+                source={require('../../../assets/background-login.png')}
                 style={styles.backgroundLoginImage}
               />
             </View>
@@ -407,18 +403,18 @@ class LoginClass extends React.Component<Props, State> {
               deviceIsATablet ? styles.containerTablet : styles.containerMobile
             }
           >
-            <View style={{ margin: deviceIsATablet ? 80 : 0, flex: 1 }}>
+            <View style={{margin: deviceIsATablet ? 80 : 0, flex: 1}}>
               <Pressable
-                onPress={() => this.props.navigation.navigate("Settings")}
+                onPress={() => this.props.navigation.navigate('Settings')}
               >
                 <View
                   style={[
                     styles.settingsImageContainer,
-                    { right: deviceIsATablet ? 0 : undefined }
+                    {right: deviceIsATablet ? 0 : undefined},
                   ]}
                 >
                   <Image
-                    source={require("../../../assets/settings.png")}
+                    source={require('../../../assets/settings.png')}
                     style={styles.settingsImage}
                   />
                 </View>
@@ -426,8 +422,8 @@ class LoginClass extends React.Component<Props, State> {
               <Image
                 source={
                   deviceIsATablet
-                    ? require("../../../assets/etendo-logotype-standard.png")
-                    : require("../../../assets/etendo-logotype.png")
+                    ? require('../../../assets/etendo-logotype-standard.png')
+                    : require('../../../assets/etendo-logotype.png')
                 }
                 style={
                   deviceIsATablet
@@ -441,13 +437,13 @@ class LoginClass extends React.Component<Props, State> {
                     <Text
                       style={[
                         styles.welcomeTitle,
-                        { fontSize: deviceIsATablet ? 40 : 30 }
+                        {fontSize: deviceIsATablet ? 40 : 30},
                       ]}
                     >
-                      {locale.t("Welcome")}
+                      {locale.t('Welcome')}
                     </Text>
                     <Image
-                      source={require("../../img/stars.png")}
+                      source={require('../../img/stars.png')}
                       style={styles.starsImage}
                     />
                   </View>
@@ -457,12 +453,14 @@ class LoginClass extends React.Component<Props, State> {
                         ? styles.credentialsTextTablet
                         : styles.credentialsTextMobile,
                       {
-                        marginTop: deviceIsATablet ? -45 : -90,
-                        fontWeight: "500"
-                      }
+                        marginTop:
+                          deviceIsATablet || Platform.OS === 'android'
+                            ? -40
+                            : -20,
+                      },
                     ]}
                   >
-                    {locale.t("EnterCredentials")}
+                    {locale.t('EnterCredentials')}
                   </Text>
 
                   <View style={styles.containerInputs}>
@@ -470,56 +468,61 @@ class LoginClass extends React.Component<Props, State> {
                       style={styles.buttonDemo}
                       onPress={() => this.demo()}
                     >
-                      {locale.t("DemoTry")}
+                      {locale.t('DemoTry')}
                     </Button>
 
                     <View style={styles.textInputStyle}>
                       <Input
-                        numberOfLines={2}
-                        typeField={"textInput"}
+                        typeField={'textInput'}
                         value={this.state.username}
-                        onChangeText={username => this.setState({ username })}
-                        placeholder={locale.t("User")}
+                        onChangeText={username => this.setState({username})}
+                        placeholder={locale.t('User')}
+                        fontSize={16}
+                        height={40}
                       />
                     </View>
 
                     <View style={styles.textInputStyle}>
                       <Input
-                        numberOfLines={2}
-                        typeField={"textInput"}
+                        typeField={'textInput'}
                         value={this.state.password}
-                        onChangeText={password => this.setState({ password })}
-                        placeholder={locale.t("Password")}
+                        onChangeText={password => this.setState({password})}
+                        placeholder={locale.t('Password')}
+                        fontSize={16}
+                        height={40}
+                        password={true}
                       />
                     </View>
                   </View>
                   <View style={styles.containerLogin}>
-                    <View style={{ alignSelf: "center" }}>
+                    <View style={{height: 50}}>
                       <ButtonUI
                         onPress={this.submitLogin}
-                        text={locale.t("Log in")}
-                        typeStyle={"primary"}
-                        typeSize={"medium"}
+                        text={locale.t('Log in')}
+                        typeStyle={'primary'}
+                        typeSize="medium"
+                        width="100%"
+                        height={50}
                       />
                     </View>
                     <TouchableOpacity
                       activeOpacity={0.5}
-                      style={{ marginTop: deviceIsATablet ? 0 : 25 }}
+                      style={{marginTop: deviceIsATablet ? 0 : 25}}
                       onPress={() => [
-                        this.setState({ showChangePassword: true })
+                        this.setState({showChangePassword: true}),
                       ]}
                     >
                       <Text
                         allowFontScaling={false}
                         style={{
-                          fontSize: 13,
-                          textAlign: "right",
+                          fontSize: 14,
+                          textAlign: 'right',
                           marginTop: 5,
                           color: defaultTheme.colors.textSecondary,
-                          marginRight: 3
+                          marginRight: 3,
                         }}
                       >
-                        {locale.t("Forgot_password")}
+                        {locale.t('Forgot_password')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -544,29 +547,29 @@ class LoginClass extends React.Component<Props, State> {
             <Dialog visible={this.state.showSetUrl}>
               <Dialog.Title>
                 <Text allowFontScaling={false}>
-                  {locale.t("ShowLoadUrl:Title")}
+                  {locale.t('ShowLoadUrl:Title')}
                 </Text>
               </Dialog.Title>
               <Dialog.Content>
                 <Text allowFontScaling={false}>
-                  {locale.t("ShowLoadUrl:Content")}
+                  {locale.t('ShowLoadUrl:Content')}
                 </Text>
                 <View
                   style={{
                     borderWidth: 1,
                     borderColor: defaultTheme.colors.primary,
-                    borderRadius: 4
+                    borderRadius: 4,
                   }}
                 >
                   <Picker
                     selectedValue={this.state.url}
-                    onValueChange={url => this.setState({ url })}
+                    onValueChange={url => this.setState({url})}
                     style={[styles.picker]}
                     itemStyle={styles.pickerItem}
                   >
                     <Picker.Item
                       key="disabled"
-                      label={locale.t("ShowLoadUrl:PickerLabel")}
+                      label={locale.t('ShowLoadUrl:PickerLabel')}
                       value=""
                     />
                     {this.renderPickerItems(this.state.storedDataUrl)}
@@ -574,63 +577,62 @@ class LoginClass extends React.Component<Props, State> {
                 </View>
               </Dialog.Content>
 
-              <Dialog.Actions style={{ marginRight: 20 }}>
+              <Dialog.Actions style={{marginRight: 20}}>
                 <Button
                   style={{
                     width: 110,
                     backgroundColor: defaultTheme.colors.accent,
-                    marginRight: 10
+                    marginRight: 10,
                   }}
-                  onPress={() => this.setState({ showAddUrl: true })}
+                  onPress={() => this.setState({showAddUrl: true})}
                 >
-                  {locale.t("ShowLoadUrl:Add")}
+                  {locale.t('ShowLoadUrl:Add')}
                 </Button>
                 <Button
                   style={{
                     width: 110,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
+                    backgroundColor: defaultTheme.colors.backgroundSecondary,
                   }}
                   onPress={() => this.saveUrl()}
                 >
-                  {" "}
-                  {locale.t("Save")}
+                  {locale.t('Save')}
                 </Button>
               </Dialog.Actions>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                   paddingHorizontal: 20,
-                  alignItems: "center"
+                  alignItems: 'center',
                 }}
               >
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={{padding: 1, flexGrow: 1}} />
                 <Text
                   allowFontScaling={false}
-                  style={{ textAlignVertical: "center", margin: 20 }}
+                  style={{textAlignVertical: 'center', margin: 20}}
                 >
-                  {locale.t("Or")}
+                  {locale.t('Or')}
                 </Text>
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={{padding: 1, flexGrow: 1}} />
               </View>
               <Dialog.Title>
                 <Text allowFontScaling={false}>
-                  {locale.t("ShowLoadUrl:DemoTitle")}
+                  {locale.t('ShowLoadUrl:DemoTitle')}
                 </Text>
               </Dialog.Title>
               <Dialog.Content>
-                <Text>{locale.t("ShowLoadUrl:Demo")}</Text>
+                <Text>{locale.t('ShowLoadUrl:Demo')}</Text>
               </Dialog.Content>
               <Dialog.Actions>
                 <Button
                   style={{
                     width: 150,
                     backgroundColor: defaultTheme.colors.backgroundSecondary,
-                    margin: 10
+                    margin: 10,
                   }}
                   onPress={() => this.demo()}
                 >
-                  {locale.t("DemoTry")}
+                  {locale.t('DemoTry')}
                 </Button>
               </Dialog.Actions>
             </Dialog>
@@ -638,62 +640,62 @@ class LoginClass extends React.Component<Props, State> {
           <Dialog visible={this.state.showAddUrl}>
             <Dialog.Title>
               <Text allowFontScaling={false}>
-                {locale.t("ShowLoadUrl:AddUrl")}
+                {locale.t('ShowLoadUrl:AddUrl')}
               </Text>
             </Dialog.Title>
             <Dialog.Content>
               <TextInput
                 allowFontScaling={false}
                 mode="outlined"
-                placeholder={locale.t("ShowLoadUrl:Example")}
+                placeholder={locale.t('ShowLoadUrl:Example')}
                 value={this.state.currentAddUrl}
-                onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
+                onChangeText={currentAddUrl => this.setState({currentAddUrl})}
                 textContentType="URL"
-                label={locale.t("ShowLoadUrl:EnvironmentUrl")}
+                label={locale.t('ShowLoadUrl:EnvironmentUrl')}
               />
-              <Dialog.Actions style={{ marginTop: 20 }}>
+              <Dialog.Actions style={{marginTop: 20}}>
                 <Button
                   style={{
                     backgroundColor: defaultTheme.colors.accent,
                     width: 120,
-                    marginRight: 10
+                    marginRight: 10,
                   }}
                   onPress={() => this.addUrl()}
                 >
-                  {locale.t("ShowLoadUrl:Add")}
+                  {locale.t('ShowLoadUrl:Add')}
                 </Button>
                 <Button
                   style={{
                     width: 120,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
+                    backgroundColor: defaultTheme.colors.backgroundSecondary,
                   }}
-                  onPress={() => this.setState({ showAddUrl: false })}
+                  onPress={() => this.setState({showAddUrl: false})}
                 >
-                  {locale.t("ShowLoadUrl:Close")}
+                  {locale.t('ShowLoadUrl:Close')}
                 </Button>
               </Dialog.Actions>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 10
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 10,
                 }}
               >
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={{padding: 1, flexGrow: 1}} />
                 <Text
                   allowFontScaling={false}
                   style={{
-                    textAlignVertical: "center",
+                    textAlignVertical: 'center',
                     margin: 10,
-                    fontSize: 15
+                    fontSize: 15,
                   }}
                 >
-                  {locale.t("ShowLoadUrl:ItemList")}
+                  {locale.t('ShowLoadUrl:ItemList')}
                 </Text>
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={{padding: 1, flexGrow: 1}} />
               </View>
-              <View style={{ height: 200 }}>
+              <View style={{height: 200}}>
                 <ScrollView>
                   {this.renderUrlItems(this.state.storedDataUrl)}
                 </ScrollView>
@@ -708,173 +710,166 @@ class LoginClass extends React.Component<Props, State> {
   }
 }
 
-const Login = (props) => {
-  const { dispatch } = useContext(ContainerContext);
+const Login = props => {
+  const {dispatch} = useContext(ContainerContext);
 
-  return (
-    <LoginClass {...props} dispatch={dispatch} />
-  )
-}
+  return <LoginClass {...props} dispatch={dispatch} />;
+};
 export default Login;
 
 const styles = StyleSheet.create({
-  // Mobile Styles
   containerMobile: {
-    backgroundColor: WHITE,
     flex: 1,
     paddingHorizontal: 30,
-    paddingVertical: 100
+    paddingVertical: 50,
+    backgroundColor: defaultTheme.colors.background,
   },
   etendoLogotypeMobile: {
-    resizeMode: "contain",
+    resizeMode: 'contain',
     width: 90,
     height: 90,
     margin: 0,
     padding: 0,
-    alignSelf: "center"
+    alignSelf: 'center',
   },
   credentialsTextMobile: {
     color: GREY_PURPLE,
     fontSize: 19.5,
-    fontWeight: "700"
+    fontWeight: '500',
   },
-  // Tablet Styles
   containerTablet: {
-    backgroundColor: WHITE,
-    flex: 1
+    flex: 1,
+    backgroundColor: defaultTheme.colors.background,
   },
   backgroundLoginImageContainer: {
-    position: "relative",
-    width: "34.5%"
+    position: 'relative',
+    width: '34.5%',
   },
   backgroundLoginImage: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
-    width: "100%",
-    height: "100%"
+    width: '100%',
+    height: '100%',
   },
   settingsImageContainer: {
-    position: "absolute",
+    position: 'absolute',
     height: 40,
     width: 40,
     borderRadius: 8,
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   settingsImage: {
-    resizeMode: "contain",
+    resizeMode: 'contain',
     height: 24,
     width: 24,
     tintColor: GREY_60,
-    alignSelf: "center"
+    alignSelf: 'center',
   },
   etendoLogotypeTablet: {
-    resizeMode: "contain",
+    resizeMode: 'contain',
     width: 150,
     height: 40,
     margin: 0,
     padding: 0,
-    alignSelf: "flex-start"
+    alignSelf: 'flex-start',
   },
   credentialsTextTablet: {
     color: GREY_PURPLE,
     fontSize: 19.5,
-    textAlign: "center",
-    fontWeight: "500"
+    textAlign: 'center',
+    fontWeight: '500',
   },
-
-  // Same Styles
   welcomeTitleContainer: {
-    flexDirection: "row",
-    alignSelf: "center",
-    marginTop: 10
+    flexDirection: 'row',
+    alignSelf: 'center',
+    marginTop: 10,
   },
   welcomeTitle: {
     color: BLUE,
-    fontWeight: "700",
-    fontSize: 30
+    fontWeight: '700',
+    fontSize: 30,
   },
   starsImage: {
-    position: "absolute",
-    resizeMode: "contain",
+    position: 'absolute',
+    resizeMode: 'contain',
     right: 0,
     width: 27,
     height: 27,
-    marginRight: -30
+    marginRight: -30,
   },
 
   generalView: {
     flex: 1,
-    flexDirection: "column",
-    paddingBottom: 16
+    flexDirection: 'column',
+    paddingBottom: 16,
   },
   viewStyle: {
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "100%"
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%',
   },
   appbarStyle: {
     paddingTop: 28,
-    paddingLeft: 8
+    paddingLeft: 8,
   },
   containerLogo: {
-    height: "15%"
+    height: '15%',
   },
   logo: {
     flex: 1,
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
     width: win.width,
-    height: win.height
+    height: win.height,
   },
   containerInputs: {
-    display: "flex",
-    flexDirection: "column",
-    alignContent: "center",
-    paddingHorizontal: 16,
-    marginBottom: 0
+    display: 'flex',
+    flexDirection: 'column',
+    alignContent: 'center',
+    marginBottom: 0,
   },
   buttonDemo: {
-    flexDirection: "row",
-    justifyContent: "flex-end"
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    fontFamily: 'Inter-Regular',
   },
   textInputStyle: {
-    justifyContent: "center",
+    justifyContent: 'center',
     height: 45,
     paddingVertical: 5,
-    marginBottom: 0,
+    marginBottom: 20,
     marginTop: 10,
-    fontSize: 15
+    width: '100%',
   },
   textInputIconStyle: {
-    paddingTop: 10
+    paddingTop: 10,
   },
   containerLogin: {
     marginTop: 20,
     marginBottom: 20,
-    paddingHorizontal: 16
   },
   buttonLogin: {
     height: 45,
     paddingVertical: 5,
-    fontSize: 1
+    fontSize: 1,
   },
 
   containerCopyright: {
-    width: "100%",
-    alignItems: "center"
+    width: '100%',
+    alignItems: 'center',
   },
   copyrightStyle: {
-    textAlign: "center",
+    textAlign: 'center',
     color: defaultTheme.colors.primary,
-    fontSize: 12,
-    backgroundColor: defaultTheme.colors.background
+    fontSize: 14,
+    backgroundColor: defaultTheme.colors.background,
   },
   picker: {
     height: 44,
     borderColor: defaultTheme.colors.primary,
-    borderWidth: 1
+    borderWidth: 1,
   },
   pickerItem: {
-    height: 44
-  }
+    height: 44,
+  },
 });
