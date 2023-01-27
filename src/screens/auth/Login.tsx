@@ -4,12 +4,12 @@ import {
   Dimensions,
   Image,
   StyleSheet,
-  AsyncStorage,
   LogBox,
   Keyboard,
   TouchableWithoutFeedback,
   SafeAreaView,
-  Pressable
+  Pressable,
+  Platform
 } from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
@@ -33,12 +33,12 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { Input } from "../../../ui/components/input";
+import Input from "../../../ui/components/input/Input";
 import ButtonUI from "../../../ui/components/button/Button";
 
 import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
-import { BLACK, BLUE, GREY_60, WHITE } from "../../../ui/styles/colors";
+import { BLUE, GREY_60 } from "../../../ui/styles/colors";
 import { GREY_PURPLE } from "../../styles/colors";
 import { ContainerContext } from "../../contexts/ContainerContext";
 
@@ -140,7 +140,7 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  loadWindows = async token => {
+  loadWindows = async (token) => {
     const {
       selectedLanguage,
       changeLanguage,
@@ -149,7 +149,7 @@ class LoginClass extends React.Component<Props, State> {
     updateLanguageList();
     const etendoLanguages = (await Languages.getLanguages()) as EtendoLanguage[];
     if (
-      etendoLanguages.filter(lang => lang.language === selectedLanguage)
+      etendoLanguages.filter((lang) => lang.language === selectedLanguage)
         .length === 0
     ) {
       changeLanguage("en_US");
@@ -175,21 +175,22 @@ class LoginClass extends React.Component<Props, State> {
   };
 
   loadDynamic = async () => {
-
-      let storedEnviromentsUrl = await getUrl();
-      const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-      fetch(callUrlApps, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${User.token}`
-        },
-        mode: "no-cors"
-      }).then(async(callApps) => {
-      const data = await callApps.json();
-      this.props.dispatch({ appsData: data.data, logged: true });
-    }).catch(err => console.error(err));
-  }
+    let storedEnviromentsUrl = await getUrl();
+    const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
+    fetch(callUrlApps, {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${User.token}`
+      },
+      mode: "no-cors"
+    })
+      .then(async (callApps) => {
+        const data = await callApps.json();
+        this.props.dispatch({ appsData: data.data, logged: true });
+      })
+      .catch((err) => console.error(err));
+  };
 
   submitLogin = async () => {
     const { username, password } = this.state;
@@ -200,7 +201,6 @@ class LoginClass extends React.Component<Props, State> {
         await User.login(username, password);
         const isCoreVersionBeingChecked = await this.checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
-          // await this.loadWindows(false);
           this.loadDynamic();
           this.props.navigation.closeDrawer();
           this.props.navigation.navigate("Tutorial");
@@ -225,7 +225,7 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  onConfirmVersionUpdate = option => {
+  onConfirmVersionUpdate = (option) => {
     if (option === "logout") logout();
     this.setState({ showUpdateDialog: false });
   };
@@ -315,7 +315,7 @@ class LoginClass extends React.Component<Props, State> {
                 <TouchableOpacity
                   onPress={() => {
                     let filteredItems = this.state.storedDataUrl.filter(
-                      url => url !== item
+                      (url) => url !== item
                     );
                     this.setState({ storedDataUrl: filteredItems });
                   }}
@@ -349,8 +349,8 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  renderPickerItems = items => {
-    return items.map(item => {
+  renderPickerItems = (items) => {
+    return items.map((item) => {
       return <Picker.Item key={item} label={item} value={item} />;
     });
   };
@@ -457,8 +457,10 @@ class LoginClass extends React.Component<Props, State> {
                         ? styles.credentialsTextTablet
                         : styles.credentialsTextMobile,
                       {
-                        marginTop: deviceIsATablet ? -45 : -90,
-                        fontWeight: "500"
+                        marginTop:
+                          deviceIsATablet || Platform.OS === "android"
+                            ? -40
+                            : -20
                       }
                     ]}
                   >
@@ -475,31 +477,36 @@ class LoginClass extends React.Component<Props, State> {
 
                     <View style={styles.textInputStyle}>
                       <Input
-                        numberOfLines={2}
                         typeField={"textInput"}
                         value={this.state.username}
-                        onChangeText={username => this.setState({ username })}
+                        onChangeText={(username) => this.setState({ username })}
                         placeholder={locale.t("User")}
+                        fontSize={16}
+                        height={40}
                       />
                     </View>
 
                     <View style={styles.textInputStyle}>
                       <Input
-                        numberOfLines={2}
                         typeField={"textInput"}
                         value={this.state.password}
-                        onChangeText={password => this.setState({ password })}
+                        onChangeText={(password) => this.setState({ password })}
                         placeholder={locale.t("Password")}
+                        fontSize={16}
+                        height={40}
+                        password={true}
                       />
                     </View>
                   </View>
                   <View style={styles.containerLogin}>
-                    <View style={{ alignSelf: "center" }}>
+                    <View style={{ height: 50 }}>
                       <ButtonUI
                         onPress={this.submitLogin}
                         text={locale.t("Log in")}
                         typeStyle={"primary"}
-                        typeSize={"medium"}
+                        typeSize="medium"
+                        width="100%"
+                        height={50}
                       />
                     </View>
                     <TouchableOpacity
@@ -512,7 +519,7 @@ class LoginClass extends React.Component<Props, State> {
                       <Text
                         allowFontScaling={false}
                         style={{
-                          fontSize: 13,
+                          fontSize: 14,
                           textAlign: "right",
                           marginTop: 5,
                           color: defaultTheme.colors.textSecondary,
@@ -560,7 +567,7 @@ class LoginClass extends React.Component<Props, State> {
                 >
                   <Picker
                     selectedValue={this.state.url}
-                    onValueChange={url => this.setState({ url })}
+                    onValueChange={(url) => this.setState({ url })}
                     style={[styles.picker]}
                     itemStyle={styles.pickerItem}
                   >
@@ -592,7 +599,6 @@ class LoginClass extends React.Component<Props, State> {
                   }}
                   onPress={() => this.saveUrl()}
                 >
-                  {" "}
                   {locale.t("Save")}
                 </Button>
               </Dialog.Actions>
@@ -647,7 +653,9 @@ class LoginClass extends React.Component<Props, State> {
                 mode="outlined"
                 placeholder={locale.t("ShowLoadUrl:Example")}
                 value={this.state.currentAddUrl}
-                onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
+                onChangeText={(currentAddUrl) =>
+                  this.setState({ currentAddUrl })
+                }
                 textContentType="URL"
                 label={locale.t("ShowLoadUrl:EnvironmentUrl")}
               />
@@ -711,19 +719,16 @@ class LoginClass extends React.Component<Props, State> {
 const Login = (props) => {
   const { dispatch } = useContext(ContainerContext);
 
-  return (
-    <LoginClass {...props} dispatch={dispatch} />
-  )
-}
+  return <LoginClass {...props} dispatch={dispatch} />;
+};
 export default Login;
 
 const styles = StyleSheet.create({
-  // Mobile Styles
   containerMobile: {
-    backgroundColor: WHITE,
     flex: 1,
     paddingHorizontal: 30,
-    paddingVertical: 100
+    paddingVertical: 50,
+    backgroundColor: defaultTheme.colors.background
   },
   etendoLogotypeMobile: {
     resizeMode: "contain",
@@ -736,12 +741,11 @@ const styles = StyleSheet.create({
   credentialsTextMobile: {
     color: GREY_PURPLE,
     fontSize: 19.5,
-    fontWeight: "700"
+    fontWeight: "500"
   },
-  // Tablet Styles
   containerTablet: {
-    backgroundColor: WHITE,
-    flex: 1
+    flex: 1,
+    backgroundColor: defaultTheme.colors.background
   },
   backgroundLoginImageContainer: {
     position: "relative",
@@ -781,8 +785,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "500"
   },
-
-  // Same Styles
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
@@ -830,28 +832,27 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignContent: "center",
-    paddingHorizontal: 16,
     marginBottom: 0
   },
   buttonDemo: {
     flexDirection: "row",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
+    fontFamily: "Inter-Regular"
   },
   textInputStyle: {
     justifyContent: "center",
     height: 45,
     paddingVertical: 5,
-    marginBottom: 0,
+    marginBottom: 20,
     marginTop: 10,
-    fontSize: 15
+    width: "100%"
   },
   textInputIconStyle: {
     paddingTop: 10
   },
   containerLogin: {
     marginTop: 20,
-    marginBottom: 20,
-    paddingHorizontal: 16
+    marginBottom: 20
   },
   buttonLogin: {
     height: 45,
@@ -866,7 +867,7 @@ const styles = StyleSheet.create({
   copyrightStyle: {
     textAlign: "center",
     color: defaultTheme.colors.primary,
-    fontSize: 12,
+    fontSize: 14,
     backgroundColor: defaultTheme.colors.background
   },
   picker: {

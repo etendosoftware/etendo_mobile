@@ -31,7 +31,6 @@
     "axios": "0.20.0",
     "base-64": "^1.0.0",
     "date-fns": "^2.10.0",
-    "etendo-ui-library": "git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68",
     "i18n-js": "^3.5.1",
     "mobx": "^5.15.4",
     "mobx-persist": "^0.4.1",
@@ -53,7 +52,7 @@
     "react-native-swipeable-item": "^2.0.9",
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-web": "^0.17.7",
+    "react-native-web": "0.17.7",
     "rn-placeholder": "^3.0.3",
     "tslib": "^2.4.1",
     "unmock": "^0.3.18"
