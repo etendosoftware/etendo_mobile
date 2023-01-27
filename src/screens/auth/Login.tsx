@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Pressable,
-  Platform,
+  Platform
 } from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
@@ -20,7 +20,7 @@ import {
   Text,
   Divider,
   List,
-  Button,
+  Button
 } from "react-native-paper";
 import { Snackbar } from "../../globals";
 import { UpdateDialog } from "../../components";
@@ -100,7 +100,7 @@ class LoginClass extends React.Component<Props, State> {
       showAddUrl: false,
       currentAddUrl: "",
       storedDataUrl: [],
-      showChangePassword: false,
+      showChangePassword: false
     };
   }
 
@@ -140,16 +140,16 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  loadWindows = async token => {
+  loadWindows = async (token) => {
     const {
       selectedLanguage,
       changeLanguage,
-      updateLanguageList,
+      updateLanguageList
     } = this.context;
     updateLanguageList();
     const etendoLanguages = (await Languages.getLanguages()) as EtendoLanguage[];
     if (
-      etendoLanguages.filter(lang => lang.language === selectedLanguage)
+      etendoLanguages.filter((lang) => lang.language === selectedLanguage)
         .length === 0
     ) {
       changeLanguage("en_US");
@@ -170,7 +170,7 @@ class LoginClass extends React.Component<Props, State> {
       showPassword: false,
       showAddUrl: false,
       currentAddUrl: "",
-      storedDataUrl: [],
+      storedDataUrl: []
     });
   };
 
@@ -181,15 +181,15 @@ class LoginClass extends React.Component<Props, State> {
       method: "GET",
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${User.token}`,
+        Authorization: `Bearer ${User.token}`
       },
-      mode: "no-cors",
+      mode: "no-cors"
     })
-      .then(async callApps => {
+      .then(async (callApps) => {
         const data = await callApps.json();
         this.props.dispatch({ appsData: data.data, logged: true });
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   };
 
   submitLogin = async () => {
@@ -225,7 +225,7 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  onConfirmVersionUpdate = option => {
+  onConfirmVersionUpdate = (option) => {
     if (option === "logout") logout();
     this.setState({ showUpdateDialog: false });
   };
@@ -289,7 +289,7 @@ class LoginClass extends React.Component<Props, State> {
     currentValue = formatUrl(currentValue);
     this.setState({
       storedDataUrl: [...this.state.storedDataUrl, currentValue],
-      currentAddUrl: "",
+      currentAddUrl: ""
     });
   };
 
@@ -315,7 +315,7 @@ class LoginClass extends React.Component<Props, State> {
                 <TouchableOpacity
                   onPress={() => {
                     let filteredItems = this.state.storedDataUrl.filter(
-                      url => url !== item,
+                      (url) => url !== item
                     );
                     this.setState({ storedDataUrl: filteredItems });
                   }}
@@ -340,7 +340,7 @@ class LoginClass extends React.Component<Props, State> {
             fontSize: 15,
             textAlign: "center",
             textAlignVertical: "center",
-            height: 150,
+            height: 150
           }}
         >
           {locale.t("ShowLoadUrl:NotItemList")}
@@ -349,8 +349,8 @@ class LoginClass extends React.Component<Props, State> {
     }
   };
 
-  renderPickerItems = items => {
-    return items.map(item => {
+  renderPickerItems = (items) => {
+    return items.map((item) => {
       return <Picker.Item key={item} label={item} value={item} />;
     });
   };
@@ -364,7 +364,7 @@ class LoginClass extends React.Component<Props, State> {
           width: deviceIsATablet ? "50%" : "90%",
           justifyContent: "center",
           alignItems: "center",
-          alignSelf: "center",
+          alignSelf: "center"
         }}
       >
         <Dialog.Content>
@@ -377,7 +377,7 @@ class LoginClass extends React.Component<Props, State> {
               backgroundColor: defaultTheme.colors.accent,
               width: "20%",
               alignSelf: "flex-end",
-              marginRight: 20,
+              marginRight: 20
             }}
           >
             <Button style={{ width: "100%", alignItems: "center" }}>Ok</Button>
@@ -414,7 +414,7 @@ class LoginClass extends React.Component<Props, State> {
                 <View
                   style={[
                     styles.settingsImageContainer,
-                    { right: deviceIsATablet ? 0 : undefined },
+                    { right: deviceIsATablet ? 0 : undefined }
                   ]}
                 >
                   <Image
@@ -441,7 +441,7 @@ class LoginClass extends React.Component<Props, State> {
                     <Text
                       style={[
                         styles.welcomeTitle,
-                        { fontSize: deviceIsATablet ? 40 : 30 },
+                        { fontSize: deviceIsATablet ? 40 : 30 }
                       ]}
                     >
                       {locale.t("Welcome")}
@@ -460,8 +460,8 @@ class LoginClass extends React.Component<Props, State> {
                         marginTop:
                           deviceIsATablet || Platform.OS === "android"
                             ? -40
-                            : -20,
-                      },
+                            : -20
+                      }
                     ]}
                   >
                     {locale.t("EnterCredentials")}
@@ -479,7 +479,7 @@ class LoginClass extends React.Component<Props, State> {
                       <Input
                         typeField={"textInput"}
                         value={this.state.username}
-                        onChangeText={username => this.setState({ username })}
+                        onChangeText={(username) => this.setState({ username })}
                         placeholder={locale.t("User")}
                         fontSize={16}
                         height={40}
@@ -490,7 +490,7 @@ class LoginClass extends React.Component<Props, State> {
                       <Input
                         typeField={"textInput"}
                         value={this.state.password}
-                        onChangeText={password => this.setState({ password })}
+                        onChangeText={(password) => this.setState({ password })}
                         placeholder={locale.t("Password")}
                         fontSize={16}
                         height={40}
@@ -513,7 +513,7 @@ class LoginClass extends React.Component<Props, State> {
                       activeOpacity={0.5}
                       style={{ marginTop: deviceIsATablet ? 0 : 25 }}
                       onPress={() => [
-                        this.setState({ showChangePassword: true }),
+                        this.setState({ showChangePassword: true })
                       ]}
                     >
                       <Text
@@ -523,7 +523,7 @@ class LoginClass extends React.Component<Props, State> {
                           textAlign: "right",
                           marginTop: 5,
                           color: defaultTheme.colors.textSecondary,
-                          marginRight: 3,
+                          marginRight: 3
                         }}
                       >
                         {locale.t("Forgot_password")}
@@ -562,12 +562,12 @@ class LoginClass extends React.Component<Props, State> {
                   style={{
                     borderWidth: 1,
                     borderColor: defaultTheme.colors.primary,
-                    borderRadius: 4,
+                    borderRadius: 4
                   }}
                 >
                   <Picker
                     selectedValue={this.state.url}
-                    onValueChange={url => this.setState({ url })}
+                    onValueChange={(url) => this.setState({ url })}
                     style={[styles.picker]}
                     itemStyle={styles.pickerItem}
                   >
@@ -586,7 +586,7 @@ class LoginClass extends React.Component<Props, State> {
                   style={{
                     width: 110,
                     backgroundColor: defaultTheme.colors.accent,
-                    marginRight: 10,
+                    marginRight: 10
                   }}
                   onPress={() => this.setState({ showAddUrl: true })}
                 >
@@ -595,7 +595,7 @@ class LoginClass extends React.Component<Props, State> {
                 <Button
                   style={{
                     width: 110,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary
                   }}
                   onPress={() => this.saveUrl()}
                 >
@@ -607,7 +607,7 @@ class LoginClass extends React.Component<Props, State> {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   paddingHorizontal: 20,
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <Divider style={{ padding: 1, flexGrow: 1 }} />
@@ -632,7 +632,7 @@ class LoginClass extends React.Component<Props, State> {
                   style={{
                     width: 150,
                     backgroundColor: defaultTheme.colors.backgroundSecondary,
-                    margin: 10,
+                    margin: 10
                   }}
                   onPress={() => this.demo()}
                 >
@@ -653,7 +653,9 @@ class LoginClass extends React.Component<Props, State> {
                 mode="outlined"
                 placeholder={locale.t("ShowLoadUrl:Example")}
                 value={this.state.currentAddUrl}
-                onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
+                onChangeText={(currentAddUrl) =>
+                  this.setState({ currentAddUrl })
+                }
                 textContentType="URL"
                 label={locale.t("ShowLoadUrl:EnvironmentUrl")}
               />
@@ -662,7 +664,7 @@ class LoginClass extends React.Component<Props, State> {
                   style={{
                     backgroundColor: defaultTheme.colors.accent,
                     width: 120,
-                    marginRight: 10,
+                    marginRight: 10
                   }}
                   onPress={() => this.addUrl()}
                 >
@@ -671,7 +673,7 @@ class LoginClass extends React.Component<Props, State> {
                 <Button
                   style={{
                     width: 120,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary,
+                    backgroundColor: defaultTheme.colors.backgroundSecondary
                   }}
                   onPress={() => this.setState({ showAddUrl: false })}
                 >
@@ -683,7 +685,7 @@ class LoginClass extends React.Component<Props, State> {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginTop: 10,
+                  marginTop: 10
                 }}
               >
                 <Divider style={{ padding: 1, flexGrow: 1 }} />
@@ -692,7 +694,7 @@ class LoginClass extends React.Component<Props, State> {
                   style={{
                     textAlignVertical: "center",
                     margin: 10,
-                    fontSize: 15,
+                    fontSize: 15
                   }}
                 >
                   {locale.t("ShowLoadUrl:ItemList")}
@@ -714,7 +716,7 @@ class LoginClass extends React.Component<Props, State> {
   }
 }
 
-const Login = props => {
+const Login = (props) => {
   const { dispatch } = useContext(ContainerContext);
 
   return <LoginClass {...props} dispatch={dispatch} />;
@@ -726,7 +728,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 30,
     paddingVertical: 50,
-    backgroundColor: defaultTheme.colors.background,
+    backgroundColor: defaultTheme.colors.background
   },
   etendoLogotypeMobile: {
     resizeMode: "contain",
@@ -734,40 +736,40 @@ const styles = StyleSheet.create({
     height: 90,
     margin: 0,
     padding: 0,
-    alignSelf: "center",
+    alignSelf: "center"
   },
   credentialsTextMobile: {
     color: GREY_PURPLE,
     fontSize: 19.5,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   containerTablet: {
     flex: 1,
-    backgroundColor: defaultTheme.colors.background,
+    backgroundColor: defaultTheme.colors.background
   },
   backgroundLoginImageContainer: {
     position: "relative",
-    width: "34.5%",
+    width: "34.5%"
   },
   backgroundLoginImage: {
     position: "absolute",
     left: 0,
     width: "100%",
-    height: "100%",
+    height: "100%"
   },
   settingsImageContainer: {
     position: "absolute",
     height: 40,
     width: 40,
     borderRadius: 8,
-    justifyContent: "center",
+    justifyContent: "center"
   },
   settingsImage: {
     resizeMode: "contain",
     height: 24,
     width: 24,
     tintColor: GREY_60,
-    alignSelf: "center",
+    alignSelf: "center"
   },
   etendoLogotypeTablet: {
     resizeMode: "contain",
@@ -775,23 +777,23 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 0,
     padding: 0,
-    alignSelf: "flex-start",
+    alignSelf: "flex-start"
   },
   credentialsTextTablet: {
     color: GREY_PURPLE,
     fontSize: 19.5,
     textAlign: "center",
-    fontWeight: "500",
+    fontWeight: "500"
   },
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 10
   },
   welcomeTitle: {
     color: BLUE,
     fontWeight: "700",
-    fontSize: 30,
+    fontSize: 30
   },
   starsImage: {
     position: "absolute",
@@ -799,43 +801,43 @@ const styles = StyleSheet.create({
     right: 0,
     width: 27,
     height: 27,
-    marginRight: -30,
+    marginRight: -30
   },
 
   generalView: {
     flex: 1,
     flexDirection: "column",
-    paddingBottom: 16,
+    paddingBottom: 16
   },
   viewStyle: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
-    height: "100%",
+    height: "100%"
   },
   appbarStyle: {
     paddingTop: 28,
-    paddingLeft: 8,
+    paddingLeft: 8
   },
   containerLogo: {
-    height: "15%",
+    height: "15%"
   },
   logo: {
     flex: 1,
     alignSelf: "stretch",
     width: win.width,
-    height: win.height,
+    height: win.height
   },
   containerInputs: {
     display: "flex",
     flexDirection: "column",
     alignContent: "center",
-    marginBottom: 0,
+    marginBottom: 0
   },
   buttonDemo: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    fontFamily: "Inter-Regular",
+    fontFamily: "Inter-Regular"
   },
   textInputStyle: {
     justifyContent: "center",
@@ -843,37 +845,37 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginBottom: 20,
     marginTop: 10,
-    width: "100%",
+    width: "100%"
   },
   textInputIconStyle: {
-    paddingTop: 10,
+    paddingTop: 10
   },
   containerLogin: {
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 20
   },
   buttonLogin: {
     height: 45,
     paddingVertical: 5,
-    fontSize: 1,
+    fontSize: 1
   },
 
   containerCopyright: {
     width: "100%",
-    alignItems: "center",
+    alignItems: "center"
   },
   copyrightStyle: {
     textAlign: "center",
     color: defaultTheme.colors.primary,
     fontSize: 14,
-    backgroundColor: defaultTheme.colors.background,
+    backgroundColor: defaultTheme.colors.background
   },
   picker: {
     height: 44,
     borderColor: defaultTheme.colors.primary,
-    borderWidth: 1,
+    borderWidth: 1
   },
   pickerItem: {
-    height: 44,
-  },
+    height: 44
+  }
 });
