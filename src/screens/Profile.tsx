@@ -262,9 +262,9 @@ const styles = StyleSheet.create({
     height:'auto'
   },
   containerTablet:{
-    flexDirection:"row-reverse",
-    height:'100%',
+    flexDirection:"row-reverse",  
     justifyContent: "center", 
     alignItems:'center', 
+    top: '5%'
   }
 })

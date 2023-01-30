@@ -474,23 +474,17 @@ class LoginClass extends React.Component<Props, State> {
                     </Button>
 
                     <View style={styles.textInputStyle}>
-                      <Input
-                        numberOfLines={2}
-                        typeField={"textInput"}
-                        value={this.state.username}
-                        onChangeText={username => this.setState({ username })}
-                        placeholder={locale.t("User")}
-                      />
+                      <Input value={"test"} typeField={"textInput"}                      />
                     </View>
 
                     <View style={styles.textInputStyle}>
                       <Input
-                        numberOfLines={2}
+                      numberOfLines={2}
                         typeField={"textInput"}
                         value={this.state.password}
                         onChangeText={password => this.setState({ password })}
                         placeholder={locale.t("Password")}
-                      />
+                      /> 
                     </View>
                   </View>
                   <View style={styles.containerLogin}>
@@ -500,7 +494,7 @@ class LoginClass extends React.Component<Props, State> {
                         text={locale.t("Log in")}
                         typeStyle={"primary"}
                         typeSize={"medium"}
-                      />
+                      /> 
                     </View>
                     <TouchableOpacity
                       activeOpacity={0.5}

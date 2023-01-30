@@ -80,7 +80,18 @@ export class DrawerClass extends React.Component<Props, State> {
       }
     });
   }
-
+  componentDidUpdate = (_, prevState) => {
+    let newMenuItems = Windows.menuItems;
+    if (
+      !Windows.loading &&
+      !User.loading &&
+      User.token &&
+      prevState.menuItems != newMenuItems
+    ) {
+      // not loading but logged in, and menus are not loaded
+      this.setState({ menuItems: newMenuItems, userName: User.data.username });
+    }
+  };
   componentDidMount = async () => {
     
     const organization = await this.getOrganizationName();

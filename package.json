@@ -31,7 +31,6 @@
     "axios": "0.20.0",
     "base-64": "^1.0.0",
     "date-fns": "^2.10.0",
-    "etendo-ui-library": "git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68",
     "i18n-js": "^3.5.1",
     "mobx": "^5.15.4",
     "mobx-persist": "^0.4.1",
