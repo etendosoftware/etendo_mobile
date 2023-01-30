@@ -1528,9 +1528,9 @@
     invariant "^2.2.4"
 
 "@react-native-community/datetimepicker@^6.1.2":
-  version "6.7.1"
-  resolved "https://repo.futit.cloud/repository/npm-group/@react-native-community/datetimepicker/-/datetimepicker-6.7.1.tgz#a52eed9512898adef323b2fa78c6ac4611af5502"
-  integrity sha512-NPW1YITG7N+3TsqXc4LZV3c5IEpTD5iX18r0bvFsHdIblo5qi0ykpeK3TffmMM5gbTjgKJ4DNVHOjLiWKxFUxw==
+  version "6.7.3"
+  resolved "https://repo.futit.cloud/repository/npm-group/@react-native-community/datetimepicker/-/datetimepicker-6.7.3.tgz#e6d75a42729265d8404d1d668c86926564abca2f"
+  integrity sha512-fXWbEdHMLW/e8cts3snEsbOTbnFXfUHeO2pkiDFX3fWpFoDtUrRWvn50xbY13IJUUKHDhoJ+mj24nMRVIXfX1A==
   dependencies:
     invariant "^2.2.4"
 
@@ -3644,9 +3644,10 @@ etag@~1.8.1:
   resolved "https://repo.futit.cloud/repository/npm-group/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-"etendo-ui-library@git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68":
-  version "1.0.60"
-  resolved "git+ssh://git@bitbucket.org:koodu_software/etendo_ui_library.git#9fb9f0a1f7c433944c89638796de7e6d055a5e68"
+etendo-ui-library@1.0.67:
+  version "1.0.67"
+  resolved "https://repo.futit.cloud/repository/npm-group/etendo-ui-library/-/etendo-ui-library-1.0.67.tgz#042630b1827b1368660217ae042c2197261aa6eb"
+  integrity sha512-L8da9vHfvG4VmPCOgkrQHYIktsWN+bvU7eGTiccpzZUOYWKLOuZYMI1PQ9Dj+6Lk9Ziac50E/h7tILTmqtChwA==
   dependencies:
     "@react-native-async-storage/async-storage" "^1.17.3"
     "@react-native-community/datetimepicker" "^6.1.2"
@@ -3654,7 +3655,7 @@ etag@~1.8.1:
     react "17.0.2"
     react-dom "^17.0.0"
     react-native "0.68.1"
-    react-native-web "^0.17.7"
+    react-native-web "0.17.7"
 
 event-target-shim@^5.0.0, event-target-shim@^5.0.1:
   version "5.0.1"
@@ -7710,7 +7711,7 @@ react-native-vector-icons@^9.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-web@^0.17.7:
+react-native-web@0.17.7:
   version "0.17.7"
   resolved "https://repo.futit.cloud/repository/npm-group/react-native-web/-/react-native-web-0.17.7.tgz#038899dbc94467a0ca0be214b88a30e0c117b176"
   integrity sha512-4OOU/QjyRySOXyHfTvljEMS4VXKn42Qs3y9uHDPMwaCUFjwg0oasR/j706OaVgan9kF4Ipa2vJ3F6Z/Xqy8KeQ==
