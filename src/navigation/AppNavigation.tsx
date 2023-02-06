@@ -2,13 +2,12 @@ import React, { useContext } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
 import { CardViewStackNavigator } from "./CardViewNavigator";
-import { LoadingScreen, Drawer } from "../components";
+import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import MainScreen from "../components/MainScreen";
+import { isTablet } from "../../hook/isTablet";
 import { ContainerContext } from "../contexts/ContainerContext";
-import { useNavigation } from "@react-navigation/native";
-import { Etendo } from "../helpers/Etendo";
 
 export const DrawerNav = createDrawerNavigator();
 
@@ -47,7 +46,7 @@ export function AppHome() {
       drawerContent={props => {
         return <Drawer {...props} />;
       }}
-      drawerStyle={{ width: User.token ? "65%" : 0 }}
+      drawerStyle={{ width: User.token ? isTablet() ? "30%"  : "65%": 0 }}
     >
       <DrawerNav.Screen
         name="Home"

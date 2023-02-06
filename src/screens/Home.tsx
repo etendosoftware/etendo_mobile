@@ -5,7 +5,8 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform,
 } from "react-native";
 import locale from "../i18n/locale";
 import withAuthentication from "../withAuthentication";
@@ -15,8 +16,9 @@ import MainAppContext from "../contexts/MainAppContext";
 import { INavigation } from "../components/Card";
 import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
-import { Platform } from "react-native";
-import { BackHandler } from "react-native";
+import { isTablet } from "../../hook/isTablet";
+
+const etendoBoyImg = require("../img/etendo_boy_back.png");
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../helpers/Etendo";
 
@@ -36,7 +38,7 @@ class HomeClass extends React.Component<Props, State> {
   static contextType = MainAppContext;
   render() {
     return (
-      <View style={{ backgroundColor: defaultTheme.colors.background }}>
+      <View style={styles.container}>
         <Appbar.Header dark={true}>
           <Appbar.Action
             icon="menu"
@@ -47,42 +49,38 @@ class HomeClass extends React.Component<Props, State> {
         <View style={styles.conteinerSup}>
           <View
             style={{
-              height: "55%",
-              width: "40%",
-              backgroundColor: defaultTheme.colors.accent
-            }}
-          >
+              flex: 1,
+              backgroundColor: defaultTheme.colors.accent,
+            }}>
             <Image
               style={styles.logo}
               resizeMode={"stretch"}
               source={require("../img/home2.png")}
             />
           </View>
-          <View style={{ height: "55%", width: "50%", marginRight: 10 }}>
+          <View style={styles.etendoContainer}>
+            <Image
+              style={styles.etendo}
+              source={require("../img/etendo-logo-1.png")}
+            />
             <Text allowFontScaling={false} style={styles.text}>
               {locale.t("Welcome!")}
             </Text>
-            <Image
-              style={styles.etendo}
-              resizeMode={"contain"}
-              source={require("../img/etendo-logo-1.png")}
-            />
           </View>
           <View
             style={{
               width: "10%",
               backgroundColor: defaultTheme.colors.accent,
-              height: "55%"
+              height: "100%",
             }}
-          ></View>
+          />
         </View>
         <View style={styles.conteinerMed}>
           <View style={styles.button}>
             <Icon name="person-circle" size={25} style={styles.TextIcon} />
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Profile")}
-            >
+              onPress={() => this.props.navigation.navigate("Profile")}>
               <Button>
                 <Text allowFontScaling={false} style={styles.TextIcon}>
                   {locale.t("Profile")}{" "}
@@ -94,23 +92,16 @@ class HomeClass extends React.Component<Props, State> {
             <Icon name="md-settings" size={20} style={styles.TextIcon} />
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Settings")}
-            >
+              onPress={() => this.props.navigation.navigate("Settings")}>
               <Button>
                 <Text allowFontScaling={false} style={styles.TextIcon}>
-                  {locale.t("Settings")}{" "}
+                  {locale.t("Settings")}
                 </Text>
               </Button>
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.conteinerInf}>
-          <Image
-            style={styles.image}
-            source={require("../img/home.png")}
-            width={win.width}
-          />
-        </View>
+        <Image style={styles.image} source={etendoBoyImg} />
       </View>
     );
   }
@@ -119,66 +110,73 @@ const Home = (props) => {
   const navigation = useNavigation();
   Etendo.globalNav = navigation;
 
-  return (
-    <HomeClass {...props} />
-  )
-}
+  return <HomeClass {...props} />;
+};
 export default withAuthentication(Home);
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: defaultTheme.colors.background,
+    height: "100%",
+  },
   image: {
-    height: 600,
-    width: "100%",
-    position: "absolute"
+    height: 342,
+    width: 364,
+    right: 0,
+    bottom: 0,
+    position: "absolute",
   },
   logo: {
     height: "100%",
-    width: "80%"
+    width: 130,
   },
   etendo: {
-    height: "90%",
-    width: "100%",
-    position: "absolute"
+    height: 50,
+    width: 200,
+  },
+  etendoContainer: {
+    height: "100%",
+    width: isTablet() ? 260 : 220,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
   },
   text: {
-    display: "flex",
-    alignSelf: "flex-end",
     color: defaultTheme.colors.textSecondary,
-    position: "relative",
-    marginTop: "30%",
-    fontSize: 20
+    fontSize: 20,
+    alignSelf: "flex-end",
+    paddingRight: isTablet() ? 40 : 20,
   },
 
   conteinerSup: {
-    display: "flex",
-    width: win.width,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
-    height: "16%",
+    height: 80,
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   conteinerMed: {
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     height: "8%",
     marginTop: 20,
-    marginLeft: 10
   },
   conteinerInf: {
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    height: "80%"
+    height: "80%",
   },
   button: {
-    width: "32%",
+    width: "50%",
     display: "flex",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonFaq: {
     width: "100%",
@@ -187,9 +185,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     marginLeft: "62%",
-    marginTop: Platform.OS === "ios" ? "10%" : "25%"
+    marginTop: Platform.OS === "ios" ? "10%" : "25%",
   },
   TextIcon: {
-    color: defaultTheme.colors.textSecondary
-  }
+    color: defaultTheme.colors.textSecondary,
+  },
 });
