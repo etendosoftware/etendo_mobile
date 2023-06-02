@@ -184,7 +184,6 @@ export default class App extends React.Component<Props, State> {
                 <NavigationContainer>
                   {User.token ? <AppHome /> : <AppLogin />}
                 </NavigationContainer>
-                {/* <Snackbar ref={(ref) => (GlobalSnackbar.instance = ref)} /> */}
               </ContainerProvider>
             </>
           )}
