@@ -5,22 +5,27 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   Platform,
+  ImageBackground,
+  StatusBar
 } from "react-native";
-import locale from "../i18n/locale";
 import withAuthentication from "../withAuthentication";
 import { observer } from "mobx-react";
-import { Appbar, Button } from "react-native-paper";
-import MainAppContext from "../contexts/MainAppContext";
 import { INavigation } from "../components/Card";
-import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import { isTablet } from "../../hook/isTablet";
-
-const etendoBoyImg = require("../img/etendo_boy_back.png");
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../helpers/Etendo";
+import { Navbar } from "../../ui/components";
+import { ContainerContext } from "../contexts/ContainerContext";
+import { ConfigurationIcon } from "../../ui/assets/images/icons/ConfigurationIcon";
+import { OBRest, Restrictions } from "obrest";
+import { User, logout } from "../stores";
+import { PRIMARY_100 } from "../../ui/styles/colors";
+const etendoBoyImg = require("../../assets/etendo-bk-tablet.png");
+const etendoBoyMobile = require("../../assets/etendo-bk-mobile.png");
+const background = require("../../assets/background.png");
+const backgroundMobile = require("../../assets/backgroud-mobile.png");
 
 interface Props {
   navigation: INavigation;
@@ -35,74 +40,84 @@ const ratio = win.width / 1080; //541 is actual image width
 
 @observer
 class HomeClass extends React.Component<Props, State> {
-  static contextType = MainAppContext;
+  static contextType = ContainerContext;
+  constructor(props) {
+    super(props);
+    this.state = {
+      image: null
+    };
+  }
+
+  componentDidMount = async () => {
+    this.setState({ image: await this.getImage() });
+  };
+
+  getImage = async () => {
+    let imageIdCriteria = OBRest.getInstance().createCriteria("ADUser");
+    imageIdCriteria.add(Restrictions.equals("id", User.data.userId));
+    let user: any = await imageIdCriteria.uniqueResult();
+    let imageCriteria = OBRest.getInstance().createCriteria("ADImage");
+    imageCriteria.add(Restrictions.equals("id", user.image));
+    let image: any = await imageCriteria.list();
+    return image;
+  };
+
+  handleLogout = async () => {
+    await logout();
+    this.setState({ menuItems: [] });
+  };
   render() {
+    const img = this.state.image;
+
     return (
-      <View style={styles.container}>
-        <Appbar.Header dark={true}>
-          <Appbar.Action
-            icon="menu"
-            onPress={() => this.props.navigation.toggleDrawer()}
-          />
-          <Appbar.Content title={locale.t("Home:Title")} />
-        </Appbar.Header>
-        <View style={styles.conteinerSup}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: defaultTheme.colors.accent,
-            }}>
-            <Image
-              style={styles.logo}
-              resizeMode={"stretch"}
-              source={require("../img/home2.png")}
-            />
+      <ImageBackground
+        source={isTablet() ? background : backgroundMobile}
+        style={[
+          styles.container,
+          { marginTop: StatusBar.currentHeight, height: win.height }
+        ]}
+      >
+        <Navbar
+          optionsProfile={[
+            {
+              title: "Profile and settings",
+              image: <ConfigurationIcon />,
+              route: "Settings"
+            }
+          ]}
+          onOptionSelectedProfile={(route: string, index: number) => {
+            if (route === "logout") {
+              return this.handleLogout();
+            }
+            this.props.navigation.navigate(route);
+          }}
+          name={User?.data?.username ? User?.data?.username : "A"}
+          profileImage={
+            img && (
+              <Image
+                source={{
+                  uri: `data:image/jpeg;base64,${img[0].bindaryData}`
+                }}
+              />
+            )
+          }
+          onPressLogo={() => this.props.navigation.navigate("Profile")}
+          onPressMenuBurger={() => this.props.navigation.navigate("Profile")}
+        />
+        {isTablet() ? (
+          <View horizontal style={styles.conteinerMed}></View>
+        ) : (
+          <View style={styles.welcomeMobile}>
+            <Text style={styles.welcomeText}>Welcome to Etendo,</Text>
+            <Text style={styles.welcomeName}>{User?.data?.username}</Text>
           </View>
-          <View style={styles.etendoContainer}>
-            <Image
-              style={styles.etendo}
-              source={require("../img/etendo-logo-1.png")}
-            />
-            <Text allowFontScaling={false} style={styles.text}>
-              {locale.t("Welcome!")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: "10%",
-              backgroundColor: defaultTheme.colors.accent,
-              height: "100%",
-            }}
-          />
-        </View>
-        <View style={styles.conteinerMed}>
-          <View style={styles.button}>
-            <Icon name="person-circle" size={25} style={styles.TextIcon} />
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Profile")}>
-              <Button>
-                <Text allowFontScaling={false} style={styles.TextIcon}>
-                  {locale.t("Profile")}{" "}
-                </Text>
-              </Button>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button}>
-            <Icon name="md-settings" size={20} style={styles.TextIcon} />
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Settings")}>
-              <Button>
-                <Text allowFontScaling={false} style={styles.TextIcon}>
-                  {locale.t("Settings")}
-                </Text>
-              </Button>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <Image style={styles.image} source={etendoBoyImg} />
-      </View>
+        )}
+
+        <Image
+          style={[styles.image, isTablet() && { width: "100%" }]}
+          source={isTablet() ? etendoBoyImg : etendoBoyMobile}
+        />
+      </ImageBackground>
     );
   }
 }
@@ -116,36 +131,33 @@ export default withAuthentication(Home);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultTheme.colors.background,
-    height: "100%",
+    backgroundColor: defaultTheme.colors.background
   },
   image: {
-    height: 342,
-    width: 364,
     right: 0,
     bottom: 0,
-    position: "absolute",
+    position: "absolute"
   },
   logo: {
     height: "100%",
-    width: 130,
+    width: 130
   },
   etendo: {
     height: 50,
-    width: 200,
+    width: 200
   },
   etendoContainer: {
     height: "100%",
     width: isTablet() ? 260 : 220,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column",
+    flexDirection: "column"
   },
   text: {
     color: defaultTheme.colors.textSecondary,
     fontSize: 20,
     alignSelf: "flex-end",
-    paddingRight: isTablet() ? 40 : 20,
+    paddingRight: isTablet() ? 40 : 20
   },
 
   conteinerSup: {
@@ -154,29 +166,28 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 80,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 20
   },
   conteinerMed: {
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "8%",
-    marginTop: 20,
+    alignSelf: "center",
+    marginTop: 50,
+    marginLeft: 52
   },
   conteinerInf: {
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    height: "80%",
+    height: "80%"
   },
   button: {
     width: "50%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   buttonFaq: {
     width: "100%",
@@ -185,9 +196,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     marginLeft: "62%",
-    marginTop: Platform.OS === "ios" ? "10%" : "25%",
+    marginTop: Platform.OS === "ios" ? "10%" : "25%"
   },
   TextIcon: {
-    color: defaultTheme.colors.textSecondary,
+    color: defaultTheme.colors.textSecondary
   },
+  welcomeMobile: {
+    marginHorizontal: 24,
+    marginTop: 48
+  },
+  welcomeText: {
+    color: PRIMARY_100,
+    fontWeight: "700",
+    fontSize: 45,
+    lineHeight: 53
+  },
+  welcomeName: {
+    color: PRIMARY_100,
+    fontWeight: "500",
+    fontSize: 28,
+    lineHeight: 36
+  }
 });
