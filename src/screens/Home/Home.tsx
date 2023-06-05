@@ -47,7 +47,6 @@ class HomeClass extends React.Component<Props, State> {
 
   async componentDidUpdate(): Promise<void> {
     if (!this.state.getImage) {
-      console.log("a");
       this.setState({ image: await this.getImage() });
     }
   }
