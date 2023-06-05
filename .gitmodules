@@ -1,3 +1,0 @@
-[submodule "ui"]
-	path = ui
-	url = git@bitbucket.org:koodu_software/etendo_ui_library.git
