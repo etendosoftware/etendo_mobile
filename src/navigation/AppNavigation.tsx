@@ -1,18 +1,21 @@
-import React, { useContext } from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  createDrawerNavigator,
+  useDrawerStatus
+} from "@react-navigation/drawer";
 import * as Screens from "../screens";
 import { CardViewStackNavigator } from "./CardViewNavigator";
-import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import MainScreen from "../components/MainScreen";
-import { isTablet } from "../../hook/isTablet";
 import { ContainerContext } from "../contexts/ContainerContext";
+import { DrawerLateral } from "../../ui/components/navbar";
+import { DrawerCurrentIndexType } from "../../ui/components/navbar/Navbar.types";
+import { Etendo } from "../helpers/Etendo";
 
 export const DrawerNav = createDrawerNavigator();
 
 export function AppLogin() {
-
   return (
     <DrawerNav.Navigator
       initialRouteName={"Login"}
@@ -36,17 +39,58 @@ export function AppLogin() {
     </DrawerNav.Navigator>
   );
 }
-export function AppHome() {
+export function AppHome({ props }) {
+  const [routes, setRoutes] = useState<any>([]);
   const context = useContext(ContainerContext);
+  const isDrawerOpen = () => {
+    const drawerStatus = useDrawerStatus();
+
+    if (drawerStatus === "open") {
+      return true;
+    }
+    return false;
+  };
+  useEffect(() => {
+    setRoutes(getRoutes());
+  }, [context?.state?.menuItems.length]);
+
+  const getRoutes = () => {
+    return context?.state?.menuItems.map((item) => {
+      return { label: item.name, route: item.name };
+    });
+  };
 
   return (
     <DrawerNav.Navigator
       initialRouteName={"Home"}
       screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerContent={props => {
-        return <Drawer {...props} />;
+      drawerContent={(props) => {
+        return (
+          <DrawerLateral
+            version=""
+            copyright=""
+            data={{
+              content: [
+                {
+                  sectionType: "sections",
+                  titleSection: "Aplications",
+                  dataSection: routes
+                }
+              ]
+            }}
+            showDrawer={isDrawerOpen()}
+            onOptionSelected={(
+              route?: string,
+              currentIndex?: DrawerCurrentIndexType
+            ) => {
+              props.navigation.navigate(route);
+            }}
+            onCloseDrawer={() => {
+              Etendo.closeDrawer();
+            }}
+          />
+        );
       }}
-      drawerStyle={{ width: User.token ? isTablet() ? "30%"  : "65%": 0 }}
     >
       <DrawerNav.Screen
         name="Home"
