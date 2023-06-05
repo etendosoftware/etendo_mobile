@@ -1,6 +1,6 @@
 import Login from "./auth/Login";
 import CardView from "./CardView";
-import Home from "./Home";
+import Home from "./Home/Home";
 import Settings from "./Settings";
 import Profile from "./Profile";
 import ProcessDialogScreen from "./ProcessDialogScreen";
