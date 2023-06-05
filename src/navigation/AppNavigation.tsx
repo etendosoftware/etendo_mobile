@@ -32,6 +32,13 @@ export function AppLogin() {
     </DrawerNav.Navigator>
   );
 }
+const computeDrawerWidth = () => {
+  if (User.token) {
+    return isTablet() ? "30%" : "65%";
+  } else {
+    return "0";
+  }
+};
 export function AppHome() {
   return (
     <DrawerNav.Navigator
@@ -40,7 +47,7 @@ export function AppHome() {
       drawerContent={(props) => {
         return <Drawer {...props} />;
       }}
-      drawerStyle={{ width: User.token ? (isTablet() ? "30%" : "65%") : 0 }}
+      drawerStyle={{ width: computeDrawerWidth() }}
     >
       <DrawerNav.Screen
         name="Home"

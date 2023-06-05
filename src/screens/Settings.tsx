@@ -130,10 +130,6 @@ class Settings extends React.Component<State> {
     this.setState({ showChangeURLModal: false, modalUrl: url, url, logo });
   };
 
-  onChangeModalURL = (modalUrl) => {
-    this.setState({ modalUrl });
-  };
-
   changeURLButton = () => {
     return (
       <Button
@@ -250,7 +246,7 @@ class Settings extends React.Component<State> {
   };
 
   getAppVersion = async () => {
-    const metadata = null; // = await codePush.getUpdateMetadata();
+    const metadata = null;
 
     if (!metadata) {
       return version;

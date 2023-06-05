@@ -530,15 +530,6 @@ class LoginClass extends React.Component<State> {
                 </View>
               </View>
             </View>
-
-            {/* Pop up that appears when you first log in */}
-            {/* <UpdateDialog
-              visible={this.state.showUpdateDialog}
-              coreVersion={this.state.coreVersion}
-              appMinCoreVersion={MIN_CORE_VERSION}
-              onConfirm={this.onConfirmVersionUpdate}
-            ></UpdateDialog> */}
-
             <Dialog visible={this.state.showSetUrl}>
               <Dialog.Title>
                 <Text allowFontScaling={false}>

@@ -40,7 +40,6 @@ class LoadingScreen extends React.Component<Props, State> {
         visible={this.state.visible}
         onPress={this.hideLoader}
         textContent={locale.t("LoadingScreen:loadingText")}
-        //customIndicator={<ActivityIndicator size='large' />}
       />
     );
   }

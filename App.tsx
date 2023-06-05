@@ -64,7 +64,6 @@ export default class App extends React.Component<Props, State> {
     locale.setCurrentLanguage(input);
     if (User.user) {
       Windows.loading = true;
-      // await Windows.loadWindows(input);
       User.saveLanguage(input);
       Windows.loading = false;
     }
