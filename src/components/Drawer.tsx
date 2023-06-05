@@ -102,10 +102,6 @@ export class DrawerClass extends React.Component<Props, State> {
     this.setState({ menuItems: [] });
   };
 
-  noAuthenticationScreens = (screen) => {
-    return NOAUTH_SCREENS.includes(screen.key);
-  };
-
   getInitials = function(string) {
     var names = string.split(" "),
       initials = names[0].substring(0, 1).toUpperCase();
