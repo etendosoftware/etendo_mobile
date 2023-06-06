@@ -12,6 +12,7 @@ import { defaultTheme } from "../themes";
 import ShowProfilePicture from "./ShowProfilePicture";
 import { ContainerContext } from "../contexts/ContainerContext";
 import { Etendo } from "../helpers/Etendo";
+import { INavigation } from "../interfaces";
 
 interface IRoute {
   name: string;
@@ -29,10 +30,8 @@ interface Props {
   onItemPress: object;
   getLabel: object;
   routes?: IRoute[];
-  navigation: {
-    navigate: (route: string, params?: object) => void;
-  };
-  context: any,
+  navigation: INavigation;
+  context: any;
   state: {
     routes: IRoute[];
   };

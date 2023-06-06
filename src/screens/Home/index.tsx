@@ -11,12 +11,10 @@ import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
 import { defaultTheme } from "../../themes";
 import { styles } from "./style";
+import { INavigation } from "../../interfaces";
 
 interface Props {
-  navigation: {
-    navigate: (route: string, params?: object) => void; // Assuming navigate accepts a string route and an optional object parameter, adjust if necessary
-    toggleDrawer: () => void;
-  };
+  navigation: INavigation;
   appMinCoreVersion: string;
   coreVersion: string;
 }
