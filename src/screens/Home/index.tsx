@@ -10,7 +10,7 @@ const etendoBoyImg = require("../../img/etendo_boy_back.png");
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
 import { defaultTheme } from "../../themes";
-import { styles } from "./style";
+import { styles } from "./styles";
 import { INavigation } from "../../interfaces";
 
 interface Props {
