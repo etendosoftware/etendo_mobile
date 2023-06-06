@@ -7,16 +7,11 @@ import { observer } from "mobx-react";
 import withAuthentication from "../withAuthentication";
 import { OBRest, Restrictions } from "obrest";
 import { IRecord } from "../types/Record";
-import { INavigation } from "../components/Card";
 import { defaultTheme } from "../themes";
 import { ShowProfilePicture } from "../components";
 import { isTablet } from "../../hook/isTablet";
 
-const settings = require("../img/settings-profile.png")
-
-interface Props {
-  navigation: INavigation;
-}
+const settings = require("../img/settings-profile.png");
 
 interface State {
   role: string;
@@ -28,7 +23,7 @@ interface State {
 }
 
 @observer
-class Profile extends React.Component<Props, State> {
+class Profile extends React.Component<State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,7 +44,7 @@ class Profile extends React.Component<Props, State> {
         this.getWarehouseName(),
         this.getClientName()
       ])
-        .then(values => {
+        .then((values) => {
           const [org, role, warehouse, client] = values;
           this.setState({ org, role, warehouse, client });
         })
@@ -60,20 +55,20 @@ class Profile extends React.Component<Props, State> {
   };
 
   getStyleItemList = () => {
-    return {width:isTablet() ? '50%': '100%'}
-  }
-  
+    return { width: isTablet() ? "50%" : "100%" };
+  };
+
   getStyleList = () => {
-    return { width: isTablet()? "50%":"80%",alignItems:'center'}
-  }
+    return { width: isTablet() ? "50%" : "80%", alignItems: "center" };
+  };
 
   getStyleContainer = () => {
-   return isTablet() ? styles.containerTablet : styles.containerMobile
-  }
+    return isTablet() ? styles.containerTablet : styles.containerMobile;
+  };
 
   getStyleImageBackground = () => {
-    return isTablet() ? styles.backgroundTablet: styles.backgroundMobile
-  }
+    return isTablet() ? styles.backgroundTablet : styles.backgroundMobile;
+  };
 
   getOrganizationName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Organization");
@@ -88,7 +83,7 @@ class Profile extends React.Component<Props, State> {
     let client: IRecord = await criteria.uniqueResult();
     return client.name;
   };
-  
+
   getWarehouseName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Warehouse");
     criteria.add(Restrictions.equals("id", User.data.warehouseId));
@@ -131,7 +126,12 @@ class Profile extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={{ backgroundColor: defaultTheme.colors.background,height: '100%' }}>
+      <View
+        style={{
+          backgroundColor: defaultTheme.colors.background,
+          height: "100%"
+        }}
+      >
         <Appbar.Header dark={true}>
           {!User.token && (
             <Appbar.BackAction
@@ -147,39 +147,37 @@ class Profile extends React.Component<Props, State> {
           <Appbar.Content title={locale.t("Profile:Title")} />
         </Appbar.Header>
         <View style={this.getStyleContainer()}>
-            <View style={{alignItems:'center',marginTop: 20,width:'50%'}}>
-              <View style={{height: 140, alignItems: "center"}}>
-                <ShowProfilePicture
-                  size={140}
-                  username={User.data.username}
-                ></ShowProfilePicture>
-                <FAB
-                  icon={"camera-plus-outline"}
-                  small={true}
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      bottom: 0,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
-                  color={defaultTheme.colors.text}
-                  onPress={() => [this.setState({ showChangePicture: true })]}
-                  visible={this.state.showChangePicture === false}
-                />
-              </View>
-              <View style={{ justifyContent: "center", height: 40 }}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ fontWeight: "bold", fontSize: 20 }}
-                >
-                  {User.data.username}
-                </Text>
-              </View>
+          <View style={{ alignItems: "center", marginTop: 20, width: "50%" }}>
+            <View style={{ height: 140, alignItems: "center" }}>
+              <ShowProfilePicture
+                size={140}
+                username={User.data.username}
+              ></ShowProfilePicture>
+              <FAB
+                icon={"camera-plus-outline"}
+                small={true}
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: defaultTheme.colors.backgroundSecondary
+                }}
+                color={defaultTheme.colors.text}
+                onPress={() => [this.setState({ showChangePicture: true })]}
+                visible={this.state.showChangePicture === false}
+              />
             </View>
+            <View style={{ justifyContent: "center", height: 40 }}>
+              <Text
+                allowFontScaling={false}
+                style={{ fontWeight: "bold", fontSize: 20 }}
+              >
+                {User.data.username}
+              </Text>
+            </View>
+          </View>
 
-          <List.Section
-            style={this.getStyleList()}
-          >
+          <List.Section style={this.getStyleList()}>
             <List.Item
               title={locale.t("Profile:Role")}
               description={
@@ -227,10 +225,7 @@ class Profile extends React.Component<Props, State> {
             />
           </List.Section>
         </View>
-          <Image
-            style={this.getStyleImageBackground()}
-            source={settings}
-          />
+        <Image style={this.getStyleImageBackground()} source={settings} />
         {this.ChangedImagProfile()}
       </View>
     );
@@ -239,32 +234,32 @@ class Profile extends React.Component<Props, State> {
 
 export default withAuthentication(Profile);
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   backgroundMobile: {
-    width: '100%',
-    height: '50%', 
-    position:'absolute',
-    top:'70%' , 
-    zIndex: -1 
+    width: "100%",
+    height: "50%",
+    position: "absolute",
+    top: "70%",
+    zIndex: -1
   },
   backgroundTablet: {
-    width: '70%',
-    height: '100%', 
-    position:'absolute',
-    top:'70%',
-    left: '0%', 
-    zIndex: -1 
+    width: "70%",
+    height: "100%",
+    position: "absolute",
+    top: "70%",
+    left: "0%",
+    zIndex: -1
   },
-  containerMobile:{
+  containerMobile: {
     flexDirection: "column",
-    justifyContent: "center", 
-    alignItems:'center', 
-    height:'auto'
+    justifyContent: "center",
+    alignItems: "center",
+    height: "auto"
   },
-  containerTablet:{
-    flexDirection:"row-reverse",  
-    justifyContent: "center", 
-    alignItems:'center', 
-    top: '5%'
+  containerTablet: {
+    flexDirection: "row-reverse",
+    justifyContent: "center",
+    alignItems: "center",
+    top: "5%"
   }
-})
+});

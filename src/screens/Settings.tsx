@@ -18,7 +18,6 @@ import {
   Dialog,
   Portal,
   Text,
-  Caption,
   Divider
 } from "react-native-paper";
 import { setUrl, getUrl, formatUrl } from "../ob-api/ob";
@@ -29,21 +28,15 @@ import { Snackbar } from "../globals";
 import Languages from "../ob-api/objects/Languages";
 import MainAppContext from "../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { INavigation } from "../components/Card";
-import { defaultTheme, ITheme } from "../themes";
-import FormContext, { FieldEvent } from "../contexts/FormContext";
+import { defaultTheme } from "../themes";
+import FormContext from "../contexts/FormContext";
 import { IField } from "../components/Field";
-
 import { Picker } from "@react-native-picker/picker";
 
 const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const defaultLogoUri = "../../assets/logo.png";
 const win = Dimensions.get("window");
 const ratio = win.width / 1080; //541 is actual image width
-
-interface Props extends ITheme {
-  navigation: INavigation;
-}
 
 interface State {
   modalUrl: string;
@@ -61,7 +54,7 @@ interface State {
 }
 
 @observer
-class Settings extends React.Component<Props, State> {
+class Settings extends React.Component<State> {
   static contextType = MainAppContext;
 
   constructor(props) {
@@ -104,7 +97,7 @@ class Settings extends React.Component<Props, State> {
     });
   };
 
-  loadServerLogo = url => {
+  loadServerLogo = (url) => {
     let logo;
     if (url) {
       const logoUrl = url + logoUri;
@@ -124,7 +117,7 @@ class Settings extends React.Component<Props, State> {
   };
 
   hideChangeURLModal = () => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return { showChangeURLModal: false, modalUrl: prevState.url };
     });
   };
@@ -135,10 +128,6 @@ class Settings extends React.Component<Props, State> {
     const url = await setUrl(this.state.modalUrl);
     const logo = this.loadServerLogo(url);
     this.setState({ showChangeURLModal: false, modalUrl: url, url, logo });
-  };
-
-  onChangeModalURL = modalUrl => {
-    this.setState({ modalUrl });
   };
 
   changeURLButton = () => {
@@ -202,9 +191,9 @@ class Settings extends React.Component<Props, State> {
     });
   };
 
-  renderUrlItems = items => {
+  renderUrlItems = (items) => {
     if (items.length !== 0) {
-      return items.map(item => {
+      return items.map((item) => {
         return (
           <>
             <List.Item
@@ -216,7 +205,7 @@ class Settings extends React.Component<Props, State> {
                 <TouchableOpacity
                   onPress={() => {
                     let filteredItems = this.state.storedDataUrl.filter(
-                      url => url !== item
+                      (url) => url !== item
                     );
                     this.setState({ storedDataUrl: filteredItems });
                   }}
@@ -250,14 +239,14 @@ class Settings extends React.Component<Props, State> {
     }
   };
 
-  renderPickerItems = items => {
-    return items.map(item => {
+  renderPickerItems = (items) => {
+    return items.map((item) => {
       return <Picker.Item key={item} label={item} value={item} />;
     });
   };
 
   getAppVersion = async () => {
-    const metadata = null; // = await codePush.getUpdateMetadata();
+    const metadata = null;
 
     if (!metadata) {
       return version;
@@ -384,7 +373,7 @@ class Settings extends React.Component<Props, State> {
             <Dialog.Content>
               <Picker
                 selectedValue={this.state.modalUrl}
-                onValueChange={modalUrl => this.setState({ modalUrl })}
+                onValueChange={(modalUrl) => this.setState({ modalUrl })}
                 itemStyle={{ paddingLeft: 15, marginLeft: 15 }}
               >
                 <Picker.Item
@@ -427,7 +416,9 @@ class Settings extends React.Component<Props, State> {
                 allowFontScaling={false}
                 mode="outlined"
                 placeholder={locale.t("ShowLoadUrl:Example")}
-                onChangeText={currentAddUrl => this.setState({ currentAddUrl })}
+                onChangeText={(currentAddUrl) =>
+                  this.setState({ currentAddUrl })
+                }
                 defaultValue={this.state.currentAddUrl}
                 textContentType="URL"
               />

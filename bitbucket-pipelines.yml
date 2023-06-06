@@ -1,21 +1,53 @@
-image: maven:3.5.0
+image: maven:3.3.9
+
+clone:
+  depth: full
+
+definitions:
+  steps:
+    - step: &make-review
+        name: Make Review Step
+        script:
+          - printenv
+          - echo "-------------------------------------------------------------------------"
+          - echo ${DOCKERHUB_PASSWORD} | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+          - docker run -d -p 5000:5000 -e REPO_API_TOKEN="${ETENDOBOT_TOKEN}" -e PULL_REQUEST=$BITBUCKET_PR_ID -e PROJECT=$BITBUCKET_REPO_OWNER -e REPO_SLUG=$BITBUCKET_REPO_SLUG -e OPENAI_API_KEY=$OPENAI_API_KEY etendo/code-reviewer:latest
+          - echo "-------------------------------------------------------------------------"
+          - sleep 10s
+          - response=$(curl -s -o response.txt -w "%{http_code}" -X GET http://localhost:5000/review/bitbucket)
+          - if [ $response -ne 200 ]; then
+          - echo "API call failed with status code $response"
+          - echo "Response text:"
+          - cat response.txt
+          - exit 1
+          - fi
+          - echo "API call successful with status code $response"
+          - echo "Response text:"
+          - cat response.txt
+        services:
+          - docker
+    - step: &build-step
+        name: SonarQube analysis
+        script:
+          - pipe: sonarsource/sonarqube-scan:1.0.0
+            variables:
+              SONAR_HOST_URL: ${SONAR_HOST_URL} # Get the value from the repository/workspace variable.
+              SONAR_TOKEN: ${SONAR_TOKEN} # Get the value from the repository/workspace variable. You shouldn't set secret in clear text here.
+              SONAR_EXCLUDE: node_modules, android, ios
+  caches:
+    sonar: ~/.sonar
 
 pipelines:
-  default:
-    - step:
-        script:
-            - apt-get update; apt-get install -y jq unzip
-            - export BITBUCKET_ACCESS_TOKEN=$(curl -s -X POST -u "$OAUTH_CLIENT_KEY:$OAUTH_CLIENT_SECRET" https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials | jq ".access_token")
-            - export BITBUCKET_PULL_REQUEST_ID=$(curl -s -X GET "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_REPO_OWNER/$BITBUCKET_REPO_SLUG/pullrequests?pagelen=1&state=OPEN&access_token=$BITBUCKET_ACCESS_TOKEN" | jq ".values[] | .id")
-            - curl --insecure -OL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-2.7.zip
-            - curl -sL https://deb.nodesource.com/setup_14.x | bash -
-            - apt-get install -y nodejs
-            - curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-            - echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list
-            - apt-get update && apt-get install yarn
-            - echo "//repo.futit.cloud/repository/npm-group/:_authToken=$NPM_TOKEN" >> .npmrc
-            - echo "always-auth=true" >> .npmrc
-            - yarn config set registry https://repo.futit.cloud/repository/npm-group/
-            - yarn install
-            - unzip sonar-scanner-2.7.zip
-            - ./sonar-scanner-2.7/bin/sonar-scanner -X -Dsonar.verbose=true -Dsonar.projectKey=$BITBUCKET_REPO_FULL_NAME -Dsonar.sources=src -Dsonar.java.binaries=. -Dsonar.bitbucket.repoSlug=$BITBUCKET_REPO_SLUG -Dsonar.bitbucket.accountName=$BITBUCKET_REPO_OWNER -Dsonar.bitbucket.branchName=$BITBUCKET_BRANCH -Dsonar.bitbucket.oauthClientKey=$OAUTH_CLIENT_KEY -Dsonar.bitbucket.oauthClientSecret=$OAUTH_CLIENT_SECRET -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.password=$SONAR_PASSWORD -Dsonar.analysis.mode=preview -Dsonar.bitbucket.pullRequestId=$BITBUCKET_PULL_REQUEST_ID -Dsonar.bitbucket.maxSeverityApprovalLevel=INFO -Dsonar.bitbucket.buildStatusEnabled=true -Dsonar.bitbucket.approvalFeatureEnabled=false
+  branches:
+    "{master,develop}":
+      - step: *build-step
+  pull-requests:
+    "develop":
+      - step:
+          script:
+            - echo "Skip for develop branch"
+            - exit 0
+    "**":
+      - parallel:
+          - step: *make-review
+          - step: *build-step

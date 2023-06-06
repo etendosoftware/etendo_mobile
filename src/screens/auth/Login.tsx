@@ -23,9 +23,7 @@ import {
   Button
 } from "react-native-paper";
 import { Snackbar } from "../../globals";
-import { UpdateDialog } from "../../components";
 import { Version } from "../../ob-api/objects";
-import { INavigation } from "../../components/Card";
 import MainAppContext from "../../contexts/MainAppContext";
 import Languages from "../../ob-api/objects/Languages";
 import { getUrl, setUrl, formatUrl } from "../../ob-api/ob";
@@ -43,10 +41,6 @@ import { GREY_PURPLE } from "../../styles/colors";
 import { ContainerContext } from "../../contexts/ContainerContext";
 
 const MIN_CORE_VERSION = "3.0.202201";
-
-interface Props {
-  navigation: INavigation;
-}
 
 interface EtendoLanguage {
   _entityName: string;
@@ -81,10 +75,8 @@ const win = Dimensions.get("window");
 const deviceIsATablet = isTablet();
 
 @observer
-class LoginClass extends React.Component<Props, State> {
+class LoginClass extends React.Component<State> {
   static contextType = MainAppContext;
-
-  secondTextInput: any;
 
   constructor(props) {
     super(props);
@@ -203,7 +195,6 @@ class LoginClass extends React.Component<Props, State> {
         if (!isCoreVersionBeingChecked) {
           this.loadDynamic();
           this.props.navigation.closeDrawer();
-          this.props.navigation.navigate("Tutorial");
         }
       } catch (e) {
         console.error(e);
@@ -539,15 +530,6 @@ class LoginClass extends React.Component<Props, State> {
                 </View>
               </View>
             </View>
-
-            {/* Pop up that appears when you first log in */}
-            <UpdateDialog
-              visible={this.state.showUpdateDialog}
-              coreVersion={this.state.coreVersion}
-              appMinCoreVersion={MIN_CORE_VERSION}
-              onConfirm={this.onConfirmVersionUpdate}
-            ></UpdateDialog>
-
             <Dialog visible={this.state.showSetUrl}>
               <Dialog.Title>
                 <Text allowFontScaling={false}>

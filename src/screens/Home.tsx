@@ -6,14 +6,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Platform,
+  Platform
 } from "react-native";
 import locale from "../i18n/locale";
 import withAuthentication from "../withAuthentication";
 import { observer } from "mobx-react";
 import { Appbar, Button } from "react-native-paper";
 import MainAppContext from "../contexts/MainAppContext";
-import { INavigation } from "../components/Card";
 import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import { isTablet } from "../../hook/isTablet";
@@ -23,7 +22,6 @@ import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../helpers/Etendo";
 
 interface Props {
-  navigation: INavigation;
   appMinCoreVersion: string;
   coreVersion: string;
 }
@@ -50,8 +48,9 @@ class HomeClass extends React.Component<Props, State> {
           <View
             style={{
               flex: 1,
-              backgroundColor: defaultTheme.colors.accent,
-            }}>
+              backgroundColor: defaultTheme.colors.accent
+            }}
+          >
             <Image
               style={styles.logo}
               resizeMode={"stretch"}
@@ -71,7 +70,7 @@ class HomeClass extends React.Component<Props, State> {
             style={{
               width: "10%",
               backgroundColor: defaultTheme.colors.accent,
-              height: "100%",
+              height: "100%"
             }}
           />
         </View>
@@ -80,7 +79,8 @@ class HomeClass extends React.Component<Props, State> {
             <Icon name="person-circle" size={25} style={styles.TextIcon} />
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Profile")}>
+              onPress={() => this.props.navigation.navigate("Profile")}
+            >
               <Button>
                 <Text allowFontScaling={false} style={styles.TextIcon}>
                   {locale.t("Profile")}{" "}
@@ -92,7 +92,8 @@ class HomeClass extends React.Component<Props, State> {
             <Icon name="md-settings" size={20} style={styles.TextIcon} />
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={() => this.props.navigation.navigate("Settings")}>
+              onPress={() => this.props.navigation.navigate("Settings")}
+            >
               <Button>
                 <Text allowFontScaling={false} style={styles.TextIcon}>
                   {locale.t("Settings")}
@@ -117,35 +118,35 @@ export default withAuthentication(Home);
 const styles = StyleSheet.create({
   container: {
     backgroundColor: defaultTheme.colors.background,
-    height: "100%",
+    height: "100%"
   },
   image: {
     height: 342,
     width: 364,
     right: 0,
     bottom: 0,
-    position: "absolute",
+    position: "absolute"
   },
   logo: {
     height: "100%",
-    width: 130,
+    width: 130
   },
   etendo: {
     height: 50,
-    width: 200,
+    width: 200
   },
   etendoContainer: {
     height: "100%",
     width: isTablet() ? 260 : 220,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column",
+    flexDirection: "column"
   },
   text: {
     color: defaultTheme.colors.textSecondary,
     fontSize: 20,
     alignSelf: "flex-end",
-    paddingRight: isTablet() ? 40 : 20,
+    paddingRight: isTablet() ? 40 : 20
   },
 
   conteinerSup: {
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 80,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 20
   },
   conteinerMed: {
     display: "flex",
@@ -163,20 +164,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: "8%",
-    marginTop: 20,
+    marginTop: 20
   },
   conteinerInf: {
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    height: "80%",
+    height: "80%"
   },
   button: {
     width: "50%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   buttonFaq: {
     width: "100%",
@@ -185,9 +186,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     marginLeft: "62%",
-    marginTop: Platform.OS === "ios" ? "10%" : "25%",
+    marginTop: Platform.OS === "ios" ? "10%" : "25%"
   },
   TextIcon: {
-    color: defaultTheme.colors.textSecondary,
-  },
+    color: defaultTheme.colors.textSecondary
+  }
 });

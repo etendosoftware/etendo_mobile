@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { User } from "../stores";
 import { observer } from "mobx-react";
 import { OBRest, Restrictions } from "obrest";
@@ -49,7 +49,7 @@ class ShowProfilePicture extends React.Component<Props, State> {
 
   render = () => {
     if (this.state.image) {
-      return this.state.image.map(imag => {
+      return this.state.image.map((imag) => {
         console.log(imag.bin);
         if (
           imag.bindaryData !== " " ||
