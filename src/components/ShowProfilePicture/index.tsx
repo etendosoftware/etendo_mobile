@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { User } from "../stores";
+import { User } from "../../stores";
 import { observer } from "mobx-react";
 import { OBRest, Restrictions } from "obrest";
 import { Avatar } from "react-native-paper";
@@ -8,10 +8,6 @@ import { Avatar } from "react-native-paper";
 interface Props {
   username: string;
   size: number;
-}
-
-interface State {
-  image: string;
 }
 
 const ShowProfilePicture = observer((props: Props) => {

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Image, StyleSheet, Text, Pressable } from "react-native";
+import { View, Image, Text, Pressable } from "react-native";
 import { User, Windows, logout } from "../../stores";
 import { observer } from "mobx-react";
 import { OBRest, Restrictions } from "obrest";
@@ -14,7 +14,6 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import { Etendo } from "../../helpers/Etendo";
 import { INavigation, IRoute } from "../../interfaces";
 import styles from "./styles";
-
 
 interface Props {
   activeItemKey: object;
