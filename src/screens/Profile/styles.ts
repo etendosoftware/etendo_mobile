@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   backgroundMobile: {
     width: "100%",
     height: "50%",
@@ -29,3 +29,5 @@ export const styles = StyleSheet.create({
     top: "5%"
   }
 });
+
+export default styles;

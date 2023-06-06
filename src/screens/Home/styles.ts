@@ -2,7 +2,7 @@ import { StyleSheet, Platform } from "react-native";
 import { defaultTheme } from "../../themes";
 import { isTablet } from "../../../hook/isTablet";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: defaultTheme.colors.background,
     height: "100%"
@@ -79,3 +79,5 @@ export const styles = StyleSheet.create({
     color: defaultTheme.colors.textSecondary
   }
 });
+
+export default styles;

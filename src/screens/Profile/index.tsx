@@ -10,7 +10,7 @@ import { IRecord } from "../../types/Record";
 import { defaultTheme } from "../../themes";
 import { ShowProfilePicture } from "../../components";
 import { isTablet } from "../../../hook/isTablet";
-import { styles } from "./styles";
+import styles from "./styles";
 
 const settings = require("../../img/settings-profile.png");
 
