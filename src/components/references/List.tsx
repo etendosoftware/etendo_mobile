@@ -62,15 +62,16 @@ export default class List extends Modal<ListProps, State> {
 
   renderLabel = () => {
     return (
-      this.props.pickerItems.find(i => i.value === this.state.currentSelection)
-        ?.label ||
+      this.props.pickerItems.find(
+        (i) => i.value === this.state.currentSelection
+      )?.label ||
       this.props.value ||
       locale.t("Reference:Select")
     );
   };
 
   renderPickerItems = (items: PickerItem[]) => {
-    return items.map(item => {
+    return items.map((item) => {
       return (
         <Picker.Item key={item.id} label={item.label} value={item.value} />
       );

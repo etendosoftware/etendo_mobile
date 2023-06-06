@@ -1,18 +1,14 @@
-import React, { useContext } from "react";
+import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
-import { CardViewStackNavigator } from "./CardViewNavigator";
 import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
-import MainScreen from "../components/MainScreen";
 import { isTablet } from "../../hook/isTablet";
-import { ContainerContext } from "../contexts/ContainerContext";
 
 export const DrawerNav = createDrawerNavigator();
 
 export function AppLogin() {
-
   return (
     <DrawerNav.Navigator
       initialRouteName={"Login"}
@@ -36,17 +32,22 @@ export function AppLogin() {
     </DrawerNav.Navigator>
   );
 }
+const computeDrawerWidth = () => {
+  if (User.token) {
+    return isTablet() ? "30%" : "65%";
+  } else {
+    return "0";
+  }
+};
 export function AppHome() {
-  const context = useContext(ContainerContext);
-
   return (
     <DrawerNav.Navigator
       initialRouteName={"Home"}
       screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerContent={props => {
+      drawerContent={(props) => {
         return <Drawer {...props} />;
       }}
-      drawerStyle={{ width: User.token ? isTablet() ? "30%"  : "65%": 0 }}
+      drawerStyle={{ width: computeDrawerWidth() }}
     >
       <DrawerNav.Screen
         name="Home"
@@ -55,15 +56,6 @@ export function AppHome() {
           drawerLockMode: "locked-closed"
         }}
       />
-
-      <DrawerNav.Screen
-        name="Tutorial"
-        component={Screens.Tutorial}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-
       <DrawerNav.Screen
         name={"Settings"}
         component={Screens.Settings}
@@ -80,22 +72,6 @@ export function AppHome() {
           drawerLockMode: "locked-closed"
         }}
       />
-
-      <DrawerNav.Screen name="CardView1" component={CardViewStackNavigator} />
-      {context?.state?.menuItems.map((menuItem: any) => {
-        const params = { ...menuItem };
-        if (params.component) {
-          delete params.component;
-        }
-        return (
-          <DrawerNav.Screen
-            name={menuItem.name}
-            component={menuItem.component ? menuItem.component : MainScreen}
-            initialParams={params}
-            options={{}}
-          />
-        );
-      })}
     </DrawerNav.Navigator>
   );
 }

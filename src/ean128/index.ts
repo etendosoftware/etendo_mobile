@@ -30,22 +30,6 @@ export default class EANParser {
   }
 
   setConfig(config) {
-    // Format of config is like this
-    /*
-    [
-      { 
-        "id":"95435FB883B1458CA516CDA911BDADCF",
-        "eanTypeName":"GS1-128",
-        "isdefault":true,
-        "ai":"01",
-        "contentLength":14,
-        "isFixedLength":true
-      }
-      ,
-      ...
-    ]
-    */
-
     this.config = config;
   }
 
@@ -90,7 +74,7 @@ export default class EANParser {
       currentPosition < currentEan.length &&
       configLoops <= SMFEAN.Constants.MAX_EAN_PARSE_LOOPS
     ) {
-      this.config.forEach(attribute => {
+      this.config.forEach((attribute) => {
         var maxAILength = 0;
 
         localAI = attribute.ai;

@@ -52,7 +52,6 @@ export const defaultTheme: Theme = {
     greybackgroundSecondary: "#e2e2e2",
     greyborders: "#cccccc"
   }
-  //fonts: configureFonts(fontConfig),
 };
 
 export interface ITheme {
