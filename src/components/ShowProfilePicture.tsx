@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import { User } from "../stores";
 import { observer } from "mobx-react";
@@ -14,21 +14,19 @@ interface State {
   image: string;
 }
 
-@observer
-class ShowProfilePicture extends React.Component<Props, State> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      image: null
+const ShowProfilePicture = observer((props: Props) => {
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const image = await getImage();
+      setImage(image);
     };
-  }
 
-  componentDidMount = async () => {
-    this.setState({ image: await this.getImage() });
-    this;
-  };
+    fetchImage();
+  }, []);
 
-  getImage = async () => {
+  const getImage = async () => {
     let imageIdCriteria = OBRest.getInstance().createCriteria("ADUser");
     imageIdCriteria.add(Restrictions.equals("id", User.data.userId));
     let user: any = await imageIdCriteria.uniqueResult();
@@ -38,7 +36,7 @@ class ShowProfilePicture extends React.Component<Props, State> {
     return image;
   };
 
-  getInitials = function(string) {
+  const getInitials = function(string) {
     var names = string.split(" "),
       initials = names[0].substring(0, 1).toUpperCase();
     if (names.length > 1) {
@@ -47,36 +45,36 @@ class ShowProfilePicture extends React.Component<Props, State> {
     return initials;
   };
 
-  render = () => {
-    if (this.state.image) {
-      return this.state.image.map((imag) => {
-        console.log(imag.bin);
-        if (
-          imag.bindaryData !== " " ||
-          imag.bindaryData !== null ||
-          imag.bindaryData !== undefined
-        ) {
-          return (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "center",
-                marginBottom: 80
-              }}
-            >
-              <Avatar.Image
-                size={this.props.size}
-                source={{
-                  uri: `data:image/jpeg;base64,${imag.bindaryData}`
+  return (
+    <>
+      {image &&
+        image.map((imag) => {
+          if (
+            imag.bindaryData !== " " ||
+            imag.bindaryData !== null ||
+            imag.bindaryData !== undefined
+          ) {
+            return (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  marginBottom: 80
                 }}
-              />
-            </View>
-          );
-        }
-      });
-    } else {
-      return (
+              >
+                <Avatar.Image
+                  size={props.size}
+                  source={{
+                    uri: `data:image/jpeg;base64,${imag.bindaryData}`
+                  }}
+                />
+              </View>
+            );
+          }
+        })}
+
+      {!image && (
         <View
           style={{
             flex: 1,
@@ -85,14 +83,11 @@ class ShowProfilePicture extends React.Component<Props, State> {
             marginBottom: 80
           }}
         >
-          <Avatar.Text
-            size={this.props.size}
-            label={this.getInitials(this.props.username)}
-          />
+          <Avatar.Text size={props.size} label={getInitials(props.username)} />
         </View>
-      );
-    }
-  };
-}
+      )}
+    </>
+  );
+});
 
 export default ShowProfilePicture;

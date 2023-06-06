@@ -9,7 +9,9 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Pressable,
-  Platform
+  Platform,
+  ScrollView, 
+  TouchableOpacity
 } from "react-native";
 import { observer } from "mobx-react";
 import { logout, User, Windows } from "../../stores";
@@ -30,7 +32,6 @@ import { getUrl, setUrl, formatUrl } from "../../ob-api/ob";
 import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Input from "../../../ui/components/input/Input";
 import ButtonUI from "../../../ui/components/button/Button";
 
