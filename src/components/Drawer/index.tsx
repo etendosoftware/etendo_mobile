@@ -1,28 +1,21 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, Image, StyleSheet, Text, Pressable } from "react-native";
-import { User, Windows, logout } from "../stores";
+import { User, Windows, logout } from "../../stores";
 import { observer } from "mobx-react";
 import { OBRest, Restrictions } from "obrest";
-import { IRecord } from "../types/Record";
+import { IRecord } from "../../types/Record";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import locale from "../i18n/locale";
+import locale from "../../i18n/locale";
 import { observe } from "mobx";
 import Icon from "react-native-vector-icons/Ionicons";
-import { defaultTheme } from "../themes";
-import ShowProfilePicture from "./ShowProfilePicture";
-import { ContainerContext } from "../contexts/ContainerContext";
-import { Etendo } from "../helpers/Etendo";
-import { INavigation } from "../interfaces";
+import { defaultTheme } from "../../themes";
+import ShowProfilePicture from "./../ShowProfilePicture";
+import { ContainerContext } from "../../contexts/ContainerContext";
+import { Etendo } from "../../helpers/Etendo";
+import { INavigation, IRoute } from "../../interfaces";
+import styles from "./styles";
 
-interface IRoute {
-  name: string;
-  key: string;
-  label: string;
-  reset?: boolean;
-  params: {
-    key: string;
-  }[];
-}
+
 interface Props {
   activeItemKey: object;
   activeTintColor: object;
@@ -37,7 +30,7 @@ interface Props {
   };
 }
 
-const DrawerClass = observer((props: Props) => {
+const DrawerFunction = observer((props: Props) => {
   const [menuItems, setMenuItems] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(true);
   const [userName, setUserName] = useState("");
@@ -94,7 +87,7 @@ const DrawerClass = observer((props: Props) => {
       <View>
         <Image
           style={styles.image}
-          source={require("../../src/img/drawer.png")}
+          source={require("../../../src/img/drawer.png")}
         />
         <View style={styles.topData}>
           <Pressable
@@ -186,77 +179,6 @@ const DrawerClass = observer((props: Props) => {
 export const Drawer = (props) => {
   const context = useContext(ContainerContext);
 
-  return <DrawerClass {...props} context={context} />;
+  return <DrawerFunction {...props} context={context} />;
 };
 export default Drawer;
-
-const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    alignSelf: "stretch",
-    width: "100%",
-    height: 150,
-    position: "relative"
-  },
-  topData: {
-    position: "absolute",
-    padding: 5,
-    width: "100%",
-    height: "50%",
-    alignContent: "center",
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    marginTop: 10
-  },
-  pressableStyle: {
-    marginTop: 30,
-    width: 85
-  },
-  dataProfile: {
-    width: "50%",
-    height: "30%"
-  },
-  textProfile: {
-    fontWeight: "bold",
-    color: defaultTheme.colors.textSecondary,
-    fontSize: 15
-  },
-  constantItems: {
-    borderStyle: "solid",
-    borderColor: defaultTheme.colors.textSecondary,
-    borderTopWidth: 0.5,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10
-  },
-  constantItemsSecondary: {
-    borderStyle: "solid",
-    borderColor: defaultTheme.colors.textSecondary,
-    borderBottomWidth: 0.5,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10
-  },
-  viewPlaceholder: {
-    margin: 20
-  },
-  drawerItemsContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10
-  },
-  drawerItem: {
-    width: "80%"
-  },
-  iconColor: {
-    color: defaultTheme.colors.textSecondary
-  },
-  drawerText: {
-    color: defaultTheme.colors.textSecondary,
-    fontSize: 15
-  }
-});
