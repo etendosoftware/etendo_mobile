@@ -30,7 +30,7 @@ interface Props {
   getLabel: object;
   routes?: IRoute[];
   navigation: {
-    navigate: (route: string, params?: object) => void; // Assuming navigate accepts a string route and an optional object parameter, adjust if necessary
+    navigate: (route: string, params?: object) => void;
   };
   context: any,
   state: {
