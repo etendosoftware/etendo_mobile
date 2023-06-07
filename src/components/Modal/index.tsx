@@ -1,7 +1,6 @@
 import React from "react";
 import { Dialog, Button, Portal } from "react-native-paper";
 import {
-  Modal as RNModal,
   Text,
   View,
   TouchableOpacity,

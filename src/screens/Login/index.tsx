@@ -12,7 +12,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { observer } from "mobx-react";
-import { logout, User, Windows } from "../../stores";
+import { User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
 import {
   TextInput,
