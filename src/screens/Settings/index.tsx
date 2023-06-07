@@ -21,10 +21,9 @@ import {
 } from "react-native-paper";
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
-import { User, logout } from "../../stores";
+import { User } from "../../stores";
 import { observer } from "mobx-react";
 import { Snackbar } from "../../globals";
-import Languages from "../../ob-api/objects/Languages";
 import MainAppContext from "../../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { defaultTheme } from "../../themes";
@@ -36,7 +35,6 @@ import styles from "./styles";
 const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
 const defaultLogoUri = "../../../assets/logo.png";
 const win = Dimensions.get("window");
-const ratio = win.width / 1080; //541 is actual image width
 
 const Settings = observer((props) => {
   const mainAppContext = useContext(MainAppContext);
@@ -50,7 +48,6 @@ const Settings = observer((props) => {
   );
   const [logo, setLogo] = useState<string>(null);
   const [defaultLogo, setDefaultLogo] = useState<string>(null);
-  const [open, setOpen] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
   const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
@@ -112,18 +109,6 @@ const Settings = observer((props) => {
     setModalUrl(url);
     setUrl(tmpUrl);
     setLogo(tmpLogo);
-  };
-
-  const changeURLButton = () => {
-    return (
-      <Button
-        style={{ backgroundColor: defaultTheme.colors.accent, height: 50 }}
-        mode="text"
-        onPress={showChangeURLModalFn}
-      >
-        {locale.t("Settings:ChangeURL")}
-      </Button>
-    );
   };
 
   const showLogoutConfirmationFn = () => {

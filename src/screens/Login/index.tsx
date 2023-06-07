@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
-  Dimensions,
   Image,
-  StyleSheet,
   LogBox,
   Keyboard,
   TouchableWithoutFeedback,
@@ -26,8 +24,6 @@ import {
 } from "react-native-paper";
 import { Snackbar } from "../../globals";
 import { Version } from "../../ob-api/objects";
-import MainAppContext from "../../contexts/MainAppContext";
-import Languages from "../../ob-api/objects/Languages";
 import { getUrl, setUrl as setUrlOB, formatUrl } from "../../ob-api/ob";
 import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
@@ -43,32 +39,14 @@ import isAdmin from "../../helpers/isAdmin";
 
 const MIN_CORE_VERSION = "3.0.202201";
 
-interface EtendoLanguage {
-  _entityName: string;
-  active: string;
-  client: string;
-  createdBy: string;
-  creationDate: string;
-  id: string;
-  language: string;
-  name: string;
-  organization: string;
-  updated: string;
-  updatedBy: string;
-}
-
 const deviceIsATablet = isTablet();
 
 const LoginFunctional = observer((props) => {
-  const context = useContext(MainAppContext);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
-  const [showUpdateDialog, setShowUpdateDialog] = useState<boolean>(false);
   const [url, setUrl] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showSetUrl, setShowSetUrl] = useState<boolean>(false);
   const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
@@ -122,22 +100,6 @@ const LoginFunctional = observer((props) => {
       submitLogin();
     }
   }, [username, password]);
-
-  const loadWindows = async (token) => {
-    const { selectedLanguage, changeLanguage, updateLanguageList } = context;
-    updateLanguageList();
-    const etendoLanguages = (await Languages.getLanguages()) as EtendoLanguage[];
-    if (
-      etendoLanguages.filter((lang) => lang.language === selectedLanguage)
-        .length === 0
-    ) {
-      changeLanguage("en_US");
-    } else {
-      if (!Windows.hydrated || !token) {
-        await Windows.loadWindows(selectedLanguage);
-      }
-    }
-  };
 
   const loadDynamic = async () => {
     let storedEnviromentsUrl = await getUrl();
@@ -193,7 +155,6 @@ const LoginFunctional = observer((props) => {
     const shouldShowUpdateDialog =
       versionCompare(MIN_CORE_VERSION, coreVersion) > 0;
     setCoreVersion(newCoreVersion);
-    setShowUpdateDialog(shouldShowUpdateDialog);
     return shouldShowUpdateDialog;
   };
 

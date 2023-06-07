@@ -92,7 +92,7 @@ const HomeFunction = observer((props: Props) => {
   );
 });
 
-const Home = (props) => {
+const Home = (props: any) => {
   const navigation = useNavigation();
   Etendo.globalNav = navigation;
 
