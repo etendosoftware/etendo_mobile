@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import { Chip, Subheading } from "react-native-paper";
-import { View, StyleSheet } from "react-native";
-import { Field as FieldType } from "../types";
-import { defaultTheme } from "../themes";
-import { References } from "../constants/References";
+import { View } from "react-native";
+import { Field as FieldType } from "../../types";
+import { References } from "../../constants/References";
+import styles from "./styles";
 
 export type IField = FieldType;
 
@@ -93,17 +93,3 @@ export default abstract class Field<
     }
   }
 }
-
-const styles = StyleSheet.create({
-  subheadingStyle: {
-    width: "100%",
-    color: defaultTheme.colors.text
-  },
-  switchStyle: {
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  chipStyle: {
-    marginRight: 8
-  }
-});

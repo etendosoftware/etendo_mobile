@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import PickerList from "../../components/references/List";
+import PickerList from "../../components/List";
 import {
   View,
   ScrollView,
