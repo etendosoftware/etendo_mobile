@@ -5,9 +5,9 @@ export type Field = {
   name: string;
   readOnly: boolean;
   column: {
-    mandatory: boolean;
-    reference: any;
-    updatable: boolean;
+    mandatory?: boolean;
+    reference?: any;
+    updatable?: boolean;
   };
   textInputStyle?: StyleProp<ViewStyle>;
   columnName: string;

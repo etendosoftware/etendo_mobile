@@ -1,4 +1,4 @@
-import Login from "./auth/Login";
+import Login from "./Login";
 import Home from "./Home";
 import Settings from "./Settings";
 import Profile from "./Profile";
