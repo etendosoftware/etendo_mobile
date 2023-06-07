@@ -73,14 +73,14 @@ const DrawerFunction = observer((props: Props) => {
   const getOrganizationName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Organization");
     criteria.add(Restrictions.equals("id", User.data.organization));
-    var org: IRecord = await criteria.uniqueResult();
+    const org: IRecord = await criteria.uniqueResult();
     return org.name;
   };
 
   if (Windows.loading || !loadingMenu) {
     return null;
   }
-  var focused = false;
+
   return (
     <DrawerContentScrollView {...props}>
       <View>

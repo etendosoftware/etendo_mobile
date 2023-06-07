@@ -62,7 +62,7 @@ const Profile = observer((props) => {
   const getOrganizationName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Organization");
     criteria.add(Restrictions.equals("id", User.data.organization));
-    var org: IRecord = await criteria.uniqueResult();
+    let org: IRecord = await criteria.uniqueResult();
     return org.name;
   };
 

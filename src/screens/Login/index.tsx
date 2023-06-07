@@ -198,7 +198,7 @@ const LoginFunctional = observer((props) => {
   };
 
   const versionCompare = (v1: any, v2: any, options?: any) => {
-    var lexicographical = options && options.lexicographical,
+    let lexicographical = options && options.lexicographical,
       zeroExtend = options && options.zeroExtend,
       v1parts = v1.split("."),
       v2parts = v2.split(".");
@@ -216,7 +216,7 @@ const LoginFunctional = observer((props) => {
       v1parts = v1parts.map(Number);
       v2parts = v2parts.map(Number);
     }
-    for (var i = 0; i < v1parts.length; ++i) {
+    for (let i = 0; i < v1parts.length; ++i) {
       if (v2parts.length == i) {
         return 1;
       }

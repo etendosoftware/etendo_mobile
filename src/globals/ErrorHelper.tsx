@@ -30,7 +30,7 @@ class ErrorHelper {
     return error;
   };
   static handleError = (type, error) => {
-    var handled = false;
+    let handled = false;
     try {
       if (error.response) {
         const response = error.response;
@@ -42,7 +42,7 @@ class ErrorHelper {
               console.log("RSQL Parse", response.headers);
               console.log("RSQL Parse", response.status);
             }
-            var message = null;
+            let message = null;
             switch (type) {
               default:
                 console.error("Error type miss message localization", type);
