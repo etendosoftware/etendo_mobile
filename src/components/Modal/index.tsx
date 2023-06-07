@@ -1,10 +1,6 @@
 import React from "react";
 import { Dialog, Button, Portal } from "react-native-paper";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import Field, { FieldProps, FieldState, FieldMode } from "../Field";
 import locale from "../../i18n/locale";
 import { componentsStyle, defaultTheme } from "../../themes";

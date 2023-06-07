@@ -37,7 +37,7 @@ const DrawerFunction = observer((props: Props) => {
 
   useEffect(() => {
     const disposer = observe(Windows, (_change) => {
-      setLoadingMenu(!(Windows.menuItems.length > 0));
+      setLoadingMenu(Windows.menuItems.length <= 0);
     });
 
     return () => disposer(); // cleanup observer when component unmounts

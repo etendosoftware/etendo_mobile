@@ -43,9 +43,6 @@ const Settings = observer((props) => {
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
-  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState<boolean>(
-    false
-  );
   const [logo, setLogo] = useState<string>(null);
   const [defaultLogo, setDefaultLogo] = useState<string>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
@@ -87,9 +84,7 @@ const Settings = observer((props) => {
   };
 
   const showChangeURLModalFn = () => {
-    if (User.token) {
-      showLogoutConfirmationFn();
-    } else {
+    if (!User.token) {
       setShowChangeURLModal(true);
     }
   };
@@ -109,10 +104,6 @@ const Settings = observer((props) => {
     setModalUrl(url);
     setUrl(tmpUrl);
     setLogo(tmpLogo);
-  };
-
-  const showLogoutConfirmationFn = () => {
-    setShowLogoutConfirmation(true);
   };
 
   const onLogoError = ({ nativeEvent }) => {

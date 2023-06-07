@@ -383,7 +383,7 @@ const LoginFunctional = observer((props) => {
                 <View style={styles.containerInputs}>
                   <Button
                     style={styles.buttonDemo}
-                    onPress={async () => await demo()}
+                    onPress={() => demo()}
                   >
                     {locale.t("DemoTry")}
                   </Button>

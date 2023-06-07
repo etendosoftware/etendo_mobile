@@ -40,7 +40,7 @@ export default abstract class Field<
 
   render() {
     const mode = this.props.mode || FieldMode.horizontal;
-    let isMandatory = this.props.field.column?.mandatory == true;
+    let isMandatory = !!this.props.field.column?.mandatory;
 
     let referenceKey = null;
     if (this.props.field.column) {
