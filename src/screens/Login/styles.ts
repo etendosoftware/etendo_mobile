@@ -16,11 +16,11 @@ const styles = StyleSheet.create({
   },
   etendoLogotypeMobile: {
     resizeMode: "contain",
-    width: 90,
-    height: 90,
+    width: 80,
+    height: 80,
     alignSelf: "center",
-    top: -100,
-    flex: 1
+    top: -100
+    // flex: 1
   },
   credentialsTextMobile: {
     color: NEUTRAL_60,
@@ -41,7 +41,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     backgroundColor: defaultTheme.colors.background,
-    borderRadius: 20
+    borderRadius: 20,
+    width: 600,
+    height: 656
   },
   generalContainerTablet: {
     flex: 1,
@@ -83,7 +85,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     marginBottom: 40,
-    marginTop: 40,
+    marginTop: 36,
+    marginHorizontal: 1,
     justifyContent: "space-between"
   },
   buttonsDemoSettingsTablet: {
@@ -91,19 +94,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 80,
     left: -10,
-    top: 25,
+    top: 40,
     justifyContent: "space-between"
   },
   settingsImageContainer: {
     display: "flex",
-    fontFamily: "Inter-Regular",
-    height: 30,
-    width: 130,
-    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "space-between",
-    top: -45,
-    flexDirection: "row"
+    fontFamily: "Inter-Regular",
+    lineHeight: 24,
+    fontSize: 16,
+    borderRadius: 8,
+    top: -48,
+    width: 112,
+    height: 40
   },
   settingsImage: {
     display: "flex",
@@ -116,12 +121,28 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start"
   },
   etendoLogotypeTablet: {
+    display: "flex",
     resizeMode: "contain",
-    width: 70,
-    height: 70,
-    alignSelf: "center",
-    top: -90,
-    flex: 1
+    width: 76,
+    height: 76,
+    alignContent: "center",
+    justifyContent: "center",
+    top: -100,
+    marginTop: 40,
+    marginBottom: 20
+  },
+  etendoLogoContainerTablet: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  etendoLogoContainerMobile: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40
   },
   credentialsTextTablet: {
     color: NEUTRAL_60,
@@ -132,12 +153,15 @@ const styles = StyleSheet.create({
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    top: -100
+    top: -100,
+    marginTop: 24
   },
   welcomeTitle: {
     color: PRIMARY_100,
     fontWeight: "700",
-    fontSize: 30
+    fontSize: 30,
+    marginBottom: 4,
+    lineHeight: 36
   },
   starsImage: {
     position: "absolute",
@@ -175,15 +199,24 @@ const styles = StyleSheet.create({
   containerInputs: {
     display: "flex",
     flexDirection: "column",
-    alignContent: "center",
-    top: -20
+    alignContent: "center"
+  },
+  containerInputsMobile: {
+    display: "flex",
+    flexDirection: "column",
+    alignContent: "center"
+  },
+  containerCopyrightMobile: {
+    display: "flex",
+    flexDirection: "column",
+    alignContent: "center"
   },
   buttonDemo: {
     flexDirection: "row",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    top: -55,
+    top: -48,
     fontFamily: "Inter-Regular"
   },
   textInputsHolders: {
@@ -197,8 +230,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     justifyContent: "flex-end",
     height: 45,
-    paddingVertical: 0,
-    marginBottom: 20,
+    marginBottom: 28,
     marginTop: 20,
     width: "100%"
   },
@@ -211,12 +243,21 @@ const styles = StyleSheet.create({
     fontSize: 1
   },
   copyRightStyle: {
-    paddingTop: 50
+    paddingTop: 24,
+    color: NEUTRAL_60
+  },
+  copyRightStyleMobile: {
+    top: -15,
+    fontSize: 10,
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    color: NEUTRAL_60
   },
   containerCopyright: {
     width: "100%",
     alignItems: "center",
-    justifyContent: "flex-end"
+    justifyContent: "center"
   },
   copyrightStyle: {
     textAlign: "center",
