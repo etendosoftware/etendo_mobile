@@ -139,7 +139,7 @@ class OBDal {
         // Group filters by Field ID. This allows to use the OR operator between filters of the same field
         // But keeping an AND operator between all filters.
                 let groupedFilters = filters.reduce((groups, filter) => {
-          var group = filter.fieldID;
+          let group = filter.fieldID;
 
           groups[group] = groups[group] || [];
           groups[group].push(filter);
@@ -151,7 +151,7 @@ class OBDal {
             groupedFilters[fieldId].map(filter => {
               // Only use case insensitive contains on string type fields
               // For types that are a reference to another entity, search via its identifier 
-              var filterProperty = locale.t(filter.propertyType).includes('missing') ? filter.propertyType: locale.t(filter.propertyType);
+              let filterProperty = locale.t(filter.propertyType).includes('missing') ? filter.propertyType: locale.t(filter.propertyType);
               
               switch (filterProperty) {
                 case "Search":

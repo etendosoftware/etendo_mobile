@@ -65,7 +65,7 @@ class Windows {
   }
 
   getTabRoutes(windowId, tabLevel = 0, tabKey = null): ITabRoute[] {
-    var tabs = this.getTabs(windowId, tabLevel);
+    let tabs = this.getTabs(windowId, tabLevel);
     if (tabKey !== null && tabKey !== 0) {
       tabs = tabs.filter(t => t.sequenceNumber === tabKey);
     }

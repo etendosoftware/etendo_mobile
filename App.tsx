@@ -128,12 +128,12 @@ export default class App extends React.Component<Props, State> {
   }
   // Generic helper function that can be used for the three operations:
   operation(list1, list2, isUnion) {
-    var result = [];
+    let result = [];
 
-    for (var i = 0; i < list1.length; i++) {
-      var item1 = list1[i],
+    for (let i = 0; i < list1.length; i++) {
+      let item1 = list1[i],
         found = false;
-      for (var j = 0; j < list2.length && !found; j++) {
+      for (let j = 0; j < list2.length && !found; j++) {
         found = item1.value === list2[j].value;
       }
       if (found === !!isUnion) {
