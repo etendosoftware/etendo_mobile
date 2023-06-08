@@ -1,78 +1,141 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { defaultTheme } from "../../themes";
-import { BLUE, GREY_60, GREY_PURPLE } from "../../styles/colors";
+import { GREY_BLUE, NEUTRAL_60, PRIMARY_100, WHITE } from "../../styles/colors";
 
 const win = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   containerMobile: {
-    flex: 1,
     paddingHorizontal: 30,
     paddingVertical: 50,
-    backgroundColor: defaultTheme.colors.background
+    backgroundColor: defaultTheme.colors.background,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    top: -160,
+    height: "60%"
   },
   etendoLogotypeMobile: {
     resizeMode: "contain",
     width: 90,
     height: 90,
-    margin: 0,
-    padding: 0,
-    alignSelf: "center"
+    alignSelf: "center",
+    top: -100,
+    flex: 1
   },
   credentialsTextMobile: {
-    color: GREY_PURPLE,
-    fontSize: 19.5,
-    fontWeight: "500"
+    color: NEUTRAL_60,
+    fontSize: 14,
+    fontWeight: "500",
+    top: -50,
+    paddingRight: 25,
+    paddingLeft: 25,
+    display: "flex",
+    alignSelf: "stretch",
+    fontFamily: "Inter",
+    alignItems: "center",
+    textAlign: "center"
   },
   containerTablet: {
+    position: "absolute",
+    display: "flex",
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: defaultTheme.colors.background,
+    borderRadius: 20
+  },
+  generalContainerTablet: {
     flex: 1,
-    backgroundColor: defaultTheme.colors.background
+    flexDirection: "row",
+    backgroundColor: WHITE,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  generalContainerMobile: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: WHITE
   },
   backgroundLoginImageContainer: {
     position: "relative",
-    width: "34.5%"
+    width: "100%"
+  },
+  backgroundHeaderImage: {
+    position: "relative",
+    width: "100%",
+    height: "90%",
+    bottom: "auto"
   },
   backgroundLoginImage: {
-    position: "absolute",
-    left: 0,
     width: "100%",
-    height: "100%"
+    height: "100%",
+    resizeMode: "stretch"
+  },
+  settingsText: {
+    fontFamily: "Inter-Regular",
+    fontWeight: "600",
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: "center",
+    left: -5
+  },
+  buttonsDemoSettings: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 40,
+    marginTop: 40,
+    justifyContent: "space-between"
+  },
+  buttonsDemoSettingsTablet: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 80,
+    left: -10,
+    top: 25,
+    justifyContent: "space-between"
   },
   settingsImageContainer: {
-    position: "absolute",
-    height: 40,
-    width: 40,
+    display: "flex",
+    fontFamily: "Inter-Regular",
+    height: 30,
+    width: 130,
     borderRadius: 8,
-    justifyContent: "center"
+    alignItems: "center",
+    justifyContent: "space-between",
+    top: -45,
+    flexDirection: "row"
   },
   settingsImage: {
+    display: "flex",
     resizeMode: "contain",
     height: 24,
     width: 24,
-    tintColor: GREY_60,
-    alignSelf: "center"
+    left: -10,
+    tintColor: defaultTheme.colors.primary,
+    alignSelf: "center",
+    justifyContent: "flex-start"
   },
   etendoLogotypeTablet: {
     resizeMode: "contain",
-    width: 150,
-    height: 40,
-    margin: 0,
-    padding: 0,
-    alignSelf: "flex-start"
+    width: 70,
+    height: 70,
+    alignSelf: "center",
+    top: -90,
+    flex: 1
   },
   credentialsTextTablet: {
-    color: GREY_PURPLE,
-    fontSize: 19.5,
+    color: NEUTRAL_60,
+    fontSize: 14,
     textAlign: "center",
     fontWeight: "500"
   },
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    marginTop: 10
+    top: -100
   },
   welcomeTitle: {
-    color: BLUE,
+    color: PRIMARY_100,
     fontWeight: "700",
     fontSize: 30
   },
@@ -113,37 +176,47 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignContent: "center",
-    marginBottom: 0
+    top: -20
   },
   buttonDemo: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    top: -55,
     fontFamily: "Inter-Regular"
   },
+  textInputsHolders: {
+    fontFamily: "Inter-Regular",
+    fontStyle: "normal",
+    fontSize: 14,
+    lineHeight: 22,
+    color: GREY_BLUE,
+    paddingLeft: 5
+  },
   textInputStyle: {
-    justifyContent: "center",
+    justifyContent: "flex-end",
     height: 45,
-    paddingVertical: 5,
+    paddingVertical: 0,
     marginBottom: 20,
-    marginTop: 10,
+    marginTop: 20,
     width: "100%"
   },
   textInputIconStyle: {
     paddingTop: 10
   },
-  containerLogin: {
-    marginTop: 20,
-    marginBottom: 20
-  },
   buttonLogin: {
     height: 45,
-    paddingVertical: 5,
+    paddingVertical: 0,
     fontSize: 1
   },
-
+  copyRightStyle: {
+    paddingTop: 50
+  },
   containerCopyright: {
     width: "100%",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "flex-end"
   },
   copyrightStyle: {
     textAlign: "center",
