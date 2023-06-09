@@ -128,8 +128,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     top: -100,
-    marginTop: 40,
-    marginBottom: 20
+    marginTop: 40
   },
   etendoLogoContainerTablet: {
     display: "flex",
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     top: -100,
-    marginTop: 24
+    marginTop: 20
   },
   welcomeTitle: {
     color: PRIMARY_100,
@@ -244,7 +243,8 @@ const styles = StyleSheet.create({
   },
   copyRightStyle: {
     paddingTop: 24,
-    color: NEUTRAL_60
+    color: NEUTRAL_60,
+    textAlign: "center"
   },
   copyRightStyleMobile: {
     top: -15,

@@ -353,7 +353,7 @@ const LoginFunctional = observer((props) => {
                 : styles.buttonsDemoSettings}>
                 <View style={styles.buttonDemo}>
                   <ButtonUI
-                    height={40}
+                    height={43}
                     width={98}
                     typeStyle="terciary"
                     onPress={() => demo()}
@@ -370,6 +370,7 @@ const LoginFunctional = observer((props) => {
                     onPress={() => props.navigation.navigate("Settings")}
                     text={locale.t("Settings")}
                     typeStyle="whiteBorder"
+                    height={47}
                     image=<ConfigurationIcon style={{ height: 16, width: 16, marginRight: 8 }} />
                   />
                 </View>
