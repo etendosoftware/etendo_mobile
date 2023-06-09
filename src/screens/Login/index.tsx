@@ -6,10 +6,13 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   SafeAreaView,
-  Pressable,
   Platform,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ViewStyle,
+  ImageStyle,
+  TextStyle
 } from "react-native";
 import { observer } from "mobx-react";
 import { User, Windows } from "../../stores";
@@ -30,6 +33,8 @@ import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Input from "../../../ui/components/input/Input";
 import ButtonUI from "../../../ui/components/button/Button";
+import { ConfigurationIcon } from "../../../ui/assets/images/icons/ConfigurationIcon";
+
 
 import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
@@ -53,7 +58,7 @@ const LoginFunctional = observer((props) => {
   const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
 
-  
+
 
   useEffect(() => {
     const load = async () => {
@@ -219,6 +224,58 @@ const LoginFunctional = observer((props) => {
     setShowSetUrl(false);
   };
 
+  const containerStyle = ():ViewStyle => { return deviceIsATablet
+                ? styles.containerTablet
+                : styles.containerMobile
+  }
+  const buttonsDemoSettings = ():ViewStyle => {
+    return deviceIsATablet
+                  ? styles.buttonsDemoSettingsTablet
+                  : styles.buttonsDemoSettings
+  } 
+ const buttonsContainers = ():ViewStyle => {
+    return deviceIsATablet ? styles.buttonsContainers : styles.buttonsContainersMobile
+  } 
+
+ const etendoLogoContainer = ():ViewStyle => {
+    return deviceIsATablet
+                ? styles.etendoLogoContainerTablet : styles.etendoLogoContainerMobile
+  } 
+  
+   const etendoLogotype = ():ImageStyle => {
+    return deviceIsATablet
+                      ? styles.etendoLogotypeTablet
+                      : styles.etendoLogotypeMobile
+  } 
+     const containerInputs = ():ViewStyle => {
+    return deviceIsATablet ? styles.containerInputs : styles.containerInputsMobile
+  } 
+     const copyRightStyle = ():ViewStyle => {
+    return deviceIsATablet ? styles.copyRightStyle : styles.copyRightStyleMobile
+  } 
+  const credentialsText = ():TextStyle => {
+    return deviceIsATablet ? styles.credentialsTextTabletM  : styles.credentialsTextMobile
+  } 
+  const welcomeText = ():string => {
+    return  deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome")
+  } 
+  const generalContainerStyle = ():ViewStyle => {
+    return  deviceIsATablet
+              ? styles.generalContainerTablet
+              : styles.generalContainerMobile
+  } 
+  const backgroundContainer = ():ViewStyle => {
+    return deviceIsATablet ? styles.backgroundContainerTablet : styles.backgroundContainerMobile
+
+  } 
+const settingsImageContainer = ():ViewStyle => {
+    return deviceIsATablet ? styles.settingsImageContainerTablet : styles.settingsImageContainerMobile
+} 
+ const changePasswordStyle = ():ViewStyle => {
+    return deviceIsATablet ? styles.changePasswordTablet : styles.changePasswordMobile
+
+} 
+
   const renderUrlItems = (items: any) => {
     if (items.length !== 0) {
       return items.map((item: any) => {
@@ -307,308 +364,266 @@ const LoginFunctional = observer((props) => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView
-        style={{ flex: 1, flexDirection: deviceIsATablet ? "row" : "column" }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={ styles.keyboardAvoiding  }
       >
-        {deviceIsATablet && (
-          <View style={styles.backgroundLoginImageContainer}>
-            <Image
-              source={require("../../../assets/background-login.png")}
-              style={styles.backgroundLoginImage}
-            />
-          </View>
-        )}
-
-        <View
-          style={
-            deviceIsATablet ? styles.containerTablet : styles.containerMobile
-          }
+        <SafeAreaView
+          style={generalContainerStyle()}
         >
-          <View style={{ margin: deviceIsATablet ? 80 : 0, flex: 1 }}>
-            <Pressable onPress={() => props.navigation.navigate("Settings")}>
-              <View
-                style={[
-                  styles.settingsImageContainer,
-                  { right: deviceIsATablet ? 0 : undefined }
-                ]}
-              >
-                <Image
-                  source={require("../../../assets/settings.png")}
-                  style={styles.settingsImage}
-                />
-              </View>
-            </Pressable>
+          <View
+            style={backgroundContainer()}
+          >
             <Image
-              source={
-                deviceIsATablet
-                  ? require("../../../assets/etendo-logotype-standard.png")
-                  : require("../../../assets/etendo-logotype.png")
-              }
-              style={
-                deviceIsATablet
-                  ? styles.etendoLogotypeTablet
-                  : styles.etendoLogotypeMobile
-              }
+              source={deviceIsATablet ? null : require("../../img/background.png")}
+              style={styles.backgroundHeaderImage}
             />
-            <View style={styles.generalView}>
-              <View style={styles.viewStyle}>
-                <View style={styles.welcomeTitleContainer}>
-                  <Text
-                    style={[
-                      styles.welcomeTitle,
-                      { fontSize: deviceIsATablet ? 40 : 30 }
-                    ]}
-                  >
-                    {locale.t("Welcome")}
-                  </Text>
-                  <Image
-                    source={require("../../img/stars.png")}
-                    style={styles.starsImage}
-                  />
-                </View>
-                <Text
-                  style={[
-                    deviceIsATablet
-                      ? styles.credentialsTextTablet
-                      : styles.credentialsTextMobile,
-                    {
-                      marginTop:
-                        deviceIsATablet || Platform.OS === "android" ? -40 : -20
-                    }
-                  ]}
-                >
-                  {locale.t("EnterCredentials")}
-                </Text>
-
-                <View style={styles.containerInputs}>
-                  <Button
-                    style={styles.buttonDemo}
-                    onPress={() => demo()}
-                  >
-                    {locale.t("DemoTry")}
-                  </Button>
-
-                  <View style={styles.textInputStyle}>
-                    <Input
-                      typeField={"textInput"}
-                      value={username}
-                      onChangeText={(username) => setUsername(username)}
-                      placeholder={locale.t("User")}
-                      fontSize={16}
-                      height={40}
-                    />
-                  </View>
-
-                  <View style={styles.textInputStyle}>
-                    <Input
-                      typeField={"textInput"}
-                      value={password}
-                      onChangeText={(password) => setPassword(password)}
-                      placeholder={locale.t("Password")}
-                      fontSize={16}
-                      height={40}
-                      password={true}
-                    />
-                  </View>
-                </View>
-                <View style={styles.containerLogin}>
-                  <View style={{ height: 50 }}>
-                    <ButtonUI
-                      onPress={submitLogin}
-                      text={locale.t("Log in")}
-                      typeStyle={"primary"}
-                      typeSize="medium"
-                      width="100%"
-                      height={50}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
-                    style={{ marginTop: deviceIsATablet ? 0 : 25 }}
-                    onPress={() => [setShowChangePassword(true)]}
-                  >
-                    <Text
-                      allowFontScaling={false}
-                      style={{
-                        fontSize: 14,
-                        textAlign: "right",
-                        marginTop: 5,
-                        color: defaultTheme.colors.textSecondary,
-                        marginRight: 3
-                      }}
-                    >
-                      {locale.t("Forgot_password")}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View style={styles.containerCopyright}>
-                  <Text style={styles.copyrightStyle}>
-                    @ Copyright Etendo 2020-2023
-                  </Text>
-                </View>
-              </View>
-            </View>
           </View>
-          <Dialog visible={showSetUrl}>
+          {deviceIsATablet && (
+            <View style={styles.backgroundLoginImageContainer}>
+              <Image
+                source={require("../../img/tablet-background.png")}
+                style={styles.backgroundLoginImage}
+              />
+            </View>
+          )}
+
+          <View
+            style={containerStyle()}
+          >
+            <View style={ buttonsContainers() }>
+              <View style={buttonsDemoSettings()}>
+                <View style={styles.buttonDemo}>
+                  <ButtonUI
+                    height={43}
+                    width={98}
+                    typeStyle="terciary"
+                    onPress={() => demo()}
+                    text={locale.t("DemoTry")}
+                  />
+                </View>
+                <View
+                  style={settingsImageContainer()}
+                >
+                  <ButtonUI
+                    onPress={() => props.navigation.navigate("Settings")}
+                    text={locale.t("Settings")}
+                    typeStyle="whiteBorder"
+                    height={47}
+                    image=<ConfigurationIcon style={styles.configurationImage } />
+                  />
+                </View>
+              </View>
+              <View style={etendoLogoContainer()}>
+                <Image
+                  source={require("../../../assets/etendo-logotype.png")}
+                  style={etendoLogotype()}
+                />
+                  <View style={styles.welcomeTitleContainer}>
+                    <Text
+                      style={styles.welcomeTitle}
+                    >
+                      {welcomeText()}
+                    </Text>
+                    <Image
+                      source={require("../../img/stars.png")}
+                      style={styles.starsImage}
+                    />
+                  </View>
+                  <Text
+                    style={credentialsText()}
+                  >
+                    {locale.t("EnterCredentials")}
+                  </Text>
+              </View>
+
+                  <View style={containerInputs()}>
+                    <View style={styles.textInputStyle}>
+                      <Text style={styles.textInputsHolders}>
+                        {locale.t("User")}
+                      </Text>
+                      <Input
+                        typeField={"textInput"}
+                        value={username}
+                        onChangeText={(username) =>
+                          setUsername(username)
+                        }
+                        placeholder={locale.t("User")}
+                        fontSize={16}
+                        height={48}
+                      />
+                    </View>
+
+                    <View style={styles.textInputStyle}>
+                      <Text style={styles.textInputsHolders}>
+                        {locale.t("Password")}
+                      </Text>
+                      <Input
+                        typeField={"textInputPassword"}
+                        value={password}
+                        onChangeText={(password) =>
+                          setPassword(password)
+                        }
+                        placeholder={locale.t("Password")}
+                        fontSize={16}
+                        height={48}
+                      />
+                    </View>
+                  </View>
+                  <View>
+                    <View>
+                      <ButtonUI
+                        onPress={submitLogin}
+                        text={locale.t("Log in")}
+                        typeStyle={"primary"}
+                        width="100%"
+                        height={50}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      style={changePasswordStyle()}
+                      onPress={() => [
+                        setShowChangePassword(true)
+                      ]}
+                    ></TouchableOpacity>
+                  </View>
+
+                    <Text style={copyRightStyle()}>
+                      @ Copyright Etendo 2020-2023
+                    </Text>
+                  
+            </View>
+            <Dialog visible={showSetUrl}>
+              <Dialog.Title>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:Title")}
+                </Text>
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:Content")}
+                </Text>
+                <View
+                  style={styles.pickerContainer}
+                >
+                  <Picker
+                    selectedValue={url}
+                    onValueChange={(url) => setUrl(url)}
+                    style={[styles.picker]}
+                    itemStyle={styles.pickerItem}
+                  >
+                    <Picker.Item
+                      key="disabled"
+                      label={locale.t("ShowLoadUrl:PickerLabel")}
+                      value=""
+                    />
+                    {renderPickerItems(storedDataUrl)}
+                  </Picker>
+                </View>
+              </Dialog.Content>
+
+              <Dialog.Actions style={styles.showAddUrlContainer}>
+                <Button
+                  style={styles.showAddUrl}
+                  onPress={() => setShowAddUrl(showAddUrl)}
+                >
+                  {locale.t("ShowLoadUrl:Add")}
+                </Button>
+                <Button
+                  style={styles.buttonSaveUrl}
+                  onPress={() => saveUrl()}
+                >
+                  {locale.t("Save")}
+                </Button>
+              </Dialog.Actions>
+              <View
+                style={styles.dividerContainerStyle}
+              >
+                <Divider style={styles.dividerStyle} />
+                <Text
+                  allowFontScaling={false}
+                  style={styles.orTextStyle}
+                >
+                  {locale.t("Or")}
+                </Text>
+                <Divider style={styles.dividerStyle} />
+              </View>
+              <Dialog.Title>
+                <Text allowFontScaling={false}>
+                  {locale.t("ShowLoadUrl:DemoTitle")}
+                </Text>
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text>{locale.t("ShowLoadUrl:Demo")}</Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  style={styles.buttonDemoTry}
+                  onPress={() => demo()}
+                >
+                  {locale.t("DemoTry")}
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </View>
+          <Dialog visible={showAddUrl}>
             <Dialog.Title>
               <Text allowFontScaling={false}>
-                {locale.t("ShowLoadUrl:Title")}
+                {locale.t("ShowLoadUrl:AddUrl")}
               </Text>
             </Dialog.Title>
             <Dialog.Content>
-              <Text allowFontScaling={false}>
-                {locale.t("ShowLoadUrl:Content")}
-              </Text>
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: defaultTheme.colors.primary,
-                  borderRadius: 4
-                }}
-              >
-                <Picker
-                  selectedValue={url}
-                  onValueChange={(url) => setUrl(url)}
-                  style={[styles.picker]}
-                  itemStyle={styles.pickerItem}
+              <KeyboardAvoidingView>
+                <TextInput
+                  allowFontScaling={false}
+                  mode="outlined"
+                  placeholder={locale.t("ShowLoadUrl:Example")}
+                  value={currentAddUrl}
+                  onChangeText={(currentAddUrl) =>
+                    setCurrentAddUrl(currentAddUrl)
+                  }
+                  textContentType="URL"
+                  label={locale.t("ShowLoadUrl:EnvironmentUrl")}
+                />
+              </KeyboardAvoidingView>
+              <Dialog.Actions style={styles.ShowLoadUrlContainer}>
+                <Button
+                  style={styles.ShowLoadUrlAddButton}
+                  onPress={() => addUrl()}
                 >
-                  <Picker.Item
-                    key="disabled"
-                    label={locale.t("ShowLoadUrl:PickerLabel")}
-                    value=""
-                  />
-                  {renderPickerItems(storedDataUrl)}
-                </Picker>
+                  {locale.t("ShowLoadUrl:Add")}
+                </Button>
+                <Button
+                  style={styles.ShowLoadUrlCloseButton}
+                  onPress={() => setShowAddUrl(false)}
+                >
+                  {locale.t("ShowLoadUrl:Close")}
+                </Button>
+              </Dialog.Actions>
+              <View
+                style={styles.itemListContainer}
+              >
+                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Text
+                  allowFontScaling={false}
+                  style={styles.itemListText}
+                >
+                  {locale.t("ShowLoadUrl:ItemList")}
+                </Text>
+                <Divider style={styles.dividerStyle} />
+              </View>
+              <View style={styles.scrollViewContainer}>
+                <ScrollView>
+                  {renderUrlItems(storedDataUrl)}
+                </ScrollView>
               </View>
             </Dialog.Content>
-
-            <Dialog.Actions style={{ marginRight: 20 }}>
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: defaultTheme.colors.accent,
-                  marginRight: 10
-                }}
-                onPress={() => setShowAddUrl(true)}
-              >
-                {locale.t("ShowLoadUrl:Add")}
-              </Button>
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: defaultTheme.colors.backgroundSecondary
-                }}
-                onPress={() => saveUrl()}
-              >
-                {locale.t("Save")}
-              </Button>
-            </Dialog.Actions>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 20,
-                alignItems: "center"
-              }}
-            >
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-              <Text
-                allowFontScaling={false}
-                style={{ textAlignVertical: "center", margin: 20 }}
-              >
-                {locale.t("Or")}
-              </Text>
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-            </View>
-            <Dialog.Title>
-              <Text allowFontScaling={false}>
-                {locale.t("ShowLoadUrl:DemoTitle")}
-              </Text>
-            </Dialog.Title>
-            <Dialog.Content>
-              <Text>{locale.t("ShowLoadUrl:Demo")}</Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                style={{
-                  width: 150,
-                  backgroundColor: defaultTheme.colors.backgroundSecondary,
-                  margin: 10
-                }}
-                onPress={() => demo()}
-              >
-                {locale.t("DemoTry")}
-              </Button>
-            </Dialog.Actions>
           </Dialog>
-        </View>
-        <Dialog visible={showAddUrl}>
-          <Dialog.Title>
-            <Text allowFontScaling={false}>
-              {locale.t("ShowLoadUrl:AddUrl")}
-            </Text>
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              allowFontScaling={false}
-              mode="outlined"
-              placeholder={locale.t("ShowLoadUrl:Example")}
-              value={currentAddUrl}
-              onChangeText={(currentAddUrl) => setCurrentAddUrl(currentAddUrl)}
-              textContentType="URL"
-              label={locale.t("ShowLoadUrl:EnvironmentUrl")}
-            />
-            <Dialog.Actions style={{ marginTop: 20 }}>
-              <Button
-                style={{
-                  backgroundColor: defaultTheme.colors.accent,
-                  width: 120,
-                  marginRight: 10
-                }}
-                onPress={() => addUrl()}
-              >
-                {locale.t("ShowLoadUrl:Add")}
-              </Button>
-              <Button
-                style={{
-                  width: 120,
-                  backgroundColor: defaultTheme.colors.backgroundSecondary
-                }}
-                onPress={() => setShowAddUrl(false)}
-              >
-                {locale.t("ShowLoadUrl:Close")}
-              </Button>
-            </Dialog.Actions>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 10
-              }}
-            >
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-              <Text
-                allowFontScaling={false}
-                style={{
-                  textAlignVertical: "center",
-                  margin: 10,
-                  fontSize: 15
-                }}
-              >
-                {locale.t("ShowLoadUrl:ItemList")}
-              </Text>
-              <Divider style={{ padding: 1, flexGrow: 1 }} />
-            </View>
-            <View style={{ height: 200 }}>
-              <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
-            </View>
-          </Dialog.Content>
-        </Dialog>
 
-        {ChangedPassword()}
-      </SafeAreaView>
+          {ChangedPassword()}
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 });
