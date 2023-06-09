@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     height: 80,
     alignSelf: "center",
     top: -100
-    // flex: 1
   },
   credentialsTextMobile: {
     color: NEUTRAL_60,
