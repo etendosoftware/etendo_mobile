@@ -9,7 +9,10 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ViewStyle,
+  ImageStyle,
+  TextStyle
 } from "react-native";
 import { observer } from "mobx-react";
 import { User, Windows } from "../../stores";
@@ -221,6 +224,58 @@ const LoginFunctional = observer((props) => {
     setShowSetUrl(false);
   };
 
+  const containerStyle = ():ViewStyle => { return deviceIsATablet
+                ? styles.containerTablet
+                : styles.containerMobile
+  }
+  const buttonsDemoSettings = ():ViewStyle => {
+    return deviceIsATablet
+                  ? styles.buttonsDemoSettingsTablet
+                  : styles.buttonsDemoSettings
+  } 
+ const buttonsContainers = ():ViewStyle => {
+    return deviceIsATablet ? styles.buttonsContainers : styles.buttonsContainersMobile
+  } 
+
+ const etendoLogoContainer = ():ViewStyle => {
+    return deviceIsATablet
+                ? styles.etendoLogoContainerTablet : styles.etendoLogoContainerMobile
+  } 
+  
+   const etendoLogotype = ():ImageStyle => {
+    return deviceIsATablet
+                      ? styles.etendoLogotypeTablet
+                      : styles.etendoLogotypeMobile
+  } 
+     const containerInputs = ():ViewStyle => {
+    return deviceIsATablet ? styles.containerInputs : styles.containerInputsMobile
+  } 
+     const copyRightStyle = ():ViewStyle => {
+    return deviceIsATablet ? styles.copyRightStyle : styles.copyRightStyleMobile
+  } 
+  const credentialsText = ():TextStyle => {
+    return deviceIsATablet ? styles.credentialsTextTabletM  : styles.credentialsTextMobile
+  } 
+  const welcomeText = ():string => {
+    return  deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome")
+  } 
+  const generalContainerStyle = ():ViewStyle => {
+    return  deviceIsATablet
+              ? styles.generalContainerTablet
+              : styles.generalContainerMobile
+  } 
+  const backgroundContainer = ():ViewStyle => {
+    return deviceIsATablet ? styles.backgroundContainerTablet : styles.backgroundContainerMobile
+
+  } 
+const settingsImageContainer = ():ViewStyle => {
+    return deviceIsATablet ? styles.settingsImageContainerTablet : styles.settingsImageContainerMobile
+} 
+ const changePasswordStyle = ():ViewStyle => {
+    return deviceIsATablet ? styles.changePasswordTablet : styles.changePasswordMobile
+
+} 
+
   const renderUrlItems = (items: any) => {
     if (items.length !== 0) {
       return items.map((item: any) => {
@@ -311,20 +366,13 @@ const LoginFunctional = observer((props) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={ styles.keyboardAvoiding  }
       >
         <SafeAreaView
-          style={
-            deviceIsATablet
-              ? styles.generalContainerTablet
-              : styles.generalContainerMobile
-          }
+          style={generalContainerStyle()}
         >
           <View
-            style={{
-              flex: 1,
-              flexDirection: deviceIsATablet ? "row" : "column"
-            }}
+            style={backgroundContainer()}
           >
             <Image
               source={deviceIsATablet ? null : require("../../img/background.png")}
@@ -341,16 +389,10 @@ const LoginFunctional = observer((props) => {
           )}
 
           <View
-            style={
-              deviceIsATablet
-                ? styles.containerTablet
-                : styles.containerMobile
-            }
+            style={containerStyle()}
           >
-            <View style={{ margin: deviceIsATablet ? 55 : 0, flex: 1 }}>
-              <View style={deviceIsATablet
-                ? styles.buttonsDemoSettingsTablet
-                : styles.buttonsDemoSettings}>
+            <View style={ buttonsContainers() }>
+              <View style={buttonsDemoSettings()}>
                 <View style={styles.buttonDemo}>
                   <ButtonUI
                     height={43}
@@ -361,39 +403,27 @@ const LoginFunctional = observer((props) => {
                   />
                 </View>
                 <View
-                  style={[
-                    styles.settingsImageContainer,
-                    { right: deviceIsATablet ? -15 : undefined }
-                  ]}
+                  style={settingsImageContainer()}
                 >
                   <ButtonUI
                     onPress={() => props.navigation.navigate("Settings")}
                     text={locale.t("Settings")}
                     typeStyle="whiteBorder"
                     height={47}
-                    image=<ConfigurationIcon style={{ height: 16, width: 16, marginRight: 8 }} />
+                    image=<ConfigurationIcon style={styles.configurationImage } />
                   />
                 </View>
               </View>
-              <View style={[deviceIsATablet
-                ? styles.etendoLogoContainerTablet : styles.etendoLogoContainerMobile]}>
-
+              <View style={etendoLogoContainer()}>
                 <Image
                   source={require("../../../assets/etendo-logotype.png")}
-                  style={[
-                    deviceIsATablet
-                      ? styles.etendoLogotypeTablet
-                      : styles.etendoLogotypeMobile
-                  ]}
+                  style={etendoLogotype()}
                 />
                   <View style={styles.welcomeTitleContainer}>
                     <Text
-                      style={[
-                        styles.welcomeTitle,
-                        { fontSize: deviceIsATablet ? 30 : 30 }
-                      ]}
+                      style={styles.welcomeTitle}
                     >
-                      {deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome")}
+                      {welcomeText()}
                     </Text>
                     <Image
                       source={require("../../img/stars.png")}
@@ -401,13 +431,13 @@ const LoginFunctional = observer((props) => {
                     />
                   </View>
                   <Text
-                    style={[styles.credentialsTextMobile, { marginTop: deviceIsATablet || Platform.OS === "android" ? -55 : -20 }]}
+                    style={credentialsText()}
                   >
                     {locale.t("EnterCredentials")}
                   </Text>
               </View>
 
-                  <View style={deviceIsATablet ? styles.containerInputs : styles.containerInputsMobile}>
+                  <View style={containerInputs()}>
                     <View style={styles.textInputStyle}>
                       <Text style={styles.textInputsHolders}>
                         {locale.t("User")}
@@ -452,14 +482,14 @@ const LoginFunctional = observer((props) => {
                     </View>
                     <TouchableOpacity
                       activeOpacity={0.5}
-                      style={{ marginTop: deviceIsATablet ? 0 : 25 }}
+                      style={changePasswordStyle()}
                       onPress={() => [
                         setShowChangePassword(true)
                       ]}
                     ></TouchableOpacity>
                   </View>
 
-                    <Text style={deviceIsATablet ? styles.copyRightStyle : styles.copyRightStyleMobile}>
+                    <Text style={copyRightStyle()}>
                       @ Copyright Etendo 2020-2023
                     </Text>
                   
@@ -475,11 +505,7 @@ const LoginFunctional = observer((props) => {
                   {locale.t("ShowLoadUrl:Content")}
                 </Text>
                 <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: defaultTheme.colors.primary,
-                    borderRadius: 4
-                  }}
+                  style={styles.pickerContainer}
                 >
                   <Picker
                     selectedValue={url}
@@ -497,43 +523,31 @@ const LoginFunctional = observer((props) => {
                 </View>
               </Dialog.Content>
 
-              <Dialog.Actions style={{ marginRight: 20 }}>
+              <Dialog.Actions style={styles.showAddUrlContainer}>
                 <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.accent,
-                    marginRight: 10
-                  }}
+                  style={styles.showAddUrl}
                   onPress={() => setShowAddUrl(showAddUrl)}
                 >
                   {locale.t("ShowLoadUrl:Add")}
                 </Button>
                 <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
+                  style={styles.buttonSaveUrl}
                   onPress={() => saveUrl()}
                 >
                   {locale.t("Save")}
                 </Button>
               </Dialog.Actions>
               <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 20,
-                  alignItems: "center"
-                }}
+                style={styles.dividerContainerStyle}
               >
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={styles.dividerStyle} />
                 <Text
                   allowFontScaling={false}
-                  style={{ textAlignVertical: "center", margin: 20 }}
+                  style={styles.orTextStyle}
                 >
                   {locale.t("Or")}
                 </Text>
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={styles.dividerStyle} />
               </View>
               <Dialog.Title>
                 <Text allowFontScaling={false}>
@@ -545,10 +559,7 @@ const LoginFunctional = observer((props) => {
               </Dialog.Content>
               <Dialog.Actions>
                 <Button
-                  style={{
-                    width: 150,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
+                  style={styles.buttonDemoTry}
                   onPress={() => demo()}
                 >
                   {locale.t("DemoTry")}
@@ -576,49 +587,33 @@ const LoginFunctional = observer((props) => {
                   label={locale.t("ShowLoadUrl:EnvironmentUrl")}
                 />
               </KeyboardAvoidingView>
-              <Dialog.Actions style={{ marginTop: 20 }}>
+              <Dialog.Actions style={styles.ShowLoadUrlContainer}>
                 <Button
-                  style={{
-                    backgroundColor: defaultTheme.colors.accent,
-                    width: 120,
-                    marginRight: 10
-                  }}
+                  style={styles.ShowLoadUrlAddButton}
                   onPress={() => addUrl()}
                 >
                   {locale.t("ShowLoadUrl:Add")}
                 </Button>
                 <Button
-                  style={{
-                    width: 120,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
+                  style={styles.ShowLoadUrlCloseButton}
                   onPress={() => setShowAddUrl(false)}
                 >
                   {locale.t("ShowLoadUrl:Close")}
                 </Button>
               </Dialog.Actions>
               <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 10
-                }}
+                style={styles.itemListContainer}
               >
                 <Divider style={{ padding: 1, flexGrow: 1 }} />
                 <Text
                   allowFontScaling={false}
-                  style={{
-                    textAlignVertical: "center",
-                    margin: 10,
-                    fontSize: 15
-                  }}
+                  style={styles.itemListText}
                 >
                   {locale.t("ShowLoadUrl:ItemList")}
                 </Text>
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
+                <Divider style={styles.dividerStyle} />
               </View>
-              <View style={{ height: 200 }}>
+              <View style={styles.scrollViewContainer}>
                 <ScrollView>
                   {renderUrlItems(storedDataUrl)}
                 </ScrollView>

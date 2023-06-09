@@ -14,12 +14,78 @@ const styles = StyleSheet.create({
     top: -160,
     height: "60%"
   },
+  keyboardAvoiding: { flex: 1 },
+  buttonsContainers: {
+    margin: 55,
+    flex: 1
+  },
+  configurationImage: {
+    height: 16,
+    width: 16,
+    marginRight: 8
+  },
+  buttonsContainersMobile: {
+    margin: 0,
+    flex: 1
+  },
   etendoLogotypeMobile: {
     resizeMode: "contain",
     width: 80,
     height: 80,
     alignSelf: "center",
     top: -100
+  },
+  backgroundContainerTablet: {
+    flex: 1,
+    flexDirection: "row"
+  },
+  backgroundContainerMobile: {
+    flex: 1,
+    flexDirection: "column"
+  },
+  credentialsTextTabletM: {
+    marginTop: -55,
+    color: NEUTRAL_60,
+    fontSize: 14,
+    fontWeight: "500",
+    top: -50,
+    paddingRight: 25,
+    paddingLeft: 25,
+    display: "flex",
+    alignSelf: "stretch",
+    fontFamily: "Inter",
+    alignItems: "center",
+    textAlign: "center"
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: defaultTheme.colors.primary,
+    borderRadius: 4
+  },
+  dividerStyle: {
+    padding: 1,
+    flexGrow: 1
+  },
+  orTextStyle: {
+    textAlignVertical: "center",
+    margin: 20
+  },
+  dividerContainerStyle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    alignItems: "center"
+  },
+  showAddUrlContainer: {
+    marginRight: 20
+  },
+  buttonSaveUrl: {
+    width: 110,
+    backgroundColor: defaultTheme.colors.backgroundSecondary
+  },
+  buttonDemoTry: {
+    width: 150,
+    backgroundColor: defaultTheme.colors.backgroundSecondary
   },
   credentialsTextMobile: {
     color: NEUTRAL_60,
@@ -29,6 +95,7 @@ const styles = StyleSheet.create({
     paddingRight: 25,
     paddingLeft: 25,
     display: "flex",
+    marginTop: -20,
     alignSelf: "stretch",
     fontFamily: "Inter",
     alignItems: "center",
@@ -96,7 +163,7 @@ const styles = StyleSheet.create({
     top: 40,
     justifyContent: "space-between"
   },
-  settingsImageContainer: {
+  settingsImageContainerMobile: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -108,6 +175,54 @@ const styles = StyleSheet.create({
     top: -48,
     width: 112,
     height: 40
+  },
+  changePasswordTablet: {
+    marginTop: 0
+  },
+  showAddUrl: {
+    width: 110,
+    backgroundColor: defaultTheme.colors.accent,
+    marginRight: 10
+  },
+  changePasswordMobile: {
+    marginTop: 25
+  },
+  ShowLoadUrlContainer: {
+    marginTop: 20
+  },
+  itemListText: {
+    textAlignVertical: "center",
+    margin: 10,
+    fontSize: 15
+  },
+  itemListContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10
+  },
+  ShowLoadUrlCloseButton: {
+    width: 120,
+    backgroundColor: defaultTheme.colors.backgroundSecondary
+  },
+  ShowLoadUrlAddButton: {
+    backgroundColor: defaultTheme.colors.accent,
+    width: 120,
+    marginRight: 10
+  },
+  settingsImageContainerTablet: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Inter-Regular",
+    lineHeight: 24,
+    fontSize: 16,
+    borderRadius: 8,
+    top: -48,
+    width: 112,
+    height: 40,
+    right: -15
   },
   settingsImage: {
     display: "flex",
@@ -169,7 +284,9 @@ const styles = StyleSheet.create({
     height: 27,
     marginRight: -30
   },
-
+  scrollViewContainer: {
+    height: 200
+  },
   generalView: {
     flex: 1,
     flexDirection: "column",
