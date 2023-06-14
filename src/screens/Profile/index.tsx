@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, Image } from "react-native";
 import locale from "../../i18n/locale";
-import { Appbar, Button, Dialog, FAB, List, Text } from "react-native-paper";
+import { Appbar, List, Text } from "react-native-paper";
 import { User } from "../../stores";
 import { observer } from "mobx-react";
 import withAuthentication from "../../withAuthentication";
 import { OBRest, Restrictions } from "obrest";
 import { IRecord } from "../../types/Record";
-import { defaultTheme } from "../../themes";
 import { ShowProfilePicture } from "../../components";
 import { isTablet } from "../../../hook/isTablet";
 import styles from "./styles";
-
-const settings = require("../../img/settings-profile.png");
+import ButtonUI from "../../../ui/components/button/Button";
+import { Navbar } from "../../../ui/components";
+import { BackIcon } from "../../../ui/assets/images/icons/BackIcon";
 
 const Profile = observer((props) => {
-
-  const [showChangePicture, setShowChangePicture] = useState<boolean>(false);
-  const [role, setRole] = useState<string>('');
-  const [org, setOrg] = useState<string>('');
-  const [client, setClient] = useState<string>('');
-  const [warehouse, setWarehouse] = useState<string>('');
+  const [role, setRole] = useState<string>("");
+  const [org, setOrg] = useState<string>("");
+  const [client, setClient] = useState<string>("");
+  const [warehouse, setWarehouse] = useState<string>("");
 
   useEffect(() => {
-    
     if (User.data) {
       Promise.all([
         getOrganizationName(),
@@ -33,10 +30,10 @@ const Profile = observer((props) => {
       ])
         .then((values) => {
           const [org, role, warehouse, client] = values;
-          setRole(role)
-          setOrg(org)
-          setClient(client)
-          setWarehouse(warehouse)
+          setRole(role);
+          setOrg(org);
+          setClient(client);
+          setWarehouse(warehouse);
         })
         .catch(function(err) {
           console.log(err);
@@ -44,19 +41,19 @@ const Profile = observer((props) => {
     }
   }, []);
   const getStyleItemList = () => {
-    return { width: isTablet() ? "50%" : "100%" };
+    return isTablet() ? styles.itemListStyleTablet : styles.itemListStyleMobile;
   };
-
-  const getStyleList = () => {
-    return { width: isTablet() ? "50%" : "80%", alignItems: "center" };
+  const getStyleItemListFirst = () => {
+    return isTablet() ? styles.itemListStyleFirst : styles.itemListStyleMobile;
+  };
+  const getStyleItemListLastTablet = () => {
+    return isTablet()
+      ? styles.itemListStyleLastTablet
+      : styles.itemListStyleMobile;
   };
 
   const getStyleContainer = () => {
     return isTablet() ? styles.containerTablet : styles.containerMobile;
-  };
-
-  const getStyleImageBackground = () => {
-    return isTablet() ? styles.backgroundTablet : styles.backgroundMobile;
   };
 
   const getOrganizationName = async () => {
@@ -87,134 +84,157 @@ const Profile = observer((props) => {
     return role.name;
   };
 
-  const ChangedImagProfile = () => {
-    return (
-      <Dialog
-        visible={showChangePicture}
-        style={{ height: "15%", justifyContent: "center" }}
-      >
-        <Dialog.Content>
-          <Text allowFontScaling={false}>{locale.t("Coming_Soon")}</Text>
-        </Dialog.Content>
-        <View style={{ width: "100%", alignSelf: "center" }}>
-          <TouchableOpacity
-            onPress={() => setShowChangePicture(false)}
-            style={{
-              backgroundColor: defaultTheme.colors.accent,
-              width: "20%",
-              alignSelf: "flex-end",
-              marginRight: 20
-            }}
-          >
-            <Button style={{ width: "100%", alignItems: "center" }}>Ok</Button>
-          </TouchableOpacity>
-        </View>
-      </Dialog>
-    );
+  const geyBackgroundProfile = () => {
+    return isTablet()
+      ? require("../../img/tablet-profile.png")
+      : require("../../img/profile-background.png");
+  };
+
+  const getProfilePictureStyle = () => {
+    return isTablet() ? styles.profilePictureTablet : styles.profilePicture;
+  };
+
+  const getUserDataStyle = () => {
+    return isTablet() ? styles.userDataTablet : styles.userData;
+  };
+
+  const userNameContainer = () => {
+    return isTablet()
+      ? styles.userNameContainerTablet
+      : styles.userNameContainer;
+  };
+  const imageHeader = () => {
+    return isTablet() ? styles.imageHeaderTablet : styles.imageHeader;
+  };
+  const accountDataContainer = () => {
+    return isTablet() ? styles.accountDataContainer : null;
+  };
+  const accountTitleStyle = () => {
+    return isTablet() ? styles.accountTitleTablet : styles.accountTitle;
+  };
+
+  const getDescriptionStyle = () => {
+    return isTablet() ? styles.descriptionStyleTablet : styles.descriptionStyle;
+  };
+
+  const getinformationCardStyle = () => {
+    return isTablet() ? styles.informationCardTablet : null;
+  };
+
+  const getListSectionStyle = () => {
+    return isTablet() ? styles.informationCardTablet : styles.informationCard;
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: defaultTheme.colors.background,
-        height: "100%"
-      }}
-    >
-      <Appbar.Header dark={true}>
-        {!User.token && (
-          <Appbar.BackAction
-            onPress={() => props.navigation.navigate("Login")}
-          />
-        )}
-        {User.token && (
-          <Appbar.Action
-            icon="menu"
-            onPress={() => props.navigation.toggleDrawer()}
-          />
-        )}
-        <Appbar.Content title={locale.t("Profile:Title")} />
-      </Appbar.Header>
-      <View style={getStyleContainer()}>
-        <View style={{ alignItems: "center", marginTop: 20, width: "50%" }}>
-          <View style={{ height: 140, alignItems: "center" }}>
-            <ShowProfilePicture
-              size={140}
-              username={User.data.username}
-            ></ShowProfilePicture>
-            <FAB
-              icon={"camera-plus-outline"}
-              small={true}
-              style={{
-                position: "absolute",
-                right: 0,
-                bottom: 0,
-                backgroundColor: defaultTheme.colors.backgroundSecondary
+    <View style={styles.fullContainer}>
+      {isTablet() ? (
+        <View>
+          <View style={styles.navbarTablet}>
+            <Navbar
+              profileImage={
+                <ShowProfilePicture size={75} username={User?.data?.username} />
+              }
+              name={User?.data?.username}
+              onOptionSelectedProfile={async () => {
+                await User?.logout();
+                !User?.token
+                  ? await props?.navigation?.navigate("Login")
+                  : null;
               }}
-              color={defaultTheme.colors.text}
-              onPress={() => [setShowChangePicture(true)]}
-              visible={showChangePicture === false}
             />
           </View>
-          <View style={{ justifyContent: "center", height: 40 }}>
-            <Text
-              allowFontScaling={false}
-              style={{ fontWeight: "bold", fontSize: 20 }}
-            >
-              {User.data.username}
-            </Text>
+          <View style={styles.breadCumsTablet}>
+            <Text style={styles.profileTitle}>{locale.t("Profile")}</Text>
+            <ButtonUI
+              image={<BackIcon style={styles.backIcon} />}
+              height={32}
+              width={84}
+              typeStyle="terciary"
+              text={locale.t("Back")}
+              onPress={
+                !User.token
+                  ? () => props.navigation.navigate("Login")
+                  : () => props.navigation.navigate("Home")
+              }
+            />
           </View>
         </View>
+      ) : (
+        <Appbar.Header dark={true} style={styles.header}>
+          {!User.token && (
+            <Appbar.BackAction
+              onPress={() => props.navigation.navigate("Login")}
+            />
+          )}
+          {User.token && (
+            <Appbar.Action
+              icon="menu"
+              onPress={() => props.navigation.toggleDrawer()}
+            />
+          )}
+          <Appbar.Content title={locale.t("Profile:Title")} />
+        </Appbar.Header>
+      )}
+      <Image source={geyBackgroundProfile()} style={imageHeader()} />
+      <View style={styles.accountContainer}>
+        <View style={getStyleContainer()}>
+          <View style={getUserDataStyle()}>
+            <View style={getProfilePictureStyle()}>
+              <ShowProfilePicture
+                size={140}
+                username={User.data.username}
+              ></ShowProfilePicture>
+            </View>
+            <View style={userNameContainer()}>
+              <Text allowFontScaling={false} style={styles.usernameText}>
+                {User.data.username}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={accountDataContainer()}>
+          <Text style={accountTitleStyle()}>{locale.t("Profile:Account")}</Text>
+          <View style={getinformationCardStyle()}>
+            <List.Section style={getListSectionStyle()}>
+              <List.Item
+                title={locale.t("Profile:Role")}
+                description={role === null || org === " " ? "*" : role}
+                style={getStyleItemListFirst()}
+                titleStyle={styles.titleStyle}
+                descriptionStyle={getDescriptionStyle()}
+                descriptionNumberOfLines={3}
+              />
+              <List.Item
+                title={locale.t("Profile:Org")}
+                description={org === null || org === " " ? "*" : org}
+                style={getStyleItemList()}
+                titleStyle={styles.titleStyle}
+                descriptionStyle={getDescriptionStyle()}
+                descriptionNumberOfLines={3}
+              />
+              <List.Item
+                title={locale.t("Profile:Client")}
+                description={client === null || client === " " ? "*" : org}
+                style={getStyleItemList()}
+                titleStyle={styles.titleStyle}
+                descriptionStyle={getDescriptionStyle()}
+                descriptionNumberOfLines={3}
+              />
 
-        <List.Section style={getStyleList()}>
-          <List.Item
-            title={locale.t("Profile:Role")}
-            description={
-            role === null || org === " "
-                ? "*"
-                : role
-            }
-            style={getStyleItemList()}
-            descriptionStyle={{ paddingTop: 5 }}
-            descriptionNumberOfLines={3}
-          />
-          <List.Item
-            title={locale.t("Profile:Org")}
-            description={
-              org === null || org === " "
-                ? "*"
-                : org
-            }
-            style={getStyleItemList()}
-            descriptionStyle={{ paddingTop: 5 }}
-            descriptionNumberOfLines={3}
-          />
-          <List.Item
-            title={locale.t("Profile:Client")}
-            description={
-              client === null || client === " "
-                ? "*"
-                : org
-            }
-            style={getStyleItemList()}
-            descriptionStyle={{ paddingTop: 5 }}
-            descriptionNumberOfLines={3}
-          />
-
-          <List.Item
-            title={locale.t("Profile:warehouse")}
-            description={
-              warehouse === null || org === " "
-                ? "*"
-                : warehouse
-            }
-            style={getStyleItemList()}
-            descriptionStyle={{ paddingTop: 5 }}
-            descriptionNumberOfLines={3}
-          />
-        </List.Section>
+              <List.Item
+                title={locale.t("Profile:warehouse")}
+                description={
+                  warehouse === null || org === " " ? "*" : warehouse
+                }
+                style={getStyleItemListLastTablet()}
+                titleStyle={styles.titleStyle}
+                descriptionStyle={styles.descriptionStyleLast}
+                descriptionNumberOfLines={3}
+              />
+            </List.Section>
+          </View>
+        </View>
       </View>
-      <Image style={getStyleImageBackground()} source={settings} />
-      {ChangedImagProfile()}
     </View>
   );
 });
