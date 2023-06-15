@@ -222,11 +222,6 @@ const LoginFunctional = observer((props) => {
       ? styles.buttonsDemoSettingsTablet
       : styles.buttonsDemoSettings;
   };
-  const buttonsContainers = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.buttonsContainers
-      : styles.buttonsContainersMobile;
-  };
 
   const etendoLogoContainer = (): ViewStyle => {
     return deviceIsATablet
@@ -316,7 +311,11 @@ const LoginFunctional = observer((props) => {
   };
 
   return (
-    <TouchableWithoutFeedback accessible={false} style={{ flex: 1 }}>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      accessible={false}
+      style={{ flex: 1 }}
+    >
       <SafeAreaView style={generalContainerStyle()}>
         <View style={[backgroundContainer()]}>
           <Image
@@ -357,25 +356,26 @@ const LoginFunctional = observer((props) => {
               />
             </View>
           </View>
-          <View style={etendoLogoContainer()}>
-            {win.height > 605 && (
-              <Image
-                source={require("../../../assets/etendo-logotype.png")}
-                style={etendoLogotype()}
-              />
-            )}
-            <View style={getWelcomeContainer()}>
-              <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
-              <Image
-                source={require("../../img/stars.png")}
-                style={styles.starsImage}
-              />
+          {!keyboardOpen && (
+            <View style={etendoLogoContainer()}>
+              {win.height > 605 && (
+                <Image
+                  source={require("../../../assets/etendo-logotype.png")}
+                  style={etendoLogotype()}
+                />
+              )}
+              <View style={getWelcomeContainer()}>
+                <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
+                <Image
+                  source={require("../../img/stars.png")}
+                  style={styles.starsImage}
+                />
+              </View>
+              <Text style={credentialsText()}>
+                {locale.t("EnterCredentials")}
+              </Text>
             </View>
-            <Text style={credentialsText()}>
-              {locale.t("EnterCredentials")}
-            </Text>
-          </View>
-
+          )}
           <View style={containerInputs()}>
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
