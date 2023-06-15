@@ -11,12 +11,14 @@ const styles = StyleSheet.create({
     backgroundColor: defaultTheme.colors.background,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    top: -160,
     height: "60%"
   },
-  keyboardAvoiding: { flex: 1 },
+  keyboardAvoiding: {
+    flex: 1,
+    display: "flex",
+    backgroundColor: "white"
+  },
   buttonsContainers: {
-    margin: 55,
     flex: 1
   },
   configurationImage: {
@@ -24,16 +26,12 @@ const styles = StyleSheet.create({
     width: 16,
     marginRight: 8
   },
-  buttonsContainersMobile: {
-    margin: 0,
-    flex: 1
-  },
   etendoLogotypeMobile: {
     resizeMode: "contain",
     width: 80,
     height: 80,
-    alignSelf: "center",
-    top: -100
+    alignSelf: "center"
+    // top: -100
   },
   backgroundContainerTablet: {
     flex: 1,
@@ -70,12 +68,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     margin: 20
   },
-  dividerContainerStyle: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    alignItems: "center"
-  },
   showAddUrlContainer: {
     marginRight: 20
   },
@@ -89,17 +81,16 @@ const styles = StyleSheet.create({
   },
   credentialsTextMobile: {
     color: NEUTRAL_60,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
-    top: -50,
     paddingRight: 25,
     paddingLeft: 25,
     display: "flex",
-    marginTop: -20,
     alignSelf: "stretch",
     fontFamily: "Inter",
     alignItems: "center",
-    textAlign: "center"
+    textAlign: "center",
+    marginBottom: 30
   },
   containerTablet: {
     position: "absolute",
@@ -109,20 +100,21 @@ const styles = StyleSheet.create({
     backgroundColor: defaultTheme.colors.background,
     borderRadius: 20,
     width: 600,
-    height: 656
+    height: "90%"
   },
   generalContainerTablet: {
     flex: 1,
     flexDirection: "row",
     backgroundColor: WHITE,
-    display: "flex",
     alignItems: "center",
     justifyContent: "center"
   },
   generalContainerMobile: {
     flex: 1,
     flexDirection: "column",
+    justifyContent: "center",
     backgroundColor: WHITE
+    // paddingBottom: 350
   },
   backgroundLoginImageContainer: {
     position: "relative",
@@ -147,20 +139,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     left: -5
   },
-  buttonsDemoSettings: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 40,
-    marginTop: 36,
-    marginHorizontal: 1,
-    justifyContent: "space-between"
-  },
   buttonsDemoSettingsTablet: {
     display: "flex",
     flexDirection: "row",
     marginBottom: 80,
     left: -10,
     top: 40,
+    justifyContent: "space-between"
+  },
+  buttonsDemoSettings: {
+    flexDirection: "row",
     justifyContent: "space-between"
   },
   settingsImageContainerMobile: {
@@ -171,10 +159,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     lineHeight: 24,
     fontSize: 16,
-    borderRadius: 8,
-    top: -48,
-    width: 112,
-    height: 40
+    borderRadius: 8
   },
   changePasswordTablet: {
     marginTop: 0
@@ -251,11 +236,10 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   etendoLogoContainerMobile: {
-    display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40
+    marginTop: 30
   },
   credentialsTextTablet: {
     color: NEUTRAL_60,
@@ -266,13 +250,19 @@ const styles = StyleSheet.create({
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    top: -100,
     marginTop: 20
+  },
+  welcomeTitleSmallContainer: {
+    flexDirection: "row",
+    alignSelf: "center",
+    top: -100,
+    marginTop: 48
   },
   welcomeTitle: {
     color: PRIMARY_100,
     fontWeight: "700",
     fontSize: 30,
+    height: 40,
     marginBottom: 4,
     lineHeight: 36
   },
@@ -331,7 +321,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    top: -48,
     fontFamily: "Inter-Regular"
   },
   textInputsHolders: {
@@ -363,8 +352,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   copyRightStyleMobile: {
-    top: -15,
-    fontSize: 10,
+    fontSize: 12,
     textAlign: "center",
     alignItems: "center",
     justifyContent: "center",
