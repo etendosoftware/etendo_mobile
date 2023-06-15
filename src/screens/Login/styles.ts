@@ -240,8 +240,7 @@ const styles = StyleSheet.create({
   welcomeTitleSmallContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    top: -100,
-    marginTop: 48
+    marginTop: 28
   },
   welcomeTitle: {
     color: PRIMARY_100,
