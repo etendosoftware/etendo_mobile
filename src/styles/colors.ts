@@ -1,7 +1,9 @@
-export const BLUE = "#202452";
+export const PRIMARY_100 = "#202452";
 
 export const YELLOW = "#FAD614";
 export const YELLOW_30 = "#FEF7D0";
+
+export const NEUTRAL_60 = "#666666";
 
 export const GREY_BLUE = "#808695";
 export const GREY_BLUE_50 = "#D3D6E1";
@@ -23,6 +25,8 @@ export const GREY_60 = "#808080";
 export const GREY_40 = "#999999";
 export const GREY_10 = "#E5E5E5";
 export const GREY_5 = "#F2F2F2";
+
+export const TERCIARY_100 = "#DDDFF6";
 
 export const BLACK = "#000000";
 

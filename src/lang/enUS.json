@@ -7,7 +7,7 @@
   "Change": "Change",
   "User": "User",
   "Password": "Password",
-  "Log in": "Log in",
+  "Log in": "Login",
   "Log out": "Log out",
   "Settings": "Settings",
   "Profile": "Profile",
@@ -75,6 +75,6 @@
   "Recover_password": "Please contact the ERP administrator to recover your password.",
   "Forgot_password": "Forgot your password?",
   "NoResult": "No results found",
-  "Welcome": "Welcome to Etendo",
+  "Welcome": "Welcome to Etendo!",
   "EnterCredentials": "Enter your credentials to access your account."
 }

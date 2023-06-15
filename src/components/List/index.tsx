@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Picker } from "@react-native-picker/picker";
-import Modal, { ModalProps, ModalState } from "./Modal";
+import Modal, { ModalProps, ModalState } from "./../Modal";
 import locale from "../../i18n/locale";
 import FormContext from "../../contexts/FormContext";
 

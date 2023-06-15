@@ -51,6 +51,7 @@
     "react-native-screens": "^3.18.2",
     "react-native-svg": "^13.9.0",
     "react-native-swipeable-item": "^2.0.9",
+    "react-native-svg": "^13.9.0",
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "0.17.7",
@@ -78,5 +79,9 @@
   },
   "private": true,
   "name": "Etendo_Mobile",
-  "version": "1.1.5"
+  "version": "1.1.5",
+  "resolutions": {
+    "@types/react": "17.0.14",
+    "@types/react-dom": "17.0.14"
+  }
 }
