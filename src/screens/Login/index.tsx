@@ -41,8 +41,7 @@ const LoginFunctional = observer((props) => {
   const [coreVersion, setCoreVersion] = useState<string>("");
   const [url, setUrl] = useState<string>("");
   const [showSetUrl, setShowSetUrl] = useState<boolean>(false);
-  const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
-  const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
 
@@ -84,6 +83,27 @@ const LoginFunctional = observer((props) => {
     };
 
     load();
+  }, []);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardOpen(true);
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardOpen(false);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -296,11 +316,7 @@ const LoginFunctional = observer((props) => {
   };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={Keyboard.dismiss}
-      accessible={false}
-      style={{ flex: 1 }}
-    >
+    <TouchableWithoutFeedback accessible={false} style={{ flex: 1 }}>
       <SafeAreaView style={generalContainerStyle()}>
         <View style={[backgroundContainer()]}>
           <Image
@@ -320,93 +336,89 @@ const LoginFunctional = observer((props) => {
         )}
 
         <View style={[containerStyle()]}>
-          <ScrollView style={{ flex: 1 }}>
-            <View style={buttonsDemoSettings()}>
-              <View style={styles.buttonDemo}>
-                <ButtonUI
-                  height={43}
-                  width={98}
-                  typeStyle="terciary"
-                  onPress={() => demo()}
-                  text={locale.t("DemoTry")}
-                />
-              </View>
-              <View style={settingsImageContainer()}>
-                <ButtonUI
-                  onPress={() => props.navigation.navigate("Settings")}
-                  text={locale.t("Settings")}
-                  typeStyle="whiteBorder"
-                  height={47}
-                  width={110}
-                  image={
-                    <ConfigurationIcon style={styles.configurationImage} />
-                  }
-                />
-              </View>
-            </View>
-            <View style={etendoLogoContainer()}>
-              {win.height > 605 && (
-                <Image
-                  source={require("../../../assets/etendo-logotype.png")}
-                  style={etendoLogotype()}
-                />
-              )}
-              <View style={getWelcomeContainer()}>
-                <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
-                <Image
-                  source={require("../../img/stars.png")}
-                  style={styles.starsImage}
-                />
-              </View>
-              <Text style={credentialsText()}>
-                {locale.t("EnterCredentials")}
-              </Text>
-            </View>
-
-            <View style={containerInputs()}>
-              <View style={styles.textInputStyle}>
-                <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
-                <Input
-                  typeField={"textInput"}
-                  value={username}
-                  onChangeText={(username) => setUsername(username)}
-                  placeholder={locale.t("User")}
-                  fontSize={16}
-                  height={48}
-                />
-              </View>
-
-              <View style={styles.textInputStyle}>
-                <Text style={styles.textInputsHolders}>
-                  {locale.t("Password")}
-                </Text>
-                <Input
-                  typeField={"textInputPassword"}
-                  value={password}
-                  onChangeText={(password) => setPassword(password)}
-                  placeholder={locale.t("Password")}
-                  fontSize={16}
-                  height={48}
-                />
-              </View>
-            </View>
-            <View>
+          <View style={buttonsDemoSettings()}>
+            <View style={styles.buttonDemo}>
               <ButtonUI
-                onPress={submitLogin}
-                text={locale.t("Log in")}
-                typeStyle={"primary"}
-                width="100%"
-                height={50}
+                height={43}
+                width={98}
+                typeStyle="terciary"
+                onPress={() => demo()}
+                text={locale.t("DemoTry")}
               />
             </View>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={changePasswordStyle()}
-              onPress={() => [setShowChangePassword(true)]}
-            ></TouchableOpacity>
+            <View style={settingsImageContainer()}>
+              <ButtonUI
+                onPress={() => props.navigation.navigate("Settings")}
+                text={locale.t("Settings")}
+                typeStyle="whiteBorder"
+                height={47}
+                width={110}
+                image={<ConfigurationIcon style={styles.configurationImage} />}
+              />
+            </View>
+          </View>
+          <View style={etendoLogoContainer()}>
+            {win.height > 605 && (
+              <Image
+                source={require("../../../assets/etendo-logotype.png")}
+                style={etendoLogotype()}
+              />
+            )}
+            <View style={getWelcomeContainer()}>
+              <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
+              <Image
+                source={require("../../img/stars.png")}
+                style={styles.starsImage}
+              />
+            </View>
+            <Text style={credentialsText()}>
+              {locale.t("EnterCredentials")}
+            </Text>
+          </View>
 
-            <Text style={copyRightStyle()}>© Copyright Etendo 2020-2023</Text>
-          </ScrollView>
+          <View style={containerInputs()}>
+            <View style={styles.textInputStyle}>
+              <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
+              <Input
+                typeField={"textInput"}
+                value={username}
+                onChangeText={(username) => setUsername(username)}
+                placeholder={locale.t("User")}
+                fontSize={16}
+                height={48}
+              />
+            </View>
+
+            <View style={styles.textInputStyle}>
+              <Text style={styles.textInputsHolders}>
+                {locale.t("Password")}
+              </Text>
+              <Input
+                typeField={"textInputPassword"}
+                value={password}
+                onChangeText={(password) => setPassword(password)}
+                placeholder={locale.t("Password")}
+                fontSize={16}
+                height={48}
+              />
+            </View>
+          </View>
+          <View>
+            <ButtonUI
+              onPress={submitLogin}
+              text={locale.t("Log in")}
+              typeStyle={"primary"}
+              width="100%"
+              height={50}
+            />
+          </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={changePasswordStyle()}
+            onPress={() => [setShowChangePassword(true)]}
+          ></TouchableOpacity>
+
+          <Text style={copyRightStyle()}>© Copyright Etendo 2020-2023</Text>
         </View>
 
         {ChangedPassword()}

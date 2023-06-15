@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { defaultTheme } from "../../themes";
-import { GREY_BLUE, NEUTRAL_60, PRIMARY_100, WHITE } from "../../styles/colors";
+import { GREY_BLUE, NEUTRAL_60, PRIMARY_100 } from "../../styles/colors";
 
 const win = Dimensions.get("window");
 
@@ -11,12 +11,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultTheme.colors.background,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    height: "60%"
-  },
-  keyboardAvoiding: {
-    flex: 1,
-    display: "flex",
-    backgroundColor: "white"
+    height: "75%"
   },
   buttonsContainers: {
     flex: 1
@@ -39,14 +34,13 @@ const styles = StyleSheet.create({
   },
   backgroundContainerMobile: {
     flex: 1,
-    flexDirection: "column"
+    flexDirection: "column",
+    height: "100%"
   },
   credentialsTextTabletM: {
-    marginTop: -55,
     color: NEUTRAL_60,
     fontSize: 14,
     fontWeight: "500",
-    top: -50,
     paddingRight: 25,
     paddingLeft: 25,
     display: "flex",
@@ -99,32 +93,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: defaultTheme.colors.background,
     borderRadius: 20,
-    width: 600,
-    height: "90%"
+    width: "45%",
+    paddingVertical: 35,
+    paddingHorizontal: 40
   },
   generalContainerTablet: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: WHITE,
     alignItems: "center",
     justifyContent: "center"
   },
   generalContainerMobile: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "center",
-    backgroundColor: WHITE
-    // paddingBottom: 350
+    justifyContent: "center"
   },
   backgroundLoginImageContainer: {
     position: "relative",
     width: "100%"
   },
   backgroundHeaderImage: {
-    position: "relative",
     width: "100%",
-    height: "90%",
-    bottom: "auto"
+    height: "120%",
+    bottom: "auto",
+    resizeMode: "cover",
+    zIndex: -1
   },
   backgroundLoginImage: {
     width: "100%",
@@ -140,16 +133,14 @@ const styles = StyleSheet.create({
     left: -5
   },
   buttonsDemoSettingsTablet: {
-    display: "flex",
     flexDirection: "row",
-    marginBottom: 80,
-    left: -10,
-    top: 40,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginBottom: 10
   },
   buttonsDemoSettings: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginBottom: 10
   },
   settingsImageContainerMobile: {
     display: "flex",
@@ -196,21 +187,15 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   settingsImageContainerTablet: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     fontFamily: "Inter-Regular",
     lineHeight: 24,
     fontSize: 16,
-    borderRadius: 8,
-    top: -48,
-    width: 112,
-    height: 40,
-    right: -15
+    borderRadius: 8
   },
   settingsImage: {
-    display: "flex",
     resizeMode: "contain",
     height: 24,
     width: 24,
@@ -226,14 +211,14 @@ const styles = StyleSheet.create({
     height: 76,
     alignContent: "center",
     justifyContent: "center",
-    top: -100,
     marginTop: 40
   },
   etendoLogoContainerTablet: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: 30
   },
   etendoLogoContainerMobile: {
     flexDirection: "column",
@@ -288,10 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: "100%"
   },
-  appbarStyle: {
-    paddingTop: 28,
-    paddingLeft: 8
-  },
+
   containerLogo: {
     height: "15%"
   },
