@@ -37,7 +37,7 @@
   "LoginScreen:LoginButtonTitle": "Login",
   "LoginScreen:NoPermissions": "User does not have permissions to access the application.",
   "LoginScreen:UserPassIncorrect": "Incorrect User or Password",
-  "LoginScreen:URLNotFound": "Server not found. Check your instance configuration.",
+  "LoginScreen:URLNotFound": "Server Error. Check your URL in Settings.",
   "LoginScreen:NetworkError": "Cannot access server. Check your instance configuration or your internet access.",
   "Home:ChooseFromTheMenu": "Choose an entry from the menu.",
   "Home:Title": "Home",
@@ -76,5 +76,6 @@
   "Forgot_password": "Forgot your password?",
   "NoResult": "No results found",
   "Welcome": "Welcome to Etendo!",
-  "EnterCredentials": "Enter your credentials to access your account."
+  "EnterCredentials": "Enter your credentials to access your account.",
+  "ErrorUserPassword": "Username or password are incorrect"
 }

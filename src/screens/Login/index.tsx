@@ -6,7 +6,6 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   SafeAreaView,
-  ScrollView,
   TouchableOpacity,
   ViewStyle,
   ImageStyle,
@@ -16,13 +15,11 @@ import {
 import { observer } from "mobx-react";
 import { User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
-import { Dialog, Text, List, Button } from "react-native-paper";
+import { Dialog, Text, Button } from "react-native-paper";
 import { Snackbar } from "../../globals";
 import { Version } from "../../ob-api/objects";
-import { getUrl, setUrl as setUrlOB, formatUrl } from "../../ob-api/ob";
+import { getUrl, setUrl as setUrlOB } from "../../ob-api/ob";
 import { defaultTheme } from "../../themes";
-import { Picker } from "@react-native-picker/picker";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Input from "../../../ui/components/input/Input";
 import ButtonUI from "../../../ui/components/button/Button";
 import { ConfigurationIcon } from "../../../ui/assets/images/icons/ConfigurationIcon";
@@ -31,6 +28,7 @@ import Orientation from "react-native-orientation-locker";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import styles from "./styles";
 import isAdmin from "../../helpers/isAdmin";
+import Toast from "react-native-toast-message";
 
 const MIN_CORE_VERSION = "3.0.202201";
 const win = Dimensions.get("window");
@@ -39,11 +37,10 @@ const LoginFunctional = observer((props) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
-  const [url, setUrl] = useState<string>("");
-  const [showSetUrl, setShowSetUrl] = useState<boolean>(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
+  const [error, setError] = useState();
 
   useEffect(() => {
     const load = async () => {
@@ -135,6 +132,7 @@ const LoginFunctional = observer((props) => {
       User.loading = true;
       Windows.loading = true;
       try {
+        setError(false);
         await User.login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
@@ -142,14 +140,42 @@ const LoginFunctional = observer((props) => {
           props.navigation.closeDrawer();
         }
       } catch (e) {
-        console.error(e);
-        await User.logout();
-        if (e.message.includes("Request failed with status code 404")) {
-          Snackbar.showError(locale.t("LoginScreen:URLNotFound"));
+        console.log(e);
+        setError(true);
+        if (e.message.includes("Invalid user name or password")) {
+          await User.logout();
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: 'locale.t("ErrorUserPassword")',
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        }
+        if (e.message.includes("OBRest instance not initialized")) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("LoginScreen:URLNotFound"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
         } else if (e.message.includes("Network Error")) {
-          Snackbar.showError(locale.t("LoginScreen:NetworkError"));
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("LoginScreen:NetworkError"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
         } else {
-          Snackbar.showError(e.message);
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: e.message,
+            visibilityTime: 3000,
+            autoHide: true
+          });
         }
       }
     } catch (e) {
@@ -386,6 +412,7 @@ const LoginFunctional = observer((props) => {
                 placeholder={locale.t("User")}
                 fontSize={16}
                 height={48}
+                isError={error}
               />
             </View>
 
@@ -400,6 +427,7 @@ const LoginFunctional = observer((props) => {
                 placeholder={locale.t("Password")}
                 fontSize={16}
                 height={48}
+                isError={error}
               />
             </View>
           </View>
@@ -422,6 +450,7 @@ const LoginFunctional = observer((props) => {
         </View>
 
         {ChangedPassword()}
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

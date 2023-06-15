@@ -285,12 +285,14 @@ const styles = StyleSheet.create({
   containerInputs: {
     display: "flex",
     flexDirection: "column",
-    alignContent: "center"
+    alignContent: "center",
+    marginTop: 20
   },
   containerInputsMobile: {
     display: "flex",
     flexDirection: "column",
-    alignContent: "center"
+    alignContent: "center",
+    marginTop: 20
   },
   containerCopyrightMobile: {
     display: "flex",
