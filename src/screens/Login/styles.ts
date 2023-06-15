@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     alignSelf: "center"
-    // top: -100
   },
   backgroundContainerTablet: {
     flex: 1,
