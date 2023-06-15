@@ -31,7 +31,7 @@ import isAdmin from "../../helpers/isAdmin";
 import Toast from "react-native-toast-message";
 
 const MIN_CORE_VERSION = "3.0.202201";
-const win = Dimensions.get("window");
+const windowDimenson = Dimensions.get("window");
 const deviceIsATablet = isTablet();
 const LoginFunctional = observer((props) => {
   const [username, setUsername] = useState<string>("");
@@ -70,7 +70,6 @@ const LoginFunctional = observer((props) => {
         }
 
         let url = await getUrl();
-        setShowSetUrl(url === null);
       } catch (e) {
         Snackbar.showError(e.message);
       } finally {
@@ -237,7 +236,6 @@ const LoginFunctional = observer((props) => {
     setUsername("admin");
     setPassword("admin");
     props.navigation.closeDrawer();
-    setShowSetUrl(false);
   };
 
   const containerStyle = (): ViewStyle => {
@@ -295,7 +293,7 @@ const LoginFunctional = observer((props) => {
       : styles.changePasswordMobile;
   };
   const getWelcomeContainer = () => {
-    return win.height > 605
+    return windowDimenson.height > 605
       ? styles.welcomeTitleContainer
       : styles.welcomeTitleSmallContainer;
   };
@@ -380,7 +378,7 @@ const LoginFunctional = observer((props) => {
           </View>
           {!keyboardOpen && (
             <View style={etendoLogoContainer()}>
-              {win.height > 605 && (
+              {windowDimenson.height > 605 && (
                 <Image
                   source={require("../../../assets/etendo-logotype.png")}
                   style={etendoLogotype()}
