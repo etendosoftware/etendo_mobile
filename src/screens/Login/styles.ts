@@ -288,12 +288,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     marginTop: 20
   },
-  containerInputsMobile: {
-    display: "flex",
-    flexDirection: "column",
-    alignContent: "center",
-    marginTop: 20
-  },
   containerCopyrightMobile: {
     display: "flex",
     flexDirection: "column",

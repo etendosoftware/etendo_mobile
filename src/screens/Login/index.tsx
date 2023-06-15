@@ -260,11 +260,7 @@ const LoginFunctional = observer((props) => {
       ? styles.etendoLogotypeTablet
       : styles.etendoLogotypeMobile;
   };
-  const containerInputs = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.containerInputs
-      : styles.containerInputsMobile;
-  };
+
   const copyRightStyle = (): ViewStyle => {
     return deviceIsATablet
       ? styles.copyRightStyle
@@ -402,7 +398,7 @@ const LoginFunctional = observer((props) => {
               </Text>
             </View>
           )}
-          <View style={containerInputs()}>
+          <View style={styles.containerInputs}>
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
               <Input
