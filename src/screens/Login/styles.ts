@@ -1,22 +1,19 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { defaultTheme } from "../../themes";
-import { GREY_BLUE, NEUTRAL_60, PRIMARY_100, WHITE } from "../../styles/colors";
+import { GREY_BLUE, NEUTRAL_60, PRIMARY_100 } from "../../styles/colors";
 
 const win = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styleSheet = StyleSheet.create({
   containerMobile: {
     paddingHorizontal: 30,
     paddingVertical: 50,
     backgroundColor: defaultTheme.colors.background,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    top: -160,
-    height: "60%"
+    height: "75%"
   },
-  keyboardAvoiding: { flex: 1 },
   buttonsContainers: {
-    margin: 55,
     flex: 1
   },
   configurationImage: {
@@ -24,16 +21,11 @@ const styles = StyleSheet.create({
     width: 16,
     marginRight: 8
   },
-  buttonsContainersMobile: {
-    margin: 0,
-    flex: 1
-  },
   etendoLogotypeMobile: {
     resizeMode: "contain",
     width: 80,
     height: 80,
-    alignSelf: "center",
-    top: -100
+    alignSelf: "center"
   },
   backgroundContainerTablet: {
     flex: 1,
@@ -41,14 +33,13 @@ const styles = StyleSheet.create({
   },
   backgroundContainerMobile: {
     flex: 1,
-    flexDirection: "column"
+    flexDirection: "column",
+    height: "100%"
   },
   credentialsTextTabletM: {
-    marginTop: -55,
     color: NEUTRAL_60,
     fontSize: 14,
     fontWeight: "500",
-    top: -50,
     paddingRight: 25,
     paddingLeft: 25,
     display: "flex",
@@ -70,12 +61,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     margin: 20
   },
-  dividerContainerStyle: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    alignItems: "center"
-  },
   showAddUrlContainer: {
     marginRight: 20
   },
@@ -89,17 +74,16 @@ const styles = StyleSheet.create({
   },
   credentialsTextMobile: {
     color: NEUTRAL_60,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
-    top: -50,
     paddingRight: 25,
     paddingLeft: 25,
     display: "flex",
-    marginTop: -20,
     alignSelf: "stretch",
     fontFamily: "Inter",
     alignItems: "center",
-    textAlign: "center"
+    textAlign: "center",
+    marginBottom: 30
   },
   containerTablet: {
     position: "absolute",
@@ -108,31 +92,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: defaultTheme.colors.background,
     borderRadius: 20,
-    width: 600,
-    height: 656
+    width: "45%",
+    paddingVertical: 35,
+    paddingHorizontal: 40
   },
   generalContainerTablet: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: WHITE,
-    display: "flex",
     alignItems: "center",
     justifyContent: "center"
   },
   generalContainerMobile: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: WHITE
+    justifyContent: "center"
   },
   backgroundLoginImageContainer: {
     position: "relative",
     width: "100%"
   },
   backgroundHeaderImage: {
-    position: "relative",
     width: "100%",
-    height: "90%",
-    bottom: "auto"
+    height: "120%",
+    bottom: "auto",
+    resizeMode: "cover",
+    zIndex: -1
   },
   backgroundLoginImage: {
     width: "100%",
@@ -147,21 +131,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     left: -5
   },
-  buttonsDemoSettings: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 40,
-    marginTop: 36,
-    marginHorizontal: 1,
-    justifyContent: "space-between"
-  },
   buttonsDemoSettingsTablet: {
-    display: "flex",
     flexDirection: "row",
-    marginBottom: 80,
-    left: -10,
-    top: 40,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginBottom: 10
+  },
+  buttonsDemoSettings: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10
   },
   settingsImageContainerMobile: {
     display: "flex",
@@ -171,10 +149,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     lineHeight: 24,
     fontSize: 16,
-    borderRadius: 8,
-    top: -48,
-    width: 112,
-    height: 40
+    borderRadius: 8
   },
   changePasswordTablet: {
     marginTop: 0
@@ -211,21 +186,15 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   settingsImageContainerTablet: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     fontFamily: "Inter-Regular",
     lineHeight: 24,
     fontSize: 16,
-    borderRadius: 8,
-    top: -48,
-    width: 112,
-    height: 40,
-    right: -15
+    borderRadius: 8
   },
   settingsImage: {
-    display: "flex",
     resizeMode: "contain",
     height: 24,
     width: 24,
@@ -241,21 +210,20 @@ const styles = StyleSheet.create({
     height: 76,
     alignContent: "center",
     justifyContent: "center",
-    top: -100,
     marginTop: 40
   },
   etendoLogoContainerTablet: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: 30
   },
   etendoLogoContainerMobile: {
-    display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40
+    marginTop: 30
   },
   credentialsTextTablet: {
     color: NEUTRAL_60,
@@ -266,13 +234,18 @@ const styles = StyleSheet.create({
   welcomeTitleContainer: {
     flexDirection: "row",
     alignSelf: "center",
-    top: -100,
     marginTop: 20
+  },
+  welcomeTitleSmallContainer: {
+    flexDirection: "row",
+    alignSelf: "center",
+    marginTop: 28
   },
   welcomeTitle: {
     color: PRIMARY_100,
     fontWeight: "700",
     fontSize: 30,
+    height: 40,
     marginBottom: 4,
     lineHeight: 36
   },
@@ -298,10 +271,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: "100%"
   },
-  appbarStyle: {
-    paddingTop: 28,
-    paddingLeft: 8
-  },
+
   containerLogo: {
     height: "15%"
   },
@@ -314,12 +284,8 @@ const styles = StyleSheet.create({
   containerInputs: {
     display: "flex",
     flexDirection: "column",
-    alignContent: "center"
-  },
-  containerInputsMobile: {
-    display: "flex",
-    flexDirection: "column",
-    alignContent: "center"
+    alignContent: "center",
+    marginTop: 20
   },
   containerCopyrightMobile: {
     display: "flex",
@@ -331,7 +297,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    top: -48,
     fontFamily: "Inter-Regular"
   },
   textInputsHolders: {
@@ -363,8 +328,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   copyRightStyleMobile: {
-    top: -15,
-    fontSize: 10,
+    fontSize: 12,
     textAlign: "center",
     alignItems: "center",
     justifyContent: "center",
@@ -391,4 +355,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default styles;
+export default styleSheet;
