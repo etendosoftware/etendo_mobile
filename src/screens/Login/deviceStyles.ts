@@ -2,6 +2,19 @@ import { isDeviceTablet } from "../../../hook/isTablet";
 import styleSheet from "./styles";
 
 export const deviceStyles = {
+  // Styles for both mobile and tablet
+  configurationImage: styleSheet.configurationImage,
+  backgroundHeaderImage: styleSheet.backgroundHeaderImage,
+  containerInputs: styleSheet.containerInputs,
+  textInputStyle: styleSheet.textInputStyle,
+  textInputsHolders: styleSheet.textInputsHolders,
+  welcomeTitle: styleSheet.welcomeTitle,
+  starsImage: styleSheet.starsImage,
+  backgroundLoginImageContainer: styleSheet.backgroundLoginImageContainer,
+  backgroundLoginImage: styleSheet.backgroundLoginImage,
+  buttonDemo: styleSheet.buttonDemo,
+
+  // Styles specific to mobile or tablet
   container: isDeviceTablet
     ? styleSheet.containerTablet
     : styleSheet.containerMobile,
@@ -31,15 +44,5 @@ export const deviceStyles = {
     : styleSheet.settingsImageContainerMobile,
   changePasswordStyle: isDeviceTablet
     ? styleSheet.changePasswordTablet
-    : styleSheet.changePasswordMobile,
-  configurationImage: styleSheet.configurationImage,
-  backgroundHeaderImage: styleSheet.backgroundHeaderImage,
-  containerInputs: styleSheet.containerInputs,
-  textInputStyle: styleSheet.textInputStyle,
-  textInputsHolders: styleSheet.textInputsHolders,
-  welcomeTitle: styleSheet.welcomeTitle,
-  starsImage: styleSheet.starsImage,
-  backgroundLoginImageContainer: styleSheet.backgroundLoginImageContainer,
-  backgroundLoginImage: styleSheet.backgroundLoginImage,
-  buttonDemo: styleSheet.buttonDemo
+    : styleSheet.changePasswordMobile
 };

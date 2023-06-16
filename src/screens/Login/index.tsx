@@ -1,3 +1,4 @@
+// Importing required modules and libraries
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
@@ -28,10 +29,14 @@ import isAdmin from "../../helpers/isAdmin";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 
+// Constants
 const MIN_CORE_VERSION = "3.0.202201";
-const windowDimenson = Dimensions.get("window");
+const windowDimensions = Dimensions.get("window");
 const deviceIsATablet = isTablet();
+
+// Main functional component of the Login screen
 const LoginFunctional = observer((props) => {
+  // Initializing the state variables
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
@@ -136,10 +141,10 @@ const LoginFunctional = observer((props) => {
           loadDynamic();
           props.navigation.closeDrawer();
         }
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        console.log(error);
         setError(true);
-        if (e.message.includes("Invalid user name or password")) {
+        if (error.message.includes("Invalid user name or password")) {
           await User.logout();
           Toast.show({
             type: "error",
@@ -149,7 +154,7 @@ const LoginFunctional = observer((props) => {
             autoHide: true
           });
         }
-        if (e.message.includes("OBRest instance not initialized")) {
+        if (error.message.includes("OBRest instance not initialized")) {
           Toast.show({
             type: "error",
             position: "bottom",
@@ -157,7 +162,7 @@ const LoginFunctional = observer((props) => {
             visibilityTime: 3000,
             autoHide: true
           });
-        } else if (e.message.includes("Network Error")) {
+        } else if (error.message.includes("Network Error")) {
           Toast.show({
             type: "error",
             position: "bottom",
@@ -169,15 +174,15 @@ const LoginFunctional = observer((props) => {
           Toast.show({
             type: "error",
             position: "bottom",
-            text1: e.message,
+            text1: error.message,
             visibilityTime: 3000,
             autoHide: true
           });
         }
       }
-    } catch (e) {
-      Snackbar.showError(e.message);
-      console.error(e);
+    } catch (error) {
+      Snackbar.showError(error.message);
+      console.error(error);
     } finally {
       User.loading = false;
       Windows.loading = false;
@@ -241,7 +246,7 @@ const LoginFunctional = observer((props) => {
   };
 
   const getWelcomeContainer = () => {
-    return windowDimenson.height > 605
+    return windowDimensions.height > 605
       ? styleSheet.welcomeTitleContainer
       : styleSheet.welcomeTitleSmallContainer;
   };
@@ -326,7 +331,7 @@ const LoginFunctional = observer((props) => {
           </View>
           {!keyboardOpen && (
             <View style={styles.etendoLogoContainer}>
-              {windowDimenson.height > 605 && (
+              {windowDimensions.height > 605 && (
                 <Image
                   source={require("../../../assets/etendo-logotype.png")}
                   style={styles.etendoLogotype}
