@@ -37,7 +37,7 @@
   "LoginScreen:LoginButtonTitle": "Iniciar sesión",
   "LoginScreen:NoPermissions": "El usuario no tiene permisos para acceder a la aplicación.",
   "LoginScreen:UserPassIncorrect": "Usuario o contraseña incorrectos",
-  "LoginScreen:URLNotFound": "No se puede acceder al servidor. Chequea la configuración",
+  "LoginScreen:URLNotFound": "Error de servidor. Verifica la URL en configuración",
   "LoginScreen:NetworkError": "No se puede acceder al servidor. Chequea la configuración o tu conexión a internet",
   "Home:ChooseFromTheMenu": "Elige una entrada desde el menú.",
   "Home:Title": "Inicio",
@@ -78,5 +78,6 @@
   "Cadena": "String",
   "Texto": "Text",
   "Welcome": "Bienvenido a Etendo!",
-  "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta."
+  "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
+  "ErrorUserPassword": "Usuario o contraseña son incorrectos"
 }
