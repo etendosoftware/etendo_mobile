@@ -19,3 +19,5 @@ export const isTablet = () => {
       pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920)
     );
 };
+
+export const isDeviceTablet = isTablet();

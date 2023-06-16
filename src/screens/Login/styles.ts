@@ -4,7 +4,7 @@ import { GREY_BLUE, NEUTRAL_60, PRIMARY_100 } from "../../styles/colors";
 
 const win = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styleSheet = StyleSheet.create({
   containerMobile: {
     paddingHorizontal: 30,
     paddingVertical: 50,
@@ -355,4 +355,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default styles;
+export default styleSheet;

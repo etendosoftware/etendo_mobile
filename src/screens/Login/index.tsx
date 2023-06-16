@@ -7,9 +7,6 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   TouchableOpacity,
-  ViewStyle,
-  ImageStyle,
-  TextStyle,
   Dimensions
 } from "react-native";
 import { observer } from "mobx-react";
@@ -26,9 +23,10 @@ import { ConfigurationIcon } from "../../../ui/assets/images/icons/Configuration
 import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
 import { ContainerContext } from "../../contexts/ContainerContext";
-import styles from "./styles";
+import styleSheet from "./styles";
 import isAdmin from "../../helpers/isAdmin";
 import Toast from "react-native-toast-message";
+import { deviceStyles as styles } from "./deviceStyles";
 
 const MIN_CORE_VERSION = "3.0.202201";
 const windowDimenson = Dimensions.get("window");
@@ -238,64 +236,14 @@ const LoginFunctional = observer((props) => {
     props.navigation.closeDrawer();
   };
 
-  const containerStyle = (): ViewStyle => {
-    return deviceIsATablet ? styles.containerTablet : styles.containerMobile;
-  };
-  const buttonsDemoSettings = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.buttonsDemoSettingsTablet
-      : styles.buttonsDemoSettings;
-  };
-
-  const etendoLogoContainer = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.etendoLogoContainerTablet
-      : styles.etendoLogoContainerMobile;
-  };
-
-  const etendoLogotype = (): ImageStyle => {
-    return deviceIsATablet
-      ? styles.etendoLogotypeTablet
-      : styles.etendoLogotypeMobile;
-  };
-
-  const copyRightStyle = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.copyRightStyle
-      : styles.copyRightStyleMobile;
-  };
-  const credentialsText = (): TextStyle => {
-    return deviceIsATablet
-      ? styles.credentialsTextTabletM
-      : styles.credentialsTextMobile;
-  };
   const welcomeText = (): string => {
     return deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome");
   };
-  const generalContainerStyle = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.generalContainerTablet
-      : styles.generalContainerMobile;
-  };
-  const backgroundContainer = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.backgroundContainerTablet
-      : styles.backgroundContainerMobile;
-  };
-  const settingsImageContainer = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.settingsImageContainerTablet
-      : styles.settingsImageContainerMobile;
-  };
-  const changePasswordStyle = (): ViewStyle => {
-    return deviceIsATablet
-      ? styles.changePasswordTablet
-      : styles.changePasswordMobile;
-  };
+
   const getWelcomeContainer = () => {
     return windowDimenson.height > 605
-      ? styles.welcomeTitleContainer
-      : styles.welcomeTitleSmallContainer;
+      ? styleSheet.welcomeTitleContainer
+      : styleSheet.welcomeTitleSmallContainer;
   };
 
   const ChangedPassword = () => {
@@ -336,8 +284,8 @@ const LoginFunctional = observer((props) => {
       accessible={false}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={generalContainerStyle()}>
-        <View style={[backgroundContainer()]}>
+      <SafeAreaView style={styles.generalContainer}>
+        <View style={[styles.backgroundContainer]}>
           <Image
             source={
               deviceIsATablet ? null : require("../../img/background.png")
@@ -354,8 +302,8 @@ const LoginFunctional = observer((props) => {
           </View>
         )}
 
-        <View style={[containerStyle()]}>
-          <View style={buttonsDemoSettings()}>
+        <View style={[styles.container]}>
+          <View style={styles.buttonsDemoSettings}>
             <View style={styles.buttonDemo}>
               <ButtonUI
                 height={43}
@@ -365,7 +313,7 @@ const LoginFunctional = observer((props) => {
                 text={locale.t("DemoTry")}
               />
             </View>
-            <View style={settingsImageContainer()}>
+            <View style={styles.settingsImageContainer}>
               <ButtonUI
                 onPress={() => props.navigation.navigate("Settings")}
                 text={locale.t("Settings")}
@@ -377,11 +325,11 @@ const LoginFunctional = observer((props) => {
             </View>
           </View>
           {!keyboardOpen && (
-            <View style={etendoLogoContainer()}>
+            <View style={styles.etendoLogoContainer}>
               {windowDimenson.height > 605 && (
                 <Image
                   source={require("../../../assets/etendo-logotype.png")}
-                  style={etendoLogotype()}
+                  style={styles.etendoLogotype}
                 />
               )}
               <View style={getWelcomeContainer()}>
@@ -391,7 +339,7 @@ const LoginFunctional = observer((props) => {
                   style={styles.starsImage}
                 />
               </View>
-              <Text style={credentialsText()}>
+              <Text style={styles.credentialsText}>
                 {locale.t("EnterCredentials")}
               </Text>
             </View>
@@ -436,11 +384,13 @@ const LoginFunctional = observer((props) => {
           </View>
           <TouchableOpacity
             activeOpacity={0.5}
-            style={changePasswordStyle()}
+            style={styles.changePasswordStyle}
             onPress={() => [setShowChangePassword(true)]}
           ></TouchableOpacity>
 
-          <Text style={copyRightStyle()}>© Copyright Etendo 2020-2023</Text>
+          <Text style={styles.copyRightStyle}>
+            © Copyright Etendo 2020-2023
+          </Text>
         </View>
 
         {ChangedPassword()}
