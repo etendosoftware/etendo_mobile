@@ -30,7 +30,7 @@ class ErrorHelper {
     return error;
   };
   static handleError = (type, error) => {
-    var handled = false;
+    let handled = false;
     try {
       if (error.response) {
         const response = error.response;
@@ -42,26 +42,8 @@ class ErrorHelper {
               console.log("RSQL Parse", response.headers);
               console.log("RSQL Parse", response.status);
             }
-            var message = null;
+            let message = null;
             switch (type) {
-              case ERROR_TYPE.CREATE_CRITERIA:
-                message = locale.t("Tab:RSQL_ParseError");
-                break;
-              case ERROR_TYPE.REMOVE:
-                message = locale.t("Tab:RSQL_RemoveError");
-                break;
-              case ERROR_TYPE.REMOVE_LIST:
-                message = locale.t("Tab:RSQL_RemoveListError");
-                break;
-              case ERROR_TYPE.SAVE:
-                message = locale.t("Tab:RSQL_SaveError");
-                break;
-              case ERROR_TYPE.DEFAULT_VALUES:
-                message = locale.t("Tab:RSQL_DefaultValuesError");
-                break;
-              case ERROR_TYPE.SELECTOR_FETCH:
-                message = locale.t("Selector:RSQL_SelectorFetch");
-                break;
               default:
                 console.error("Error type miss message localization", type);
             }

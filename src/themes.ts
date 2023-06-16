@@ -33,7 +33,30 @@ const fontConfig = {
   }
 };
 
-export const defaultTheme: Theme = {
+
+interface AppDefaultTheme extends Theme {
+  colors: {
+    primary: string;
+    background: string;
+    surface: string;
+    accent: string;
+    error: string;
+    text: string;
+    onSurface: string;
+    disabled: string;
+    placeholder: string;
+    backdrop: string;
+    notification: string;
+    greyborders: string,
+    greybackgroundSecondary: string,
+    backgroundSecondary: string,
+    success: string,
+    textSecondary: string,
+    greyaccent: string
+  };
+}
+
+export const defaultTheme: AppDefaultTheme = {
   ...DefaultTheme,
   roundness: 5,
   colors: {
@@ -52,7 +75,6 @@ export const defaultTheme: Theme = {
     greybackgroundSecondary: "#e2e2e2",
     greyborders: "#cccccc"
   }
-  //fonts: configureFonts(fontConfig),
 };
 
 export interface ITheme {

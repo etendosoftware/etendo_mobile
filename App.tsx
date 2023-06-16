@@ -1,11 +1,10 @@
 import React from "react";
-import { StatusBar, Text } from "react-native";
+import { StatusBar } from "react-native";
 import { User, Windows } from "./src/stores";
 import { LoadingScreen } from "./src/components";
 import { observer } from "mobx-react";
 import locale from "./src/i18n/locale";
 import { Provider as PaperProvider } from "react-native-paper";
-import Snackbar from "./src/components/Snackbar";
 import { Snackbar as GlobalSnackbar } from "./src/globals";
 import MainAppContext, { APP_EVENT } from "./src/contexts/MainAppContext";
 import { AppHome, AppLogin } from "./src/navigation/AppNavigation";
@@ -13,7 +12,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { defaultTheme } from "./src/themes";
 import Languages from "./src/ob-api/objects/Languages";
 import { supportedLocales } from "./src/i18n/config";
-import Orientation from 'react-native-orientation-locker'
+import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import { ContainerProvider } from "./src/contexts/ContainerContext";
 
@@ -44,7 +43,7 @@ export default class App extends React.Component<Props, State> {
     } else {
       Orientation.lockToPortrait();
     }
-    
+
     locale.init();
     const storagedLanguage = await User.loadLanguage();
     await this.updateLanguageList();
@@ -65,7 +64,6 @@ export default class App extends React.Component<Props, State> {
     locale.setCurrentLanguage(input);
     if (User.user) {
       Windows.loading = true;
-      // await Windows.loadWindows(input);
       User.saveLanguage(input);
       Windows.loading = false;
     }
@@ -110,12 +108,12 @@ export default class App extends React.Component<Props, State> {
       etendoLanguages = await this.getServerLanguages();
     } catch (ignored) {}
 
-    const etendoLocalLanguages = etendoLanguages.map(f => {
+    const etendoLocalLanguages = etendoLanguages.map((f) => {
       return { id: f.id, value: f.language, label: f.name };
     });
     //App languages
     const localLanguages = Object.keys(supportedLocales);
-    const appLanguages = localLanguages.map(localLanguage => {
+    const appLanguages = localLanguages.map((localLanguage) => {
       return {
         id: localLanguage,
         value: localLanguage.replace("-", "_"),
@@ -130,12 +128,12 @@ export default class App extends React.Component<Props, State> {
   }
   // Generic helper function that can be used for the three operations:
   operation(list1, list2, isUnion) {
-    var result = [];
+    let result = [];
 
-    for (var i = 0; i < list1.length; i++) {
-      var item1 = list1[i],
+    for (let i = 0; i < list1.length; i++) {
+      let item1 = list1[i],
         found = false;
-      for (var j = 0; j < list2.length && !found; j++) {
+      for (let j = 0; j < list2.length && !found; j++) {
         found = item1.value === list2[j].value;
       }
       if (found === !!isUnion) {
@@ -185,7 +183,6 @@ export default class App extends React.Component<Props, State> {
                 <NavigationContainer>
                   {User.token ? <AppHome /> : <AppLogin />}
                 </NavigationContainer>
-                <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
               </ContainerProvider>
             </>
           )}
