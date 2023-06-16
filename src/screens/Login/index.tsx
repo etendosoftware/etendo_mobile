@@ -31,9 +31,9 @@ import { getUrl, setUrl as setUrlOB, formatUrl } from "../../ob-api/ob";
 import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Input from "../../../ui/components/input/Input";
-import ButtonUI from "../../../ui/components/button/Button";
-import { ConfigurationIcon } from "../../../ui/assets/images/icons/ConfigurationIcon";
+import Input from "etendo-ui-library/dist-native/components/input/Input";
+import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
+import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 
 
 import { isTablet } from "../../helpers/IsTablet";
