@@ -19,20 +19,10 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 25
   },
-  header: {
-    backgroundColor: PRIMARY_100,
-    marginTop: 48
-  },
-  navbarTablet: {
-    marginTop: 24,
-    backgroundColor: PRIMARY_100
-  },
-  breadCumsTablet: {
-    height: 32,
-    marginTop: 24,
-    marginLeft: 32,
-    display: "flex",
-    flexDirection: "row"
+  backContainer: {
+    marginTop: 80,
+    flexDirection: "row",
+    alignItems: "center"
   },
   settingsTitle: {
     fontFamily: "Inter-SemiBold",
@@ -41,7 +31,7 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     color: PRIMARY_100,
     paddingRight: 20,
-    marginBottom: -15
+    paddingLeft: 24
   },
   backIcon: {
     height: 16,
@@ -54,28 +44,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 12
   },
-  homeStyle: {
-    height: 20,
-    top: 6
-  },
   containerCard: {
     backgroundColor: NEUTRAL_100,
     marginTop: 24,
     marginLeft: 24,
     marginRight: 24,
     borderRadius: 8,
-    flexDirection: "row"
+    flexDirection: "column"
   },
   containerCardTablet: {
     backgroundColor: NEUTRAL_100,
-    display: "flex",
-    marginTop: 24,
-    marginLeft: 24,
-    marginRight: 24,
+    margin: 24,
     flexDirection: "row",
-    width: "97%",
-    height: "18%",
-    borderRadius: 8
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 16
   },
   listSection: {
     width: "100%",
@@ -100,27 +83,22 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     height: 150
   },
-  listItem: {
-    marginLeft: -15
-  },
-  listItemTablet: {
-    marginLeft: -15,
-    marginTop: -20
-  },
-  buttonCahngeUrl: {
-    marginBottom: 24
+  urlTextsContainer: {
+    marginBottom: 16
   },
   urlContainer: {
-    display: "flex",
     flexDirection: "column",
+    marginHorizontal: 20,
+    paddingVertical: 24,
     borderBottomWidth: 1,
-    borderColor: NEUTRAL_30,
-    marginHorizontal: 20
+    borderColor: NEUTRAL_30
   },
   urlContainerTablet: {
     width: "33%",
+    flexDirection: "column",
     borderRightWidth: 1,
-    borderColor: NEUTRAL_30
+    borderColor: NEUTRAL_30,
+    justifyContent: "space-between"
   },
   urlTitle: {
     fontFamily: "Inter-SemiBold",
@@ -139,76 +117,59 @@ const styles = StyleSheet.create({
     color: NEUTRAL_60,
     fontFamily: "Inter-SemiBold",
     fontWeight: "600",
-    fontSize: 12,
-    lineHeight: 16,
-    marginBottom: 28
+    fontSize: 12
   },
   logoContainer: {
     borderBottomWidth: 1,
     borderBottomColor: NEUTRAL_30,
-    marginLeft: 20,
-    marginRight: 20
+    marginHorizontal: 20,
+    paddingVertical: 24
   },
   logoContainerTablet: {
     borderRightWidth: 1,
     borderColor: NEUTRAL_30,
     width: "33%",
-    paddingHorizontal: 20,
-    paddingVertical: 0
+    paddingHorizontal: 20
   },
   logoTitle: {
-    marginLeft: -15,
     fontSize: 12,
+    marginBottom: 16,
     fontWeight: "bold",
     color: NEUTRAL_60
   },
   logoTitleTablet: {
-    marginLeft: -15,
-    marginTop: -18,
     fontSize: 12,
     fontWeight: "bold",
-    color: NEUTRAL_60
+    color: NEUTRAL_60,
+    paddingBottom: 8
   },
   logoImage: {
-    height: 80,
-    resizeMode: "contain",
-    marginBottom: 28
+    resizeMode: "contain"
   },
   logoImageTablet: {
-    width: "80%",
-    paddingLeft: 60
+    width: "80%"
   },
   languageContainer: {
-    marginTop: 28,
+    marginVertical: 24,
     marginHorizontal: 20,
     fontFamily: "Inter-SemiBold"
-    // width: "33%"
   },
   languageContainerTablet: {
     width: "33%",
     paddingHorizontal: 20
   },
   languageText: {
-    marginBottom: -17,
-    marginLeft: 2,
     fontFamily: "Inter-SemiBold",
     color: NEUTRAL_60,
     fontSize: 12,
-    lineHeight: 18
-  },
-  languageTextTablet: {
-    marginBottom: -17,
-    marginLeft: 2,
-    top: -5,
-    fontFamily: "Inter-SemiBold",
-    color: NEUTRAL_60,
-    fontSize: 12,
-    lineHeight: 18
+    lineHeight: 18,
+    paddingBottom: 8
   },
   copyrightTablet: {
+    flex: 1,
     position: "absolute",
-    bottom: 41,
-    left: 52
+    bottom: 68,
+    left: 32
   }
 });
 

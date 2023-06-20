@@ -1,3 +1,4 @@
+//Imports
 import React, { useEffect, useState, useContext } from "react";
 import PickerList from "../../components/List";
 import {
@@ -5,12 +6,10 @@ import {
   ScrollView,
   Image,
   TextInput,
-  Dimensions,
   TouchableOpacity
 } from "react-native";
 import locale from "../../i18n/locale";
 import {
-  Appbar,
   List,
   withTheme,
   Button,
@@ -30,23 +29,19 @@ import { defaultTheme } from "../../themes";
 import FormContext from "../../contexts/FormContext";
 import { IField } from "../../components/Field";
 import { Picker } from "@react-native-picker/picker";
-import ButtonUI from "../../../ui/components/button/Button";
-import styles from "./styles";
+import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
-import { Navbar } from "../../../ui/components";
-import { HomeIcon } from "../../../ui/assets/images/icons/HomeIcon";
-import { ArrowRight } from "../../../ui/assets/images/icons/ArrowRight";
-import { BackIcon } from "../../../ui/assets/images/icons/BackIcon";
-import ShowProfilePicture from "../../components/ShowProfilePicture";
-
-const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-const defaultLogoUri = "../../../assets/logo.png";
-const win = Dimensions.get("window");
+import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
+import { deviceStyles as styles } from "./deviceStyles";
 
 const Settings = observer((props) => {
+  //Images
+  const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
+  const defaultLogoUri = "../../../assets/logo.png";
+  //Context
   const mainAppContext = useContext(MainAppContext);
   const { getRecordContext } = useContext(FormContext);
-
+  //States
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
@@ -79,6 +74,7 @@ const Settings = observer((props) => {
 
     fetchUrlAndLogo();
   }, []);
+
   const loadServerLogo = (url) => {
     let logo;
     if (url) {
@@ -190,111 +186,39 @@ const Settings = observer((props) => {
     return `${metadata.appVersion} - ${metadata.label}`;
   };
 
-  const listSectionStyle = () => {
-    return isTablet() ? styles.listSectionTablet : styles.listSection;
-  };
-  const containerCardStyle = () => {
-    return isTablet() ? styles.containerCardTablet : styles.containerCard;
-  };
-  const containerUrlStyle = () => {
-    return isTablet() ? styles.urlContainerTablet : styles.urlContainer;
-  };
-
-  const listItemStyles = () => {
-    return isTablet() ? styles.listItemTablet : styles.listItem;
-  };
-
-  const logoContainerStyles = () => {
-    return isTablet() ? styles.logoContainerTablet : styles.logoContainer;
-  };
-
-  const languageContainerStyles = () => {
-    return isTablet()
-      ? styles.languageContainerTablet
-      : styles.languageContainer;
-  };
-
-  const logoImageStyles = () => {
-    return isTablet() ? styles.logoImageTablet : styles.logoImage;
-  };
-
-  const logoTitleStyles = () => {
-    return isTablet() ? styles.logoTitleTablet : styles.logoTitle;
-  };
-
-  const languajeTeStyles = () => {
-    return isTablet() ? styles.languageTextTablet : styles.languageText;
-  };
-
   const { languages } = mainAppContext;
   return (
-    <View style={styles.container}>
-      {isTablet() ? (
-        <View>
-          <View style={styles.navbarTablet}>
-            <Navbar
-              name={User?.data?.username ? User?.data?.username : ""}
-              onOptionSelectedProfile={async () => {
-                await User?.logout();
-                !User?.token ? await props.navigation.navigate("Login") : null;
-              }}
-            />
-          </View>
-          <View style={styles.breadCumsTablet}>
-            <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
-            <ButtonUI
-              image={<BackIcon style={styles.backIcon} />}
-              height={32}
-              width={84}
-              typeStyle="terciary"
-              text={locale.t("Back")}
-              onPress={
-                !User?.token
-                  ? () => props.navigation.navigate("Login")
-                  : () => props.navigation.navigate("Home")
-              }
-            />
-          </View>
+    <>
+      <View style={styles.container}>
+        <View style={styles.backContainer}>
+          <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
+          <ButtonUI
+            image={<BackIcon style={styles.backIcon} />}
+            height={32}
+            width={84}
+            typeStyle="terciary"
+            text={locale.t("Back")}
+            onPress={
+              !User?.token
+                ? () => props.navigation.navigate("Login")
+                : () => props.navigation.navigate("Home")
+            }
+          />
         </View>
-      ) : (
-        <Appbar.Header dark={true} style={styles.header}>
-          {!User?.token && (
-            <Appbar.BackAction
-              onPress={() => props.navigation.navigate("Login")}
-            />
-          )}
-          {User?.token && (
-            <Appbar.Action
-              icon="menu"
-              onPress={() => props.navigation.toggleDrawer()}
-            />
-          )}
-          <Appbar.Content title={locale.t("Settings:Title")} />
-        </Appbar.Header>
-      )}
-      <View style={containerCardStyle()}>
-        <List.Section style={listSectionStyle()}>
-          <View style={containerUrlStyle()}>
-            <List.Item
-              title={locale.t("Settings:URL")}
-              titleStyle={styles.urlTitle}
-              description={url}
-              descriptionStyle={styles.urlDescription}
-              descriptionNumberOfLines={1}
-              style={listItemStyles()}
-            />
+        <View style={styles.containerCardStyle}>
+          <View style={styles.containerUrlStyle}>
+            <View style={styles.urlTextsContainer}>
+              <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
+              <Text style={styles.urlDescription}>{url}</Text>
+            </View>
             {!User?.token ? (
-              <>
-                <View style={styles.buttonCahngeUrl}>
-                  <ButtonUI
-                    height={45}
-                    width={118}
-                    typeStyle="primary"
-                    onPress={showChangeURLModalFn}
-                    text={locale.t("Settings:ChangeURL")}
-                  />
-                </View>
-              </>
+              <ButtonUI
+                height={45}
+                width={118}
+                typeStyle="primary"
+                onPress={showChangeURLModalFn}
+                text={locale.t("Settings:ChangeURL")}
+              />
             ) : (
               <Text
                 allowFontScaling={false}
@@ -304,19 +228,18 @@ const Settings = observer((props) => {
               </Text>
             )}
           </View>
-          <View style={logoContainerStyles()}>
-            <List.Item
-              title={locale.t("Settings:Logo")}
-              titleStyle={logoTitleStyles()}
-            />
+          <View style={styles.logoContainerStyles}>
+            <Text style={styles.logoTitleStyles}>
+              {locale.t("Settings:Logo")}
+            </Text>
             <Image
-              style={logoImageStyles()}
+              style={styles.logoImageStyles}
               defaultSource={defaultLogo}
               source={logo}
               onError={onLogoError}
             />
           </View>
-          <View style={languageContainerStyles()}>
+          <View style={styles.languageContainerStyles}>
             <FormContext.Provider
               value={{
                 getRecordContext,
@@ -324,7 +247,7 @@ const Settings = observer((props) => {
                 onChangeSelection: onChangePicker
               }}
             >
-              <Text style={languajeTeStyles()}>
+              <Text style={styles.languageText}>
                 {locale.t("Settings:Language")}
               </Text>
               <PickerList
@@ -341,114 +264,116 @@ const Settings = observer((props) => {
                     ? selectedLanguage
                     : mainAppContext.selectedLanguage
                 }
-              ></PickerList>
+              />
             </FormContext.Provider>
           </View>
-        </List.Section>
 
-        <Portal>
-          <Dialog visible={showChangeURLModal} onDismiss={hideChangeURLModal}>
-            <Dialog.Title>{locale.t("Settings:ChangeServerURL")}</Dialog.Title>
-            <Dialog.Content>
-              <Picker
-                selectedValue={modalUrl}
-                onValueChange={(newModalUrl) => setModalUrl(newModalUrl)}
-                itemStyle={{ paddingLeft: 15, marginLeft: 15 }}
-              >
-                <Picker.Item
-                  key="disabled"
-                  label={locale.t("ShowLoadUrl:PickerLabel")}
-                  value=""
-                />
-                {renderPickerItems(storedDataUrl)}
-              </Picker>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: defaultTheme.colors.accent,
-                  marginRight: 10
-                }}
-                onPress={() => setShowAddUrl(true)}
-              >
-                {" "}
-                {locale.t("ShowLoadUrl:Add")}
-              </Button>
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: defaultTheme.colors.backgroundSecondary
-                }}
-                onPress={changeURL}
-              >
-                {locale.t("Save")}
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-
-          <Dialog visible={showAddUrl}>
-            <Dialog.Title>{locale.t("ShowLoadUrl:AddUrl")}</Dialog.Title>
-            <Dialog.Content>
-              <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
-              <TextInput
-                allowFontScaling={false}
-                mode="outlined"
-                placeholder={locale.t("ShowLoadUrl:Example")}
-                onChangeText={(newCurrentAddUrl) =>
-                  setCurrentAddUrl(newCurrentAddUrl)
-                }
-                defaultValue={currentAddUrl}
-                textContentType="URL"
-              />
-              <Dialog.Actions style={{ marginTop: 20 }}>
+          <Portal>
+            <Dialog visible={showChangeURLModal} onDismiss={hideChangeURLModal}>
+              <Dialog.Title>
+                {locale.t("Settings:ChangeServerURL")}
+              </Dialog.Title>
+              <Dialog.Content>
+                <Picker
+                  selectedValue={modalUrl}
+                  onValueChange={(newModalUrl) => setModalUrl(newModalUrl)}
+                  itemStyle={{ paddingLeft: 15, marginLeft: 15 }}
+                >
+                  <Picker.Item
+                    key="disabled"
+                    label={locale.t("ShowLoadUrl:PickerLabel")}
+                    value=""
+                  />
+                  {renderPickerItems(storedDataUrl)}
+                </Picker>
+              </Dialog.Content>
+              <Dialog.Actions>
                 <Button
                   style={{
+                    width: 110,
                     backgroundColor: defaultTheme.colors.accent,
-                    width: 120,
                     marginRight: 10
                   }}
-                  onPress={() => addUrl()}
+                  onPress={() => setShowAddUrl(true)}
                 >
+                  {" "}
                   {locale.t("ShowLoadUrl:Add")}
                 </Button>
                 <Button
                   style={{
-                    width: 120,
+                    width: 110,
                     backgroundColor: defaultTheme.colors.backgroundSecondary
                   }}
-                  onPress={() => setShowAddUrl(false)}
+                  onPress={changeURL}
                 >
-                  {locale.t("ShowLoadUrl:Close")}
+                  {locale.t("Save")}
                 </Button>
               </Dialog.Actions>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 10
-                }}
-              >
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
-                <Text
+            </Dialog>
+
+            <Dialog visible={showAddUrl}>
+              <Dialog.Title>{locale.t("ShowLoadUrl:AddUrl")}</Dialog.Title>
+              <Dialog.Content>
+                <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
+                <TextInput
                   allowFontScaling={false}
+                  mode="outlined"
+                  placeholder={locale.t("ShowLoadUrl:Example")}
+                  onChangeText={(newCurrentAddUrl) =>
+                    setCurrentAddUrl(newCurrentAddUrl)
+                  }
+                  defaultValue={currentAddUrl}
+                  textContentType="URL"
+                />
+                <Dialog.Actions style={{ marginTop: 20 }}>
+                  <Button
+                    style={{
+                      backgroundColor: defaultTheme.colors.accent,
+                      width: 120,
+                      marginRight: 10
+                    }}
+                    onPress={() => addUrl()}
+                  >
+                    {locale.t("ShowLoadUrl:Add")}
+                  </Button>
+                  <Button
+                    style={{
+                      width: 120,
+                      backgroundColor: defaultTheme.colors.backgroundSecondary
+                    }}
+                    onPress={() => setShowAddUrl(false)}
+                  >
+                    {locale.t("ShowLoadUrl:Close")}
+                  </Button>
+                </Dialog.Actions>
+                <View
                   style={{
-                    textAlignVertical: "center",
-                    margin: 10,
-                    fontSize: 15
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: 10
                   }}
                 >
-                  {locale.t("ShowLoadUrl:ItemList")}
-                </Text>
-                <Divider style={{ padding: 1, flexGrow: 1 }} />
-              </View>
-              <View style={{ height: 200 }}>
-                <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
+                  <Divider style={{ padding: 1, flexGrow: 1 }} />
+                  <Text
+                    allowFontScaling={false}
+                    style={{
+                      textAlignVertical: "center",
+                      margin: 10,
+                      fontSize: 15
+                    }}
+                  >
+                    {locale.t("ShowLoadUrl:ItemList")}
+                  </Text>
+                  <Divider style={{ padding: 1, flexGrow: 1 }} />
+                </View>
+                <View style={{ height: 200 }}>
+                  <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </View>
       </View>
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
@@ -459,7 +384,7 @@ const Settings = observer((props) => {
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
       ) : null}
-    </View>
+    </>
   );
 });
 

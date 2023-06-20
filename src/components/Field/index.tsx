@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Chip, Subheading } from "react-native-paper";
+import { Chip } from "react-native-paper";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Field as FieldType } from "../../types";
 import { References } from "../../constants/References";
@@ -62,10 +62,6 @@ export default abstract class Field<
               marginBottom: 8
             }}
           >
-            <Subheading style={styles.subheadingStyle}>
-              {this.props.field.name}
-              {isMandatory && !isSwitch ? "(*)" : ""}
-            </Subheading>
             <View style={styles.switchStyle}>{this.renderField()}</View>
           </View>
         );
