@@ -26,7 +26,6 @@ import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import styleSheet from "./styles";
-import isAdmin from "../../helpers/isAdmin";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 
@@ -72,8 +71,6 @@ const LoginFunctional = observer((props) => {
         if (storedEnviromentsUrl) {
           setStoredDataUrl([...storedDataUrl, storedEnviromentsUrl]);
         }
-
-        let url = await getUrl();
       } catch (e) {
         Snackbar.showError(e.message);
       } finally {
@@ -106,12 +103,6 @@ const LoginFunctional = observer((props) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isAdmin(username, password)) {
-      submitLogin();
-    }
-  }, [username, password]);
-
   const loadDynamic = async () => {
     let storedEnviromentsUrl = await getUrl();
     const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
@@ -136,6 +127,9 @@ const LoginFunctional = observer((props) => {
       Windows.loading = true;
       try {
         setError(false);
+        if (username === "admin" && password === "admin") {
+          demo();
+        }
         await User.login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
@@ -236,10 +230,13 @@ const LoginFunctional = observer((props) => {
   };
 
   const demo = async () => {
+    User.loading = true;
+    Windows.loading = true;
     await setUrlOB("https://demo.etendo.cloud/etendo");
-    setUsername("admin");
-    setPassword("admin");
-    props.navigation.closeDrawer();
+    await User.login("admin", "admin");
+    await props.navigation.closeDrawer();
+    Windows.loading = false;
+    User.loading = false;
   };
 
   const welcomeText = (): string => {
