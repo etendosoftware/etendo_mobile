@@ -28,11 +28,13 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import styleSheet from "./styles";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
+import { References } from "../../constants/References";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
 const windowDimensions = Dimensions.get("window");
 const deviceIsATablet = isTablet();
+const { AdminUsername, AdminPassword } = References;
 
 // Main functional component of the Login screen
 const LoginFunctional = observer((props) => {
@@ -127,7 +129,7 @@ const LoginFunctional = observer((props) => {
       Windows.loading = true;
       try {
         setError(false);
-        if (username === "admin" && password === "admin") {
+        if (username === AdminUsername && password === AdminPassword) {
           demo();
         }
         await User.login(username, password);
@@ -139,6 +141,7 @@ const LoginFunctional = observer((props) => {
       } catch (error) {
         console.log(error);
         setError(true);
+
         if (error.message.includes("Invalid user name or password")) {
           await User.logout();
           Toast.show({
@@ -233,7 +236,7 @@ const LoginFunctional = observer((props) => {
     User.loading = true;
     Windows.loading = true;
     await setUrlOB("https://demo.etendo.cloud/etendo");
-    await User.login("admin", "admin");
+    await User.login(AdminUsername, AdminPassword);
     await props.navigation.closeDrawer();
     Windows.loading = false;
     User.loading = false;
