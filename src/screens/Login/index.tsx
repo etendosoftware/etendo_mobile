@@ -139,7 +139,7 @@ const LoginFunctional = observer((props) => {
         await User.login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
-          loadDynamic();
+          await loadDynamic();
           props.navigation.closeDrawer();
         }
       } catch (error) {
