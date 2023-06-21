@@ -93,15 +93,15 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     color: PRIMARY_100,
-    fontWeight: "700",
-    fontSize: 45,
-    lineHeight: 53
-  },
-  welcomeName: {
-    color: PRIMARY_100,
     fontWeight: "500",
     fontSize: 28,
     lineHeight: 36
+  },
+  welcomeName: {
+    color: PRIMARY_100,
+    fontWeight: "700",
+    fontSize: 45,
+    lineHeight: 53
   }
 });
 

@@ -5,8 +5,7 @@ import {
   SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView,
-  Dimensions
+  ScrollView
 } from "react-native";
 
 import locale from "../../i18n/locale";
@@ -72,6 +71,10 @@ const HomeFunction = observer((props: Props) => {
     return User?.data?.username ? User?.data?.username : "A";
   };
 
+  const getNameInBody = () => {
+    return User?.data?.username ? User?.data?.username + "!" : null;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
@@ -109,7 +112,7 @@ const HomeFunction = observer((props: Props) => {
         ) : (
           <View style={styles.welcomeMobile}>
             <Text style={styles.welcomeText}>{locale.t("Welcome")}</Text>
-            <Text style={styles.welcomeName}>{User?.data?.username}</Text>
+            <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
         <Image
