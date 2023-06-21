@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
-import { Chip, Subheading } from "react-native-paper";
-import { View } from "react-native";
+import { Chip } from "react-native-paper";
+import { StyleProp, View, ViewStyle } from "react-native";
 import { Field as FieldType } from "../../types";
 import { References } from "../../constants/References";
 import styles from "./styles";
@@ -14,7 +14,7 @@ export enum FieldMode {
 
 export interface FieldProps {
   mode?: FieldMode;
-  fieldStyle?: any;
+  fieldStyle?: StyleProp<ViewStyle>;
   renderField?: any;
   field: IField;
   // Following props are for mode: FieldMode.chip
@@ -59,14 +59,9 @@ export default abstract class Field<
             key={`v-${this.props.field.id}`}
             style={{
               flexDirection: "column",
-              marginBottom: 8,
-              ...this.props.fieldStyle
+              marginBottom: 8
             }}
           >
-            <Subheading style={styles.subheadingStyle}>
-              {this.props.field.name + ": "}
-              {isMandatory && !isSwitch ? "(*)" : ""}
-            </Subheading>
             <View style={styles.switchStyle}>{this.renderField()}</View>
           </View>
         );

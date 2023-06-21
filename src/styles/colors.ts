@@ -3,7 +3,10 @@ export const PRIMARY_100 = "#202452";
 export const YELLOW = "#FAD614";
 export const YELLOW_30 = "#FEF7D0";
 
+export const NEUTRAL_10 = "#121212";
+export const NEUTRAL_30 = "#E0E0E0";
 export const NEUTRAL_60 = "#666666";
+export const NEUTRAL_100 = "#F5F5F5";
 
 export const GREY_BLUE = "#808695";
 export const GREY_BLUE_50 = "#D3D6E1";

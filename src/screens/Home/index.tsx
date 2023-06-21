@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   View,
   SafeAreaView,
   Text,
-  StatusBar,
   ImageBackground,
   ScrollView,
   Dimensions
@@ -20,18 +19,15 @@ import { INavigation } from "../../interfaces";
 import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { isTablet } from "../../../hook/isTablet";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
+import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { OBRest, Restrictions } from "obrest";
 import { User, logout } from "../../stores";
-import { ContainerContext } from "../../contexts/ContainerContext";
-import CardDropown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
+import { deviceStyles } from "./deviceStyles";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyMobile = require("../../../assets/etendo-bk-mobile.png");
 const background = require("../../../assets/background.png");
-const backgroundMobile = require("../../../assets/backgroud-mobile.png");
-
-const height = Dimensions.get("window").height;
-
+const backgroundMobile = require("../../../assets/background-mobile.png");
 interface Props {
   navigation: INavigation;
   appMinCoreVersion: string;
@@ -39,13 +35,13 @@ interface Props {
 }
 
 const HomeFunction = observer((props: Props) => {
-  const [profileImage, setProfileImage] = useState<any>();
-  const context = useContext(ContainerContext);
-  useEffect(() => {
-    getImage().catch((error) => {});
-  }, []);
+  const [profileImage, setProfileImage] = useState<any>([]);
 
-  const getImage = async () => {
+  useEffect(() => {
+    getImageProfile().catch((error) => {});
+  }, [profileImage]);
+
+  const getImageProfile = async () => {
     try {
       const imageIdCriteria = OBRest.getInstance().createCriteria("ADUser");
       imageIdCriteria.add(Restrictions.equals("id", User.data.userId));
@@ -53,12 +49,10 @@ const HomeFunction = observer((props: Props) => {
       const imageCriteria = OBRest.getInstance().createCriteria("ADImage");
       imageCriteria.add(Restrictions.equals("id", user.image));
       const imageList: any[] = await imageCriteria.list();
-      const image = imageList[0]; // Suponemos que solo queremos el primer elemento de la lista
-      setProfileImage(image);
-    } catch (error) {
-      // Manejar el error aquí si es necesario
-    }
+      setProfileImage(imageList);
+    } catch (error) {}
   };
+
   const onOptionPressHandle = async (route: string) => {
     if (route === "logout") {
       await logout();
@@ -66,26 +60,40 @@ const HomeFunction = observer((props: Props) => {
     props.navigation.navigate(route);
   };
 
+  const getBackground = () => {
+    return isTablet() ? background : backgroundMobile;
+  };
+
+  const getImageBackground = () => {
+    return isTablet() ? etendoBoyImg : etendoBoyMobile;
+  };
+
+  const getName = () => {
+    return User?.data?.username ? User?.data?.username : "A";
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={isTablet() ? background : backgroundMobile}
-        style={[styles.imgBackground]}
-      >
+      <ImageBackground source={getBackground()} style={styles.imgBackground}>
         <Navbar
           optionsProfile={[
             {
-              title: "Profile and settings",
+              title: "Profile",
+              image: <UserNoBorder />,
+              route: "Profile"
+            },
+            {
+              title: "Settings",
               image: <ConfigurationIcon />,
               route: "Settings"
             }
           ]}
-          onOptionSelectedProfile={async (route: string, index: number) => {
+          onOptionSelectedProfile={async (route: string) => {
             await onOptionPressHandle(route);
           }}
-          name={User?.data?.username ? User?.data?.username : "A"}
+          name={getName()}
           profileImage={
-            profileImage && (
+            profileImage.length && (
               <Image
                 source={{
                   uri: `data:image/jpeg;base64,${profileImage[0].bindaryData}`
@@ -97,11 +105,7 @@ const HomeFunction = observer((props: Props) => {
           onPressMenuBurger={() => {}}
         />
         {isTablet() ? (
-          <ScrollView horizontal style={styles.conteinerMed}>
-            {context?.state?.menuItems.map(() => {
-              return <CardDropown />;
-            })}
-          </ScrollView>
+          <ScrollView horizontal style={styles.conteinerMed} />
         ) : (
           <View style={styles.welcomeMobile}>
             <Text style={styles.welcomeText}>{locale.t("Welcome")}</Text>
@@ -109,8 +113,8 @@ const HomeFunction = observer((props: Props) => {
           </View>
         )}
         <Image
-          style={[styles.image, isTablet() && { width: "100%" }]}
-          source={isTablet() ? etendoBoyImg : etendoBoyMobile}
+          style={deviceStyles.imageBackground}
+          source={getImageBackground()}
         />
       </ImageBackground>
     </SafeAreaView>

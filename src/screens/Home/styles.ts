@@ -12,8 +12,15 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   image: {
+    height: 350,
+    width: "100%",
+    right: 0,
+    bottom: 0,
+    position: "absolute"
+  },
+  imageMobile: {
     height: 342,
-    width: 364,
+    width: 328,
     right: 0,
     bottom: 0,
     position: "absolute"
