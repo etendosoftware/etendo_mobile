@@ -356,7 +356,10 @@ const LoginFunctional = observer((props) => {
               <Input
                 typeField={"textInput"}
                 value={username}
-                onChangeText={(username) => setUsername(username)}
+                onChangeText={(username) => {
+                  setUsername(username);
+                  if (error) setError(false);
+                }}
                 placeholder={locale.t("User")}
                 fontSize={16}
                 height={48}
@@ -371,7 +374,10 @@ const LoginFunctional = observer((props) => {
               <Input
                 typeField={"textInputPassword"}
                 value={password}
-                onChangeText={(password) => setPassword(password)}
+                onChangeText={(password) => {
+                  setPassword(password);
+                  if (error) setError(false);
+                }}
                 placeholder={locale.t("Password")}
                 fontSize={16}
                 height={48}
