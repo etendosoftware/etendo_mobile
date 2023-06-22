@@ -1,5 +1,4 @@
 import { Platform, StyleSheet } from "react-native";
-import { defaultTheme } from "../../themes";
 import { GREY_40, PRIMARY_100, WHITE } from "../../styles/colors";
 
 const styles = StyleSheet.create({
@@ -38,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     flexGrow: 0,
-    backgroundColor: WHITE
+    backgroundColor: "transparent"
   },
   iconViewStyle: {
     flexDirection: "row",

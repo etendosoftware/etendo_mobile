@@ -50,7 +50,7 @@ const Settings = observer((props) => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
   const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
-  const [storedDataUrl, setStoredDataUrl] = useState<any[]>([]);
+  const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
 
   useEffect(() => {
@@ -59,19 +59,17 @@ const Settings = observer((props) => {
       const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
       const tmpDefaultLogo = require(defaultLogoUri);
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
-
       let storedEnviromentsUrl = await User.loadEnviromentsUrl();
 
       if (storedEnviromentsUrl) {
-        setStoredDataUrl([...storedDataUrl, storedEnviromentsUrl]);
+        setStoredDataUrl(storedEnviromentsUrl);
       }
       setDefaultLogo(tmpDefaultLogo);
       setLogo(tmpLogo);
       setUrl(tmpUrl);
       setAppVersion(tmpAppVersion);
-      setModalUrl(url.toString());
+      setModalUrl(url ? url.toString() : tmpUrl);
     };
-
     fetchUrlAndLogo();
   }, []);
 
@@ -128,37 +126,35 @@ const Settings = observer((props) => {
     if (!currentValue || currentValue == "") return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
-    setCurrentAddUrl("");
+    setCurrentAddUrl([]);
   };
 
   const renderUrlItems = (items) => {
     if (items.length !== 0) {
       return items.map((item) => {
         return (
-          <>
-            <List.Item
-              key={item}
-              titleNumberOfLines={1}
-              titleEllipsizeMode="tail"
-              title={item}
-              right={() => (
-                <TouchableOpacity
-                  onPress={() => {
-                    let filteredItems = storedDataUrl.filter(
-                      (url) => url !== item
-                    );
-                    setStoredDataUrl(filteredItems);
-                  }}
-                >
-                  <Icon
-                    name="delete-empty"
-                    size={25}
-                    color={defaultTheme.colors.primary}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          </>
+          <List.Item
+            key={item}
+            titleNumberOfLines={1}
+            titleEllipsizeMode="tail"
+            title={item}
+            right={() => (
+              <TouchableOpacity
+                onPress={() => {
+                  let filteredItems = storedDataUrl.filter(
+                    (url) => url !== item
+                  );
+                  setStoredDataUrl(filteredItems);
+                }}
+              >
+                <Icon
+                  name="delete-empty"
+                  size={25}
+                  color={defaultTheme.colors.primary}
+                />
+              </TouchableOpacity>
+            )}
+          />
         );
       });
     } else {
@@ -171,9 +167,9 @@ const Settings = observer((props) => {
   };
 
   const renderPickerItems = (items) => {
-    return items.map((item) => {
-      return <Picker.Item key={item} label={item} value={item} />;
-    });
+    return items?.map((item) => (
+      <Picker.Item key={item} label={item} value={item} />
+    ));
   };
 
   const getAppVersion = async () => {
