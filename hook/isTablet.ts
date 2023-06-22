@@ -9,10 +9,7 @@ export const isTablet = () => {
   let pixelDensity = PixelRatio.get();
   const adjustedWidth = width * pixelDensity;
   const adjustedHeight = height * pixelDensity;
-  if (
-    pixelDensity < 1.75 &&
-    (adjustedWidth >= 1000 || adjustedHeight >= 1000)
-  ) {
+  if (pixelDensity < 1.6 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
     return true;
   } else
     return (
