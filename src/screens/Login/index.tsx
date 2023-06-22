@@ -26,14 +26,15 @@ import { isTablet } from "../../helpers/IsTablet";
 import Orientation from "react-native-orientation-locker";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import styleSheet from "./styles";
-import isAdmin from "../../helpers/isAdmin";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
+import { References } from "../../constants/References";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
 const windowDimensions = Dimensions.get("window");
 const deviceIsATablet = isTablet();
+const { AdminUsername, AdminPassword } = References;
 
 // Main functional component of the Login screen
 const LoginFunctional = observer((props) => {
@@ -72,8 +73,6 @@ const LoginFunctional = observer((props) => {
         if (storedEnviromentsUrl) {
           setStoredDataUrl([...storedDataUrl, storedEnviromentsUrl]);
         }
-
-        let url = await getUrl();
       } catch (e) {
         Snackbar.showError(e.message);
       } finally {
@@ -106,12 +105,6 @@ const LoginFunctional = observer((props) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isAdmin(username, password)) {
-      submitLogin();
-    }
-  }, [username, password]);
-
   const loadDynamic = async () => {
     let storedEnviromentsUrl = await getUrl();
     const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
@@ -136,6 +129,9 @@ const LoginFunctional = observer((props) => {
       Windows.loading = true;
       try {
         setError(false);
+        if (username === AdminUsername && password === AdminPassword) {
+          demo();
+        }
         await User.login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
@@ -145,6 +141,7 @@ const LoginFunctional = observer((props) => {
       } catch (error) {
         console.log(error);
         setError(true);
+
         if (error.message.includes("Invalid user name or password")) {
           await User.logout();
           Toast.show({
@@ -236,10 +233,13 @@ const LoginFunctional = observer((props) => {
   };
 
   const demo = async () => {
+    User.loading = true;
+    Windows.loading = true;
     await setUrlOB("https://demo.etendo.cloud/etendo");
-    setUsername("admin");
-    setPassword("admin");
-    props.navigation.closeDrawer();
+    await User.login(AdminUsername, AdminPassword);
+    await props.navigation.closeDrawer();
+    Windows.loading = false;
+    User.loading = false;
   };
 
   const welcomeText = (): string => {
