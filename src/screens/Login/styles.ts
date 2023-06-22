@@ -82,8 +82,10 @@ const styleSheet = StyleSheet.create({
     alignSelf: "stretch",
     fontFamily: "Inter",
     alignItems: "center",
-    textAlign: "center",
-    marginBottom: 30
+    textAlign: "center"
+  },
+  loginButton: {
+    marginTop: 15
   },
   containerTablet: {
     position: "absolute",
@@ -170,12 +172,6 @@ const styleSheet = StyleSheet.create({
     margin: 10,
     fontSize: 15
   },
-  itemListContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 10
-  },
   ShowLoadUrlCloseButton: {
     width: 120,
     backgroundColor: defaultTheme.colors.backgroundSecondary
@@ -222,8 +218,7 @@ const styleSheet = StyleSheet.create({
   etendoLogoContainerMobile: {
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
-    marginTop: 30
+    alignItems: "center"
   },
   credentialsTextTablet: {
     color: NEUTRAL_60,
@@ -276,16 +271,13 @@ const styleSheet = StyleSheet.create({
     height: "15%"
   },
   logo: {
-    flex: 1,
+    flex: 0.5,
     alignSelf: "stretch",
     width: win.width,
     height: win.height
   },
   containerInputs: {
-    display: "flex",
-    flexDirection: "column",
-    alignContent: "center",
-    marginTop: 20
+    justifyContent: "space-around"
   },
   containerCopyrightMobile: {
     display: "flex",
@@ -309,9 +301,6 @@ const styleSheet = StyleSheet.create({
   },
   textInputStyle: {
     justifyContent: "flex-end",
-    height: 45,
-    marginBottom: 28,
-    marginTop: 20,
     width: "100%"
   },
   textInputIconStyle: {

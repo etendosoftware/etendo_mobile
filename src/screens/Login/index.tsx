@@ -378,15 +378,15 @@ const LoginFunctional = observer((props) => {
                 isError={error}
               />
             </View>
-          </View>
-          <View>
-            <ButtonUI
-              onPress={submitLogin}
-              text={locale.t("Log in")}
-              typeStyle={"primary"}
-              width="100%"
-              height={50}
-            />
+            <View style={styles.loginButton}>
+              <ButtonUI
+                onPress={submitLogin}
+                text={locale.t("Log in")}
+                typeStyle={"primary"}
+                width="100%"
+                height={50}
+              />
+            </View>
           </View>
           <TouchableOpacity
             activeOpacity={0.5}

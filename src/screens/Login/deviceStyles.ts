@@ -15,6 +15,7 @@ export const deviceStyles = {
   buttonDemo: styleSheet.buttonDemo,
 
   // Styles specific to mobile or tablet
+  loginButton: !isDeviceTablet ? styleSheet.loginButton : null,
   container: isDeviceTablet
     ? styleSheet.containerTablet
     : styleSheet.containerMobile,
