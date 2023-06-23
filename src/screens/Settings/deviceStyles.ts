@@ -20,10 +20,12 @@ export const deviceStyles = {
   logoTitleStyles: isDeviceTablet
     ? styleSheet.logoTitleTablet
     : styleSheet.logoTitle,
+  backContainer: isDeviceTablet
+    ? styleSheet.backContainerTablet
+    : styleSheet.backContainerMobile,
 
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
-  backContainer: styleSheet.backContainer,
   settingsTitle: styleSheet.settingsTitle,
   urlTextsContainer: styleSheet.urlTextsContainer,
   urlTitle: styleSheet.urlTitle,
