@@ -31,6 +31,10 @@ export const GREY_5 = "#F2F2F2";
 
 export const TERCIARY_100 = "#DDDFF6";
 
+export const QUATERNARY_100 = "#7182FF";
+
+export const INITIAL_10 = "#ECF5FF";
+
 export const BLACK = "#000000";
 
 export const LIGHT_BLUE = "#3E97FF";

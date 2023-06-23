@@ -4,6 +4,7 @@ import { User } from "../../stores";
 import { observer } from "mobx-react";
 import { OBRest, Restrictions } from "obrest";
 import { Avatar } from "react-native-paper";
+import { INITIAL_10, QUATERNARY_100 } from "../../styles/colors";
 
 interface Props {
   username: string;
@@ -79,7 +80,12 @@ const ShowProfilePicture = observer((props: Props) => {
             marginBottom: 80
           }}
         >
-          <Avatar.Text size={props.size} label={getInitials(props.username)} />
+          <Avatar.Text
+            size={props.size}
+            label={getInitials(props.username)}
+            style={{ backgroundColor: INITIAL_10 }}
+            labelStyle={{ color: QUATERNARY_100 }}
+          />
         </View>
       )}
     </>
