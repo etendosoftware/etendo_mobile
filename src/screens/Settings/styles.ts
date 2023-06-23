@@ -18,10 +18,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%"
   },
-  backContainer: {
+  backContainerTablet: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 40
+  },
+  backContainerMobile: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 80
   },
   settingsTitle: {
     fontFamily: "Inter-SemiBold",
