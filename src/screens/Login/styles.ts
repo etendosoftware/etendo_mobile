@@ -11,7 +11,7 @@ const styleSheet = StyleSheet.create({
     backgroundColor: defaultTheme.colors.background,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    height: "75%"
+    height: "82%"
   },
   buttonsContainers: {
     flex: 1
@@ -218,7 +218,8 @@ const styleSheet = StyleSheet.create({
   etendoLogoContainerMobile: {
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: 30
   },
   credentialsTextTablet: {
     color: NEUTRAL_60,
@@ -277,7 +278,8 @@ const styleSheet = StyleSheet.create({
     height: win.height
   },
   containerInputs: {
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    marginTop: 20
   },
   containerCopyrightMobile: {
     display: "flex",
@@ -300,8 +302,9 @@ const styleSheet = StyleSheet.create({
     paddingLeft: 5
   },
   textInputStyle: {
-    justifyContent: "flex-end",
-    width: "100%"
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 8
   },
   textInputIconStyle: {
     paddingTop: 10
