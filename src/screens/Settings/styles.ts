@@ -16,13 +16,12 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: "100%",
-    marginTop: 25
+    width: "100%"
   },
   backContainer: {
-    marginTop: 80,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: 40
   },
   settingsTitle: {
     fontFamily: "Inter-SemiBold",
