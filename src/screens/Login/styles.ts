@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StatusBar, StyleSheet } from "react-native";
 import { defaultTheme } from "../../themes";
 import { GREY_BLUE, NEUTRAL_60, PRIMARY_100 } from "../../styles/colors";
 
@@ -6,12 +6,13 @@ const win = Dimensions.get("window");
 
 const styleSheet = StyleSheet.create({
   containerMobile: {
+    display: "flex",
     paddingHorizontal: 30,
     paddingVertical: 50,
     backgroundColor: defaultTheme.colors.background,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    height: "82%"
+    bottom: 0
   },
   buttonsContainers: {
     flex: 1
@@ -27,14 +28,12 @@ const styleSheet = StyleSheet.create({
     height: 80,
     alignSelf: "center"
   },
-  backgroundContainerTablet: {
-    flex: 1,
-    flexDirection: "row"
-  },
-  backgroundContainerMobile: {
-    flex: 1,
-    flexDirection: "column",
-    height: "100%"
+  backgroundContainer: {
+    display: "flex",
+    position: "absolute",
+    top: 0,
+    height: "100%",
+    width: "100%"
   },
   credentialsTextTabletM: {
     color: NEUTRAL_60,
@@ -88,7 +87,6 @@ const styleSheet = StyleSheet.create({
     marginTop: 15
   },
   containerTablet: {
-    position: "absolute",
     display: "flex",
     alignSelf: "center",
     justifyContent: "center",
@@ -96,7 +94,8 @@ const styleSheet = StyleSheet.create({
     borderRadius: 20,
     width: "45%",
     paddingVertical: 35,
-    paddingHorizontal: 40
+    paddingHorizontal: 40,
+    height: 656
   },
   generalContainerTablet: {
     flex: 1,
@@ -106,8 +105,8 @@ const styleSheet = StyleSheet.create({
   },
   generalContainerMobile: {
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "center"
+    justifyContent: "flex-end",
+    height: win.height
   },
   backgroundLoginImageContainer: {
     position: "relative",
@@ -344,7 +343,11 @@ const styleSheet = StyleSheet.create({
   },
   pickerItem: {
     height: 44
-  }
+  },
+  statusBar: {
+    height: StatusBar.currentHeight
+  },
+  container: { flex: 1 }
 });
 
 export default styleSheet;

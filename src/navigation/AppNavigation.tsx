@@ -5,31 +5,37 @@ import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import { isTablet } from "../../hook/isTablet";
+import { View } from "react-native";
 
 export const DrawerNav = createDrawerNavigator();
 
 export function AppLogin() {
   return (
-    <DrawerNav.Navigator
-      initialRouteName={"Login"}
-      screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerStyle={{ width: User.token ? "65%" : 0 }}
-    >
-      <DrawerNav.Screen
-        name="Login"
-        component={Screens.Login}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-      <DrawerNav.Screen
-        name={"Settings"}
-        component={Screens.Settings}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-    </DrawerNav.Navigator>
+    <>
+      <DrawerNav.Navigator
+        initialRouteName={"Login"}
+        screenOptions={{ unmountOnBlur: true, headerShown: false }}
+        drawerStyle={{ width: User.token ? "65%" : 0 }}
+      >
+        <DrawerNav.Screen
+          name="Login"
+          component={Screens.Login}
+          options={{
+            drawerLockMode: "locked-closed",
+            headerStyle: {
+              backgroundColor: "#f4511e" // este cambiará el color del header
+            }
+          }}
+        />
+        <DrawerNav.Screen
+          name={"Settings"}
+          component={Screens.Settings}
+          options={{
+            drawerLockMode: "locked-closed"
+          }}
+        />
+      </DrawerNav.Navigator>
+    </>
   );
 }
 const computeDrawerWidth = () => {
