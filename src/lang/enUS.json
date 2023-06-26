@@ -37,7 +37,7 @@
   "LoginScreen:LoginButtonTitle": "Login",
   "LoginScreen:UserPassIncorrect": "Incorrect User or Password",
   "LoginScreen:URLNotFound": "Server Error. Check your URL in Settings.",
-  "LoginScreen:NetworkError": "Server access issue. Check internet connection.",
+  "LoginScreen:NetworkError": "Server access issue.",
   "Home:ChooseFromTheMenu": "Choose an entry from the menu.",
   "Home:Title": "Home",
   "DismissSnackBar": "Dismiss",
