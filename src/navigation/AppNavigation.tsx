@@ -5,7 +5,6 @@ import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import { isTablet } from "../../hook/isTablet";
-import { View } from "react-native";
 
 export const DrawerNav = createDrawerNavigator();
 
