@@ -1,9 +1,9 @@
-
 import React from "react";
 import { Picker } from "@react-native-picker/picker";
 import Modal, { ModalProps, ModalState } from "./../Modal";
 import locale from "../../i18n/locale";
 import FormContext from "../../contexts/FormContext";
+import { TextStyle } from "react-native";
 
 export interface PickerItem {
   id: string;
@@ -14,6 +14,7 @@ export interface PickerItem {
 export interface ListProps extends ModalProps {
   onChangePicker?: (value: string, key: string, diplayedValue?: string) => void;
   pickerItems?: PickerItem[];
+  style?: TextStyle;
   valueKey?: string;
   onChangeSelection?: (
     value: string,
@@ -83,6 +84,7 @@ export default class List extends Modal<ListProps, State> {
     return (
       <Picker
         key={this.props.field.id}
+        style={this.props.style}
         enabled={!this.props.field.readOnly}
         selectedValue={this.state.currentSelection}
         onValueChange={this.onValueChange}

@@ -1,5 +1,5 @@
 import { Platform, StyleSheet } from "react-native";
-import { defaultTheme } from "../../themes";
+import { GREY_40, PRIMARY_100, WHITE } from "../../styles/colors";
 
 const styles = StyleSheet.create({
   viewStyle: {
@@ -8,11 +8,11 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     width: "100%",
     justifyContent: "space-between",
-    backgroundColor: defaultTheme.colors.background,
+    backgroundColor: WHITE,
     height: 45,
-    borderColor: defaultTheme.colors.greyborders,
-    borderWidth: 1,
-    borderRadius: 3,
+    borderColor: PRIMARY_100,
+    borderWidth: 2,
+    borderRadius: 5,
     marginBottom: 10
   },
   textStyle: {
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   textSelectStyle: {
     marginLeft: 10,
     flexGrow: 1,
-    color: defaultTheme.colors.greyaccent,
+    color: GREY_40,
     marginTop: Platform.OS === "ios" ? 10 : 0,
     fontSize: 15
   },
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     flexGrow: 0,
-    backgroundColor: defaultTheme.colors.background
+    backgroundColor: "transparent"
   },
   iconViewStyle: {
     flexDirection: "row",
@@ -46,10 +46,12 @@ const styles = StyleSheet.create({
   iconStyle: {
     flexShrink: 1,
     textAlignVertical: "center",
-    paddingLeft: 5,
+    paddingLeft: 15,
     paddingRight: 5,
-    color: defaultTheme.colors.primary,
-    fontSize: 20
+    color: PRIMARY_100,
+    fontSize: 20,
+    width: 8,
+    height: 8
   },
   textIconStyle: {
     flexShrink: 1,

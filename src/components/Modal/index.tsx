@@ -4,9 +4,10 @@ import { Text, View, TouchableOpacity } from "react-native";
 import Field, { FieldProps, FieldState, FieldMode } from "../Field";
 import locale from "../../i18n/locale";
 import { componentsStyle, defaultTheme } from "../../themes";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { UI_PATTERNS } from "../../ob-api/constants/uiPatterns";
 import styles from "./styles";
+import { ArrowDown } from "etendo-ui-library/dist-native/assets/images/icons/ArrowDown";
+import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 
 export interface ModalProps extends FieldProps {
   identifier?: string;
@@ -95,7 +96,7 @@ export default abstract class Modal<
                 }}
               >
                 <View style={styles.iconViewStyle}>
-                  <Icon name="pencil" size={12} style={styles.iconStyle} />
+                  <ArrowDown style={styles.iconStyle} />
                 </View>
               </TouchableOpacity>
             </View>
@@ -116,22 +117,17 @@ export default abstract class Modal<
             </Dialog.Title>
             <Dialog.Content>{this.renderDialogContent()}</Dialog.Content>
             <Dialog.Actions>
-              <Button
-                style={{
-                  backgroundColor: defaultTheme.colors.accent,
-                  marginRight: 20,
-                  width: 120,
-                  marginBottom: 20
-                }}
-                loading={this.state.loading}
+              <ButtonUI
+                typeStyle="secondary"
+                text={locale.t("Done")}
                 onPress={async () => {
                   await this.onDonePressed();
                   this.onHide(false);
                   this.setState({ showPickerModal: false });
                 }}
-              >
-                {locale.t("Done")}
-              </Button>
+                height={40}
+                width={120}
+              />
             </Dialog.Actions>
           </Dialog>
         </Portal>
