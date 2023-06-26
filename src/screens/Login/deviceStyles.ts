@@ -13,8 +13,12 @@ export const deviceStyles = {
   backgroundLoginImageContainer: styleSheet.backgroundLoginImageContainer,
   backgroundLoginImage: styleSheet.backgroundLoginImage,
   buttonDemo: styleSheet.buttonDemo,
+  imageBackground: styleSheet.backgroundContainer,
+  statusBar: styleSheet.statusBar,
+  containerFlex: styleSheet.container,
 
   // Styles specific to mobile or tablet
+  loginButton: !isDeviceTablet && styleSheet.loginButton,
   container: isDeviceTablet
     ? styleSheet.containerTablet
     : styleSheet.containerMobile,
@@ -36,9 +40,7 @@ export const deviceStyles = {
   generalContainer: isDeviceTablet
     ? styleSheet.generalContainerTablet
     : styleSheet.generalContainerMobile,
-  backgroundContainer: isDeviceTablet
-    ? styleSheet.backgroundContainerTablet
-    : styleSheet.backgroundContainerMobile,
+  backgroundContainer: styleSheet.backgroundContainer,
   settingsImageContainer: isDeviceTablet
     ? styleSheet.settingsImageContainerTablet
     : styleSheet.settingsImageContainerMobile,
