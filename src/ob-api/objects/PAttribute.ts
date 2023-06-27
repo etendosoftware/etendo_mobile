@@ -1,4 +1,4 @@
-import { OBRest } from "obrest";
+import { OBRest } from "etrest";
 
 export default class PAttribute {
   /**

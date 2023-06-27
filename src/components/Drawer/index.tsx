@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { View, Image, Text, Pressable } from "react-native";
 import { User, Windows, logout } from "../../stores";
 import { observer } from "mobx-react";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { IRecord } from "../../types/Record";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import locale from "../../i18n/locale";
