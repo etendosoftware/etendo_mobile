@@ -2743,9 +2743,9 @@ camelcase@^6.0.0, camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001503:
-  version "1.0.30001508"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001508.tgz#4461bbc895c692a96da399639cc1e146e7302a33"
-  integrity sha512-sdQZOJdmt3GJs1UMNpCCCyeuS2IEGLXnHyAo9yIO5JJDjbjoVRij4M1qep6P6gFpptD1PqIYgzM+gwJbOi92mw==
+  version "1.0.30001509"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001509.tgz#2b7ad5265392d6d2de25cd8776d1ab3899570d14"
+  integrity sha512-2uDDk+TRiTX5hMcUYT/7CSyzMZxjfGu0vAUjS2g0LSD8UoXOv0LtpH4LxGMemsiPq6LCVIUjNwVM0erkOkGCDA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -3476,9 +3476,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.431:
-  version "1.4.442"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.442.tgz#455f4c5bd6ae73afb634dcffee6f356c26c8e294"
-  integrity sha512-RkrZF//Ya+0aJq2NM3OdisNh5ZodZq1rdXOS96G8DdDgpDKqKE81yTbbQ3F/4CKm1JBPsGu1Lp/akkna2xO06Q==
+  version "1.4.443"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.443.tgz#fa7e866b2ba3684259c8d373ab22ddd0e31d1a83"
+  integrity sha512-QG+DKVaD7OkcCJ/0x/IHdVEcwU7cak9Vr9dXCNp7G9ojBZQWtwtRV77CBOrU49jsKygedFcNc/IHUrGljKV2Gw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -3606,10 +3606,10 @@ etendo-ui-library@^1.2.0:
   resolved "https://registry.yarnpkg.com/etendo-ui-library/-/etendo-ui-library-1.2.0.tgz#bab68a6396492da5d011fcc50e63b58ce55eb8dd"
   integrity sha512-KovDM+EiF4IYP3AWI5lPicYebY181AoRzxGiYuvtqxk4YNX/l7jYo/5baxZK6zRnOnaHLYRaOwVpmyz7a1odiA==
 
-etrest@^1.1.24:
-  version "1.1.24"
-  resolved "https://registry.yarnpkg.com/etrest/-/etrest-1.1.24.tgz#2e0b749a14d80c6c3748c5e22fbd8c9633ba2428"
-  integrity sha512-i5UCu149JMrwmBb8ACMEFr2uPvo56U1bB9PM5QPl0kFr0SjikwUNbcz0S0thJa1MZ9TFtEtDbjbAYRJ0ArATig==
+etrest@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/etrest/-/etrest-1.2.0.tgz#9191da76f93df2b349f2af544a7f15a976098dc4"
+  integrity sha512-FyZzBHQJFgKh942yg6yQJ7U8WKxwbDHEdJ3B93SyTWqEMSBP0gWVkDaiYfy2oZ86beKmw0Ggf/uUWj+REaOmMA==
   dependencies:
     "@types/base-64" "^0.1.3"
     axios "^0.21.1"

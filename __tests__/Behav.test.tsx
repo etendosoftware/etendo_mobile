@@ -1,11 +1,6 @@
 import unmock from "unmock";
 import { OBRest } from "etrest";
 import { Windows } from "../src/stores";
-import { IOBDalEntity } from "../src/ob-api/classes/OBDal";
-import { RecordService } from "../src/ob-api/services/RecordService";
-import { OBObject } from "etrest";
-import App from "../App";
-import { APP_EVENT } from "../src/contexts/MainAppContext";
 import { UI_PATTERNS } from "../src/ob-api/constants/uiPatterns";
 
 const URL = "http://localhost:8080/etendo";

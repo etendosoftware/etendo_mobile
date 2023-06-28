@@ -1,5 +1,4 @@
 import "react-native";
-
 import unmock from "unmock";
 import { OBRest } from "etrest";
 import { Windows } from "../src/stores";
@@ -20,9 +19,7 @@ const TAB_TRANSACTION_ID = "289";
 const ORDER_WINDOW_ID = "143";
 
 describe("App", () => {
-  beforeAll(() => {
-    // mockCatFactAPI(unmock);
-  });
+  beforeAll(() => {});
   beforeEach(() => {
     unmock.reset();
   });
