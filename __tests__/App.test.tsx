@@ -1,10 +1,9 @@
 import "react-native";
 import unmock from "unmock";
-import { OBRest } from "etrest";
+import { OBRest, OBObject } from "etrest";
 import { Windows } from "../src/stores";
 import { IOBDalEntity } from "../src/ob-api/classes/OBDal";
 import { RecordService } from "../src/ob-api/services/RecordService";
-import { OBObject } from "etrest";
 import App from "../App";
 import { APP_EVENT } from "../src/contexts/MainAppContext";
 
