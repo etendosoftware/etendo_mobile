@@ -1,5 +1,4 @@
-import { OBRest } from "obrest";
-import { Settings } from "../../screens";
+import { OBRest } from "etrest";
 
 export default class ADWindow {
   /**

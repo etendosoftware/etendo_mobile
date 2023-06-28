@@ -1,4 +1,4 @@
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { IRecord } from "../types/Record";
 import { User } from "../stores";
 

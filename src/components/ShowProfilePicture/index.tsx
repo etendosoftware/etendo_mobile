@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import { User } from "../../stores";
 import { observer } from "mobx-react";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { Avatar } from "react-native-paper";
 import { QUATERNARY_100, TERCIARY_100 } from "../../styles/colors";
 

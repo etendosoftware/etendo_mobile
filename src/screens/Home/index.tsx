@@ -19,7 +19,7 @@ import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { isTablet } from "../../../hook/isTablet";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { User, logout } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 
