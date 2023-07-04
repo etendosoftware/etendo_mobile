@@ -1,9 +1,8 @@
 import unmock from 'unmock';
-import { OBRest } from 'obrest';
+import { OBRest, OBObject } from "etrest";
 import { Windows } from '../src/stores';
 import { IOBDalEntity } from '../src/ob-api/classes/OBDal'
 import { RecordService } from '../src/ob-api/services/RecordService';
-import { OBObject } from 'obrest'
 import App from '../App'
 import { APP_EVENT } from '../src/contexts/MainAppContext';
 import { UI_PATTERNS } from '../src/ob-api/constants/uiPatterns';
@@ -16,7 +15,7 @@ const TAB_ACCOUNTING_ID = '93787F9E92BD433EA7FD0E61227BC126'
 const TAB_HEADER_ID = '255'
 
 
-describe('App', () => {
+describe("App", () => {
   beforeAll(() => {
     // mockCatFactAPI(unmock);
   });

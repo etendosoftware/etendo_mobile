@@ -18,13 +18,12 @@ import { INavigation } from "../components/Card";
 import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import { isTablet } from "../../hook/isTablet";
-const etendoBoyImg = require("../img/etendo_boy_back.png");
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../helpers/Etendo";
-import CardDropdown from "../../ui/components/cards/cardDropdown";
+import CardDropdown from "../../ui/src/components/cards/cardDropdown/CardDropdown";
 import { ContainerContext } from "../contexts/ContainerContext";
-import { StarIcon } from "../../ui/assets/images/icons/StarIcon";
-import { Navbar } from "../../ui/components";
+import { StarIcon } from "../../ui/src/assets/images/icons/StarIcon";
+import { Navbar } from "../../ui/src/components";
 
 interface Props {
   navigation: INavigation;
@@ -93,7 +92,10 @@ class HomeClass extends React.Component<Props, State> {
             </TouchableOpacity>
           </View>
         </View>
-        <Image style={styles.image} source={etendoBoyImg} />
+        <Image
+          style={styles.image}
+          source={require("../img/etendo_boy_back.png")}
+        />
       </View>
     );
   }

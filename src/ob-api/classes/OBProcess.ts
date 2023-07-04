@@ -1,4 +1,4 @@
-import { OBRest } from "obrest";
+import { OBRest } from "etrest";
 import DefaultParams from "../constants/parameters";
 
 export default class OBProcess {

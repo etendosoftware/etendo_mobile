@@ -1,6 +1,6 @@
 "use strict";
 
-import { Criterion, OBRest, Restrictions } from "obrest";
+import { Criterion, OBRest, Restrictions } from "etrest";
 import { FilterValue } from "../../types";
 import { ADTab } from "../objects/ADTab";
 import locale from "../../i18n/locale";
@@ -138,42 +138,42 @@ class OBDal {
       } else {
         // Group filters by Field ID. This allows to use the OR operator between filters of the same field
         // But keeping an AND operator between all filters.
-                let groupedFilters = filters.reduce((groups, filter) => {
+        let groupedFilters = filters.reduce((groups, filter) => {
           var group = filter.fieldID;
 
           groups[group] = groups[group] || [];
           groups[group].push(filter);
           return groups;
         }, {} as { [key: string]: FilterValue[] });
-       
-        const groupedRestrictions = Object.keys(groupedFilters).map(fieldId => {
-          return Restrictions.or(
-            groupedFilters[fieldId].map(filter => {
-              // Only use case insensitive contains on string type fields
-              // For types that are a reference to another entity, search via its identifier 
-              var filterProperty = locale.t(filter.propertyType).includes('missing') ? filter.propertyType: locale.t(filter.propertyType);
-              
-              switch (filterProperty) {
-                case "Search":
-                case "Table":
-                case "TableDir":
-                case "OBUISEL_Selector Reference":
-                  return filter.isSearchBar
-                    ? Restrictions.iContains(
-                        `${filter.property}._identifier`,
-                        filter.value
-                      )
-                    : Restrictions.equals(filter.property, filter.value);
 
-                case "String":
-                case "Text":
+        const groupedRestrictions = Object.keys(groupedFilters).map(fieldId => {
+            return Restrictions.or(
+            groupedFilters[fieldId].map(filter => {
+                // Only use case insensitive contains on string type fields
+                // For types that are a reference to another entity, search via its identifier
+              var filterProperty = locale.t(filter.propertyType).includes('missing') ? filter.propertyType: locale.t(filter.propertyType);
+
+                switch (filterProperty) {
+                  case "Search":
+                  case "Table":
+                  case "TableDir":
+                  case "OBUISEL_Selector Reference":
+                    return filter.isSearchBar
+                      ? Restrictions.iContains(
+                          `${filter.property}._identifier`,
+                          filter.value
+                        )
+                      : Restrictions.equals(filter.property, filter.value);
+
+                  case "String":
+                  case "Text":
                   return Restrictions.iContains(filter.property, filter.value);
 
-                default:
-                  return Restrictions.equals(filter.property, filter.value);
-              }
-            })
-          );
+                  default:
+                    return Restrictions.equals(filter.property, filter.value);
+                }
+              })
+            );
         });
         mainRestrictions.push(...groupedRestrictions);
       }

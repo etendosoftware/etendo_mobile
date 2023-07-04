@@ -5,7 +5,7 @@ import { Appbar, Button, Dialog, FAB, List, Text } from "react-native-paper";
 import { User } from "../stores";
 import { observer } from "mobx-react";
 import withAuthentication from "../withAuthentication";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { IRecord } from "../types/Record";
 import { INavigation } from "../components/Card";
 import { defaultTheme } from "../themes";
@@ -62,7 +62,7 @@ class Profile extends React.Component<Props, State> {
   getStyleItemList = () => {
     return {width:isTablet() ? '50%': '100%'}
   }
-  
+
   getStyleList = () => {
     return { width: isTablet()? "50%":"80%",alignItems:'center'}
   }
@@ -88,7 +88,7 @@ class Profile extends React.Component<Props, State> {
     let client: IRecord = await criteria.uniqueResult();
     return client.name;
   };
-  
+
   getWarehouseName = async () => {
     let criteria = OBRest.getInstance().createCriteria("Warehouse");
     criteria.add(Restrictions.equals("id", User.data.warehouseId));
@@ -149,33 +149,33 @@ class Profile extends React.Component<Props, State> {
         <View style={this.getStyleContainer()}>
             <View style={{alignItems:'center',marginTop: 20,width:'50%'}}>
               <View style={{height: 140, alignItems: "center"}}>
-                <ShowProfilePicture
-                  size={140}
-                  username={User.data.username}
-                ></ShowProfilePicture>
-                <FAB
-                  icon={"camera-plus-outline"}
-                  small={true}
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      bottom: 0,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
-                  color={defaultTheme.colors.text}
-                  onPress={() => [this.setState({ showChangePicture: true })]}
-                  visible={this.state.showChangePicture === false}
-                />
-              </View>
-              <View style={{ justifyContent: "center", height: 40 }}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ fontWeight: "bold", fontSize: 20 }}
-                >
-                  {User.data.username}
-                </Text>
-              </View>
+              <ShowProfilePicture
+                size={140}
+                username={User.data.username}
+              ></ShowProfilePicture>
+              <FAB
+                icon={"camera-plus-outline"}
+                small={true}
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: defaultTheme.colors.backgroundSecondary
+                }}
+                color={defaultTheme.colors.text}
+                onPress={() => [this.setState({ showChangePicture: true })]}
+                visible={this.state.showChangePicture === false}
+              />
             </View>
+            <View style={{ justifyContent: "center", height: 40 }}>
+              <Text
+                allowFontScaling={false}
+                style={{ fontWeight: "bold", fontSize: 20 }}
+              >
+                {User.data.username}
+              </Text>
+            </View>
+          </View>
 
           <List.Section
             style={this.getStyleList()}
@@ -239,13 +239,13 @@ class Profile extends React.Component<Props, State> {
 
 export default withAuthentication(Profile);
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   backgroundMobile: {
     width: '100%',
     height: '50%', 
     position:'absolute',
     top:'70%' , 
-    zIndex: -1 
+    zIndex: -1
   },
   backgroundTablet: {
     width: '70%',
@@ -253,17 +253,17 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:'70%',
     left: '0%', 
-    zIndex: -1 
+    zIndex: -1
   },
   containerMobile:{
     flexDirection: "column",
-    justifyContent: "center", 
+    justifyContent: "center",
     alignItems:'center', 
     height:'auto'
   },
   containerTablet:{
     flexDirection:"row-reverse",  
-    justifyContent: "center", 
+    justifyContent: "center",
     alignItems:'center', 
     top: '5%'
   }

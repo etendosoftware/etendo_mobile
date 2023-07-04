@@ -33,12 +33,11 @@ import { defaultTheme } from "../../themes";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import Input from "../../../ui/components/input/Input";
-import ButtonUI from "../../../ui/components/button/Button";
+import Input from "../../../ui/src/components/input/Input";
+import ButtonUI from "../../../ui/src/components/button/Button";
 
 import { isTablet } from "../../helpers/IsTablet";
-import Orientation from "react-native-orientation-locker";
-import { BLUE, GREY_60 } from "../../../ui/styles/colors";
+import { PRIMARY_100, NEUTRAL_60 } from "../../../ui/src/styles/colors";
 import { GREY_PURPLE } from "../../styles/colors";
 import { ContainerContext } from "../../contexts/ContainerContext";
 
@@ -108,11 +107,6 @@ class LoginClass extends React.Component<Props, State> {
     // FIXME: For the Input component of the UI Library
     LogBox.ignoreLogs(["Require cycle: "]);
 
-    if (deviceIsATablet) {
-      Orientation.lockToLandscape();
-    } else {
-      Orientation.lockToPortrait();
-    }
 
     try {
       User.loading = true;
@@ -768,7 +762,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     height: 24,
     width: 24,
-    tintColor: GREY_60,
+    tintColor: NEUTRAL_60,
     alignSelf: "center"
   },
   etendoLogotypeTablet: {
@@ -791,7 +785,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   welcomeTitle: {
-    color: BLUE,
+    color: PRIMARY_100,
     fontWeight: "700",
     fontSize: 30
   },

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { User } from "../stores";
 import { observer } from "mobx-react";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { Avatar } from "react-native-paper";
 
 interface Props {

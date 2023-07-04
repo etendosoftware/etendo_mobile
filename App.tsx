@@ -13,8 +13,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { defaultTheme } from "./src/themes";
 import Languages from "./src/ob-api/objects/Languages";
 import { supportedLocales } from "./src/i18n/config";
-import Orientation from 'react-native-orientation-locker'
-import { isTablet } from "./hook/isTablet";
 import { ContainerProvider } from "./src/contexts/ContainerContext";
 
 interface Props {}
@@ -39,12 +37,7 @@ export default class App extends React.Component<Props, State> {
   componentDidMount = async () => {
     StatusBar.setBarStyle("light-content", true);
 
-    if (isTablet()) {
-      Orientation.lockToLandscape();
-    } else {
-      Orientation.lockToPortrait();
-    }
-    
+
     locale.init();
     const storagedLanguage = await User.loadLanguage();
     await this.updateLanguageList();
@@ -110,12 +103,12 @@ export default class App extends React.Component<Props, State> {
       etendoLanguages = await this.getServerLanguages();
     } catch (ignored) {}
 
-    const etendoLocalLanguages = etendoLanguages.map(f => {
+    const etendoLocalLanguages = etendoLanguages.map((f) => {
       return { id: f.id, value: f.language, label: f.name };
     });
     //App languages
     const localLanguages = Object.keys(supportedLocales);
-    const appLanguages = localLanguages.map(localLanguage => {
+    const appLanguages = localLanguages.map((localLanguage) => {
       return {
         id: localLanguage,
         value: localLanguage.replace("-", "_"),
@@ -185,7 +178,7 @@ export default class App extends React.Component<Props, State> {
                 <NavigationContainer>
                   {User.token ? <AppHome /> : <AppLogin />}
                 </NavigationContainer>
-                <Snackbar ref={ref => (GlobalSnackbar.instance = ref)} />
+                <Snackbar ref={(ref) => (GlobalSnackbar.instance = ref)} />
               </ContainerProvider>
             </>
           )}

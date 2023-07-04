@@ -6,14 +6,12 @@ import {
   StyleSheet,
   Text,
   Pressable,
-  AsyncStorage
 } from "react-native";
 import { User, Windows, logout } from "../stores";
 import { DefaultTheme } from "react-native-paper";
 import { observer } from "mobx-react";
-import { OBRest, Restrictions } from "obrest";
+import { OBRest, Restrictions } from "etrest";
 import { IRecord } from "../types/Record";
-import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { INavigation } from "./Card";
 import locale from "../i18n/locale";
@@ -22,8 +20,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { defaultTheme } from "../themes";
 import ShowProfilePicture from "./ShowProfilePicture";
 import { ContainerContext } from "../contexts/ContainerContext";
-import MainScreen from "./MainScreen";
-import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../helpers/Etendo";
 
 const NOAUTH_SCREENS = ["Settings", "Login"];
@@ -70,7 +66,7 @@ export class DrawerClass extends React.Component<Props, State> {
       userName: "",
       organization: ""
     };
-    observe(Windows, change => {
+    observe(Windows, (change) => {
       let loading = true;
       if (Windows.menuItems.length > 0) {
         loading = false;
@@ -172,33 +168,34 @@ export class DrawerClass extends React.Component<Props, State> {
             onPress={() => this.props.navigation.navigate("Home")}
           />
         </View>
-                 
+
         {this.props.context?.state?.menuItems.map((menuItem: any) => {
           const params = { ...menuItem };
           if (params.component) {
             delete params.component;
           }
           return (
-                <DrawerItem
-          activeTintColor={"black"}
-          inactiveTintColor={"black"}
-          key={menuItem.__id}
-          label={menuItem.name}
-          labelStyle={styles.drawerText}
-          style={styles.drawerItem}
+            <DrawerItem
+              activeTintColor={"black"}
+              inactiveTintColor={"black"}
+              key={menuItem.__id}
+              label={menuItem.name}
+              labelStyle={styles.drawerText}
+              style={styles.drawerItem}
           onPress={async() => {
-            if (menuItem.app) {
-              Etendo.navigation[menuItem.app].navigate(
-                menuItem.route,
-                menuItem
-              );
-              Etendo.toggleDrawer();
-            } else {
-              Etendo.globalNav.navigate(menuItem.name, menuItem.params);
-            }
-          }}
-        />
-        ); })}
+                if (menuItem.app) {
+                  Etendo.navigation[menuItem.app].navigate(
+                    menuItem.route,
+                    menuItem
+                  );
+                  Etendo.toggleDrawer();
+                } else {
+                  Etendo.globalNav.navigate(menuItem.name, menuItem.params);
+                }
+              }}
+            />
+          );
+        })}
         <View style={styles.constantItems}></View>
         <View style={styles.drawerItemsContainer}>
           <Icon name="md-settings" size={20} style={styles.iconColor} />
@@ -228,12 +225,10 @@ export class DrawerClass extends React.Component<Props, State> {
 }
 
 export const Drawer = (props) => {
-  const context = useContext(ContainerContext)
+  const context = useContext(ContainerContext);
 
-  return (
-    <DrawerClass {...props} context={context} />
-  )
-}
+  return <DrawerClass {...props} context={context} />;
+};
 export default Drawer;
 
 const styles = StyleSheet.create({

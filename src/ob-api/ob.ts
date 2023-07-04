@@ -1,4 +1,4 @@
-import { OBRest } from "obrest";
+import { OBRest } from "etrest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SUCCESS = 0;

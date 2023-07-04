@@ -9,8 +9,8 @@ import locale from "../i18n/locale";
 import User from "../stores/User";
 import MainScreen from "../components/MainScreen";
 import { ContainerContext } from "../contexts/ContainerContext";
-import { DrawerLateral } from "../../ui/components/navbar";
-import { DrawerCurrentIndexType } from "../../ui/components/navbar/Navbar.types";
+import { DrawerLateral } from "../../ui/src/components/navbar";
+import { DrawerCurrentIndexType } from "../../ui/src/components/navbar/Navbar.types";
 import { Etendo } from "../helpers/Etendo";
 
 export const DrawerNav = createDrawerNavigator();

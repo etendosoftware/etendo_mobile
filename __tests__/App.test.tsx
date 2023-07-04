@@ -1,11 +1,10 @@
 import 'react-native';
 
 import unmock from 'unmock';
-import { OBRest } from 'obrest';
+import { OBRest, OBObject } from "etrest";
 import { Windows } from '../src/stores';
 import { IOBDalEntity } from '../src/ob-api/classes/OBDal'
 import { RecordService } from '../src/ob-api/services/RecordService';
-import { OBObject } from 'obrest'
 import App from '../App'
 import { APP_EVENT } from '../src/contexts/MainAppContext';
 
@@ -19,7 +18,7 @@ const TAB_PRODUCT_ID = '180'
 const TAB_TRANSACTION_ID = '289'
 const ORDER_WINDOW_ID = '143'
 
-describe('App', () => {
+describe("App", () => {
   beforeAll(() => {
     // mockCatFactAPI(unmock);
   });
@@ -87,12 +86,12 @@ describe('App', () => {
     const entitiesByLevel = Windows.getWindowEntities(PRODUCT_WINDOW_ID) as IOBDalEntity[][]
     expect(entitiesByLevel.length).toBe(4)
     expect(entitiesByLevel[TAB_LEVEL]).toEqual([{
-      level: 0,
-      sequenceNumber: 10,
+        level: 0,
+        sequenceNumber: 10,
       entityName: 'Product',
-      criteria: null,
-      hqlOrderByClause: null,
-      parentColumns: []
+        criteria: null,
+        hqlOrderByClause: null,
+        parentColumns: []
     }])
 
     const currentEntity = Windows.getEntity(TAB_LEVEL, SEQUENCE_NUMBER, entitiesByLevel)
