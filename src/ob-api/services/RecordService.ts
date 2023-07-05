@@ -1,5 +1,5 @@
 import { IRecord } from "../../types/Record";
-import { OBRest } from "obrest";
+import { OBRest } from "etrest";
 
 export interface onSavePromise {
   hasNewRecord: boolean;

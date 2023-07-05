@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView
+  ScrollView,
 } from "react-native";
 
 import locale from "../../i18n/locale";
@@ -16,7 +16,8 @@ import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
 import { isTablet } from "../../../hook/isTablet";
-import { User } from "../../stores";
+
+import { User, logout } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");

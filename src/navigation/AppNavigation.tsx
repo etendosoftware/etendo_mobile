@@ -23,26 +23,31 @@ export const DrawerNav = createDrawerNavigator();
 
 export const AppLogin = () => {
   return (
-    <DrawerNav.Navigator
-      initialRouteName={"Login"}
-      screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerStyle={{ width: User.token ? "65%" : 0 }}
-    >
-      <DrawerNav.Screen
-        name="Login"
-        component={Screens.Login}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-      <DrawerNav.Screen
-        name={"Settings"}
-        component={Screens.Settings}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-    </DrawerNav.Navigator>
+    <>
+      <DrawerNav.Navigator
+        initialRouteName={"Login"}
+        screenOptions={{ unmountOnBlur: true, headerShown: false }}
+        drawerStyle={{ width: User.token ? "65%" : 0 }}
+      >
+        <DrawerNav.Screen
+          name="Login"
+          component={Screens.Login}
+          options={{
+            drawerLockMode: "locked-closed",
+            headerStyle: {
+              backgroundColor: "#f4511e" // este cambiará el color del header
+            }
+          }}
+        />
+        <DrawerNav.Screen
+          name={"Settings"}
+          component={Screens.Settings}
+          options={{
+            drawerLockMode: "locked-closed"
+          }}
+        />
+      </DrawerNav.Navigator>
+    </>
   );
 };
 const computeDrawerWidth = () => {

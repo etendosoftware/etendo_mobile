@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { OBRest } from "obrest";
+import { OBRest } from "etrest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class User {
@@ -101,7 +101,7 @@ class User {
     const context = {};
 
     if (record && fields && entityName) {
-      Object.keys(fields).forEach(key => {
+      Object.keys(fields).forEach((key) => {
         if (fields[key].column.storedInSession) {
           context["@" + entityName + "." + fields[key].columnName + "@"] =
             record[key];

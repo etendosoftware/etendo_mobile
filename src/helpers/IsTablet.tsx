@@ -18,3 +18,11 @@ export const isTablet = () => {
     );
   }
 };
+
+// function that checks if the screen of the device is less or equal than specified width and height
+export const isTabletSmall = () => {
+  let pixelDensity = PixelRatio.get();
+  const adjustedHeight = height * pixelDensity;
+
+  return adjustedHeight <= 601;
+};
