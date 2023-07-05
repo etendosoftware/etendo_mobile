@@ -407,7 +407,7 @@ const LoginFunctional = observer((props) => {
           </View>
 
           {ChangedPassword()}
-          <Toast ref={(ref) => Toast.setRef(ref)} />
+          <Toast />
         </SafeAreaView>
       </ScrollView>
     </KeyboardAvoidingView>
