@@ -6,7 +6,8 @@ import {
   ScrollView,
   Image,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  DeviceEventEmitter
 } from "react-native";
 import locale from "../../i18n/locale";
 import {
@@ -198,11 +199,10 @@ const Settings = observer((props) => {
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
-            onPress={
-              !User?.token
-                ? () => props.navigation.navigate("Login")
-                : () => props.navigation.navigate("Home")
-            }
+            onPress={() => {
+              DeviceEventEmitter.emit("goBack");
+              props.navigation.goBack();
+            }}
           />
         </View>
         <View style={styles.containerCardStyle}>

@@ -1,6 +1,6 @@
 //Imports
 import React, { useEffect, useState } from "react";
-import { View, Image, Text } from "react-native";
+import { View, Image, Text, DeviceEventEmitter } from "react-native";
 import locale from "../../i18n/locale";
 import { User } from "../../stores";
 import { observer } from "mobx-react";
@@ -62,11 +62,10 @@ const Profile = observer((props) => {
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
-            onPress={
-              !User?.token
-                ? () => props.navigation.navigate("Login")
-                : () => props.navigation.navigate("Home")
-            }
+            onPress={() => {
+              DeviceEventEmitter.emit("goBack");
+              props.navigation.goBack();
+            }}
           />
         </View>
         <Image source={getBackgroundProfile()} style={styles.imageHeader} />
