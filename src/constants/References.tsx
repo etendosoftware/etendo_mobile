@@ -19,5 +19,7 @@ export enum References {
   String = "10",
   Text = "14",
   PAttribute = "35",
-  Button = "28"
+  Button = "28",
+  AdminUsername = "admin",
+  AdminPassword = "admin" 
 }

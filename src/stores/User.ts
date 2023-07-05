@@ -101,7 +101,7 @@ class User {
     const context = {};
 
     if (record && fields && entityName) {
-      Object.keys(fields).forEach(key => {
+      Object.keys(fields).forEach((key) => {
         if (fields[key].column.storedInSession) {
           context["@" + entityName + "." + fields[key].columnName + "@"] =
             record[key];

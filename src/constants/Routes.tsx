@@ -9,15 +9,9 @@ export default {
   DRAWERDASHBOARD: "DrawerDashboard",
   DRAWERWELCOME: "DrawerWelcome",
   DRAWERNOTFOUND: "NotFound",
-  DASHBOARD: "Dashboard",
-  TABFEED: "TabFeed",
-  TABPROFILE: "TabProfile",
-  TABSETTINGS: "TabSettings",
   WELCOME: "Welcome",
   SIGNUP: "Signup",
-  FEED: "Feed",
   PROFILE: "Profile",
   SETTINGS: "Settings",
-  DETAIL: "Detail",
   MODALTEMPLATE: "ModalTemplate"
 };

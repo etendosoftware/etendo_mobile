@@ -80,11 +80,11 @@ export default class OBDatasource {
       }
 
       let encodedData: any = Object.keys(args)
-        .map(key => {
+        .map((key) => {
           if (key === "criteria" && args[key]) {
             const criterias = args[key];
             return criterias.map(
-              crit => `criteria=${encodeURIComponent(JSON.stringify(crit))}`
+              (crit) => `criteria=${encodeURIComponent(JSON.stringify(crit))}`
             );
           }
           // Convert boolean values to Y/N

@@ -4,93 +4,61 @@ import {
   useDrawerStatus
 } from "@react-navigation/drawer";
 import * as Screens from "../screens";
-import { CardViewStackNavigator } from "./CardViewNavigator";
+import { ContainerContext } from "../contexts/ContainerContext";
+import { DrawerLateral } from "etendo-ui-library/dist-native/components/navbar";
+import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
+import { Etendo } from "../helpers/Etendo";
+import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
+import { isTablet } from "../../hook/isTablet";
 import MainScreen from "../components/MainScreen";
-import { ContainerContext } from "../contexts/ContainerContext";
-import { DrawerLateral } from "../../ui/src/components/navbar";
-import { DrawerCurrentIndexType } from "../../ui/src/components/navbar/Navbar.types";
-import { Etendo } from "../helpers/Etendo";
 
 export const DrawerNav = createDrawerNavigator();
 
 export function AppLogin() {
   return (
-    <DrawerNav.Navigator
-      initialRouteName={"Login"}
-      screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerStyle={{ width: User.token ? "65%" : 0 }}
-    >
-      <DrawerNav.Screen
-        name="Login"
-        component={Screens.Login}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-      <DrawerNav.Screen
-        name={"Settings"}
-        component={Screens.Settings}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-    </DrawerNav.Navigator>
+    <>
+      <DrawerNav.Navigator
+        initialRouteName={"Login"}
+        screenOptions={{ unmountOnBlur: true, headerShown: false }}
+        drawerStyle={{ width: User.token ? "65%" : 0 }}
+      >
+        <DrawerNav.Screen
+          name="Login"
+          component={Screens.Login}
+          options={{
+            drawerLockMode: "locked-closed",
+            headerStyle: {
+              backgroundColor: "#f4511e" // este cambiará el color del header
+            }
+          }}
+        />
+        <DrawerNav.Screen
+          name={"Settings"}
+          component={Screens.Settings}
+          options={{
+            drawerLockMode: "locked-closed"
+          }}
+        />
+      </DrawerNav.Navigator>
+    </>
   );
 }
 export function AppHome({ props }) {
-  const [routes, setRoutes] = useState<any>([]);
   const context = useContext(ContainerContext);
-  const isDrawerOpen = () => {
-    const drawerStatus = useDrawerStatus();
+  const [menuItemsDrawer, setMenuItemDrawer] = useState<any>([]);
 
-    if (drawerStatus === "open") {
-      return true;
-    }
-    return false;
-  };
   useEffect(() => {
-    setRoutes(getRoutes());
-  }, [context?.state?.menuItems.length]);
-
-  const getRoutes = () => {
-    return context?.state?.menuItems.map((item) => {
-      return { label: item.name, route: item.name };
-    });
-  };
+    setMenuItemDrawer(context?.state?.menuItems);
+    console.log(context?.state?.menuItems);
+  }, [context?.state?.menuItems]);
 
   return (
     <DrawerNav.Navigator
       initialRouteName={"Home"}
       screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerContent={(props) => {
-        return (
-          <DrawerLateral
-            version=""
-            copyright=""
-            data={{
-              content: [
-                {
-                  sectionType: "sections",
-                  titleSection: "Aplications",
-                  dataSection: routes
-                }
-              ]
-            }}
-            showDrawer={isDrawerOpen()}
-            onOptionSelected={(
-              route?: string,
-              currentIndex?: DrawerCurrentIndexType
-            ) => {
-              props.navigation.navigate(route);
-            }}
-            onCloseDrawer={() => {
-              Etendo.closeDrawer();
-            }}
-          />
-        );
-      }}
+      drawerContent={(props) => {}}
     >
       <DrawerNav.Screen
         name="Home"
@@ -99,15 +67,6 @@ export function AppHome({ props }) {
           drawerLockMode: "locked-closed"
         }}
       />
-
-      <DrawerNav.Screen
-        name="Tutorial"
-        component={Screens.Tutorial}
-        options={{
-          drawerLockMode: "locked-closed"
-        }}
-      />
-
       <DrawerNav.Screen
         name={"Settings"}
         component={Screens.Settings}
@@ -124,8 +83,6 @@ export function AppHome({ props }) {
           drawerLockMode: "locked-closed"
         }}
       />
-
-      <DrawerNav.Screen name="CardView1" component={CardViewStackNavigator} />
       {context?.state?.menuItems.map((menuItem: any) => {
         const params = { ...menuItem };
         if (params.component) {

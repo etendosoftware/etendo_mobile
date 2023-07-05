@@ -2,7 +2,6 @@ import * as config from "./config";
 import i18n from "i18n-js";
 // @ts-ignore
 import { enUS, esES, format, parseISO } from "date-fns";
-import { User } from "../stores";
 import { References } from "../constants/References";
 
 const Localization = {

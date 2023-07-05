@@ -59,7 +59,7 @@ class OBDal {
       .setFirstResult(pageOffset)
       .setMaxResults(pageSize)
       .setAdditionalParameters({ tabId: currentTab.id, ...context });
-    orderBys.forEach(clause => criteria.addOrderBy(clause.name, clause.asc));
+    orderBys.forEach((clause) => criteria.addOrderBy(clause.name, clause.asc));
     return await criteria.list();
   }
 
@@ -74,7 +74,7 @@ class OBDal {
       orderByClause = DEFAULT_ORDER_BY;
     }
 
-    orderByClause.split(",").forEach(propAsc => {
+    orderByClause.split(",").forEach((propAsc) => {
       const parts = propAsc.trim().split(" ");
       const prop = parts[0];
       const asc =
@@ -122,7 +122,7 @@ class OBDal {
 
     // Filter via parent record variable in sub tabs
     if (parentRecordId && parentColumns && parentColumns.length > 0) {
-      const allParents = parentColumns.map(column => {
+      const allParents = parentColumns.map((column) => {
         return Restrictions.equals(column, parentRecordId);
       });
 
@@ -139,19 +139,24 @@ class OBDal {
         // Group filters by Field ID. This allows to use the OR operator between filters of the same field
         // But keeping an AND operator between all filters.
         let groupedFilters = filters.reduce((groups, filter) => {
-          var group = filter.fieldID;
+          let group = filter.fieldID;
 
           groups[group] = groups[group] || [];
           groups[group].push(filter);
           return groups;
         }, {} as { [key: string]: FilterValue[] });
 
-        const groupedRestrictions = Object.keys(groupedFilters).map(fieldId => {
+        const groupedRestrictions = Object.keys(groupedFilters).map(
+          (fieldId) => {
             return Restrictions.or(
-            groupedFilters[fieldId].map(filter => {
+              groupedFilters[fieldId].map((filter) => {
                 // Only use case insensitive contains on string type fields
                 // For types that are a reference to another entity, search via its identifier
-              var filterProperty = locale.t(filter.propertyType).includes('missing') ? filter.propertyType: locale.t(filter.propertyType);
+                let filterProperty = locale
+                  .t(filter.propertyType)
+                  .includes("missing")
+                  ? filter.propertyType
+                  : locale.t(filter.propertyType);
 
                 switch (filterProperty) {
                   case "Search":
@@ -167,14 +172,18 @@ class OBDal {
 
                   case "String":
                   case "Text":
-                  return Restrictions.iContains(filter.property, filter.value);
+                    return Restrictions.iContains(
+                      filter.property,
+                      filter.value
+                    );
 
                   default:
                     return Restrictions.equals(filter.property, filter.value);
                 }
               })
             );
-        });
+          }
+        );
         mainRestrictions.push(...groupedRestrictions);
       }
     }
