@@ -25,6 +25,9 @@ const Profile = observer((props) => {
   const [warehouse, setWarehouse] = useState<string>("");
 
   useEffect(() => {
+    if (!isTablet()) {
+      DeviceEventEmitter.emit("showNavbar", { state: false });
+    }
     if (User.data) {
       Promise.all([
         getOrganizationName(),
@@ -63,7 +66,6 @@ const Profile = observer((props) => {
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={() => {
-              DeviceEventEmitter.emit("goBack");
               props.navigation.goBack();
             }}
           />
