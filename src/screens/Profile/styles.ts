@@ -27,7 +27,7 @@ const styleSheet = StyleSheet.create({
     alignItems: "center"
   },
   pageTitleMobile: {
-    marginTop: 80,
+    marginTop: 24,
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
@@ -65,8 +65,7 @@ const styleSheet = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
-    marginTop: 180,
-    flex: 1
+    bottom: -120
   },
   userDataTablet: {
     display: "flex",

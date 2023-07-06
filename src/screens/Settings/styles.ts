@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   backContainerMobile: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 80
+    marginTop: 28
   },
   settingsTitle: {
     fontFamily: "Inter-SemiBold",
