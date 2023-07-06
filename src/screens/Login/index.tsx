@@ -248,7 +248,7 @@ const LoginFunctional = observer((props) => {
   };
 
   const welcomeText = (): string => {
-    return deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome");
+    return deviceIsATablet ? locale.t("Welcome!") : locale.t("Welcome") + "!";
   };
 
   const getWelcomeContainer = () => {

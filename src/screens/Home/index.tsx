@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView,
+  ScrollView
 } from "react-native";
 
 import locale from "../../i18n/locale";
@@ -17,7 +17,7 @@ import styles from "./styles";
 import { INavigation } from "../../interfaces";
 import { isTablet } from "../../../hook/isTablet";
 
-import { User, logout } from "../../stores";
+import { User } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
@@ -50,7 +50,7 @@ const HomeFunction = observer((props: Props) => {
           <ScrollView horizontal style={styles.conteinerMed} />
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>{locale.t("Welcome")}</Text>
+            <Text style={styles.welcomeText}>{locale.t("Welcome") + ","}</Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
