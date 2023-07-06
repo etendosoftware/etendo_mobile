@@ -111,7 +111,7 @@ export const AppHome = (props) => {
       ></View>
       {showNavbar && (
         <Navbar
-          title={locale.t("Welcome") + ","}
+          title={locale.t("WelcomeToEtendo,")}
           optionsProfile={[
             {
               title: locale.t("Profile"),

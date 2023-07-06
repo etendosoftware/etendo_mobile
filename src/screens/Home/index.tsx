@@ -50,7 +50,9 @@ const HomeFunction = observer((props: Props) => {
           <ScrollView horizontal style={styles.conteinerMed} />
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>{locale.t("Welcome") + ","}</Text>
+            <Text style={styles.welcomeText}>
+              {locale.t("WelcomeToEtendo,")}
+            </Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}

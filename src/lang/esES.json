@@ -76,7 +76,8 @@
   "NoResult": "No se encontraron resultados",
   "Cadena": "String",
   "Texto": "Text",
-  "Welcome": "Bienvenido a Etendo",
+  "WelcomeToEtendo!": "Bienvenido a Etendo!",
+  "WelcomeToEtendo,": "Bienvenido a Etendo,",
   "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
   "ErrorUserPassword": "Usuario o contraseña son incorrectos"
 }
