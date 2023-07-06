@@ -6,6 +6,7 @@ import {
   Text,
   ImageBackground,
   ScrollView,
+  DeviceEventEmitter
 } from "react-native";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import locale from "../../i18n/locale";
@@ -17,7 +18,7 @@ import styles from "./styles";
 import { INavigation } from "../../interfaces";
 import { isTablet } from "../../../hook/isTablet";
 import { OBRest, Restrictions } from "etrest";
-import { User, logout } from "../../stores";
+import { User } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
@@ -62,6 +63,9 @@ const HomeFunction = observer((props: Props) => {
     return User?.data?.username ? User?.data?.username + "!" : null;
   };
 
+  useEffect(() => {
+    DeviceEventEmitter.emit("showNavbar", { state: true });
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
@@ -80,7 +84,9 @@ const HomeFunction = observer((props: Props) => {
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>{locale.t("Welcome")}</Text>
+            <Text style={styles.welcomeText}>
+              {locale.t("WelcomeToEtendoHome")}
+            </Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
