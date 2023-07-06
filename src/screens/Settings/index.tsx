@@ -195,10 +195,14 @@ const Settings = observer((props) => {
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
-            onPress={() => {
-              DeviceEventEmitter.emit("goBack");
-              props.navigation.goBack();
-            }}
+            onPress={
+              !User?.token
+                ? () => props.navigation.navigate("Login")
+                : () => {
+                    DeviceEventEmitter.emit("goBack");
+                    props.navigation.navigate("Home");
+                  }
+            }
           />
         </View>
         <View style={styles.containerCardStyle}>
