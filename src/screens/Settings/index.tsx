@@ -55,6 +55,9 @@ const Settings = observer((props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
 
   useEffect(() => {
+    if (!isTablet()) {
+      DeviceEventEmitter.emit("showNavbar", { state: false });
+    }
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
       const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
@@ -184,7 +187,6 @@ const Settings = observer((props) => {
   };
 
   const handleBackButtonPress = () => {
-    DeviceEventEmitter.emit("goBack");
     props.navigation.navigate("Home");
   };
 

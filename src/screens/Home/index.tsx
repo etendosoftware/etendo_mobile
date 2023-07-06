@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Image,
   View,
   SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView
+  ScrollView,
+  DeviceEventEmitter
 } from "react-native";
 
 import locale from "../../i18n/locale";
@@ -43,6 +44,9 @@ const HomeFunction = observer((props: Props) => {
     return User?.data?.username ? User?.data?.username + "!" : null;
   };
 
+  useEffect(() => {
+    DeviceEventEmitter.emit("showNavbar", { state: true });
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>

@@ -82,8 +82,8 @@ export const AppHome = (props) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    let listener = DeviceEventEmitter.addListener("goBack", (e) => {
-      setShowNavbar(true);
+    let listener = DeviceEventEmitter.addListener("showNavbar", (e) => {
+      setShowNavbar(e.state);
     });
 
     return () => {
@@ -94,9 +94,6 @@ export const AppHome = (props) => {
   const onOptionPressHandle = async (route: string) => {
     if (route === "logout") {
       await logout();
-    }
-    if (!isTablet()) {
-      setShowNavbar(false);
     }
     navigation.navigate(route);
   };
