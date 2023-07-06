@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   image: {
-    height: 350,
     width: "100%",
     right: 0,
     bottom: 0,
