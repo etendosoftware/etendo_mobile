@@ -82,8 +82,8 @@ export const AppHome = (props) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    let listener = DeviceEventEmitter.addListener("showNavbar", (e) => {
-      setShowNavbar(e.state);
+    let listener = DeviceEventEmitter.addListener("showNavbar", (event) => {
+      setShowNavbar(event.state);
     });
 
     return () => {
