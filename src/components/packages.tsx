@@ -28,7 +28,6 @@ import * as ReactNativeVisionCamera from "react-native-vision-camera";
 import * as ReactNativeOrientationLocker from "react-native-orientation-locker";
 import * as Axios from "axios";
 import * as Base64 from "base-64";
-import * as BarcodeMask from "react-native-barcode-mask";
 import * as GestureHandler from "react-native-gesture-handler";
 import * as SafeAreaContext from "react-native-safe-area-context";
 import * as Screens from "react-native-screens";
@@ -79,7 +78,6 @@ const Packages = {
   axios: () => Axios,
   "base-64": () => Base64,
   "react-dom": () => ReactDom,
-  "react-native-barcode-mask": () => BarcodeMask,
   "react-native-gesture-handler": () => GestureHandler,
   "react-native-safe-area-context": () => SafeAreaContext,
   "react-native-screens": () => Screens,

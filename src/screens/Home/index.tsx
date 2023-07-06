@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import locale from "../../i18n/locale";
@@ -19,9 +19,6 @@ import { isTablet } from "../../../hook/isTablet";
 import { OBRest, Restrictions } from "etrest";
 import { User, logout } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
-import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
-import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 
@@ -53,23 +50,12 @@ const HomeFunction = observer((props: Props) => {
     } catch (error) {}
   };
 
-  const onOptionPressHandle = async (route: string) => {
-    if (route === "logout") {
-      await logout();
-    }
-    props.navigation.navigate(route);
-  };
-
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
   };
 
   const getImageBackground = () => {
     return isTablet() ? etendoBoyImg : etendoBoyMobile;
-  };
-
-  const getName = () => {
-    return User?.data?.username ? User?.data?.username : "A";
   };
 
   const getNameInBody = () => {
@@ -79,35 +65,6 @@ const HomeFunction = observer((props: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
-        <Navbar
-          optionsProfile={[
-            {
-              title: "Profile",
-              image: <UserNoBorder />,
-              route: "Profile"
-            },
-            {
-              title: "Settings",
-              image: <ConfigurationIcon />,
-              route: "Settings"
-            }
-          ]}
-          onOptionSelectedProfile={async (route: string) => {
-            await onOptionPressHandle(route);
-          }}
-          name={getName()}
-          profileImage={
-            profileImage.length && (
-              <Image
-                source={{
-                  uri: `data:image/jpeg;base64,${profileImage[0].bindaryData}`
-                }}
-              />
-            )
-          }
-          onPressLogo={() => {}}
-          onPressMenuBurger={() => {}}
-        />
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             {context?.state?.menuItems.map((menuItem: any) => {

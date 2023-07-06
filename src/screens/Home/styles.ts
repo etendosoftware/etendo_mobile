@@ -1,18 +1,16 @@
-import { StyleSheet, Platform, StatusBar } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { defaultTheme } from "../../themes";
 import { isTablet } from "../../../hook/isTablet";
 import { PRIMARY_100 } from "../../styles/colors";
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultTheme.colors.background,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    backgroundColor: defaultTheme.colors.background
   },
   imgBackground: {
     height: "100%"
   },
   image: {
-    height: 350,
     width: "100%",
     right: 0,
     bottom: 0,
@@ -20,7 +18,7 @@ const styles = StyleSheet.create({
   },
   imageMobile: {
     height: 342,
-    width: 328,
+    width: 324,
     right: 0,
     bottom: 0,
     position: "absolute"
