@@ -42,14 +42,11 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
-**/*.xcodeproj/xcshareddata/
 Pods/*
 *.xcodeproj/*
 Pods/*
-!*.xcodeproj/project.pbxproj
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
-ios/Etendo_Mobile.xcworkspace/xcshareddata/
 
 # Android/IntelliJ
 #
