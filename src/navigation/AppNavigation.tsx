@@ -1,17 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  createDrawerNavigator,
-  useDrawerStatus
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
 import { ContainerContext } from "../contexts/ContainerContext";
-import { DrawerLateral } from "etendo-ui-library/dist-native/components/navbar";
-import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
-import { Etendo } from "../helpers/Etendo";
-import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
-import { isTablet } from "../../hook/isTablet";
 import MainScreen from "../components/MainScreen";
 
 export const DrawerNav = createDrawerNavigator();
@@ -47,18 +39,11 @@ export function AppLogin() {
 }
 export function AppHome({ props }) {
   const context = useContext(ContainerContext);
-  const [menuItemsDrawer, setMenuItemDrawer] = useState<any>([]);
-
-  useEffect(() => {
-    setMenuItemDrawer(context?.state?.menuItems);
-    console.log(context?.state?.menuItems);
-  }, [context?.state?.menuItems]);
 
   return (
     <DrawerNav.Navigator
       initialRouteName={"Home"}
       screenOptions={{ unmountOnBlur: true, headerShown: false }}
-      drawerContent={(props) => {}}
     >
       <DrawerNav.Screen
         name="Home"

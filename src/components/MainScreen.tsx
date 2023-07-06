@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import {
   NavigationContainer,
@@ -6,29 +6,20 @@ import {
 } from "@react-navigation/native";
 import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
-import { ContainerContext } from "../contexts/ContainerContext";
 
 const HomePage = ({ route }: any) => {
   const RenderDynamicComponents = (props: any) => {
-    const context = useContext(ContainerContext);
     const appId = route.params.__id;
     const url = route.params.url;
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
 
-    useEffect(() => {
-      return () => {
-        // unmount
-      };
-    });
     return (
       <>
         <View style={{ flex: 1 }}>
           <NavigationContainer
             independent={true}
-            onReady={() => {
-              // onReady
-            }}
+            onReady={() => {}}
             ref={childNavigation}
           >
             <View style={{ flex: 1 }}>
