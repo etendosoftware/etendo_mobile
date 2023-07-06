@@ -24,6 +24,12 @@ export const DrawerNav = createDrawerNavigator();
 export const AppLogin = () => {
   return (
     <>
+      <View
+        style={{
+          height: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+          backgroundColor: "transparent"
+        }}
+      ></View>
       <DrawerNav.Navigator
         initialRouteName={"Login"}
         screenOptions={{ unmountOnBlur: true, headerShown: false }}

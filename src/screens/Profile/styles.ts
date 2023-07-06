@@ -65,7 +65,8 @@ const styleSheet = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
-    bottom: -120
+    marginTop: 180,
+    flex: 1
   },
   userDataTablet: {
     display: "flex",
