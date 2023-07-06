@@ -55,7 +55,7 @@ const HomeFunction = observer((props: Props) => {
         ) : (
           <View style={styles.welcomeMobile}>
             <Text style={styles.welcomeText}>
-              {locale.t("WelcomeToEtendo,")}
+              {locale.t("WelcomeToEtendoHome")}
             </Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>

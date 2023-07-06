@@ -67,7 +67,7 @@
   "Modal:Edit": "Edit",
   "Process:Run": "Run Process",
   "Process:SelectedRecords": "Selected %{numRecords} records",
-  "Welcome!": "Welcome!",
+  "Welcome": "Welcome!",
   "Finish": "Finish",
   "Or_select": "Or select ",
   "Or_scan": "Or scan ",
@@ -76,8 +76,8 @@
   "Recover_password": "Please contact the ERP administrator to recover your password.",
   "Forgot_password": "Forgot your password?",
   "NoResult": "No results found",
-  "WelcomeToEtendo!": "Welcome to Etendo!",
-  "WelcomeToEtendo,": "Welcome to Etendo,",
+  "WelcomeToEtendoLogin": "Welcome to Etendo!",
+  "WelcomeToEtendoHome": "Welcome to Etendo,",
   "EnterCredentials": "Enter your credentials to access your account.",
   "ErrorUserPassword": "Username or password are incorrect"
 }

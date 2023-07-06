@@ -65,7 +65,7 @@
   "Profile: User": "Usuario",
   "Profile:Account": "CUENTA",
   "Modal:Edit": "Editar",
-  "Welcome!": "¡Bienvenido!",
+  "Welcome": "¡Bienvenido!",
   "Finish": "Finalizar",
   "Or_select": "O selecciona ",
   "Or_scan": "O escanea ",
@@ -76,8 +76,8 @@
   "NoResult": "No se encontraron resultados",
   "Cadena": "String",
   "Texto": "Text",
-  "WelcomeToEtendo!": "Bienvenido a Etendo!",
-  "WelcomeToEtendo,": "Bienvenido a Etendo,",
+  "WelcomeToEtendoLogin": "Bienvenido a Etendo!",
+  "WelcomeToEtendoHome": "Bienvenido a Etendo,",
   "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
   "ErrorUserPassword": "Usuario o contraseña son incorrectos"
 }
