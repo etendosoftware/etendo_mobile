@@ -299,7 +299,6 @@ const LoginFunctional = observer((props) => {
       behavior="padding"
       enabled
     >
-      <View style={styles.statusBar} />
       <ScrollView style={styles.containerFlex}>
         <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
         <SafeAreaView

@@ -6,7 +6,8 @@ import {
   ScrollView,
   Image,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  DeviceEventEmitter
 } from "react-native";
 import locale from "../../i18n/locale";
 import {
@@ -182,6 +183,15 @@ const Settings = observer((props) => {
     return `${metadata.appVersion} - ${metadata.label}`;
   };
 
+  const handleBackButtonPress = () => {
+    DeviceEventEmitter.emit("goBack");
+    props.navigation.navigate("Home");
+  };
+
+  const handleBackButtonPressWithLogin = () => {
+    props.navigation.navigate("Login");
+  };
+
   const { languages } = mainAppContext;
   return (
     <>
@@ -195,9 +205,9 @@ const Settings = observer((props) => {
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={
-              !User?.token
-                ? () => props.navigation.navigate("Login")
-                : () => props.navigation.navigate("Home")
+              User?.token
+                ? handleBackButtonPress
+                : handleBackButtonPressWithLogin
             }
           />
         </View>

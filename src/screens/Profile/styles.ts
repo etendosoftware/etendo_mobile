@@ -27,7 +27,7 @@ const styleSheet = StyleSheet.create({
     alignItems: "center"
   },
   pageTitleMobile: {
-    marginTop: 80,
+    marginTop: 24,
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
