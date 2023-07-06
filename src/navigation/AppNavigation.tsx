@@ -105,14 +105,15 @@ export const AppHome = (props) => {
       ></View>
       {showNavbar && (
         <Navbar
+          title={locale.t("Welcome")}
           optionsProfile={[
             {
-              title: "Profile",
+              title: locale.t("Profile"),
               image: <UserNoBorder />,
               route: "Profile"
             },
             {
-              title: "Settings",
+              title: locale.t("Settings"),
               image: <ConfigurationIcon />,
               route: "Settings"
             }
