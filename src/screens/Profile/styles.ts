@@ -13,8 +13,8 @@ const styleSheet = StyleSheet.create({
     height: "100%"
   },
   imageHeader: {
-    resizeMode: "stretch",
     width: "100%",
+    height: 120,
     zIndex: -1,
     position: "relative"
   },
@@ -65,31 +65,25 @@ const styleSheet = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
-    marginTop: 180 - StatusBar.currentHeight,
-    flex: 1
+    marginTop: 160 - StatusBar.currentHeight
   },
   userDataTablet: {
-    display: "flex",
-    alignItems: "center",
     flexDirection: "row",
     alignContent: "space-around",
     marginLeft: 32
   },
   profilePicture: {
-    height: 140,
-    zIndex: 1
+    height: 145
   },
   profilePictureTablet: {
     paddingRight: 19
   },
-
   usernameTextMobile: {
     fontFamily: "Inter-SemiBold",
     fontWeight: "600",
     fontSize: 28,
     lineHeight: 36,
-    color: PRIMARY_100,
-    marginTop: 16
+    color: PRIMARY_100
   },
   usernameTextTablet: {
     fontFamily: "Inter-SemiBold",
@@ -123,7 +117,7 @@ const styleSheet = StyleSheet.create({
     marginVertical: 9
   },
   accountDataContainerMobile: {
-    marginTop: 260,
+    marginTop: 200,
     marginHorizontal: 24
   },
   accountTitle: {
