@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 import {
   NEUTRAL_100,
   NEUTRAL_30,
@@ -65,7 +65,7 @@ const styleSheet = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
-    marginTop: 180,
+    marginTop: 180 - StatusBar.currentHeight,
     flex: 1
   },
   userDataTablet: {
