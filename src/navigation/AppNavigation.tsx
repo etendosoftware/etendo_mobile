@@ -121,6 +121,12 @@ export const AppHome = (props) => {
               route: "Settings"
             }
           ]}
+          endOptions={[
+            {
+              title: locale.t("Log out"),
+              route: "logout"
+            }
+          ]}
           onOptionSelectedProfile={async (route: string) => {
             await onOptionPressHandle(route);
           }}
