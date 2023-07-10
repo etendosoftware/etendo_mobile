@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   Image,
   View,
-  SafeAreaView,
   Text,
   ImageBackground,
   ScrollView,
@@ -67,7 +66,7 @@ const HomeFunction = observer((props: Props) => {
     DeviceEventEmitter.emit("showNavbar", { state: true });
   }, []);
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
@@ -96,7 +95,7 @@ const HomeFunction = observer((props: Props) => {
           source={getImageBackground()}
         />
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 });
 
