@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  DeviceEventEmitter,
-  Image,
-  Platform,
-  StatusBar,
-  View
-} from "react-native";
+import { DeviceEventEmitter, SafeAreaView, StatusBar } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
 import { Drawer } from "../components";
@@ -16,20 +10,14 @@ import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { logout } from "../stores";
-import { NEUTRAL_100, PRIMARY_100 } from "../styles/colors";
 import { useNavigation } from "@react-navigation/native";
 
 export const DrawerNav = createDrawerNavigator();
 
 export const AppLogin = () => {
   return (
-    <>
-      <View
-        style={{
-          height: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-          backgroundColor: "transparent"
-        }}
-      ></View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
       <DrawerNav.Navigator
         initialRouteName={"Login"}
         screenOptions={{ unmountOnBlur: true, headerShown: false }}
@@ -53,7 +41,7 @@ export const AppLogin = () => {
           }}
         />
       </DrawerNav.Navigator>
-    </>
+    </SafeAreaView>
   );
 };
 const computeDrawerWidth = () => {
@@ -63,20 +51,18 @@ const computeDrawerWidth = () => {
     return "0";
   }
 };
+export function AppHome({ props }) {
+  const getActiveRouteName = (state) => {
+    const route = state.routes[state.index];
 
-const getActiveRouteName = (state) => {
-  const route = state.routes[state.index];
+    if (route.state) {
+      // Dive into nested navigators
+      return getActiveRouteName(route.state);
+    }
 
-  if (route.state) {
-    // Dive into nested navigators
-    return getActiveRouteName(route.state);
-  }
+    return route.name;
+  };
 
-  return route.name;
-};
-
-export const AppHome = (props) => {
-  const [profileImage, setProfileImage] = useState<any>([]);
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
 
   const navigation = useNavigation();
@@ -99,13 +85,8 @@ export const AppHome = (props) => {
   };
 
   return (
-    <>
-      <View
-        style={{
-          height: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-          backgroundColor: showNavbar ? PRIMARY_100 : NEUTRAL_100
-        }}
-      ></View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
       {showNavbar && (
         <Navbar
           title={locale.t("WelcomeToEtendoHome")}
@@ -131,15 +112,6 @@ export const AppHome = (props) => {
             await onOptionPressHandle(route);
           }}
           name={User?.data?.username}
-          profileImage={
-            profileImage.length && (
-              <Image
-                source={{
-                  uri: `data:image/jpeg;base64,${profileImage[0].bindaryData}`
-                }}
-              />
-            )
-          }
           onPressLogo={() => {
             setShowNavbar(true);
             navigation.navigate("Home");
@@ -179,6 +151,6 @@ export const AppHome = (props) => {
           }}
         />
       </DrawerNav.Navigator>
-    </>
+    </SafeAreaView>
   );
-};
+}

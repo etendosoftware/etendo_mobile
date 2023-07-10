@@ -5,7 +5,6 @@ import {
   Image,
   LogBox,
   Keyboard,
-  SafeAreaView,
   TouchableOpacity,
   Dimensions,
   KeyboardAvoidingView
@@ -296,122 +295,114 @@ const LoginFunctional = observer((props) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.containerFlex]}
-      behavior="padding"
-      enabled
-    >
-      <ScrollView style={styles.containerFlex}>
-        <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
-        <SafeAreaView
-          style={[
-            styles.generalContainer,
-            { height: Dimensions.get("window").height }
-          ]}
-        >
-          <View style={styles.container}>
-            <View style={styles.buttonsDemoSettings}>
-              <View style={styles.buttonDemo}>
-                <ButtonUI
-                  height={43}
-                  width={98}
-                  typeStyle="terciary"
-                  onPress={() => demo()}
-                  text={locale.t("DemoTry")}
-                />
-              </View>
-              <View style={styles.settingsImageContainer}>
-                <ButtonUI
-                  onPress={() => props.navigation.navigate("Settings")}
-                  text={locale.t("Settings")}
-                  typeStyle="whiteBorder"
-                  height={47}
-                  width={110}
-                  image={
-                    <ConfigurationIcon style={styles.configurationImage} />
-                  }
-                />
-              </View>
-            </View>
-            <View style={styles.etendoLogoContainer}>
-              {!deviceIsATabletSmall && (
-                <Image
-                  source={require("../../../assets/etendo-logotype.png")}
-                  style={styles.etendoLogotype}
-                />
-              )}
-              <View style={getWelcomeContainer()}>
-                <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
-                <Image
-                  source={require("../../img/stars.png")}
-                  style={styles.starsImage}
-                />
-              </View>
-              <Text style={styles.credentialsText}>
-                {locale.t("EnterCredentials")}
-              </Text>
-            </View>
-
-            <View style={styles.containerInputs}>
-              <View style={styles.textInputStyle}>
-                <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
-                <Input
-                  typeField={"textInput"}
-                  value={username}
-                  onChangeText={(username) => {
-                    setUsername(username);
-                    if (error) setError(false);
-                  }}
-                  placeholder={locale.t("User")}
-                  fontSize={16}
-                  height={48}
-                  isError={error}
-                />
-              </View>
-
-              <View style={styles.textInputStyle}>
-                <Text style={styles.textInputsHolders}>
-                  {locale.t("Password")}
-                </Text>
-                <Input
-                  typeField={"textInputPassword"}
-                  value={password}
-                  onChangeText={(password) => {
-                    setPassword(password);
-                    if (error) setError(false);
-                  }}
-                  placeholder={locale.t("Password")}
-                  fontSize={16}
-                  height={48}
-                  isError={error}
-                />
-              </View>
-            </View>
-            <View style={styles.loginButton}>
+    <ScrollView style={styles.containerFlex}>
+      <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
+      <View
+        style={[
+          styles.generalContainer,
+          { height: Dimensions.get("window").height }
+        ]}
+      >
+        <View style={styles.container}>
+          <View style={styles.buttonsDemoSettings}>
+            <View style={styles.buttonDemo}>
               <ButtonUI
-                onPress={submitLogin}
-                text={locale.t("Log in")}
-                typeStyle={"primary"}
-                width="100%"
-                height={50}
+                height={43}
+                width={98}
+                typeStyle="terciary"
+                onPress={() => demo()}
+                text={locale.t("DemoTry")}
               />
             </View>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={styles.changePasswordStyle}
-              onPress={() => [setShowChangePassword(true)]}
-            ></TouchableOpacity>
-
-            <Text style={styles.copyRightStyle}>
-              © Copyright Etendo 2020-2023
+            <View style={styles.settingsImageContainer}>
+              <ButtonUI
+                onPress={() => props.navigation.navigate("Settings")}
+                text={locale.t("Settings")}
+                typeStyle="whiteBorder"
+                height={47}
+                width={110}
+                image={<ConfigurationIcon style={styles.configurationImage} />}
+              />
+            </View>
+          </View>
+          <View style={styles.etendoLogoContainer}>
+            {!deviceIsATabletSmall && (
+              <Image
+                source={require("../../../assets/etendo-logotype.png")}
+                style={styles.etendoLogotype}
+              />
+            )}
+            <View style={getWelcomeContainer()}>
+              <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
+              <Image
+                source={require("../../img/stars.png")}
+                style={styles.starsImage}
+              />
+            </View>
+            <Text style={styles.credentialsText}>
+              {locale.t("EnterCredentials")}
             </Text>
           </View>
 
-          {ChangedPassword()}
-          <Toast />
-        </SafeAreaView>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View style={styles.containerInputs}>
+            <View style={styles.textInputStyle}>
+              <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
+              <Input
+                typeField={"textInput"}
+                value={username}
+                onChangeText={(username) => {
+                  setUsername(username);
+                  if (error) setError(false);
+                }}
+                placeholder={locale.t("User")}
+                fontSize={16}
+                height={48}
+                isError={error}
+              />
+            </View>
+
+            <View style={styles.textInputStyle}>
+              <Text style={styles.textInputsHolders}>
+                {locale.t("Password")}
+              </Text>
+              <Input
+                typeField={"textInputPassword"}
+                value={password}
+                onChangeText={(password) => {
+                  setPassword(password);
+                  if (error) setError(false);
+                }}
+                placeholder={locale.t("Password")}
+                fontSize={16}
+                height={48}
+                isError={error}
+              />
+            </View>
+          </View>
+          <View style={styles.loginButton}>
+            <ButtonUI
+              onPress={submitLogin}
+              text={locale.t("Log in")}
+              typeStyle={"primary"}
+              width="100%"
+              height={50}
+            />
+          </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.changePasswordStyle}
+            onPress={() => [setShowChangePassword(true)]}
+          ></TouchableOpacity>
+
+          <Text style={styles.copyRightStyle}>
+            © Copyright Etendo 2020-2023
+          </Text>
+        </View>
+
+        {ChangedPassword()}
+        <Toast />
+      </View>
+    </ScrollView>
   );
 });
 
