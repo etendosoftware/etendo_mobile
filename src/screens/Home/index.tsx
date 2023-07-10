@@ -71,16 +71,17 @@ const HomeFunction = observer((props: Props) => {
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
-            {context?.state?.menuItems.map((menuItem: any) => {
-              return (
-                <CardDropdown
-                  title={menuItem.name}
-                  key={menuItem.name}
-                  image={<StarIcon />}
-                  onPress={() => props.navigation.navigate(menuItem.name)}
-                />
-              );
-            })}
+            {context?.state?.menuItems.lenght > 0 &&
+              context?.state?.menuItems.map((menuItem: any) => {
+                return (
+                  <CardDropdown
+                    title={menuItem.name}
+                    key={menuItem.name}
+                    image={<StarIcon />}
+                    onPress={() => props.navigation.navigate(menuItem.name)}
+                  />
+                );
+              })}
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>
