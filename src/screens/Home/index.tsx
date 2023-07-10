@@ -71,7 +71,7 @@ const HomeFunction = observer((props: Props) => {
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
-            {context?.state?.menuItems.lenght > 0 &&
+            {context?.state?.menuItems.length > 0 &&
               context?.state?.menuItems.map((menuItem: any) => {
                 return (
                   <CardDropdown
