@@ -11,14 +11,15 @@ import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/i
 import { logout } from "../stores";
 import { useNavigation } from "@react-navigation/native";
 import { PRIMARY_100 } from "../styles/colors";
+import styles from "./style";
 
 export const DrawerNav = createDrawerNavigator();
 
 export const AppLogin = () => {
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: PRIMARY_100, flex: 0 }} />
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.containerBackground} />
+      <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor={PRIMARY_100} />
         <DrawerNav.Navigator
           initialRouteName={"Login"}
@@ -29,10 +30,7 @@ export const AppLogin = () => {
             name="Login"
             component={Screens.Login}
             options={{
-              drawerLockMode: "locked-closed",
-              headerStyle: {
-                backgroundColor: "#f4511e" // este cambiará el color del header
-              }
+              drawerLockMode: "locked-closed"
             }}
           />
           <DrawerNav.Screen
@@ -89,8 +87,8 @@ export function AppHome({ props }) {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: PRIMARY_100, flex: 0 }} />
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.containerBackground} />
+      <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor={PRIMARY_100} />
         {showNavbar && (
           <Navbar
@@ -121,7 +119,6 @@ export function AppHome({ props }) {
               setShowNavbar(true);
               navigation.navigate("Home");
             }}
-            onPressMenuBurger={() => {}}
           />
         )}
         <DrawerNav.Navigator
