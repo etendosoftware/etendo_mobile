@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { DeviceEventEmitter, SafeAreaView, StatusBar } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
-import { Drawer } from "../components";
 import locale from "../i18n/locale";
 import User from "../stores/User";
 import { isTablet } from "../../hook/isTablet";
