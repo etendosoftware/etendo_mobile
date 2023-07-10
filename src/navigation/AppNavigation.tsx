@@ -12,6 +12,7 @@ import { logout } from "../stores";
 import { useNavigation } from "@react-navigation/native";
 import { PRIMARY_100 } from "../styles/colors";
 import styles from "./style";
+import Drawer from "../components/Drawer";
 
 export const DrawerNav = createDrawerNavigator();
 
