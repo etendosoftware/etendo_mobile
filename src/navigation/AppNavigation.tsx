@@ -11,37 +11,41 @@ import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { logout } from "../stores";
 import { useNavigation } from "@react-navigation/native";
+import { PRIMARY_100 } from "../styles/colors";
 
 export const DrawerNav = createDrawerNavigator();
 
 export const AppLogin = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" />
-      <DrawerNav.Navigator
-        initialRouteName={"Login"}
-        screenOptions={{ unmountOnBlur: true, headerShown: false }}
-        drawerStyle={{ width: User.token ? "65%" : 0 }}
-      >
-        <DrawerNav.Screen
-          name="Login"
-          component={Screens.Login}
-          options={{
-            drawerLockMode: "locked-closed",
-            headerStyle: {
-              backgroundColor: "#f4511e" // este cambiará el color del header
-            }
-          }}
-        />
-        <DrawerNav.Screen
-          name={"Settings"}
-          component={Screens.Settings}
-          options={{
-            drawerLockMode: "locked-closed"
-          }}
-        />
-      </DrawerNav.Navigator>
-    </SafeAreaView>
+    <>
+      <SafeAreaView style={{ backgroundColor: PRIMARY_100, flex: 0 }} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor={PRIMARY_100} />
+        <DrawerNav.Navigator
+          initialRouteName={"Login"}
+          screenOptions={{ unmountOnBlur: true, headerShown: false }}
+          drawerStyle={{ width: User.token ? "65%" : 0 }}
+        >
+          <DrawerNav.Screen
+            name="Login"
+            component={Screens.Login}
+            options={{
+              drawerLockMode: "locked-closed",
+              headerStyle: {
+                backgroundColor: "#f4511e" // este cambiará el color del header
+              }
+            }}
+          />
+          <DrawerNav.Screen
+            name={"Settings"}
+            component={Screens.Settings}
+            options={{
+              drawerLockMode: "locked-closed"
+            }}
+          />
+        </DrawerNav.Navigator>
+      </SafeAreaView>
+    </>
   );
 };
 const computeDrawerWidth = () => {
@@ -85,72 +89,75 @@ export function AppHome({ props }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" />
-      {showNavbar && (
-        <Navbar
-          title={locale.t("WelcomeToEtendoHome")}
-          optionsProfile={[
-            {
-              title: locale.t("Profile"),
-              image: <UserNoBorder />,
-              route: "Profile"
-            },
-            {
-              title: locale.t("Settings"),
-              image: <ConfigurationIcon />,
-              route: "Settings"
-            }
-          ]}
-          endOptions={[
-            {
-              title: locale.t("Log out"),
-              route: "logout"
-            }
-          ]}
-          onOptionSelectedProfile={async (route: string) => {
-            await onOptionPressHandle(route);
+    <>
+      <SafeAreaView style={{ backgroundColor: PRIMARY_100, flex: 0 }} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor={PRIMARY_100} />
+        {showNavbar && (
+          <Navbar
+            title={locale.t("WelcomeToEtendoHome")}
+            optionsProfile={[
+              {
+                title: locale.t("Profile"),
+                image: <UserNoBorder />,
+                route: "Profile"
+              },
+              {
+                title: locale.t("Settings"),
+                image: <ConfigurationIcon />,
+                route: "Settings"
+              }
+            ]}
+            endOptions={[
+              {
+                title: locale.t("Log out"),
+                route: "logout"
+              }
+            ]}
+            onOptionSelectedProfile={async (route: string) => {
+              await onOptionPressHandle(route);
+            }}
+            name={User?.data?.username}
+            onPressLogo={() => {
+              setShowNavbar(true);
+              navigation.navigate("Home");
+            }}
+            onPressMenuBurger={() => {}}
+          />
+        )}
+        <DrawerNav.Navigator
+          initialRouteName={"Home"}
+          screenOptions={{ unmountOnBlur: true, headerShown: false }}
+          drawerContent={(props) => {
+            return <Drawer {...props} />;
           }}
-          name={User?.data?.username}
-          onPressLogo={() => {
-            setShowNavbar(true);
-            navigation.navigate("Home");
-          }}
-          onPressMenuBurger={() => {}}
-        />
-      )}
-      <DrawerNav.Navigator
-        initialRouteName={"Home"}
-        screenOptions={{ unmountOnBlur: true, headerShown: false }}
-        drawerContent={(props) => {
-          return <Drawer {...props} />;
-        }}
-        drawerStyle={{ width: computeDrawerWidth() }}
-      >
-        <DrawerNav.Screen
-          name="Home"
-          component={Screens.Home}
-          options={{
-            drawerLockMode: "locked-closed"
-          }}
-        />
-        <DrawerNav.Screen
-          name={"Settings"}
-          component={Screens.Settings}
-          options={{
-            drawerLockMode: "locked-closed"
-          }}
-        />
+          drawerStyle={{ width: computeDrawerWidth() }}
+        >
+          <DrawerNav.Screen
+            name="Home"
+            component={Screens.Home}
+            options={{
+              drawerLockMode: "locked-closed"
+            }}
+          />
+          <DrawerNav.Screen
+            name={"Settings"}
+            component={Screens.Settings}
+            options={{
+              drawerLockMode: "locked-closed"
+            }}
+          />
 
-        <DrawerNav.Screen
-          name={"Profile"}
-          label={locale.t("Profile")}
-          component={Screens.Profile}
-          options={{
-            drawerLockMode: "locked-closed"
-          }}
-        />
-      </DrawerNav.Navigator>
-    </SafeAreaView>
+          <DrawerNav.Screen
+            name={"Profile"}
+            label={locale.t("Profile")}
+            component={Screens.Profile}
+            options={{
+              drawerLockMode: "locked-closed"
+            }}
+          />
+        </DrawerNav.Navigator>
+      </SafeAreaView>
+    </>
   );
 }
