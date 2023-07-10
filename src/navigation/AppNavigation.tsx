@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   DeviceEventEmitter,
   Image,
@@ -8,9 +8,10 @@ import {
 } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as Screens from "../screens";
-import { Drawer } from "../components";
+import { ContainerContext } from "../contexts/ContainerContext";
 import locale from "../i18n/locale";
 import User from "../stores/User";
+import MainScreen from "../components/MainScreen";
 import { isTablet } from "../../hook/isTablet";
 import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
@@ -55,27 +56,29 @@ export const AppLogin = () => {
       </DrawerNav.Navigator>
     </>
   );
-};
-const computeDrawerWidth = () => {
-  if (User.token) {
-    return isTablet() ? "30%" : "65%";
-  } else {
-    return "0";
-  }
-};
+}
+export function AppHome({ props }) {
+  const context = useContext(ContainerContext);
 
-const getActiveRouteName = (state) => {
-  const route = state.routes[state.index];
+  const computeDrawerWidth = () => {
+    if (User.token) {
+      return isTablet() ? "30%" : "65%";
+    } else {
+      return "0";
+    }
+  };
 
-  if (route.state) {
-    // Dive into nested navigators
-    return getActiveRouteName(route.state);
-  }
+  const getActiveRouteName = (state) => {
+    const route = state.routes[state.index];
 
-  return route.name;
-};
+    if (route.state) {
+      // Dive into nested navigators
+      return getActiveRouteName(route.state);
+    }
 
-export const AppHome = (props) => {
+    return route.name;
+  };
+
   const [profileImage, setProfileImage] = useState<any>([]);
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
 
@@ -150,9 +153,6 @@ export const AppHome = (props) => {
       <DrawerNav.Navigator
         initialRouteName={"Home"}
         screenOptions={{ unmountOnBlur: true, headerShown: false }}
-        drawerContent={(props) => {
-          return <Drawer {...props} />;
-        }}
         drawerStyle={{ width: computeDrawerWidth() }}
       >
         <DrawerNav.Screen
@@ -178,7 +178,21 @@ export const AppHome = (props) => {
             drawerLockMode: "locked-closed"
           }}
         />
+        {context?.state?.menuItems.map((menuItem: any) => {
+          const params = { ...menuItem };
+          if (params.component) {
+            delete params.component;
+          }
+          return (
+            <DrawerNav.Screen
+              name={menuItem.name}
+              component={menuItem.component ? menuItem.component : MainScreen}
+              initialParams={params}
+              options={{}}
+            />
+          );
+        })}
       </DrawerNav.Navigator>
     </>
-  );
-};
+  )
+}
