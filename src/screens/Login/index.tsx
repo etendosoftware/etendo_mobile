@@ -53,6 +53,14 @@ const LoginFunctional = observer((props) => {
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
+  const validateCredentials = () => {
+    return (
+      username === AdminUsername &&
+      password === AdminPassword &&
+      url.toString() === demoUrl
+    );
+  };
+
   useEffect(() => {
     const load = async () => {
       LogBox.ignoreLogs(["Require cycle: "]);
@@ -135,11 +143,7 @@ const LoginFunctional = observer((props) => {
       Windows.loading = true;
       try {
         setError(false);
-        if (
-          username === AdminUsername &&
-          password === AdminPassword &&
-          url.toString() === demoUrl
-        ) {
+        if (validateCredentials()) {
           demo();
         }
         await User.login(username, password);
