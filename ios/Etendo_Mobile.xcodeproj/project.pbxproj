@@ -484,6 +484,7 @@
 			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-Etendo_Mobile.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
@@ -508,8 +509,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo 2023/2024";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Etendo 2023/2024";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo Loader 23-24";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Etendo Loader 23-24";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Etendo_Mobile.app/Etendo_Mobile";
 			};
 			name = Debug;
@@ -519,6 +520,7 @@
 			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-Etendo_Mobile.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
@@ -540,8 +542,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo 2023/2024";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Etendo 2023/2024";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo Loader 23-24";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Etendo Loader 23-24";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Etendo_Mobile.app/Etendo_Mobile";
 			};
 			name = Release;
@@ -553,7 +555,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -572,7 +574,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios;
 				PRODUCT_NAME = Etendo_Mobile;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo 2023/2024";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo Loader 23-24";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -590,7 +592,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -608,7 +610,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios;
 				PRODUCT_NAME = Etendo_Mobile;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo 2023/2024";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Etendo Loader 23-24";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
