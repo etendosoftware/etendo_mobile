@@ -34,18 +34,14 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata
 *.xccheckout
 *.moved-aside
 DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-project.xcworkspace
 Pods/*
-*.xcodeproj/*
 Pods/*
-!*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
 # Android/IntelliJ
