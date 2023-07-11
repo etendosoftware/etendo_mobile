@@ -11,7 +11,7 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import locale from "../../i18n/locale";
 import withAuthentication from "../../withAuthentication";
 import { observer } from "mobx-react-lite";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
@@ -21,6 +21,7 @@ import { User } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
+import { isTabletSmall } from "../../helpers/IsTablet";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyMobile = require("../../../assets/etendo-bk-mobile.png");
@@ -55,16 +56,19 @@ const HomeFunction = observer((props: Props) => {
   };
 
   const getImageBackground = () => {
-    return isTablet() ? etendoBoyImg : etendoBoyMobile;
+    if (isTablet()) {
+      return isTabletSmall() ? etendoBoyImg : etendoBoyImg;
+    }
+    return etendoBoyMobile;
   };
 
   const getNameInBody = () => {
     return User?.data?.username ? User?.data?.username + "!" : null;
   };
 
-  useEffect(() => {
+  useFocusEffect(() => {
     DeviceEventEmitter.emit("showNavbar", { state: true });
-  }, []);
+  });
   return (
     <View style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
@@ -73,12 +77,14 @@ const HomeFunction = observer((props: Props) => {
             {context?.state?.menuItems.length > 0 &&
               context?.state?.menuItems.map((menuItem: any) => {
                 return (
-                  <CardDropdown
-                    title={menuItem.name}
-                    key={menuItem.name}
-                    image={<StarIcon />}
-                    onPress={() => props.navigation.navigate(menuItem.name)}
-                  />
+                  <View style={{ marginLeft: 16 }}>
+                    <CardDropdown
+                      title={menuItem.name}
+                      key={menuItem.name}
+                      image={<StarIcon />}
+                      onPress={() => props.navigation.navigate(menuItem.name)}
+                    />
+                  </View>
                 );
               })}
           </ScrollView>

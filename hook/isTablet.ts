@@ -18,3 +18,14 @@ export const isTablet = () => {
 };
 
 export const isDeviceTablet = isTablet();
+
+export const isTabletSmall = () => {
+  const { width, height } = Dimensions.get("window");
+  const pixelDensity = PixelRatio.get();
+  const adjustedWidth = width * pixelDensity;
+  const adjustedHeight = height * pixelDensity;
+
+  return pixelDensity < 1.6 && adjustedWidth < 1200 && adjustedHeight < 832;
+};
+
+export const isDeviceTabletSmall = isTabletSmall();

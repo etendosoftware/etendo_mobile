@@ -16,6 +16,7 @@ import { isTablet } from "../../../hook/isTablet";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Profile = observer((props) => {
   //States
@@ -24,10 +25,13 @@ const Profile = observer((props) => {
   const [client, setClient] = useState<string>("");
   const [warehouse, setWarehouse] = useState<string>("");
 
-  useEffect(() => {
+  useFocusEffect(() => {
     if (!isTablet()) {
       DeviceEventEmitter.emit("showNavbar", { state: false });
     }
+  });
+
+  useEffect(() => {
     if (User.data) {
       Promise.all([
         getOrganizationName(),

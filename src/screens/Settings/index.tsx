@@ -34,6 +34,7 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Settings = observer((props) => {
   //Images
@@ -54,10 +55,13 @@ const Settings = observer((props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
 
-  useEffect(() => {
+  useFocusEffect(() => {
     if (!isTablet()) {
       DeviceEventEmitter.emit("showNavbar", { state: false });
     }
+  });
+
+  useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
       const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.

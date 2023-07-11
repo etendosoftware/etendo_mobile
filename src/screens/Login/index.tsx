@@ -48,7 +48,6 @@ const LoginFunctional = observer((props) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -96,27 +95,6 @@ const LoginFunctional = observer((props) => {
     };
 
     load();
-  }, []);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardOpen(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardOpen(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
   }, []);
 
   const loadDynamic = async () => {

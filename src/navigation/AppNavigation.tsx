@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { DeviceEventEmitter, SafeAreaView, StatusBar } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  DeviceEventEmitter,
+  SafeAreaView,
+  StatusBar,
+  View
+} from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
 import * as Screens from "../screens";
 import locale from "../i18n/locale";
 import User from "../stores/User";
-import { isTablet } from "../../hook/isTablet";
 import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
@@ -12,9 +16,13 @@ import { logout } from "../stores";
 import { useNavigation } from "@react-navigation/native";
 import { PRIMARY_100 } from "../styles/colors";
 import styles from "./style";
-import Drawer from "../components/Drawer";
+import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
+import pkg from "../../package.json";
+import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
+import { ContainerContext } from "../contexts/ContainerContext";
+import MainScreen from "../components/MainScreen";
 
-export const DrawerNav = createDrawerNavigator();
+const Stack = createStackNavigator();
 
 export const AppLogin = () => {
   return (
@@ -22,38 +30,21 @@ export const AppLogin = () => {
       <SafeAreaView style={styles.containerBackground} />
       <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor={PRIMARY_100} />
-        <DrawerNav.Navigator
+        <Stack.Navigator
           initialRouteName={"Login"}
-          screenOptions={{ unmountOnBlur: true, headerShown: false }}
-          drawerStyle={{ width: User.token ? "65%" : 0 }}
+          screenOptions={{ headerShown: false }}
         >
-          <DrawerNav.Screen
-            name="Login"
-            component={Screens.Login}
-            options={{
-              drawerLockMode: "locked-closed"
-            }}
-          />
-          <DrawerNav.Screen
-            name={"Settings"}
-            component={Screens.Settings}
-            options={{
-              drawerLockMode: "locked-closed"
-            }}
-          />
-        </DrawerNav.Navigator>
+          <Stack.Screen name="Login" component={Screens.Login} />
+          <Stack.Screen name={"Settings"} component={Screens.Settings} />
+        </Stack.Navigator>
       </SafeAreaView>
     </>
   );
 };
-const computeDrawerWidth = () => {
-  if (User.token) {
-    return isTablet() ? "30%" : "65%";
-  } else {
-    return "0";
-  }
-};
-export function AppHome({ props }) {
+
+export function AppHome() {
+  const context = useContext(ContainerContext);
+
   const getActiveRouteName = (state) => {
     const route = state.routes[state.index];
 
@@ -66,6 +57,8 @@ export function AppHome({ props }) {
   };
 
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
+  const [showDrawer, setShowDrawer] = useState<boolean>(false);
+  const [dataDrawer, setDataDrawer] = useState<any>([]);
 
   const navigation = useNavigation();
 
@@ -78,6 +71,14 @@ export function AppHome({ props }) {
       listener.remove();
     };
   }, []);
+
+  useEffect(() => {
+    const itemsDrawer = context?.state?.menuItems.map((item: any) => {
+      return { route: item.name, label: item.name };
+    });
+
+    setDataDrawer(itemsDrawer);
+  }, [context?.state?.menuItems]);
 
   const onOptionPressHandle = async (route: string) => {
     if (route === "logout") {
@@ -117,43 +118,59 @@ export function AppHome({ props }) {
             }}
             name={User?.data?.username}
             onPressLogo={() => {
-              setShowNavbar(true);
               navigation.navigate("Home");
+            }}
+            onPressMenuBurger={() => {
+              setShowDrawer(true);
             }}
           />
         )}
-        <DrawerNav.Navigator
+        <Stack.Navigator
           initialRouteName={"Home"}
-          screenOptions={{ unmountOnBlur: true, headerShown: false }}
-          drawerContent={(props) => {
-            return <Drawer {...props} />;
-          }}
-          drawerStyle={{ width: computeDrawerWidth() }}
+          screenOptions={{ headerShown: false }}
         >
-          <DrawerNav.Screen
-            name="Home"
-            component={Screens.Home}
-            options={{
-              drawerLockMode: "locked-closed"
+          <Stack.Screen name="Home" component={Screens.Home} />
+          <Stack.Screen name={"Settings"} component={Screens.Settings} />
+          <Stack.Screen name={"Profile"} component={Screens.Profile} />
+          {context?.state?.menuItems.map((menuItem: any, index: number) => {
+            const params = { ...menuItem };
+            if (params.component) {
+              delete params.component;
+            }
+            return (
+              <Stack.Screen
+                key={"drawerItems" + index}
+                name={menuItem.name}
+                component={menuItem.component ? menuItem.component : MainScreen}
+                initialParams={params}
+              />
+            );
+          })}
+        </Stack.Navigator>
+        <View>
+          <DrawerLateral
+            data={{
+              content: [
+                {
+                  sectionType: "sections",
+                  dataSection: [{ route: "Home", label: "Home" }]
+                },
+                { sectionType: "sections", dataSection: dataDrawer }
+              ]
             }}
-          />
-          <DrawerNav.Screen
-            name={"Settings"}
-            component={Screens.Settings}
-            options={{
-              drawerLockMode: "locked-closed"
+            showDrawer={showDrawer}
+            onOptionSelected={(
+              route?: string,
+              currentIndex?: DrawerCurrentIndexType
+            ) => {
+              navigation.navigate(route);
             }}
-          />
-
-          <DrawerNav.Screen
-            name={"Profile"}
-            label={locale.t("Profile")}
-            component={Screens.Profile}
-            options={{
-              drawerLockMode: "locked-closed"
+            onCloseDrawer={() => {
+              setShowDrawer(false);
             }}
+            version={pkg.version}
           />
-        </DrawerNav.Navigator>
+        </View>
       </SafeAreaView>
     </>
   );
