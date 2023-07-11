@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Image,
   View,
-  SafeAreaView,
   Text,
   ImageBackground,
-  ScrollView
+  ScrollView,
+  DeviceEventEmitter
 } from "react-native";
-
+import { ContainerContext } from "../../contexts/ContainerContext";
 import locale from "../../i18n/locale";
 import withAuthentication from "../../withAuthentication";
 import { observer } from "mobx-react-lite";
@@ -15,13 +15,12 @@ import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
-import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
 import { isTablet } from "../../../hook/isTablet";
-import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { OBRest, Restrictions } from "etrest";
-import { User, logout } from "../../stores";
+import { User } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
+import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
+import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyMobile = require("../../../assets/etendo-bk-mobile.png");
@@ -32,10 +31,9 @@ interface Props {
   appMinCoreVersion: string;
   coreVersion: string;
 }
-
 const HomeFunction = observer((props: Props) => {
   const [profileImage, setProfileImage] = useState<any>([]);
-
+  const context = useContext(ContainerContext);
   useEffect(() => {
     getImageProfile().catch((error) => {});
   }, [profileImage]);
@@ -52,13 +50,6 @@ const HomeFunction = observer((props: Props) => {
     } catch (error) {}
   };
 
-  const onOptionPressHandle = async (route: string) => {
-    if (route === "logout") {
-      await logout();
-    }
-    props.navigation.navigate(route);
-  };
-
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
   };
@@ -67,51 +58,35 @@ const HomeFunction = observer((props: Props) => {
     return isTablet() ? etendoBoyImg : etendoBoyMobile;
   };
 
-  const getName = () => {
-    return User?.data?.username ? User?.data?.username : "A";
-  };
-
   const getNameInBody = () => {
     return User?.data?.username ? User?.data?.username + "!" : null;
   };
 
+  useEffect(() => {
+    DeviceEventEmitter.emit("showNavbar", { state: true });
+  }, []);
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
-        <Navbar
-          optionsProfile={[
-            {
-              title: "Profile",
-              image: <UserNoBorder />,
-              route: "Profile"
-            },
-            {
-              title: "Settings",
-              image: <ConfigurationIcon />,
-              route: "Settings"
-            }
-          ]}
-          onOptionSelectedProfile={async (route: string) => {
-            await onOptionPressHandle(route);
-          }}
-          name={getName()}
-          profileImage={
-            profileImage.length && (
-              <Image
-                source={{
-                  uri: `data:image/jpeg;base64,${profileImage[0].bindaryData}`
-                }}
-              />
-            )
-          }
-          onPressLogo={() => {}}
-          onPressMenuBurger={() => {}}
-        />
         {isTablet() ? (
-          <ScrollView horizontal style={styles.conteinerMed} />
+          <ScrollView horizontal style={styles.conteinerMed}>
+            {context?.state?.menuItems.length > 0 &&
+              context?.state?.menuItems.map((menuItem: any) => {
+                return (
+                  <CardDropdown
+                    title={menuItem.name}
+                    key={menuItem.name}
+                    image={<StarIcon />}
+                    onPress={() => props.navigation.navigate(menuItem.name)}
+                  />
+                );
+              })}
+          </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>{locale.t("Welcome")}</Text>
+            <Text style={styles.welcomeText}>
+              {locale.t("WelcomeToEtendoHome")}
+            </Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
@@ -120,7 +95,7 @@ const HomeFunction = observer((props: Props) => {
           source={getImageBackground()}
         />
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 });
 

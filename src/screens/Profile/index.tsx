@@ -1,6 +1,6 @@
 //Imports
 import React, { useEffect, useState } from "react";
-import { View, Image, Text } from "react-native";
+import { View, Image, Text, DeviceEventEmitter } from "react-native";
 import locale from "../../i18n/locale";
 import { User } from "../../stores";
 import { observer } from "mobx-react";
@@ -25,6 +25,9 @@ const Profile = observer((props) => {
   const [warehouse, setWarehouse] = useState<string>("");
 
   useEffect(() => {
+    if (!isTablet()) {
+      DeviceEventEmitter.emit("showNavbar", { state: false });
+    }
     if (User.data) {
       Promise.all([
         getOrganizationName(),
@@ -62,21 +65,17 @@ const Profile = observer((props) => {
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
-            onPress={
-              !User?.token
-                ? () => props.navigation.navigate("Login")
-                : () => props.navigation.navigate("Home")
-            }
+            onPress={() => {
+              props.navigation.goBack();
+            }}
           />
         </View>
         <Image source={getBackgroundProfile()} style={styles.imageHeader} />
         <View style={styles.getUserDataStyle}>
           <View style={styles.getProfilePictureStyle}>
-            <ShowProfilePicture size={140} username={User.data.username} />
+            <ShowProfilePicture size={130} username={User.data.username} />
           </View>
-          <Text allowFontScaling={false} style={styles.userNameStyle}>
-            {User.data.username}
-          </Text>
+          <Text style={styles.userNameStyle}>{User.data.username}</Text>
         </View>
       </View>
       <View style={styles.accountDataContainer}>

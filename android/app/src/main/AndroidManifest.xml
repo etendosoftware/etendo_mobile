@@ -21,6 +21,7 @@
         <category android:name="android.intent.category.DEFAULT" />
         <data android:scheme="com.smf.mobile.etendo" />
       </intent-filter>
+      <meta-data android:name="android.windowLightStatusBar" android:value="true" />
     </activity>
     <activity android:name=".RNBootSplashActivityEtendo" android:theme="@style/BootTheme" android:launchMode="singleTask">
       <intent-filter>
