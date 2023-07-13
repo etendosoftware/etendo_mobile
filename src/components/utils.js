@@ -41,12 +41,12 @@ export async function fetchComponent(id, url) {
     });
     let component = { default: null };
     try {
-      DeviceEventEmitter.emit("showNavbar", { state: false });
       component = { default: getParsedModule(text, id, packages) };
     } catch (e) {
       console.error(e);
       throw e;
     }
+    DeviceEventEmitter.emit("showNavbar", { state: false });
     return component.default;
   } catch (error) {
     return {

@@ -21,6 +21,7 @@ import pkg from "../../package.json";
 import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
 import { ContainerContext } from "../contexts/ContainerContext";
 import MainScreen from "../components/MainScreen";
+import { HomeIcon } from "etendo-ui-library/dist-native/assets/images/icons/HomeIcon";
 
 const Stack = createStackNavigator();
 
@@ -149,25 +150,36 @@ export function AppHome() {
         </Stack.Navigator>
         <View>
           <DrawerLateral
-            data={{
-              content: [
-                {
-                  sectionType: "sections",
-                  dataSection: [{ route: "Home", label: "Home" }]
-                },
-                { sectionType: "sections", dataSection: dataDrawer }
-              ]
-            }}
+            data={[
+              {
+                sectionType: "sections",
+                dataSection: [
+                  { route: "Home", label: "Home", image: <HomeIcon /> }
+                ]
+              },
+              {
+                sectionType: "sections",
+                dataSection: dataDrawer,
+                titleSection: "Applications"
+              }
+            ]}
             showDrawer={showDrawer}
+            currentIndex={{
+              indexSection: 0,
+              indexSubSection: 0,
+              indexSubSectionItem: 0
+            }}
             onOptionSelected={(
               route?: string,
               currentIndex?: DrawerCurrentIndexType
             ) => {
               navigation.navigate(route);
+              setShowDrawer(false);
             }}
             onCloseDrawer={() => {
               setShowDrawer(false);
             }}
+            copyright={"Copyright @ 2023 Etendo"}
             version={pkg.version}
           />
         </View>

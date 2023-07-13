@@ -56,10 +56,7 @@ const HomeFunction = observer((props: Props) => {
   };
 
   const getImageBackground = () => {
-    if (isTablet()) {
-      return isTabletSmall() ? etendoBoyImg : etendoBoyImg;
-    }
-    return etendoBoyMobile;
+    return isTablet() ? etendoBoyImg : etendoBoyMobile;
   };
 
   const getNameInBody = () => {
