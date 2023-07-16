@@ -4,21 +4,12 @@ import { withTheme } from "react-native-paper";
 import locale from "../../i18n/locale";
 import { defaultTheme, ITheme } from "../../themes";
 
-interface Props extends ITheme {
-  visible: boolean;
-}
-
-const LoadingScreen = (props: Props) => {
-  const [visible, setVisible] = useState(true);
+const LoadingScreen = () => {
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setVisible(props.visible);
-  }, [props.visible]);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
-      setVisible(false);
-    }
+    locale.init();
+    setVisible(true);
   }, []);
 
   return (

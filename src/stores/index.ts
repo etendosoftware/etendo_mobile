@@ -3,7 +3,7 @@ import Windows from "./Windows";
 
 async function logout() {
   await User.logout();
-  // Windows.unloadWindows();
+  Windows.unloadWindows();
 }
 
 export { User, Windows, logout };

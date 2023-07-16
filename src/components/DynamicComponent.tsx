@@ -1,6 +1,6 @@
 import React, { useMemo, Suspense } from "react";
-import { Text, View } from "react-native";
 import { fetchComponent } from "./utils";
+import LoadingScreen from "./LoadingScreen";
 
 const DynamicComponent = ({ __id, url, children, ...props }: any) => {
   const Component = useMemo(() => {
@@ -17,13 +17,7 @@ const DynamicComponent = ({ __id, url, children, ...props }: any) => {
     return React.lazy(component);
   }, [__id]);
   return (
-    <Suspense
-      fallback={
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      }
-    >
+    <Suspense fallback={<LoadingScreen />}>
       <Component {...props}>{children}</Component>
     </Suspense>
   );

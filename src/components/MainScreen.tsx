@@ -17,15 +17,9 @@ const HomePage = ({ route }: any) => {
     return (
       <>
         <View style={{ flex: 1 }}>
-          <NavigationContainer
-            independent={true}
-            onReady={() => {}}
-            ref={childNavigation}
-          >
-            <View style={{ flex: 1 }}>
-              <DynamicComponent __id={appId} url={url} children={undefined} />
-            </View>
-          </NavigationContainer>
+          <View style={{ flex: 1 }}>
+            <DynamicComponent __id={appId} url={url} children={undefined} />
+          </View>
         </View>
       </>
     );

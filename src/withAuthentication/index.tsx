@@ -2,7 +2,7 @@ import React from "react";
 import { User } from "../stores";
 import { observer } from "mobx-react";
 
-const withAuthentication = Component => {
+const withAuthentication = (Component) => {
   @observer
   class WithAuthentication extends React.Component {
     static navigationOptions = Component.navigationOptions;

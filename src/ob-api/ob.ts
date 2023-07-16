@@ -32,8 +32,6 @@ const formatUrl = (_url?) => {
   return url;
 };
 
-setUrl();
-
 const getUrl = async () => {
   return AsyncStorage.getItem("baseUrl");
 };

@@ -1,15 +1,6 @@
 // Importing required modules and libraries
-import React, { useContext, useEffect, useState } from "react";
-import {
-  View,
-  Image,
-  LogBox,
-  Keyboard,
-  TouchableOpacity,
-  Dimensions,
-  KeyboardAvoidingView
-} from "react-native";
-import { observer } from "mobx-react";
+import React, { useContext, useState } from "react";
+import { View, Image, TouchableOpacity, Dimensions } from "react-native";
 import { User, Windows } from "../../stores";
 import locale from "../../i18n/locale";
 import { Dialog, Text, Button } from "react-native-paper";
@@ -21,13 +12,15 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { isTablet, isTabletSmall } from "../../helpers/IsTablet";
-import Orientation from "react-native-orientation-locker";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import styleSheet from "./styles";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 import { References } from "../../constants/References";
 import { ScrollView } from "react-native-gesture-handler";
+import MainAppContext from "../../contexts/MainAppContext";
+import loadDynamic from "../../helpers/loadDynamic";
+import getImageProfile from "../../helpers/getImageProfile";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -43,7 +36,7 @@ const backgroundTabletImg = require("../../img/tablet-background.png");
 const backgroundMobileImg = require("../../img/background.png");
 
 // Main functional component of the Login screen
-const LoginFunctional = observer((props) => {
+const LoginFunctional = (props) => {
   // Initializing the state variables
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -51,6 +44,8 @@ const LoginFunctional = observer((props) => {
   const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const { setToken } = useContext(MainAppContext);
+  const { dispatch } = useContext(ContainerContext);
 
   const validateCredentials = () => {
     return (
@@ -58,61 +53,6 @@ const LoginFunctional = observer((props) => {
       password === AdminPassword &&
       url.toString() === demoUrl
     );
-  };
-
-  useEffect(() => {
-    const load = async () => {
-      LogBox.ignoreLogs(["Require cycle: "]);
-
-      if (deviceIsATablet) {
-        Orientation.lockToLandscape();
-      } else {
-        Orientation.lockToPortrait();
-      }
-
-      try {
-        User.loading = true;
-        await User.loadToken();
-        if (User.token) {
-          await User.reloadUserData(User.token);
-          loadDynamic();
-          props.navigation.navigate("Home");
-        } else {
-          props.navigation.navigate("Login");
-        }
-
-        let storedEnviromentsUrl = await User.loadEnviromentsUrl();
-
-        if (storedEnviromentsUrl) {
-          setStoredDataUrl([...storedDataUrl, storedEnviromentsUrl]);
-        }
-      } catch (e) {
-        Snackbar.showError(e.message);
-      } finally {
-        User.loading = false;
-        Windows.loading = false;
-      }
-    };
-
-    load();
-  }, []);
-
-  const loadDynamic = async () => {
-    let storedEnviromentsUrl = await getUrl();
-    const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
-    await fetch(callUrlApps, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${User.token}`
-      },
-      mode: "no-cors"
-    })
-      .then(async (callApps) => {
-        const data = await callApps.json();
-        props.dispatch({ appsData: data.data, logged: true });
-      })
-      .catch((err) => console.error(err));
   };
 
   const submitLogin = async () => {
@@ -127,8 +67,9 @@ const LoginFunctional = observer((props) => {
         await User.login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
-          await loadDynamic();
-          props.navigation.closeDrawer();
+          setToken(true);
+          await getImageProfile(dispatch);
+          await loadDynamic(dispatch);
         }
       } catch (error) {
         console.log(error);
@@ -228,8 +169,9 @@ const LoginFunctional = observer((props) => {
     User.loading = true;
     Windows.loading = true;
     await setUrlOB(demoUrl);
-    await User.login(AdminUsername, AdminPassword);
-    await props.navigation.closeDrawer();
+    await User.login(AdminUsername, AdminPassword).then(() => {
+      setToken(true);
+    });
     Windows.loading = false;
     User.loading = false;
   };
@@ -298,7 +240,7 @@ const LoginFunctional = observer((props) => {
                 height={43}
                 width={98}
                 typeStyle="terciary"
-                onPress={() => [setUrlOB(demoUrl), demo()]}
+                onPress={() => demo()}
                 text={locale.t("DemoTry")}
               />
             </View>
@@ -381,18 +323,16 @@ const LoginFunctional = observer((props) => {
             style={styles.changePasswordStyle}
             onPress={() => [setShowChangePassword(true)]}
           ></TouchableOpacity>
-
           <Text style={styles.copyRightStyle}>
             © Copyright Etendo 2020-2023
           </Text>
         </View>
-
         {ChangedPassword()}
         <Toast />
       </View>
     </ScrollView>
   );
-});
+};
 
 const Login = (props) => {
   const { dispatch } = useContext(ContainerContext);

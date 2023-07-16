@@ -6,8 +6,7 @@ import {
   ScrollView,
   Image,
   TextInput,
-  TouchableOpacity,
-  DeviceEventEmitter
+  TouchableOpacity
 } from "react-native";
 import locale from "../../i18n/locale";
 import {
@@ -22,7 +21,6 @@ import {
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
-import { observer } from "mobx-react";
 import { Snackbar } from "../../globals";
 import MainAppContext from "../../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -36,7 +34,7 @@ import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/Back
 import { deviceStyles as styles } from "./deviceStyles";
 import { useFocusEffect } from "@react-navigation/native";
 
-const Settings = observer((props) => {
+const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const defaultLogoUri = "../../../assets/logo.png";
@@ -54,12 +52,6 @@ const Settings = observer((props) => {
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
-
-  useFocusEffect(() => {
-    if (!isTablet()) {
-      DeviceEventEmitter.emit("showNavbar", { state: false });
-    }
-  });
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -329,7 +321,6 @@ const Settings = observer((props) => {
                 <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
                 <TextInput
                   allowFontScaling={false}
-                  mode="outlined"
                   placeholder={locale.t("ShowLoadUrl:Example")}
                   onChangeText={(newCurrentAddUrl) =>
                     setCurrentAddUrl(newCurrentAddUrl)
@@ -398,6 +389,6 @@ const Settings = observer((props) => {
       ) : null}
     </>
   );
-});
+};
 
 export default withTheme(Settings);
