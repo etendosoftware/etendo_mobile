@@ -32,16 +32,14 @@ function getParsedModule(code, moduleName, packages) {
 export async function fetchComponent(id, url) {
   try {
     const urlToFetch = `${url}/${id}?timestamp=${+new Date()}`;
-
-    const text = await fetch(urlToFetch).then((a) => {
-      if (!a.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return a.text();
-    });
-    let component = { default: null };
+    const response = await fetch(urlToFetch);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.text();
+    let component;
     try {
-      component = { default: getParsedModule(text, id, packages) };
+      component = { default: getParsedModule(data, id, packages) };
     } catch (e) {
       console.error(e);
       throw e;
