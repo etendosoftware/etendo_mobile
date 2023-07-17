@@ -1,5 +1,5 @@
 import React from "react";
-import { DeviceEventEmitter, Text } from "react-native";
+import { Text } from "react-native";
 import packages from "./packages";
 
 function getParsedModule(code, moduleName, packages) {
@@ -44,7 +44,6 @@ export async function fetchComponent(id, url) {
       console.error(e);
       throw e;
     }
-    DeviceEventEmitter.emit("showNavbar", { state: false });
     return component.default;
   } catch (error) {
     return {
