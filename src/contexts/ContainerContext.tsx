@@ -7,7 +7,11 @@ const ContainerContext = React.createContext<{
   state: any;
   dispatch: any;
   Etendo: EtendoUtil;
-}>({});
+}>({
+  state: null,
+  dispatch: null,
+  Etendo: null
+});
 
 const ContainerProvider: React.FC<{ children: React.ReactNode }> = ({
   children
@@ -37,7 +41,6 @@ const ContainerProvider: React.FC<{ children: React.ReactNode }> = ({
       return { ...state, loading: action.loading };
     }
     if (action.type === "SET_BINDARY_PROFILE_IMG") {
-      console.log("a", action.bindaryImg);
       return { ...state, bindaryImg: action.bindaryImg };
     }
 

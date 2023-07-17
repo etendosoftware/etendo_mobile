@@ -51,10 +51,8 @@ const HomeFunction = (props: Props) => {
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
-            {context?.state?.loading ? (
-              <LoadingHome />
-            ) : (
-              context?.state?.menuItems.map((menuItem: any, index: number) => {
+            <>
+              {context?.state?.menuItems.map((menuItem: any, index: number) => {
                 return (
                   <View key={"CardDropdown" + index} style={{ marginLeft: 35 }}>
                     <CardDropdown
@@ -64,8 +62,9 @@ const HomeFunction = (props: Props) => {
                     />
                   </View>
                 );
-              })
-            )}
+              })}
+            </>
+            {context?.state?.loading && <LoadingHome />}
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>

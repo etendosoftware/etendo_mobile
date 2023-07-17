@@ -63,9 +63,13 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         setShowNavbar(false);
       } else {
         setShowNavbar(true);
+        setCurrentIndex({
+          indexSection: 0,
+          indexSubSection: 0,
+          indexSubSectionItem: 0
+        });
       }
     }
-    console.log(routeName);
   }, [routeName]);
 
   useEffect(() => {

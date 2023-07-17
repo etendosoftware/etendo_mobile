@@ -72,7 +72,6 @@ const LoginFunctional = (props) => {
           await loadDynamic(dispatch);
         }
       } catch (error) {
-        console.log(error);
         setError(true);
 
         if (error.message.includes("Invalid user name or password")) {

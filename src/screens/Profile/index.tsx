@@ -25,10 +25,6 @@ const Profile = (props) => {
   const { state } = useContext(ContainerContext);
 
   useEffect(() => {
-    console.log({ b: state });
-  }, [state]);
-
-  useEffect(() => {
     if (User.data) {
       Promise.all([
         getOrganizationName(),
