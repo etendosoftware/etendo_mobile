@@ -9,6 +9,7 @@ import { Etendo } from "../helpers/Etendo";
 
 const HomePage = ({ route }: any) => {
   const RenderDynamicComponents = (props: any) => {
+    console.log(route);
     const appId = route.params.__id;
     const url = route.params.url;
     const childNavigation = useNavigationContainerRef();
@@ -17,9 +18,15 @@ const HomePage = ({ route }: any) => {
     return (
       <>
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
-            <DynamicComponent __id={appId} url={url} children={undefined} />
-          </View>
+          <NavigationContainer
+            independent={true}
+            onReady={() => {}}
+            ref={childNavigation}
+          >
+            <View style={{ flex: 1 }}>
+              <DynamicComponent __id={appId} url={url} children={undefined} />
+            </View>
+          </NavigationContainer>
         </View>
       </>
     );
