@@ -10,13 +10,11 @@ import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import { ContainerContext } from "./src/contexts/ContainerContext";
 import loadDynamic from "./src/helpers/loadDynamic";
-import { OBRest, Restrictions } from "etrest";
 import { setUrl } from "./src/ob-api/ob";
 import HomeStack from "./src/navigation/HomeStack";
 import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import getImageProfile from "./src/helpers/getImageProfile";
-import locale from "./src/i18n/locale";
 
 interface Props {}
 type RootStackParamList = {

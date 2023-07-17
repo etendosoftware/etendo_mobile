@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { AppRegistry } from "react-native";
-import { name as appName } from "./app.json";
 import MainAppContext from "./src/contexts/MainAppContext";
 import locale from "./src/i18n/locale";
 import Windows from "./src/stores/Windows";
@@ -18,7 +16,7 @@ interface Language {
   label: string;
 }
 
-const AppWithContainer = () => {
+const AppContainer = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [token, setToken] = useState<boolean>(false);
@@ -130,4 +128,4 @@ const AppWithContainer = () => {
   );
 };
 
-AppRegistry.registerComponent(appName, () => AppWithContainer);
+export default AppContainer;
