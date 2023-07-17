@@ -1,0 +1,5 @@
+# appcenter-deploy.yml
+# ...
+app:
+  # Especifica el archivo index.tsx como el archivo principal
+  - file: ./index.tsx

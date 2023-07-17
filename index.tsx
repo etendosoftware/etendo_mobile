@@ -11,7 +11,6 @@ import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import App from "./App";
 import { ContainerProvider } from "./src/contexts/ContainerContext";
-import { setUrl } from "./src/ob-api/ob";
 
 interface Language {
   id: string;
