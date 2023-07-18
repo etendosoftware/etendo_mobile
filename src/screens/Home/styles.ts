@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
   image: {
     right: 0,
     bottom: 0,
-    position: "absolute",
-    resizeMode: "contain"
+    position: "absolute"
   },
   imageMobile: {
     height: 342,
@@ -58,7 +57,8 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     height: "8%",
-    marginTop: 20
+    marginTop: 33,
+    zIndex: 2
   },
   conteinerInf: {
     display: "flex",

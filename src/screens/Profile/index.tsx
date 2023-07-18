@@ -1,10 +1,8 @@
 //Imports
-import React, { useEffect, useState } from "react";
-import { View, Image, Text, DeviceEventEmitter } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, Image, Text } from "react-native";
 import locale from "../../i18n/locale";
 import { User } from "../../stores";
-import { observer } from "mobx-react";
-import withAuthentication from "../../withAuthentication";
 import {
   getOrganizationName,
   getClientName,
@@ -16,18 +14,17 @@ import { isTablet } from "../../../hook/isTablet";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
+import { ContainerContext } from "../../contexts/ContainerContext";
 
-const Profile = observer((props) => {
+const Profile = (props) => {
   //States
   const [role, setRole] = useState<string>("");
   const [org, setOrg] = useState<string>("");
   const [client, setClient] = useState<string>("");
   const [warehouse, setWarehouse] = useState<string>("");
+  const { state } = useContext(ContainerContext);
 
   useEffect(() => {
-    if (!isTablet()) {
-      DeviceEventEmitter.emit("showNavbar", { state: false });
-    }
     if (User.data) {
       Promise.all([
         getOrganizationName(),
@@ -73,7 +70,10 @@ const Profile = observer((props) => {
         <Image source={getBackgroundProfile()} style={styles.imageHeader} />
         <View style={styles.getUserDataStyle}>
           <View style={styles.getProfilePictureStyle}>
-            <ShowProfilePicture size={130} username={User.data.username} />
+            <ShowProfilePicture
+              bindaryData={state?.bindaryImg}
+              username={User.data.username}
+            />
           </View>
           <Text style={styles.userNameStyle}>{User.data.username}</Text>
         </View>
@@ -115,6 +115,6 @@ const Profile = observer((props) => {
       </View>
     </View>
   );
-});
+};
 
-export default withAuthentication(Profile);
+export default Profile;

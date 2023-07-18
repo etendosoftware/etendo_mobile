@@ -24,5 +24,5 @@ export const isTabletSmall = () => {
   let pixelDensity = PixelRatio.get();
   const adjustedHeight = height * pixelDensity;
 
-  return adjustedHeight <= 601;
+  return adjustedHeight <= 800;
 };

@@ -6,8 +6,7 @@ import {
   ScrollView,
   Image,
   TextInput,
-  TouchableOpacity,
-  DeviceEventEmitter
+  TouchableOpacity
 } from "react-native";
 import locale from "../../i18n/locale";
 import {
@@ -22,7 +21,6 @@ import {
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
-import { observer } from "mobx-react";
 import { Snackbar } from "../../globals";
 import MainAppContext from "../../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -34,8 +32,10 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
+import { ContainerContext } from "../../contexts/ContainerContext";
+import { SET_URL } from "../../contexts/actionsTypes";
 
-const Settings = observer((props) => {
+const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const defaultLogoUri = "../../../assets/logo.png";
@@ -54,10 +54,9 @@ const Settings = observer((props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
 
+  const { dispatch } = useContext(ContainerContext);
+
   useEffect(() => {
-    if (!isTablet()) {
-      DeviceEventEmitter.emit("showNavbar", { state: false });
-    }
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
       const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
@@ -109,6 +108,7 @@ const Settings = observer((props) => {
     setModalUrl(url);
     setUrl(tmpUrl);
     setLogo(tmpLogo);
+    dispatch({ type: SET_URL, url: tmpUrl });
   };
 
   const onLogoError = ({ nativeEvent }) => {
@@ -325,7 +325,6 @@ const Settings = observer((props) => {
                 <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
                 <TextInput
                   allowFontScaling={false}
-                  mode="outlined"
                   placeholder={locale.t("ShowLoadUrl:Example")}
                   onChangeText={(newCurrentAddUrl) =>
                     setCurrentAddUrl(newCurrentAddUrl)
@@ -394,6 +393,6 @@ const Settings = observer((props) => {
       ) : null}
     </>
   );
-});
+};
 
 export default withTheme(Settings);
