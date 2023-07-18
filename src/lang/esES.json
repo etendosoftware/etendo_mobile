@@ -37,6 +37,7 @@
   "LoginScreen:LoginButtonTitle": "Iniciar sesión",
   "LoginScreen:UserPassIncorrect": "Usuario o contraseña incorrectos",
   "LoginScreen:URLNotFound": "Error de servidor. Verifica URL en configuración.",
+  "LoginScreen:LogoNotFound": "Atención: No se ha encontrado el logo.",
   "LoginScreen:NetworkError": "Acceso al servidor fallido.",
   "Home:ChooseFromTheMenu": "Elige una entrada desde el menú.",
   "Home:Title": "Inicio",
