@@ -9,7 +9,6 @@ import { Etendo } from "../helpers/Etendo";
 
 const HomePage = ({ route }: any) => {
   const RenderDynamicComponents = (props: any) => {
-    console.log(route);
     const appId = route.params.__id;
     const url = route.params.url;
     const childNavigation = useNavigationContainerRef();
