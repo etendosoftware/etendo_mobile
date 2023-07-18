@@ -10,7 +10,7 @@ import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import { ContainerContext } from "./src/contexts/ContainerContext";
 import loadDynamic from "./src/helpers/loadDynamic";
-import { setUrl } from "./src/ob-api/ob";
+import { getUrl, setUrl } from "./src/ob-api/ob";
 import HomeStack from "./src/navigation/HomeStack";
 import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -39,6 +39,8 @@ const App: React.FC<Props> = () => {
       }
       await setUrl();
       await User.loadToken();
+      const url = await getUrl();
+      dispatch({ type: "SET_URL", url: url });
 
       if (User.token) {
         await User.reloadUserData(User.token);

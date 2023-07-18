@@ -33,6 +33,7 @@ import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
 import { useFocusEffect } from "@react-navigation/native";
+import { ContainerContext } from "../../contexts/ContainerContext";
 
 const Settings = (props) => {
   //Images
@@ -52,6 +53,8 @@ const Settings = (props) => {
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
+
+  const { dispatch } = useContext(ContainerContext);
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -105,6 +108,7 @@ const Settings = (props) => {
     setModalUrl(url);
     setUrl(tmpUrl);
     setLogo(tmpLogo);
+    dispatch({ type: "SET_URL", url: tmpUrl });
   };
 
   const onLogoError = ({ nativeEvent }) => {

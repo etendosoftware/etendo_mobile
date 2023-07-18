@@ -17,7 +17,10 @@ const loadDynamic = async (dispatch: any) => {
       const data = await callApps.json();
       dispatch({ appsData: data.data, logged: true });
     })
-    .catch((err) => console.error(err))
+    .catch((err) => {
+      dispatch({ appsData: [], logged: true });
+      console.log(err);
+    })
     .finally(() => {
       dispatch({ type: "SET_LOADING", loading: false });
     });

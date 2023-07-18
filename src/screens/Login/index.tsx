@@ -168,9 +168,11 @@ const LoginFunctional = (props) => {
     User.loading = true;
     Windows.loading = true;
     await setUrlOB(demoUrl);
-    await User.login(AdminUsername, AdminPassword).then(() => {
-      setToken(true);
-    });
+    await User.login(AdminUsername, AdminPassword);
+    await getImageProfile(dispatch);
+    await loadDynamic(dispatch);
+    dispatch({ type: "SET_URL", url: demoUrl });
+    setToken(true);
     Windows.loading = false;
     User.loading = false;
   };
@@ -239,7 +241,7 @@ const LoginFunctional = (props) => {
                 height={43}
                 width={98}
                 typeStyle="terciary"
-                onPress={() => demo()}
+                onPress={async () => await demo()}
                 text={locale.t("DemoTry")}
               />
             </View>

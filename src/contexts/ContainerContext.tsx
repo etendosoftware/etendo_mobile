@@ -17,6 +17,9 @@ const ContainerProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const reducer = (state: any, action: any) => {
+    if (action.type === "SET_URL") {
+      return { ...state, url: action.url };
+    }
     if (action.appsData) {
       const mi = action.appsData.map((app: any) => {
         const path = app.path.split("/");
