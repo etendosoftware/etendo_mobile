@@ -80,7 +80,7 @@ const LoginFunctional = (props) => {
           Toast.show({
             type: "error",
             position: "bottom",
-            text1: 'locale.t("ErrorUserPassword")',
+            text1: locale.t("ErrorUserPassword"),
             visibilityTime: 3000,
             autoHide: true
           });

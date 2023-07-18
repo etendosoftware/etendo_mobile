@@ -21,7 +21,6 @@ import {
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
-import { Snackbar } from "../../globals";
 import MainAppContext from "../../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { defaultTheme } from "../../themes";
@@ -34,6 +33,7 @@ import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/Back
 import { deviceStyles as styles } from "./deviceStyles";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const Settings = (props) => {
   //Images
@@ -111,8 +111,14 @@ const Settings = (props) => {
     dispatch({ type: SET_URL, url: tmpUrl });
   };
 
-  const onLogoError = ({ nativeEvent }) => {
-    Snackbar.showError(nativeEvent.error);
+  const onLogoError = () => {
+    Toast.show({
+      type: "info",
+      position: "bottom",
+      text1: locale.t("LoginScreen:LogoNotFound"),
+      visibilityTime: 3000,
+      autoHide: true
+    });
   };
 
   const onChangeModalPicker = async (field: IField, value: string) => {
@@ -391,6 +397,7 @@ const Settings = (props) => {
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
       ) : null}
+      <Toast />
     </>
   );
 };
