@@ -21,6 +21,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import MainAppContext from "../../contexts/MainAppContext";
 import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
+import { SET_URL } from "../../contexts/actionsTypes";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -171,7 +172,7 @@ const LoginFunctional = (props) => {
     await User.login(AdminUsername, AdminPassword);
     await getImageProfile(dispatch);
     await loadDynamic(dispatch);
-    dispatch({ type: "SET_URL", url: demoUrl });
+    dispatch({ type: SET_URL, url: demoUrl });
     setToken(true);
     Windows.loading = false;
     User.loading = false;

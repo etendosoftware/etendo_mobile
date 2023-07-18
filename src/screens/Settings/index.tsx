@@ -32,8 +32,8 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
-import { useFocusEffect } from "@react-navigation/native";
 import { ContainerContext } from "../../contexts/ContainerContext";
+import { SET_URL } from "../../contexts/actionsTypes";
 
 const Settings = (props) => {
   //Images
@@ -108,7 +108,7 @@ const Settings = (props) => {
     setModalUrl(url);
     setUrl(tmpUrl);
     setLogo(tmpLogo);
-    dispatch({ type: "SET_URL", url: tmpUrl });
+    dispatch({ type: SET_URL, url: tmpUrl });
   };
 
   const onLogoError = ({ nativeEvent }) => {

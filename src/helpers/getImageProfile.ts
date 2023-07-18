@@ -1,5 +1,6 @@
 import { OBRest, Restrictions } from "etrest";
 import { User } from "../stores";
+import { SET_BINDARY_IMG } from "../contexts/actionsTypes";
 
 const getImageProfile = async (dispatch: any) => {
   try {
@@ -12,7 +13,7 @@ const getImageProfile = async (dispatch: any) => {
     if (imageList.length) {
       if (imageList[0]?.bindaryData) {
         dispatch({
-          type: "SET_BINDARY_PROFILE_IMG",
+          type: SET_BINDARY_IMG,
           bindaryImg: imageList[0].bindaryData
         });
       }

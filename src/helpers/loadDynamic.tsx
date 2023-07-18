@@ -1,8 +1,9 @@
+import { SET_LOADING } from "../contexts/actionsTypes";
 import { getUrl } from "../ob-api/ob";
 import { User } from "../stores";
 
 const loadDynamic = async (dispatch: any) => {
-  dispatch({ type: "SET_LOADING", loading: true });
+  dispatch({ type: SET_LOADING, loading: true });
   let storedEnviromentsUrl = await getUrl();
   const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
   await fetch(callUrlApps, {
@@ -22,7 +23,7 @@ const loadDynamic = async (dispatch: any) => {
       console.log(err);
     })
     .finally(() => {
-      dispatch({ type: "SET_LOADING", loading: false });
+      dispatch({ type: SET_LOADING, loading: false });
     });
 };
 

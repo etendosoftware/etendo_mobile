@@ -24,6 +24,7 @@ import MainScreen from "../../components/MainScreen";
 import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
+import { drawerData } from "./dataDrawer";
 
 type RootStackParamList = {
   Home: any;
@@ -162,19 +163,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         </Stack.Navigator>
         <View>
           <DrawerLateral
-            data={[
-              {
-                sectionType: "sections",
-                dataSection: [
-                  { route: "Home", label: "Home", image: <HomeIcon /> }
-                ]
-              },
-              {
-                sectionType: "sections",
-                dataSection: dataDrawer,
-                titleSection: "Applications"
-              }
-            ]}
+            data={drawerData(dataDrawer)}
             showDrawer={showDrawer}
             currentIndex={currentIndex}
             onOptionSelected={(
