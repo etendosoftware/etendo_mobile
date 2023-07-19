@@ -1,7 +1,12 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useReducer } from "react";
 import { Etendo, EtendoUtil } from "../helpers/Etendo";
-import { SET_BINDARY_IMG, SET_LOADING, SET_URL } from "./actionsTypes";
+import {
+  SET_BINDARY_IMG,
+  SET_LOADING,
+  SET_LOADING_SCREEN,
+  SET_URL
+} from "./actionsTypes";
 
 export const DEV_URL = "http://10.0.2.2:3000";
 const ContainerContext = React.createContext<{
@@ -44,6 +49,9 @@ const ContainerProvider: React.FC<{ children: React.ReactNode }> = ({
     if (action.type === SET_LOADING) {
       return { ...state, loading: action.loading };
     }
+    if (action.type === SET_LOADING_SCREEN) {
+      return { ...state, loadingScreen: action.loadingScreen };
+    }
     if (action.type === SET_BINDARY_IMG) {
       return { ...state, bindaryImg: action.bindaryImg };
     }
@@ -57,6 +65,7 @@ const ContainerProvider: React.FC<{ children: React.ReactNode }> = ({
     url: "",
     logged: false,
     loading: false,
+    loadingScreen: true,
     bindaryImg: ""
   };
 

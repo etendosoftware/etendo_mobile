@@ -397,7 +397,6 @@ const Settings = (props) => {
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
       ) : null}
-      <Toast />
     </>
   );
 };

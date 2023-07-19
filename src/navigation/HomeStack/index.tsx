@@ -19,7 +19,6 @@ import {
   StackNavigationProp,
   createStackNavigator
 } from "@react-navigation/stack";
-import { HomeIcon } from "etendo-ui-library/dist-native/assets/images/icons/HomeIcon";
 import MainScreen from "../../components/MainScreen";
 import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
@@ -41,13 +40,20 @@ const Stack = createStackNavigator<RootStackParamList>();
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const context = useContext(ContainerContext);
   const { setToken } = useContext(MainAppContext);
-  const routeName = useNavigationState((state) => {
-    const currentRoute = state.routes[state.index];
-    if (currentRoute.state) {
-      return currentRoute.state.routeNames[currentRoute.state.index];
+  const getActiveRouteName = (state: any): string => {
+    if (!state.routes) return "";
+
+    const route = state.routes[state.index];
+
+    if (route.state) {
+      // Recursivamente hurgar en los estados anidados
+      return getActiveRouteName(route.state);
     }
-    return currentRoute.name;
-  });
+
+    return route.name;
+  };
+
+  const routeName = getActiveRouteName(useNavigationState((state) => state));
 
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
@@ -70,7 +76,20 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           indexSubSectionItem: 0
         });
       }
+    } else {
+      if (
+        routeName === "Settings" ||
+        routeName === "Profile" ||
+        routeName === "Home" ||
+        routeName === "HomeStack"
+      ) {
+        console.log(routeName);
+        setShowNavbar(true);
+      } else {
+        setShowNavbar(false);
+      }
     }
+    console.log({ routeName });
   }, [routeName]);
 
   useEffect(() => {
