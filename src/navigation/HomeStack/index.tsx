@@ -46,7 +46,6 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     const route = state.routes[state.index];
 
     if (route.state) {
-      // Recursivamente hurgar en los estados anidados
       return getActiveRouteName(route.state);
     }
 
