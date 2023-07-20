@@ -1,4 +1,4 @@
-package com.smf.mobile.etendo;
+package com.smf.mobile.etendo_loader;
 
 import android.app.Application;
 import android.content.Context;
