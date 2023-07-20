@@ -130,7 +130,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.smf.mobile.etendo_loader'
+        applicationId 'com.smf.mobile.etendo_app_loader'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 114
