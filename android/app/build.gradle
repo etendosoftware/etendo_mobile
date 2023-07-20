@@ -130,7 +130,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.smf.mobile.etendo'
+        applicationId 'com.smf.mobile.etendo_loader'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 112
@@ -171,6 +171,7 @@ android {
             //signingConfig signingConfigs.release removed, read https://docs.microsoft.com/en-us/appcenter/build/android/code-signing
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 
