@@ -19,7 +19,6 @@ import {
   StackNavigationProp,
   createStackNavigator
 } from "@react-navigation/stack";
-import { HomeIcon } from "etendo-ui-library/dist-native/assets/images/icons/HomeIcon";
 import MainScreen from "../../components/MainScreen";
 import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
@@ -41,13 +40,19 @@ const Stack = createStackNavigator<RootStackParamList>();
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const context = useContext(ContainerContext);
   const { setToken } = useContext(MainAppContext);
-  const routeName = useNavigationState((state) => {
-    const currentRoute = state.routes[state.index];
-    if (currentRoute.state) {
-      return currentRoute.state.routeNames[currentRoute.state.index];
+  const getActiveRouteName = (state: any): string => {
+    if (!state.routes) return "";
+
+    const route = state.routes[state.index];
+
+    if (route.state) {
+      return getActiveRouteName(route.state);
     }
-    return currentRoute.name;
-  });
+
+    return route.name;
+  };
+
+  const routeName = getActiveRouteName(useNavigationState((state) => state));
 
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
@@ -57,18 +62,35 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     indexSubSection: 0,
     indexSubSectionItem: 0
   });
+  const validRoutesTablet = ["Settings", "Profile", "Home", "HomeStack"];
+  const validRoutesMobile = ["Home"];
+
+  const homeStackNavBarTabletValidator = (routeName: string) => {
+    return validRoutesTablet.includes(routeName);
+  };
+
+  const homeStackNavBarMobileValidator = (routeName: string) => {
+    return validRoutesMobile.includes(routeName);
+  };
 
   useEffect(() => {
     if (!isTablet()) {
-      if (routeName === "Settings" || routeName === "Profile") {
-        setShowNavbar(false);
-      } else {
+      if (homeStackNavBarMobileValidator(routeName)) {
         setShowNavbar(true);
         setCurrentIndex({
           indexSection: 0,
           indexSubSection: 0,
           indexSubSectionItem: 0
         });
+      } else {
+        setShowNavbar(false);
+      }
+    } else {
+      if (homeStackNavBarTabletValidator(routeName)) {
+        console.log(routeName);
+        setShowNavbar(true);
+      } else {
+        setShowNavbar(false);
       }
     }
   }, [routeName]);
