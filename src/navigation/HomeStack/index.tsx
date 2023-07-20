@@ -63,7 +63,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     indexSubSectionItem: 0
   });
   const validRoutesTablet = ["Settings", "Profile", "Home", "HomeStack"];
-  const validRoutesMobile = ["Settings", "Profile"];
+  const validRoutesMobile = ["Home"];
 
   const homeStackNavBarTabletValidator = (routeName: string) => {
     return validRoutesTablet.includes(routeName);
@@ -76,14 +76,14 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   useEffect(() => {
     if (!isTablet()) {
       if (homeStackNavBarMobileValidator(routeName)) {
-        setShowNavbar(false);
-      } else {
         setShowNavbar(true);
         setCurrentIndex({
           indexSection: 0,
           indexSubSection: 0,
           indexSubSectionItem: 0
         });
+      } else {
+        setShowNavbar(false);
       }
     } else {
       if (homeStackNavBarTabletValidator(routeName)) {
