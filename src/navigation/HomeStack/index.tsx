@@ -62,10 +62,20 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     indexSubSection: 0,
     indexSubSectionItem: 0
   });
+  const validRoutesTablet = ["Settings", "Profile", "Home", "HomeStack"];
+  const validRoutesMobile = ["Settings", "Profile"];
+
+  const homeStackNavBarTabletValidator = (routeName: string) => {
+    return validRoutesTablet.includes(routeName);
+  };
+
+  const homeStackNavBarMobileValidator = (routeName: string) => {
+    return validRoutesMobile.includes(routeName);
+  };
 
   useEffect(() => {
     if (!isTablet()) {
-      if (routeName === "Settings" || routeName === "Profile") {
+      if (homeStackNavBarMobileValidator(routeName)) {
         setShowNavbar(false);
       } else {
         setShowNavbar(true);
@@ -76,19 +86,13 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         });
       }
     } else {
-      if (
-        routeName === "Settings" ||
-        routeName === "Profile" ||
-        routeName === "Home" ||
-        routeName === "HomeStack"
-      ) {
+      if (homeStackNavBarTabletValidator(routeName)) {
         console.log(routeName);
         setShowNavbar(true);
       } else {
         setShowNavbar(false);
       }
     }
-    console.log({ routeName });
   }, [routeName]);
 
   useEffect(() => {
