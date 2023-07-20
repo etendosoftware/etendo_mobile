@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.smf.mobile.etendo_loader",
+    package = "com.smf.mobile.etendo_app_loader",
 )
 
 android_resource(
     name = "res",
-    package = "com.smf.mobile.etendo_loader",
+    package = "com.smf.mobile.etendo_app_loader",
     res = "src/main/res",
 )
 
