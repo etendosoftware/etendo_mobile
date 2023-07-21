@@ -7,7 +7,7 @@ import {
 import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
 
-const HomePage = ({ route }: any) => {
+const HomePage = ({ route, navigation }: any) => {
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
     const url = route.params.url;
@@ -22,9 +22,12 @@ const HomePage = ({ route }: any) => {
             onReady={() => {}}
             ref={childNavigation}
           >
-            <View style={{ flex: 1 }}>
-              <DynamicComponent __id={appId} url={url} children={undefined} />
-            </View>
+            <DynamicComponent
+              __id={appId}
+              url={url}
+              children={childNavigation}
+              navigationContainer={navigation}
+            />
           </NavigationContainer>
         </View>
       </>

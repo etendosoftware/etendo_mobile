@@ -21,7 +21,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import MainAppContext from "../../contexts/MainAppContext";
 import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
-import { SET_URL } from "../../contexts/actionsTypes";
+import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -58,8 +58,7 @@ const LoginFunctional = (props) => {
 
   const submitLogin = async () => {
     try {
-      User.loading = true;
-      Windows.loading = true;
+      dispatch({ type: SET_LOADING_SCREEN, loadingScreen: true });
       try {
         setError(false);
         if (validateCredentials()) {
@@ -70,11 +69,12 @@ const LoginFunctional = (props) => {
         if (!isCoreVersionBeingChecked) {
           setToken(true);
           await getImageProfile(dispatch);
+          dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
           await loadDynamic(dispatch);
         }
       } catch (error) {
         setError(true);
-
+        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
         if (error.message.includes("Invalid user name or password")) {
           await User.logout();
           Toast.show({
@@ -114,9 +114,7 @@ const LoginFunctional = (props) => {
     } catch (error) {
       Snackbar.showError(error.message);
       console.error(error);
-    } finally {
-      User.loading = false;
-      Windows.loading = false;
+      dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
     }
   };
 
@@ -166,16 +164,15 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-    User.loading = true;
-    Windows.loading = true;
+    dispatch({ type: SET_LOADING_SCREEN, loadingScreen: true });
+
     await setUrlOB(demoUrl);
     await User.login(AdminUsername, AdminPassword);
     await getImageProfile(dispatch);
     await loadDynamic(dispatch);
     dispatch({ type: SET_URL, url: demoUrl });
     setToken(true);
-    Windows.loading = false;
-    User.loading = false;
+    dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
   };
 
   const welcomeText = (): string => {
@@ -330,7 +327,6 @@ const LoginFunctional = (props) => {
           </Text>
         </View>
         {ChangedPassword()}
-        <Toast />
       </View>
     </ScrollView>
   );
