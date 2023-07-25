@@ -195,7 +195,7 @@ const LoginFunctional = (props) => {
 
   const scrollBottom = () => {
     setTimeout(() => {
-      listViewRef.scrollToEnd();
+      listViewRef?.scrollToEnd();
     }, 500);
   };
 
@@ -237,7 +237,7 @@ const LoginFunctional = (props) => {
       ref={(ref: KeyboardAwareScrollView) => {
         listViewRef = ref;
       }}
-      // keyboardShouldPersistTaps="handled"
+      keyboardShouldPersistTaps="handled"
     >
       <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
       <View
@@ -302,6 +302,7 @@ const LoginFunctional = (props) => {
                 height={48}
                 isError={error}
                 onFocus={() => scrollBottom()}
+                onPress={() => scrollBottom()}
               />
             </View>
 
@@ -320,6 +321,8 @@ const LoginFunctional = (props) => {
                 fontSize={16}
                 height={48}
                 isError={error}
+                onFocus={() => scrollBottom()}
+                onPress={() => scrollBottom()}
               />
             </View>
           </View>
