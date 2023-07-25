@@ -63,7 +63,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     indexSubSectionItem: 0
   });
   const validRoutesTablet = ["Settings", "Profile", "Home", "HomeStack"];
-  const validRoutesMobile = ["Home"];
+  const validRoutesMobile = ["Home", "HomeStack"];
 
   const homeStackNavBarTabletValidator = (routeName: string) => {
     return validRoutesTablet.includes(routeName);
