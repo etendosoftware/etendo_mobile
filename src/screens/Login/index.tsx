@@ -17,11 +17,11 @@ import styleSheet from "./styles";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 import { References } from "../../constants/References";
-import { ScrollView } from "react-native-gesture-handler";
 import MainAppContext from "../../contexts/MainAppContext";
 import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -47,6 +47,8 @@ const LoginFunctional = (props) => {
   const [error, setError] = useState<boolean>(false);
   const { setToken } = useContext(MainAppContext);
   const { dispatch } = useContext(ContainerContext);
+
+  let listViewRef: KeyboardAwareScrollView;
 
   const validateCredentials = () => {
     return (
@@ -191,6 +193,12 @@ const LoginFunctional = (props) => {
     return deviceIsATablet ? backgroundTabletImg : backgroundMobileImg;
   };
 
+  const scrollBottom = () => {
+    setTimeout(() => {
+      listViewRef?.scrollToEnd();
+    }, 500);
+  };
+
   const ChangedPassword = () => {
     return (
       <Dialog
@@ -224,7 +232,13 @@ const LoginFunctional = (props) => {
   };
 
   return (
-    <ScrollView style={styles.containerFlex}>
+    <KeyboardAwareScrollView
+      style={styles.containerFlex}
+      ref={(ref: KeyboardAwareScrollView) => {
+        listViewRef = ref;
+      }}
+      keyboardShouldPersistTaps="handled"
+    >
       <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
       <View
         style={[
@@ -287,6 +301,8 @@ const LoginFunctional = (props) => {
                 fontSize={16}
                 height={48}
                 isError={error}
+                onFocus={() => scrollBottom()}
+                onPress={() => scrollBottom()}
               />
             </View>
 
@@ -305,6 +321,8 @@ const LoginFunctional = (props) => {
                 fontSize={16}
                 height={48}
                 isError={error}
+                onFocus={() => scrollBottom()}
+                onPress={() => scrollBottom()}
               />
             </View>
           </View>
@@ -328,7 +346,7 @@ const LoginFunctional = (props) => {
         </View>
         {ChangedPassword()}
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
