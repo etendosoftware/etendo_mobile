@@ -323,7 +323,7 @@ const Settings = (props) => {
                 {locale.t("Settings:AddNewURL")}
               </Dialog.Title>
               <Dialog.Content>
-                <View>
+                <View style={{ marginTop: 16 }}>
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
@@ -339,6 +339,14 @@ const Settings = (props) => {
                     onPress={() => setShowAddUrl(true)}
                     text={locale.t("Settings:NewLink")}
                   />
+                </View>
+                <View style={{ marginTop: 32 }}>
+                  <Text style={styles.urlEnvList}>
+                    {locale.t("Settings:EnviromentURL")}
+                  </Text>
+                  <Text style={styles.notUrlEnvList}>
+                    {locale.t("Settings:NotEnviromentURL")}
+                  </Text>
                 </View>
               </Dialog.Content>
             </Dialog>

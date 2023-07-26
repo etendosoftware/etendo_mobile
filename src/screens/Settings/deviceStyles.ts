@@ -35,6 +35,7 @@ export const deviceStyles = {
   urlEnvList: styleSheet.urlEnvList,
   dialogTitle: styleSheet.dialogTitle,
   dialogContent: styleSheet.dialogContent,
+  notUrlEnvList: styleSheet.notUrlEnvList,
   copyrightTablet: styleSheet.copyrightTablet,
   backIcon: styleSheet.backIcon,
   dialogNewUrl: styleSheet.dialogNewUrl

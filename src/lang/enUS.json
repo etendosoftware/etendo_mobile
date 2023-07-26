@@ -52,6 +52,7 @@
   "Settings:ChangeServerURL": "Change Server URL",
   "Settings:AddNewURL": "Add new URL",
   "Settings:EnviromentURL": "Enviroment URL",
+  "Settings:NotEnviromentURL": "There are no URLs added yet",
   "Settings:InputPlaceholder": "Type the url, e.g.: https://address/context",
   "Settings:ChangeURLLogoutConfirmation": "You need to log out in order to change the Server URL.",
   "Settings:AppVersion": "V %{version}",

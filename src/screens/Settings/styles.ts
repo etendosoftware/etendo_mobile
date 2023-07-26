@@ -4,6 +4,7 @@ import {
   NEUTRAL_100,
   NEUTRAL_30,
   NEUTRAL_60,
+  NEUTRAL_80,
   PRIMARY_100,
   TERCIARY_50,
   WHITE
@@ -186,8 +187,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 18,
     paddingBottom: 8,
-    fontWeight: "600",
-    marginTop: 12
+    fontWeight: "600"
+  },
+  notUrlEnvList: {
+    fontFamily: "Inter-Bold",
+    color: NEUTRAL_80,
+    fontSize: 18,
+    lineHeight: 18,
+    paddingBottom: 8,
+    fontWeight: "500",
+    marginTop: 16
   },
   dialogTitle: {
     fontFamily: "Inter-Bold",
