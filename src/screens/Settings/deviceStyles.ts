@@ -32,6 +32,10 @@ export const deviceStyles = {
   urlDescription: styleSheet.urlDescription,
   CahngeUrlTextConfirmation: styleSheet.CahngeUrlTextConfirmation,
   languageText: styleSheet.languageText,
+  urlEnvList: styleSheet.urlEnvList,
+  dialogTitle: styleSheet.dialogTitle,
+  dialogContent: styleSheet.dialogContent,
   copyrightTablet: styleSheet.copyrightTablet,
-  backIcon: styleSheet.backIcon
+  backIcon: styleSheet.backIcon,
+  dialogNewUrl: styleSheet.dialogNewUrl
 };

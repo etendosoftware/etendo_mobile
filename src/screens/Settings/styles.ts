@@ -5,6 +5,7 @@ import {
   NEUTRAL_30,
   NEUTRAL_60,
   PRIMARY_100,
+  TERCIARY_50,
   WHITE
 } from "../../styles/colors";
 import { defaultTheme } from "../../themes";
@@ -119,6 +120,14 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontSize: 14
   },
+  dialogNewUrl: {
+    backgroundColor: TERCIARY_50,
+    width: "50%",
+    alignSelf: "center",
+    justifySelf: "center",
+    borderRadius: 24,
+    padding: 30
+  },
   CahngeUrlTextConfirmation: {
     color: NEUTRAL_60,
     fontFamily: "Inter-SemiBold",
@@ -170,6 +179,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     paddingBottom: 8
+  },
+  urlEnvList: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    fontSize: 18,
+    lineHeight: 18,
+    paddingBottom: 8,
+    fontWeight: "600",
+    marginTop: 12
+  },
+  dialogTitle: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    lineHeight: 18,
+    paddingBottom: 8,
+    fontWeight: "800"
+  },
+  dialogContent: {
+    justifyContent: "center",
+    alignItems: "center"
   },
   copyrightTablet: {
     flex: 1,

@@ -34,6 +34,8 @@ import { deviceStyles as styles } from "./deviceStyles";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { PRIMARY_100 } from "../../styles/colors";
+import Input from "etendo-ui-library/dist-native/components/input/Input";
 
 const Settings = (props) => {
   //Images
@@ -249,8 +251,8 @@ const Settings = (props) => {
             </FormContext.Provider>
             {!User?.token ? (
               <ButtonUI
-                height={35}
-                width={118}
+                height={40}
+                width={130}
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
                 text={locale.t("Settings:NewLink")}
@@ -305,48 +307,40 @@ const Settings = (props) => {
               />
             </FormContext.Provider>
           </View>
-
           <Portal>
-            <Dialog visible={showChangeURLModal} onDismiss={hideChangeURLModal}>
-              <Dialog.Title>
-                {locale.t("Settings:ChangeServerURL")}
+            <Dialog
+              visible={showChangeURLModal}
+              onDismiss={hideChangeURLModal}
+              style={styles.dialogNewUrl}
+            >
+              <Dialog.Title
+                style={{
+                  fontSize: 25,
+                  fontWeight: "700",
+                  color: PRIMARY_100
+                }}
+              >
+                {locale.t("Settings:AddNewURL")}
               </Dialog.Title>
               <Dialog.Content>
-                <Picker
-                  selectedValue={modalUrl}
-                  onValueChange={(newModalUrl) => setModalUrl(newModalUrl)}
-                  itemStyle={{ paddingLeft: 15, marginLeft: 15 }}
-                >
-                  <Picker.Item
-                    key="disabled"
-                    label={locale.t("ShowLoadUrl:PickerLabel")}
-                    value=""
+                <View>
+                  <Text style={styles.urlEnvList}>
+                    {locale.t("Settings:EnviromentURL")}
+                  </Text>
+                  <Input
+                    typeField="textInput"
+                    placeholder="Settings:InputPlaceholder"
+                    value={modalUrl}
                   />
-                  {renderPickerItems(storedDataUrl)}
-                </Picker>
+                  <ButtonUI
+                    width="100%"
+                    height={50}
+                    typeStyle="secondary"
+                    onPress={() => setShowAddUrl(true)}
+                    text={locale.t("Settings:NewLink")}
+                  />
+                </View>
               </Dialog.Content>
-              <Dialog.Actions>
-                <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.accent,
-                    marginRight: 10
-                  }}
-                  onPress={() => setShowAddUrl(true)}
-                >
-                  {" "}
-                  {locale.t("ShowLoadUrl:Add")}
-                </Button>
-                <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
-                  onPress={changeURL}
-                >
-                  {locale.t("Save")}
-                </Button>
-              </Dialog.Actions>
             </Dialog>
 
             <Dialog visible={showAddUrl}>

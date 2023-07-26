@@ -29,6 +29,7 @@ export const GREY_40 = "#999999";
 export const GREY_10 = "#E5E5E5";
 export const GREY_5 = "#F2F2F2";
 
+export const TERCIARY_50 = "#EDF1FF";
 export const TERCIARY_100 = "#E2E7FF";
 
 export const QUATERNARY_100 = "#7182FF";
