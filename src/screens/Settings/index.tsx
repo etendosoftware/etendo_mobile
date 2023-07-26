@@ -221,17 +221,39 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <View style={styles.urlTextsContainer}>
-              <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
-              <Text style={styles.urlDescription}>{url}</Text>
-            </View>
+            <FormContext.Provider
+              value={{
+                getRecordContext,
+                onChangePicker: onChangeModalPicker,
+                onChangeSelection: onChangePicker
+              }}
+            >
+              <Text style={styles.languageText}>
+                {locale.t("Settings:URL")}
+              </Text>
+              <PickerList
+                pickerItems={languages}
+                field={{
+                  id: "Language Field",
+                  name: "",
+                  readOnly: false,
+                  column: { updatable: true },
+                  columnName: null
+                }}
+                value={
+                  selectedLanguage
+                    ? selectedLanguage
+                    : mainAppContext.selectedLanguage
+                }
+              />
+            </FormContext.Provider>
             {!User?.token ? (
               <ButtonUI
-                height={45}
+                height={35}
                 width={118}
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
-                text={locale.t("Settings:ChangeURL")}
+                text={locale.t("Settings:NewLink")}
               />
             ) : (
               <Text
@@ -242,6 +264,7 @@ const Settings = (props) => {
               </Text>
             )}
           </View>
+
           <View style={styles.logoContainerStyles}>
             <Text style={styles.logoTitleStyles}>
               {locale.t("Settings:Logo")}
@@ -253,6 +276,7 @@ const Settings = (props) => {
               onError={onLogoError}
             />
           </View>
+
           <View style={styles.languageContainerStyles}>
             <FormContext.Provider
               value={{

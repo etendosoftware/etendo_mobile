@@ -101,8 +101,10 @@ const styles = StyleSheet.create({
     width: "33%",
     flexDirection: "column",
     borderRightWidth: 1,
+    paddingRight: 20,
     borderColor: NEUTRAL_30,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginRight: 20
   },
   urlTitle: {
     fontFamily: "Inter-SemiBold",
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
   },
   languageContainerTablet: {
     width: "33%",
-    paddingHorizontal: 20
+    paddingLeft: 20
   },
   languageText: {
     fontFamily: "Inter-SemiBold",
