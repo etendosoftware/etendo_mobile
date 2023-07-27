@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/native";
 import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
+import User from "../stores/User";
 
 const HomePage = ({ route, navigation }: any) => {
   const RenderDynamicComponents = (props: any) => {
@@ -27,6 +28,7 @@ const HomePage = ({ route, navigation }: any) => {
               url={url}
               children={childNavigation}
               navigationContainer={navigation}
+              language={User.loadLanguage()}
             />
           </NavigationContainer>
         </View>
