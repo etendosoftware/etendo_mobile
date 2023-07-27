@@ -125,10 +125,15 @@ const styles = StyleSheet.create({
   dialogNewUrl: {
     backgroundColor: TERCIARY_50,
     width: "50%",
+    height: "65%",
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
     padding: 30
+  },
+  listUrlItems: {
+    height: "40%",
+    marginTop: 8
   },
   CahngeUrlTextConfirmation: {
     color: NEUTRAL_60,
@@ -207,7 +212,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderWidth: 1,
     border: PRIMARY_100,
-    backgroundColor: NEUTRAL_100
+    backgroundColor: NEUTRAL_100,
+    marginVertical: 8
   },
   urlItemBackgroundFilled: {
     backgroundColor: TERCIARY_100

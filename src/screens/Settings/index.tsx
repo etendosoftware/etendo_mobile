@@ -1,5 +1,5 @@
 //Imports
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import PickerList from "../../components/List";
 import {
   View,
@@ -55,8 +55,10 @@ const Settings = (props) => {
   const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
-
+  const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const { dispatch } = useContext(ContainerContext);
+
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -202,7 +204,8 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
-  const UrlItem = () => {
+  const UrlItem = ({ item }) => {
+    console.log("item", item);
     const [clicked, setClicked] = useState(false);
     const [clickDelete, setClickDelete] = useState(false);
     const [clickEdit, setClickEdit] = useState(false);
@@ -228,7 +231,7 @@ const Settings = (props) => {
         <TouchableOpacity
           style={styles.urlItemContainer}
           onPress={() => {
-            setClicked(!clicked);
+            !clickDelete && setClicked(!clicked);
           }}
         >
           {clickDelete ? (
@@ -243,7 +246,7 @@ const Settings = (props) => {
             ellipsizeMode="tail"
             style={[styles.notUrlEnvList, styles.urlItemContainerElem]}
           >
-            url as param
+            {item}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -377,6 +380,7 @@ const Settings = (props) => {
               />
             </FormContext.Provider>
           </View>
+
           <Portal>
             <Dialog
               visible={showChangeURLModal}
@@ -398,15 +402,21 @@ const Settings = (props) => {
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
                   <Input
+                    // ref={inputRef}
                     typeField="textInput"
-                    placeholder="Settings:InputPlaceholder"
-                    value={modalUrl}
+                    placeholder={locale.t("Settings:InputPlaceholder")}
+                    value={valueEnvUrl}
+                    onChangeText={(value) => setValueEnvUrl(value)}
                   />
+                  <View style={{ height: 12 }} />
                   <ButtonUI
                     width="100%"
                     height={50}
                     typeStyle="secondary"
-                    onPress={() => setShowAddUrl(true)}
+                    onPress={() => {
+                      setCurrentAddUrl(valueEnvUrl);
+                      addUrl();
+                    }}
                     text={locale.t("Settings:NewLink")}
                   />
                 </View>
@@ -414,15 +424,22 @@ const Settings = (props) => {
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
-                  <Text style={styles.notUrlEnvList}>
-                    {locale.t("Settings:NotEnviromentURL")}
-                  </Text>
-                  <UrlItem />
+                  <ScrollView style={styles.listUrlItems}>
+                    {storedDataUrl.length ? (
+                      storedDataUrl.map((item, index) => {
+                        return <UrlItem key={index} item={item} />;
+                      })
+                    ) : (
+                      <Text style={styles.notUrlEnvList}>
+                        {locale.t("Settings:NotEnviromentURL")}
+                      </Text>
+                    )}
+                  </ScrollView>
                 </View>
               </Dialog.Content>
             </Dialog>
 
-            <Dialog visible={showAddUrl}>
+            {/* <Dialog visible={showAddUrl}>
               <Dialog.Title>{locale.t("ShowLoadUrl:AddUrl")}</Dialog.Title>
               <Dialog.Content>
                 <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
@@ -481,7 +498,7 @@ const Settings = (props) => {
                   <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
                 </View>
               </Dialog.Content>
-            </Dialog>
+            </Dialog> */}
           </Portal>
         </View>
       </View>
