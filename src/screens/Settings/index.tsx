@@ -202,6 +202,76 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
+  const UrlItem = () => {
+    const [clicked, setClicked] = useState(false);
+    const [clickDelete, setClickDelete] = useState(false);
+    const [clickEdit, setClickEdit] = useState(false);
+
+    const handleEdit = () => {
+      console.log("Edit");
+    };
+    const handleTrash = () => {
+      console.log("Trash");
+      setClickDelete(!clickDelete);
+      setClicked(!clicked);
+    };
+    const handleConfirm = () => {
+      console.log("Confirm");
+    };
+    const handleDelete = () => {
+      console.log("Delete");
+      setClickDelete(!clickDelete); //borrar
+    };
+
+    return (
+      <View style={[styles.urlItem, clicked && styles.urlItemBackgroundFilled]}>
+        <TouchableOpacity
+          style={styles.urlItemContainer}
+          onPress={() => {
+            setClicked(!clicked);
+          }}
+        >
+          {clickDelete ? (
+            <Image source={require("../../img/icons/trash.png")} />
+          ) : clicked ? (
+            <Image source={require("../../img/icons/radio-focused.png")} />
+          ) : (
+            <Image source={require("../../img/icons/radio-default.png")} />
+          )}
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.notUrlEnvList, styles.urlItemContainerElem]}
+          >
+            url as param
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            clickDelete ? handleConfirm() : handleEdit();
+          }}
+        >
+          {clickDelete ? (
+            <Image source={require("../../img/icons/confirm.png")} />
+          ) : (
+            <Image source={require("../../img/icons/edit.png")} />
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            clickDelete ? handleDelete() : handleTrash();
+          }}
+        >
+          {clickDelete ? (
+            <Image source={require("../../img/icons/delete.png")} />
+          ) : (
+            <Image source={require("../../img/icons/trash.png")} />
+          )}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   const { languages } = mainAppContext;
   return (
     <>
@@ -347,6 +417,7 @@ const Settings = (props) => {
                   <Text style={styles.notUrlEnvList}>
                     {locale.t("Settings:NotEnviromentURL")}
                   </Text>
+                  <UrlItem />
                 </View>
               </Dialog.Content>
             </Dialog>

@@ -6,6 +6,7 @@ import {
   NEUTRAL_60,
   NEUTRAL_80,
   PRIMARY_100,
+  TERCIARY_100,
   TERCIARY_50,
   WHITE
 } from "../../styles/colors";
@@ -194,9 +195,32 @@ const styles = StyleSheet.create({
     color: NEUTRAL_80,
     fontSize: 18,
     lineHeight: 18,
-    paddingBottom: 8,
-    fontWeight: "500",
-    marginTop: 16
+    fontWeight: "500"
+  },
+  urlItem: {
+    width: "100%",
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+    borderWidth: 1,
+    border: PRIMARY_100,
+    backgroundColor: NEUTRAL_100
+  },
+  urlItemBackgroundFilled: {
+    backgroundColor: TERCIARY_100
+  },
+  urlItemContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    height: "100%"
+  },
+  urlItemContainerElem: {
+    marginHorizontal: 8,
+    width: "75%"
   },
   dialogTitle: {
     fontFamily: "Inter-Bold",
