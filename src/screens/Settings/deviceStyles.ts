@@ -29,6 +29,12 @@ export const deviceStyles = {
   containerClose: isDeviceTablet
     ? styleSheet.containerCloseTablet
     : styleSheet.containerClose,
+  listUrlItems: isDeviceTablet
+    ? styleSheet.listUrlItemsTablet
+    : styleSheet.listUrlItems,
+  urlItemContainerElem: isDeviceTablet
+    ? styleSheet.urlItemContainerElemTablet
+    : styleSheet.urlItemContainerElem,
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
   settingsTitle: styleSheet.settingsTitle,
@@ -44,9 +50,9 @@ export const deviceStyles = {
   urlItem: styleSheet.urlItem,
   urlItemBackgroundFilled: styleSheet.urlItemBackgroundFilled,
   urlItemContainer: styleSheet.urlItemContainer,
-  urlItemContainerElem: styleSheet.urlItemContainerElem,
+  actionIcon: styleSheet.actionIcon,
   buttonClose: styleSheet.buttonClose,
-  listUrlItems: styleSheet.listUrlItems,
+
   copyrightTablet: styleSheet.copyrightTablet,
   backIcon: styleSheet.backIcon
 };

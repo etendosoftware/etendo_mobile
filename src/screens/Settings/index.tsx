@@ -193,6 +193,8 @@ const Settings = (props) => {
     };
     const handleConfirm = () => {
       deleteUrl(item);
+      setClickDelete(false);
+      setClicked(false);
     };
     const handleDelete = () => {
       setClickDelete(!clickDelete);
@@ -226,6 +228,7 @@ const Settings = (props) => {
           onPress={() => {
             clickDelete ? handleConfirm() : handleEdit();
           }}
+          style={styles.actionIcon}
         >
           {clickDelete ? (
             <Image source={require("../../img/icons/confirm.png")} />
@@ -237,6 +240,7 @@ const Settings = (props) => {
           onPress={() => {
             clickDelete ? handleDelete() : handleTrash();
           }}
+          style={styles.actionIcon}
         >
           {clickDelete ? (
             <Image source={require("../../img/icons/delete.png")} />
@@ -414,7 +418,11 @@ const Settings = (props) => {
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
-                  <ScrollView style={styles.listUrlItems}>
+                  <ScrollView
+                    style={styles.listUrlItems}
+                    persistentScrollbar={true}
+                    showsVerticalScrollIndicator={true}
+                  >
                     {storedDataUrl.length ? (
                       storedDataUrl.map((item, index) => {
                         return <UrlItem key={index} item={item} />;

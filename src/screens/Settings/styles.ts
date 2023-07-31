@@ -141,6 +141,10 @@ const styles = StyleSheet.create({
     padding: 30
   },
   listUrlItems: {
+    height: "30%",
+    marginTop: 8
+  },
+  listUrlItemsTablet: {
     height: "40%",
     marginTop: 8
   },
@@ -231,12 +235,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    height: "100%"
+    height: "100%",
+    marginHorizontal: 8
   },
   urlItemContainerElem: {
     marginHorizontal: 8,
+    width: "65%"
+  },
+  urlItemContainerElemTablet: {
+    marginHorizontal: 8,
     width: "75%"
   },
+  actionIcon: { marginHorizontal: 12 },
   containerClose: {
     backgroundColor: PRIMARY_100,
     height: 50,
