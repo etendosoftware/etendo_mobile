@@ -57,7 +57,7 @@ const Settings = (props) => {
   const [logo, setLogo] = useState<string>(null);
   const [defaultLogo, setDefaultLogo] = useState<string>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
-  const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
@@ -150,6 +150,7 @@ const Settings = (props) => {
     setStoredDataUrl([...storedDataUrl, currentValue]);
     await User.saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
+    setIsUpdating(false);
   };
 
   const deleteUrl = async (item: string) => {
@@ -178,13 +179,13 @@ const Settings = (props) => {
   };
 
   const UrlItem = useCallback(({ item }) => {
-    console.log("item", item);
     const [clicked, setClicked] = useState(false);
     const [clickDelete, setClickDelete] = useState(false);
-    const [clickEdit, setClickEdit] = useState(false);
 
     const handleEdit = () => {
-      console.log("Edit");
+      setValueEnvUrl(item);
+      deleteUrl(item);
+      setIsUpdating(true);
     };
     const handleTrash = () => {
       setClickDelete(!clickDelete);
@@ -367,6 +368,7 @@ const Settings = (props) => {
                 <TouchableOpacity
                   activeOpacity={0.2}
                   style={styles.buttonClose}
+                  onPress={() => setShowChangeURLModal(false)}
                 >
                   <Image source={require("../../img/icons/close.png")} />
                 </TouchableOpacity>
@@ -401,7 +403,11 @@ const Settings = (props) => {
                     onPress={() => {
                       addUrl();
                     }}
-                    text={locale.t("Settings:NewLink")}
+                    text={
+                      isUpdating
+                        ? locale.t("Settings:UpdateLink")
+                        : locale.t("Settings:NewLink")
+                    }
                   />
                 </View>
                 <View style={{ marginTop: 32 }}>
@@ -422,67 +428,6 @@ const Settings = (props) => {
                 </View>
               </Dialog.Content>
             </Dialog>
-
-            {/* <Dialog visible={showAddUrl}>
-              <Dialog.Title>{locale.t("ShowLoadUrl:AddUrl")}</Dialog.Title>
-              <Dialog.Content>
-                <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
-                <TextInput
-                  allowFontScaling={false}
-                  placeholder={locale.t("ShowLoadUrl:Example")}
-                  onChangeText={(newCurrentAddUrl) =>
-                    setCurrentAddUrl(newCurrentAddUrl)
-                  }
-                  defaultValue={currentAddUrl}
-                  textContentType="URL"
-                />
-                <Dialog.Actions style={{ marginTop: 20 }}>
-                  <Button
-                    style={{
-                      backgroundColor: defaultTheme.colors.accent,
-                      width: 120,
-                      marginRight: 10
-                    }}
-                    onPress={() => addUrl()}
-                  >
-                    {locale.t("ShowLoadUrl:Add")}
-                  </Button>
-                  <Button
-                    style={{
-                      width: 120,
-                      backgroundColor: defaultTheme.colors.backgroundSecondary
-                    }}
-                    onPress={() => setShowAddUrl(false)}
-                  >
-                    {locale.t("ShowLoadUrl:Close")}
-                  </Button>
-                </Dialog.Actions>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: 10
-                  }}
-                >
-                  <Divider style={{ padding: 1, flexGrow: 1 }} />
-                  <Text
-                    allowFontScaling={false}
-                    style={{
-                      textAlignVertical: "center",
-                      margin: 10,
-                      fontSize: 15
-                    }}
-                  >
-                    {locale.t("ShowLoadUrl:ItemList")}
-                  </Text>
-                  <Divider style={{ padding: 1, flexGrow: 1 }} />
-                </View>
-                <View style={{ height: 200 }}>
-                  <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
-                </View>
-              </Dialog.Content>
-            </Dialog> */}
           </Portal>
         </View>
       </View>
