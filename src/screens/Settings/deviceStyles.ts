@@ -23,7 +23,12 @@ export const deviceStyles = {
   backContainer: isDeviceTablet
     ? styleSheet.backContainerTablet
     : styleSheet.backContainerMobile,
-
+  dialogNewUrl: isDeviceTablet
+    ? styleSheet.dialogNewUrlTablet
+    : styleSheet.dialogNewUrl,
+  containerClose: isDeviceTablet
+    ? styleSheet.containerCloseTablet
+    : styleSheet.containerClose,
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
   settingsTitle: styleSheet.settingsTitle,
@@ -40,10 +45,8 @@ export const deviceStyles = {
   urlItemBackgroundFilled: styleSheet.urlItemBackgroundFilled,
   urlItemContainer: styleSheet.urlItemContainer,
   urlItemContainerElem: styleSheet.urlItemContainerElem,
-  containerClose: styleSheet.containerClose,
   buttonClose: styleSheet.buttonClose,
   listUrlItems: styleSheet.listUrlItems,
   copyrightTablet: styleSheet.copyrightTablet,
-  backIcon: styleSheet.backIcon,
-  dialogNewUrl: styleSheet.dialogNewUrl
+  backIcon: styleSheet.backIcon
 };

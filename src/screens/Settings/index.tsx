@@ -46,7 +46,7 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const defaultLogoUri = "../../../assets/logo.png";
+  const defaultLogoUri = "../../../assets/logo-not-found.png";
   //Context
   const mainAppContext = useContext(MainAppContext);
   const { getRecordContext } = useContext(FormContext);

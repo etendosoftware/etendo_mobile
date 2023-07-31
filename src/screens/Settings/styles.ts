@@ -124,6 +124,15 @@ const styles = StyleSheet.create({
   },
   dialogNewUrl: {
     backgroundColor: TERCIARY_50,
+    width: 330,
+    height: 450,
+    alignSelf: "center",
+    justifySelf: "center",
+    borderRadius: 24,
+    padding: 10
+  },
+  dialogNewUrlTablet: {
+    backgroundColor: TERCIARY_50,
     width: 580,
     height: 550,
     alignSelf: "center",
@@ -169,7 +178,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain"
   },
   logoImageTablet: {
-    width: "80%"
+    width: "100%"
   },
   languageContainer: {
     marginVertical: 24,
@@ -232,12 +241,25 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_100,
     height: 50,
     width: 50,
+    right: -290,
+    top: -35,
+    zIndex: 900,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: -40
+  },
+  containerCloseTablet: {
+    backgroundColor: PRIMARY_100,
+    height: 50,
+    width: 50,
     right: -525,
     top: -35,
     zIndex: 900,
     borderRadius: 100,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: -40
   },
   buttonClose: {
     justifyContent: "center",
