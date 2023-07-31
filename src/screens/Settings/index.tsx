@@ -1,5 +1,11 @@
 //Imports
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback
+} from "react";
 import PickerList from "../../components/List";
 import {
   View,
@@ -52,13 +58,10 @@ const Settings = (props) => {
   const [defaultLogo, setDefaultLogo] = useState<string>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
   const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
-  const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const { dispatch } = useContext(ContainerContext);
-
-  const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -136,11 +139,16 @@ const Settings = (props) => {
   };
 
   const addUrl = async () => {
-    let currentValue = currentAddUrl;
-    if (!currentValue || currentValue == "") return;
+    let currentValue = valueEnvUrl;
+    if (
+      !currentValue ||
+      currentValue == "" ||
+      storedDataUrl.some((url) => url == formatUrl(valueEnvUrl))
+    )
+      return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
-    setCurrentAddUrl([]);
+    setValueEnvUrl("");
   };
 
   const renderUrlItems = (items) => {
@@ -204,7 +212,7 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
-  const UrlItem = ({ item }) => {
+  const UrlItem = useCallback(({ item }) => {
     console.log("item", item);
     const [clicked, setClicked] = useState(false);
     const [clickDelete, setClickDelete] = useState(false);
@@ -273,7 +281,11 @@ const Settings = (props) => {
         </TouchableOpacity>
       </View>
     );
-  };
+  }, []);
+
+  const setEnv = useCallback((value: any) => {
+    setValueEnvUrl(value);
+  }, []);
 
   const { languages } = mainAppContext;
   return (
@@ -415,7 +427,7 @@ const Settings = (props) => {
                     typeField="textInput"
                     placeholder={locale.t("Settings:InputPlaceholder")}
                     value={valueEnvUrl}
-                    onChangeText={(value) => setValueEnvUrl(value)}
+                    onChangeText={setEnv}
                   />
                   <View style={{ height: 12 }} />
                   <ButtonUI
@@ -423,7 +435,6 @@ const Settings = (props) => {
                     height={50}
                     typeStyle="secondary"
                     onPress={() => {
-                      setCurrentAddUrl(valueEnvUrl);
                       addUrl();
                     }}
                     text={locale.t("Settings:NewLink")}
