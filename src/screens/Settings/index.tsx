@@ -148,50 +148,15 @@ const Settings = (props) => {
       return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
+    await User.saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
   };
 
-  const renderUrlItems = (items) => {
-    if (items.length !== 0) {
-      return items.map((item) => {
-        return (
-          <List.Item
-            key={item}
-            titleNumberOfLines={1}
-            titleEllipsizeMode="tail"
-            title={item}
-            right={() => (
-              <TouchableOpacity
-                onPress={() => {
-                  let filteredItems = storedDataUrl.filter(
-                    (url) => url !== item
-                  );
-                  setStoredDataUrl(filteredItems);
-                }}
-              >
-                <Icon
-                  name="delete-empty"
-                  size={25}
-                  color={defaultTheme.colors.primary}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        );
-      });
-    } else {
-      return (
-        <Text allowFontScaling={false} style={styles.NotItemList}>
-          {locale.t("ShowLoadUrl:NotItemList")}
-        </Text>
-      );
-    }
-  };
-
-  const renderPickerItems = (items) => {
-    return items?.map((item) => (
-      <Picker.Item key={item} label={item} value={item} />
-    ));
+  const deleteUrl = async (item: string) => {
+    const storedEnviromentsUrl = await User.loadEnviromentsUrl();
+    let filteredItems = storedEnviromentsUrl.filter((url) => url !== item);
+    await User.saveEnviromentsUrl(filteredItems);
+    setStoredDataUrl(filteredItems);
   };
 
   const getAppVersion = async () => {
@@ -222,16 +187,15 @@ const Settings = (props) => {
       console.log("Edit");
     };
     const handleTrash = () => {
-      console.log("Trash");
       setClickDelete(!clickDelete);
       setClicked(!clicked);
     };
     const handleConfirm = () => {
-      console.log("Confirm");
+      deleteUrl(item);
     };
     const handleDelete = () => {
-      console.log("Delete");
-      setClickDelete(!clickDelete); //borrar
+      setClickDelete(!clickDelete);
+      setClicked(false);
     };
 
     return (
