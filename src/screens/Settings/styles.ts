@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
   },
   dialogNewUrl: {
     backgroundColor: TERCIARY_50,
-    width: "50%",
-    height: "65%",
+    width: 580,
+    height: 550,
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
@@ -227,6 +227,23 @@ const styles = StyleSheet.create({
   urlItemContainerElem: {
     marginHorizontal: 8,
     width: "75%"
+  },
+  containerClose: {
+    backgroundColor: PRIMARY_100,
+    height: 50,
+    width: 50,
+    right: -525,
+    top: -35,
+    zIndex: 900,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  buttonClose: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%"
   },
   dialogTitle: {
     fontFamily: "Inter-Bold",

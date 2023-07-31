@@ -387,6 +387,15 @@ const Settings = (props) => {
               onDismiss={hideChangeURLModal}
               style={styles.dialogNewUrl}
             >
+              <View style={styles.containerClose}>
+                <TouchableOpacity
+                  activeOpacity={0.2}
+                  style={styles.buttonClose}
+                >
+                  <Image source={require("../../img/icons/close.png")} />
+                </TouchableOpacity>
+              </View>
+
               <Dialog.Title
                 style={{
                   fontSize: 25,
@@ -396,13 +405,13 @@ const Settings = (props) => {
               >
                 {locale.t("Settings:AddNewURL")}
               </Dialog.Title>
+
               <Dialog.Content>
                 <View style={{ marginTop: 16 }}>
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
                   <Input
-                    // ref={inputRef}
                     typeField="textInput"
                     placeholder={locale.t("Settings:InputPlaceholder")}
                     value={valueEnvUrl}

@@ -40,6 +40,8 @@ export const deviceStyles = {
   urlItemBackgroundFilled: styleSheet.urlItemBackgroundFilled,
   urlItemContainer: styleSheet.urlItemContainer,
   urlItemContainerElem: styleSheet.urlItemContainerElem,
+  containerClose: styleSheet.containerClose,
+  buttonClose: styleSheet.buttonClose,
   listUrlItems: styleSheet.listUrlItems,
   copyrightTablet: styleSheet.copyrightTablet,
   backIcon: styleSheet.backIcon,
