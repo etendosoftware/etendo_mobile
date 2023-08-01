@@ -6,8 +6,9 @@ import {
 } from "@react-navigation/native";
 import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
+import User from "../stores/User";
 
-const HomePage = ({ route }: any) => {
+const HomePage = ({ route, navigation }: any) => {
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
     const url = route.params.url;
@@ -22,9 +23,13 @@ const HomePage = ({ route }: any) => {
             onReady={() => {}}
             ref={childNavigation}
           >
-            <View style={{ flex: 1 }}>
-              <DynamicComponent __id={appId} url={url} children={undefined} />
-            </View>
+            <DynamicComponent
+              __id={appId}
+              url={url}
+              children={childNavigation}
+              navigationContainer={navigation}
+              language={User.loadLanguage()}
+            />
           </NavigationContainer>
         </View>
       </>

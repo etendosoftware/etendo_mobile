@@ -15,6 +15,8 @@ import HomeStack from "./src/navigation/HomeStack";
 import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import getImageProfile from "./src/helpers/getImageProfile";
+import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
+import Toast from "react-native-toast-message";
 
 interface Props {}
 type RootStackParamList = {
@@ -25,10 +27,8 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
   const { setToken, token } = useContext(MainAppContext);
-  const { dispatch } = useContext(ContainerContext);
+  const { dispatch, state } = useContext(ContainerContext);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -40,17 +40,17 @@ const App: React.FC<Props> = () => {
       await setUrl();
       await User.loadToken();
       const url = await getUrl();
-      dispatch({ type: "SET_URL", url: url });
+      dispatch({ type: SET_URL, url: url });
 
       if (User.token) {
         await User.reloadUserData(User.token);
         await getImageProfile(dispatch);
         setToken(true);
-        setIsLoading(false);
+        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
         await loadDynamic(dispatch);
       } else {
         setToken(false);
-        setIsLoading(false);
+        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
       }
     };
 
@@ -61,7 +61,7 @@ const App: React.FC<Props> = () => {
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
         <Stack.Navigator>
-          {isLoading ? (
+          {state.loadingScreen ? (
             <Stack.Screen
               name="LoadingScreen"
               component={LoadingScreen}
@@ -82,6 +82,7 @@ const App: React.FC<Props> = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast />
     </PaperProvider>
   );
 };
