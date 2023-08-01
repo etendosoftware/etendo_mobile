@@ -215,6 +215,13 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontWeight: "500"
   },
+  urlListed: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_80,
+    fontSize: 14,
+    lineHeight: 14,
+    fontWeight: "500"
+  },
   urlItem: {
     width: "100%",
     borderRadius: 8,
@@ -222,7 +229,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 16,
+    paddingVertical: 11,
     borderWidth: 1,
     border: PRIMARY_100,
     backgroundColor: NEUTRAL_100,
@@ -235,8 +242,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    height: "100%",
-    marginHorizontal: 8
+    marginLeft: 16,
+    height: "100%"
   },
   urlItemContainerElem: {
     marginHorizontal: 8,
@@ -246,7 +253,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     width: "75%"
   },
-  actionIcon: { marginHorizontal: 12 },
+  actionIcon: {
+    marginHorizontal: 20,
+
+    width: 25,
+    height: 25
+  },
+  iconImage: {
+    width: 25,
+    height: 25
+  },
   containerClose: {
     backgroundColor: PRIMARY_100,
     height: 50,

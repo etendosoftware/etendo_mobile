@@ -47,10 +47,12 @@ export const deviceStyles = {
   dialogTitle: styleSheet.dialogTitle,
   dialogContent: styleSheet.dialogContent,
   notUrlEnvList: styleSheet.notUrlEnvList,
+  urlListed: styleSheet.urlListed,
   urlItem: styleSheet.urlItem,
   urlItemBackgroundFilled: styleSheet.urlItemBackgroundFilled,
   urlItemContainer: styleSheet.urlItemContainer,
   actionIcon: styleSheet.actionIcon,
+  iconImage: styleSheet.iconImage,
   buttonClose: styleSheet.buttonClose,
 
   copyrightTablet: styleSheet.copyrightTablet,

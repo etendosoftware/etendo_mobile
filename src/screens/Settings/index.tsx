@@ -1,38 +1,15 @@
 //Imports
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useRef,
-  useCallback
-} from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import PickerList from "../../components/List";
-import {
-  View,
-  ScrollView,
-  Image,
-  TextInput,
-  TouchableOpacity
-} from "react-native";
+import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
 import locale from "../../i18n/locale";
-import {
-  List,
-  withTheme,
-  Button,
-  Dialog,
-  Portal,
-  Text,
-  Divider
-} from "react-native-paper";
+import { withTheme, Dialog, Portal } from "react-native-paper";
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { defaultTheme } from "../../themes";
 import FormContext from "../../contexts/FormContext";
 import { IField } from "../../components/Field";
-import { Picker } from "@react-native-picker/picker";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
@@ -210,16 +187,25 @@ const Settings = (props) => {
           }}
         >
           {clickDelete ? (
-            <Image source={require("../../img/icons/trash.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/trash.png")}
+            />
           ) : clicked ? (
-            <Image source={require("../../img/icons/radio-focused.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/radio-focused.png")}
+            />
           ) : (
-            <Image source={require("../../img/icons/radio-default.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/radio-default.png")}
+            />
           )}
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
-            style={[styles.notUrlEnvList, styles.urlItemContainerElem]}
+            style={[styles.urlListed, styles.urlItemContainerElem]}
           >
             {item}
           </Text>
@@ -231,9 +217,15 @@ const Settings = (props) => {
           style={styles.actionIcon}
         >
           {clickDelete ? (
-            <Image source={require("../../img/icons/confirm.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/confirm.png")}
+            />
           ) : (
-            <Image source={require("../../img/icons/edit.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/edit.png")}
+            />
           )}
         </TouchableOpacity>
         <TouchableOpacity
@@ -243,9 +235,15 @@ const Settings = (props) => {
           style={styles.actionIcon}
         >
           {clickDelete ? (
-            <Image source={require("../../img/icons/delete.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/delete.png")}
+            />
           ) : (
-            <Image source={require("../../img/icons/trash.png")} />
+            <Image
+              style={styles.iconImage}
+              source={require("../../../assets/icons/trash.png")}
+            />
           )}
         </TouchableOpacity>
       </View>
@@ -374,7 +372,7 @@ const Settings = (props) => {
                   style={styles.buttonClose}
                   onPress={() => setShowChangeURLModal(false)}
                 >
-                  <Image source={require("../../img/icons/close.png")} />
+                  <Image source={require("../../../assets/icons/close.png")} />
                 </TouchableOpacity>
               </View>
 
@@ -389,7 +387,11 @@ const Settings = (props) => {
               </Dialog.Title>
 
               <Dialog.Content>
-                <View style={{ marginTop: 16 }}>
+                <View
+                  style={{
+                    marginTop: 16
+                  }}
+                >
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
@@ -416,7 +418,7 @@ const Settings = (props) => {
                 </View>
                 <View style={{ marginTop: 32 }}>
                   <Text style={styles.urlEnvList}>
-                    {locale.t("Settings:EnviromentURL")}
+                    {locale.t("ShowLoadUrl:ItemList")}
                   </Text>
                   <ScrollView
                     style={styles.listUrlItems}
