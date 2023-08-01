@@ -30,6 +30,7 @@ const HomePage = ({ route, navigation }: any) => {
               navigationContainer={navigation}
               token={User.token}
               user={User.user}
+              language={User.loadLanguage()}
             />
           </NavigationContainer>
         </View>
