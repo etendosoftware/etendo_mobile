@@ -130,11 +130,11 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.smf.mobile.etendo'
+        applicationId 'com.smf.mobile.etendo_app_loader'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 112
-        versionName "1.1.5"
+        versionCode 114
+        versionName "1.0.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {

@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.smf.mobile.etendo">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.smf.mobile.etendo_app_loader">
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.CAMERA" />
@@ -15,7 +15,7 @@
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="true" />
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS" />
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0" />
-    <activity  android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"  android:theme="@style/Theme.App.SplashScreen">
+    <activity  android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"  android:theme="@style/Theme.App.SplashScreen" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
@@ -23,7 +23,7 @@
       </intent-filter>
       <meta-data android:name="android.windowLightStatusBar" android:value="true" />
     </activity>
-    <activity android:name=".RNBootSplashActivityEtendo" android:theme="@style/BootTheme" android:launchMode="singleTask">
+    <activity android:name=".RNBootSplashActivityEtendo" android:theme="@style/BootTheme" android:launchMode="singleTask" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
