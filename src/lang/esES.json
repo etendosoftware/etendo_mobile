@@ -58,6 +58,8 @@
   "Settings:AppVersion": "V %{version}",
   "Settings:Logo": "Logo",
   "Settings:Language": "Idioma",
+  "Settings:ImageNotFound": "Imagen no encontrada",
+  "Settings:ImageNotFoundServer": "El servidor no pudo encontrar el logo de la empresa.",
   "Settings:Server": "Servidor",
   "Settings:ChangeURL": "Cambiar URL",
   "Settings:NewLink": "Agregar link +",

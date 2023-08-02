@@ -14,12 +14,16 @@ export const deviceStyles = {
   languageContainerStyles: isDeviceTablet
     ? styleSheet.languageContainerTablet
     : styleSheet.languageContainer,
-  logoImageStyles: isDeviceTablet
-    ? styleSheet.logoImageTablet
-    : styleSheet.logoImage,
+  logoImageStyles: styleSheet.logoImage,
+  // isDeviceTablet
+  //   ? styleSheet.logoImageTablet
+  //   : styleSheet.logoImage,
   logoTitleStyles: isDeviceTablet
     ? styleSheet.logoTitleTablet
     : styleSheet.logoTitle,
+  logoSubTitle: isDeviceTablet
+    ? styleSheet.logoSubTitleTablet
+    : styleSheet.logoSubTitle,
   backContainer: isDeviceTablet
     ? styleSheet.backContainerTablet
     : styleSheet.backContainerMobile,
@@ -54,7 +58,7 @@ export const deviceStyles = {
   actionIcon: styleSheet.actionIcon,
   iconImage: styleSheet.iconImage,
   buttonClose: styleSheet.buttonClose,
-
+  findingImageContainer: styleSheet.findingImageContainer,
   copyrightTablet: styleSheet.copyrightTablet,
   backIcon: styleSheet.backIcon
 };

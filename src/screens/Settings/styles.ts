@@ -178,6 +178,22 @@ const styles = StyleSheet.create({
     color: NEUTRAL_60,
     paddingBottom: 8
   },
+  logoSubTitle: {
+    fontSize: 12,
+    marginBottom: 16,
+    fontWeight: "normal",
+    color: NEUTRAL_60
+  },
+  logoSubTitleTablet: {
+    fontSize: 12,
+    fontWeight: "normal",
+    color: NEUTRAL_60,
+    paddingBottom: 8
+  },
+  findingImageContainer: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
   logoImage: {
     resizeMode: "contain"
   },
@@ -280,7 +296,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     right: -525,
-    top: -35,
+    top: -55,
     zIndex: 900,
     borderRadius: 100,
     justifyContent: "center",

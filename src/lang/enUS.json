@@ -62,6 +62,8 @@
   "Settings:ChangeURL": "Change URL",
   "Settings:NewLink": "Add new Link +",
   "Settings:UpdateLink": "Update link",
+  "Settings:ImageNotFound": "Image not found",
+  "Settings:ImageNotFoundServer": "The server could not find the company logo.",
   "UpdateDialog:Title": "Core Version outdate",
   "UpdateDialog:Text": "The application require core version %{appMinCoreVersion} or higher and Etendo Core is version  %{coreVersion} Please update or change Etendo server",
   "Profile:Title": "Profile",

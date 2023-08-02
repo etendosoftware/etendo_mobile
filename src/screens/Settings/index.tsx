@@ -23,7 +23,7 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const defaultLogoUri = "../../../assets/logo-not-found.png";
+  const defaultLogoUri = "../../../assets/unlink.png";
   //Context
   const mainAppContext = useContext(MainAppContext);
   const { getRecordContext } = useContext(FormContext);
@@ -323,12 +323,22 @@ const Settings = (props) => {
             <Text style={styles.logoTitleStyles}>
               {locale.t("Settings:Logo")}
             </Text>
-            <Image
-              style={styles.logoImageStyles}
-              defaultSource={defaultLogo}
-              source={logo}
-              onError={onLogoError}
-            />
+            <View style={styles.findingImageContainer}>
+              <Image
+                style={styles.logoImageStyles}
+                defaultSource={defaultLogo}
+                source={logo}
+                onError={onLogoError}
+                height={80}
+                marginBottom={10}
+              />
+              <Text style={styles.logoTitleStyles}>
+                {locale.t("Settings:ImageNotFound")}
+              </Text>
+              <Text style={styles.logoSubTitle}>
+                {locale.t("Settings:ImageNotFoundServer")}
+              </Text>
+            </View>
           </View>
 
           <View style={styles.languageContainerStyles}>
