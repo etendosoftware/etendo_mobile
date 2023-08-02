@@ -5,7 +5,11 @@ import LoadingScreen from "./LoadingScreen";
 const DynamicComponent = ({ __id, url, children, ...props }: any) => {
   const Component = useMemo(() => {
     const component = async () => {
-      const componentPromise = fetchComponent(__id, url);
+      const componentPromise = fetchComponent(
+        __id,
+        url,
+        props.navigationContainer
+      );
       componentPromise.catch((e) => {
         console.error(e);
       });
