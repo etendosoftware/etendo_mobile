@@ -1,6 +1,7 @@
 import React from "react";
-import { Text } from "react-native";
 import packages from "./packages";
+import Toast from "react-native-toast-message";
+import locale from "../i18n/locale";
 
 function getParsedModule(code, moduleName, packages) {
   try {
@@ -29,7 +30,7 @@ function getParsedModule(code, moduleName, packages) {
   }
 }
 
-export async function fetchComponent(id, url) {
+export async function fetchComponent(id, url, navigation) {
   try {
     const urlToFetch = `${url}/${id}?timestamp=${+new Date()}`;
     const response = await fetch(urlToFetch);
@@ -48,7 +49,16 @@ export async function fetchComponent(id, url) {
   } catch (error) {
     return {
       default() {
-        return <Text>Failed to Render url "{url}"</Text>;
+        navigation.navigate("Home");
+        return Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("UrlFetchFailed", { url: url }),
+          visibilityTime: 5000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40
+        });
       }
     };
   }
