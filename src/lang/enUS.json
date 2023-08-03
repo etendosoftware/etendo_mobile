@@ -80,5 +80,6 @@
   "WelcomeToEtendoLogin": "Welcome to Etendo!",
   "WelcomeToEtendoHome": "Welcome to Etendo,",
   "EnterCredentials": "Enter your credentials to access your account.",
-  "ErrorUserPassword": "Username or password are incorrect"
+  "ErrorUserPassword": "Username or password are incorrect",
+  "UrlFetchFailed": "Failed to Render url '%{url}'"
 }

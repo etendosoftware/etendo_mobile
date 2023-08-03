@@ -1,7 +1,7 @@
 import React from "react";
-import { Text } from "react-native";
 import packages from "./packages";
 import Toast from "react-native-toast-message";
+import locale from "../i18n/locale";
 
 function getParsedModule(code, moduleName, packages) {
   try {
@@ -53,7 +53,7 @@ export async function fetchComponent(id, url, navigation) {
         return Toast.show({
           type: "error",
           position: "bottom",
-          text1: `Failed to Render url "${url}"`,
+          text1: locale.t("UrlFetchFailed", { url: url }),
           visibilityTime: 5000,
           autoHide: true,
           topOffset: 30,
