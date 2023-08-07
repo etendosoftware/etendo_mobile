@@ -2,6 +2,7 @@ import React from "react";
 import packages from "./packages";
 import Toast from "react-native-toast-message";
 import locale from "../i18n/locale";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function getParsedModule(code, moduleName, packages) {
   try {
@@ -33,24 +34,38 @@ function getParsedModule(code, moduleName, packages) {
 export async function fetchComponent(id, url, navigation) {
   try {
     const urlToFetch = `${url}/${id}?timestamp=${+new Date()}`;
-    const response = await fetch(urlToFetch);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.text();
+    const responseChange = await fetch(urlToFetch, { method: "HEAD" });
+    const lastModifiedNew = responseChange.headers.get("last-modified");
+    const dateLastDownBundle = await AsyncStorage.getItem("dateLastDownBundle");
     let component;
-    try {
-      component = { default: getParsedModule(data, id, packages) };
-    } catch (e) {
-      console.error(e);
-      throw e;
+    if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
+      const response = await fetch(urlToFetch);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.text();
+      await AsyncStorage.setItem("data", data);
+      const date = responseChange.headers.get("date");
+      await AsyncStorage.setItem("dateLastDownBundle", date);
+      try {
+        component = { default: getParsedModule(data, id, packages) };
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    }
+    if (!component || dateLastDownBundle) {
+      const existingCode = await AsyncStorage.getItem("data");
+      component = {
+        default: getParsedModule(existingCode, id, packages)
+      };
     }
     return component.default;
   } catch (error) {
     return {
       default() {
         navigation.navigate("Home");
-        return Toast.show({
+        Toast.show({
           type: "error",
           position: "bottom",
           text1: locale.t("UrlFetchFailed", { url: url }),
@@ -59,6 +74,7 @@ export async function fetchComponent(id, url, navigation) {
           topOffset: 30,
           bottomOffset: 40
         });
+        return <React.Fragment />;
       }
     };
   }
