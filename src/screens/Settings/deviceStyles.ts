@@ -15,9 +15,6 @@ export const deviceStyles = {
     ? styleSheet.languageContainerTablet
     : styleSheet.languageContainer,
   logoImageStyles: styleSheet.logoImage,
-  // isDeviceTablet
-  //   ? styleSheet.logoImageTablet
-  //   : styleSheet.logoImage,
   logoTitleStyles: isDeviceTablet
     ? styleSheet.logoTitleTablet
     : styleSheet.logoTitle,
@@ -33,12 +30,10 @@ export const deviceStyles = {
   containerClose: isDeviceTablet
     ? styleSheet.containerCloseTablet
     : styleSheet.containerClose,
-  listUrlItems: isDeviceTablet
-    ? styleSheet.listUrlItemsTablet
-    : styleSheet.listUrlItems,
   urlItemContainerElem: isDeviceTablet
     ? styleSheet.urlItemContainerElemTablet
     : styleSheet.urlItemContainerElem,
+  listUrlItems: styleSheet.listUrlItems,
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
   settingsTitle: styleSheet.settingsTitle,

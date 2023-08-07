@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   dialogNewUrl: {
     backgroundColor: TERCIARY_50,
     width: 330,
-    height: 450,
+    height: 525,
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
@@ -134,19 +134,16 @@ const styles = StyleSheet.create({
   dialogNewUrlTablet: {
     backgroundColor: TERCIARY_50,
     width: 580,
-    height: 550,
+    height: 570,
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
     padding: 30
   },
   listUrlItems: {
-    height: "30%",
-    marginTop: 8
-  },
-  listUrlItemsTablet: {
-    height: "40%",
-    marginTop: 8
+    height: "48%",
+    marginTop: 8,
+    paddingRight: 12
   },
   CahngeUrlTextConfirmation: {
     color: NEUTRAL_60,
