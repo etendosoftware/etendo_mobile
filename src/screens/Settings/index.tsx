@@ -4,7 +4,12 @@ import PickerList from "../../components/List";
 import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog, Portal } from "react-native-paper";
-import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
+import {
+  setUrl as setUrlOB,
+  getUrl,
+  formatUrl,
+  resetLocalUrl
+} from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
@@ -19,11 +24,13 @@ import { SET_URL } from "../../contexts/actionsTypes";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
+import { ISelecectPicker } from "../../interfaces";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const defaultLogoUri = "../../../assets/unlink.png";
+  const notFoundLogoUri = "../../../assets/unlink.png";
+  const defaultLogoUri = "../../../assets/your-company.png";
   //Context
   const mainAppContext = useContext(MainAppContext);
   const { getRecordContext } = useContext(FormContext);
@@ -47,7 +54,6 @@ const Settings = (props) => {
       const tmpDefaultLogo = require(defaultLogoUri);
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       let storedEnviromentsUrl = await User.loadEnviromentsUrl();
-
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
@@ -60,15 +66,8 @@ const Settings = (props) => {
     fetchUrlAndLogo();
   }, []);
 
-  const loadServerLogo = (url) => {
-    let logo;
-    if (url) {
-      const logoUrl = url + logoUri;
-      logo = { uri: logoUrl };
-    } else {
-      logo = require(defaultLogoUri);
-    }
-    return logo;
+  const loadServerLogo = (url: string) => {
+    return url ? { uri: url + logoUri } : require(defaultLogoUri);
   };
 
   const showChangeURLModalFn = () => {
@@ -82,19 +81,6 @@ const Settings = (props) => {
     setModalUrl(url);
   };
 
-  const changeURL = async () => {
-    if (!modalUrl || modalUrl == "") return;
-    await User.saveEnviromentsUrl(storedDataUrl);
-    const tmpUrl = await setUrlOB(modalUrl);
-    const tmpLogo = loadServerLogo(url);
-
-    setShowChangeURLModal(false);
-    setModalUrl(url);
-    setUrl(tmpUrl);
-    setLogo(tmpLogo);
-    dispatch({ type: SET_URL, url: tmpUrl });
-  };
-
   const onLogoError = () => {
     Toast.show({
       type: "info",
@@ -103,6 +89,7 @@ const Settings = (props) => {
       visibilityTime: 3000,
       autoHide: true
     });
+    setLogo(notFoundLogoUri);
   };
 
   const onChangeModalPicker = async (field: IField, value: string) => {
@@ -164,15 +151,22 @@ const Settings = (props) => {
       deleteUrl(item);
       setIsUpdating(true);
     };
+
     const handleTrash = () => {
       setClickDelete(!clickDelete);
       setClicked(!clicked);
     };
-    const handleConfirm = () => {
+
+    const handleConfirm = async () => {
       deleteUrl(item);
       setClickDelete(false);
       setClicked(false);
+      if (!url || !modalUrl) {
+        setUrl(null);
+        resetLocalUrl();
+      }
     };
+
     const handleDelete = () => {
       setClickDelete(!clickDelete);
       setClicked(false);
@@ -184,6 +178,7 @@ const Settings = (props) => {
           style={styles.urlItemContainer}
           onPress={() => {
             !clickDelete && setClicked(!clicked);
+            handleOptionSelected({ value: item });
           }}
         >
           {clickDelete ? (
@@ -255,6 +250,18 @@ const Settings = (props) => {
   }, []);
 
   const { languages } = mainAppContext;
+
+  const handleOptionSelected = async ({ value }: ISelecectPicker) => {
+    await User.saveEnviromentsUrl(storedDataUrl);
+    const tmpUrl = await setUrlOB(value);
+    const tmpLogo = loadServerLogo(value);
+    setShowChangeURLModal(false);
+    setModalUrl(value);
+    setUrl(tmpUrl);
+    setLogo(tmpLogo);
+    dispatch({ type: SET_URL, url: tmpUrl });
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -285,20 +292,15 @@ const Settings = (props) => {
               <Text style={styles.languageText}>
                 {locale.t("Settings:URL")}
               </Text>
-              <PickerList
-                pickerItems={languages}
-                field={{
-                  id: "Language Field",
-                  name: "",
-                  readOnly: false,
-                  column: { updatable: true },
-                  columnName: null
-                }}
-                value={
-                  selectedLanguage
-                    ? selectedLanguage
-                    : mainAppContext.selectedLanguage
+              <Input
+                typeField="picker"
+                placeholder={locale.t("Settings:InputPlaceholder")}
+                value={url}
+                onOptionSelected={(option: ISelecectPicker) =>
+                  handleOptionSelected(option)
                 }
+                displayKey="value"
+                dataPicker={storedDataUrl.map((data) => ({ value: data }))}
               />
             </FormContext.Provider>
             {!User?.token ? (

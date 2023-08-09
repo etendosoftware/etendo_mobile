@@ -36,4 +36,17 @@ const getUrl = async () => {
   return AsyncStorage.getItem("baseUrl");
 };
 
-export { getUrl, formatUrl, setUrl, SUCCESS, NOT_FOUND, FORBIDDEN, ERROR };
+const resetLocalUrl = async () => {
+  return AsyncStorage.removeItem("baseUrl");
+};
+
+export {
+  getUrl,
+  formatUrl,
+  setUrl,
+  resetLocalUrl,
+  SUCCESS,
+  NOT_FOUND,
+  FORBIDDEN,
+  ERROR
+};
