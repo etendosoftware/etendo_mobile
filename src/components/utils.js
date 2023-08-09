@@ -36,7 +36,12 @@ export async function fetchComponent(id, url, navigation) {
     const urlToFetch = `${url}/${id}?timestamp=${+new Date()}`;
     const responseChange = await fetch(urlToFetch, { method: "HEAD" });
     const lastModifiedNew = responseChange.headers.get("last-modified");
-    const dateLastDownBundle = await AsyncStorage.getItem("dateLastDownBundle");
+
+    const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
+    const dateLastDownBundle = await AsyncStorage.getItem(
+      dateLastDownBundleKey
+    );
+
     let component;
     if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
       const response = await fetch(urlToFetch);
@@ -44,38 +49,35 @@ export async function fetchComponent(id, url, navigation) {
         throw new Error("Network response was not ok");
       }
       const data = await response.text();
-      await AsyncStorage.setItem("data", data);
+      await AsyncStorage.setItem(id, data);
       const date = responseChange.headers.get("date");
-      await AsyncStorage.setItem("dateLastDownBundle", date);
-      try {
-        component = { default: getParsedModule(data, id, packages) };
-      } catch (e) {
-        console.error(e);
-        throw e;
+      await AsyncStorage.setItem(dateLastDownBundleKey, date);
+      component = { default: getParsedModule(data, id, packages) };
+    } else {
+      const existingCode = await AsyncStorage.getItem(id);
+      if (existingCode) {
+        component = {
+          default: getParsedModule(existingCode, id, packages)
+        };
+      } else {
+        throw new Error("Component not found in storage");
       }
     }
-    if (!component || dateLastDownBundle) {
-      const existingCode = await AsyncStorage.getItem("data");
-      component = {
-        default: getParsedModule(existingCode, id, packages)
-      };
-    }
+
     return component.default;
   } catch (error) {
-    return {
-      default() {
-        navigation.navigate("Home");
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("UrlFetchFailed", { url: url }),
-          visibilityTime: 5000,
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40
-        });
-        return <React.Fragment />;
-      }
+    return () => {
+      navigation.navigate("Home");
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: locale.t("UrlFetchFailed", { url: url }),
+        visibilityTime: 5000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40
+      });
+      return <React.Fragment />;
     };
   }
 }
