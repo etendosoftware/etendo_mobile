@@ -192,7 +192,8 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   logoImage: {
-    resizeMode: "contain"
+    resizeMode: "contain",
+    marginBottom: 16
   },
   logoImageTablet: {
     width: "100%"
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   notUrlEnvList: {
-    fontFamily: "Inter-Bold",
+    fontFamily: "Inter-SemiBold",
     color: NEUTRAL_80,
     fontSize: 18,
     lineHeight: 18,

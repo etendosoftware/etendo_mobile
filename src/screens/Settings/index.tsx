@@ -29,8 +29,8 @@ import { ISelecectPicker } from "../../interfaces";
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const notFoundLogoUri = "../../../assets/unlink.png";
-  const defaultLogoUri = "../../../assets/your-company.png";
+  const notFoundLogo = require("../../../assets/unlink.png");
+  const defaultLogo = require("../../../assets/your-company.png");
   //Context
   const mainAppContext = useContext(MainAppContext);
   const { getRecordContext } = useContext(FormContext);
@@ -38,8 +38,8 @@ const Settings = (props) => {
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
-  const [logo, setLogo] = useState<string>(null);
-  const [defaultLogo, setDefaultLogo] = useState<string>(null);
+  const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
+
   const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
@@ -50,15 +50,11 @@ const Settings = (props) => {
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
-      const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
-      const tmpDefaultLogo = require(defaultLogoUri);
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       let storedEnviromentsUrl = await User.loadEnviromentsUrl();
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
-      setDefaultLogo(tmpDefaultLogo);
-      setLogo(tmpLogo);
       setUrl(tmpUrl);
       setAppVersion(tmpAppVersion);
       setModalUrl(url ? url.toString() : tmpUrl);
@@ -67,7 +63,7 @@ const Settings = (props) => {
   }, []);
 
   const loadServerLogo = (url: string) => {
-    return url ? { uri: url + logoUri } : require(defaultLogoUri);
+    return url ? { uri: url + logoUri } : defaultLogo;
   };
 
   const showChangeURLModalFn = () => {
@@ -82,14 +78,7 @@ const Settings = (props) => {
   };
 
   const onLogoError = () => {
-    Toast.show({
-      type: "info",
-      position: "bottom",
-      text1: locale.t("LoginScreen:LogoNotFound"),
-      visibilityTime: 3000,
-      autoHide: true
-    });
-    setLogo(notFoundLogoUri);
+    setHasErrorLogo(true);
   };
 
   const onChangeModalPicker = async (field: IField, value: string) => {
@@ -141,6 +130,22 @@ const Settings = (props) => {
   const handleBackButtonPressWithLogin = () => {
     props.navigation.navigate("Login");
   };
+
+  const LogoImage = () => {
+    return (
+      <Image
+        style={styles.logoImageStyles}
+        source={hasErrorLogo ? notFoundLogo : loadServerLogo(url)}
+        onError={onLogoError}
+        height={100}
+        width={200}
+      />
+    );
+  };
+
+  useEffect(() => {
+    setHasErrorLogo(false);
+  }, [url]);
 
   const UrlItem = useCallback(({ item }) => {
     const [clicked, setClicked] = useState(false);
@@ -258,7 +263,6 @@ const Settings = (props) => {
     setShowChangeURLModal(false);
     setModalUrl(value);
     setUrl(tmpUrl);
-    setLogo(tmpLogo);
     dispatch({ type: SET_URL, url: tmpUrl });
   };
 
@@ -296,11 +300,14 @@ const Settings = (props) => {
                 typeField="picker"
                 placeholder={locale.t("Settings:InputPlaceholder")}
                 value={url}
-                onOptionSelected={(option: ISelecectPicker) =>
-                  handleOptionSelected(option)
-                }
+                onOptionSelected={(option: ISelecectPicker) => {
+                  handleOptionSelected(option);
+                  setHasErrorLogo(false);
+                }}
                 displayKey="value"
                 dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+                height={43}
+                centerText={true}
               />
             </FormContext.Provider>
             {!User?.token ? (
@@ -326,20 +333,17 @@ const Settings = (props) => {
               {locale.t("Settings:Logo")}
             </Text>
             <View style={styles.findingImageContainer}>
-              <Image
-                style={styles.logoImageStyles}
-                defaultSource={defaultLogo}
-                source={logo}
-                onError={onLogoError}
-                height={80}
-                marginBottom={10}
-              />
-              <Text style={styles.logoTitleStyles}>
-                {locale.t("Settings:ImageNotFound")}
-              </Text>
-              <Text style={styles.logoSubTitle}>
-                {locale.t("Settings:ImageNotFoundServer")}
-              </Text>
+              <LogoImage />
+              {hasErrorLogo && (
+                <View>
+                  <Text style={styles.logoTitleStyles}>
+                    {locale.t("Settings:ImageNotFound")}
+                  </Text>
+                  <Text style={styles.logoSubTitle}>
+                    {locale.t("Settings:ImageNotFoundServer")}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -412,6 +416,7 @@ const Settings = (props) => {
                     placeholder={locale.t("Settings:InputPlaceholder")}
                     value={valueEnvUrl}
                     onChangeText={setEnv}
+                    height={45}
                   />
                   <View style={{ height: 12 }} />
                   <ButtonUI
