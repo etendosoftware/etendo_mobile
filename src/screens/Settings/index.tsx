@@ -23,7 +23,7 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
-import { ISelecectPicker } from "../../interfaces";
+import { ISelectPicker } from "../../interfaces";
 
 const Settings = (props) => {
   //Images
@@ -255,7 +255,7 @@ const Settings = (props) => {
 
   const { languages } = mainAppContext;
 
-  const handleOptionSelected = async ({ value }: ISelecectPicker) => {
+  const handleOptionSelected = async ({ value }: ISelectPicker) => {
     await User.saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(value);
     const tmpLogo = loadServerLogo(value);
@@ -299,7 +299,7 @@ const Settings = (props) => {
                 typeField="picker"
                 placeholder={locale.t("Settings:InputPlaceholder")}
                 value={url}
-                onOptionSelected={(option: ISelecectPicker) => {
+                onOptionSelected={(option: ISelectPicker) => {
                   handleOptionSelected(option);
                   setHasErrorLogo(false);
                 }}

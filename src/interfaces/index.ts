@@ -15,6 +15,6 @@ export interface IRoute {
   }[];
 }
 
-export interface ISelecectPicker {
+export interface ISelectPicker {
   value: string;
 }
