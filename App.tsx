@@ -17,6 +17,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import getImageProfile from "./src/helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
 import Toast from "react-native-toast-message";
+import { Provider } from "react-redux";
+import store from "./redux";
 
 interface Props {}
 type RootStackParamList = {
@@ -58,32 +60,34 @@ const App: React.FC<Props> = () => {
   }, []);
 
   return (
-    <PaperProvider theme={defaultTheme}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {state.loadingScreen ? (
-            <Stack.Screen
-              name="LoadingScreen"
-              component={LoadingScreen}
-              options={{ headerShown: false }}
-            />
-          ) : token ? (
-            <Stack.Screen
-              name="HomeStack"
-              component={HomeStack}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name="LoginStack"
-              component={LoginStack}
-              options={{ headerShown: false }}
-            />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-      <Toast />
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider theme={defaultTheme}>
+        <NavigationContainer>
+          <Stack.Navigator>
+            {state.loadingScreen ? (
+              <Stack.Screen
+                name="LoadingScreen"
+                component={LoadingScreen}
+                options={{ headerShown: false }}
+              />
+            ) : token ? (
+              <Stack.Screen
+                name="HomeStack"
+                component={HomeStack}
+                options={{ headerShown: false }}
+              />
+            ) : (
+              <Stack.Screen
+                name="LoginStack"
+                component={LoginStack}
+                options={{ headerShown: false }}
+              />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+        <Toast />
+      </PaperProvider>
+    </Provider>
   );
 };
 

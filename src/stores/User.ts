@@ -96,31 +96,6 @@ class User {
     }
     return storedEnviromentsUrl;
   }
-
-  getContext(record?, fields?, entityName?) {
-    const context = {};
-
-    if (record && fields && entityName) {
-      Object.keys(fields).forEach((key) => {
-        if (fields[key].column.storedInSession) {
-          context["@" + entityName + "." + fields[key].columnName + "@"] =
-            record[key];
-        }
-      });
-      context[`@${entityName}.id@`] = record.id;
-    }
-
-    // Add session variables to context
-    if (this.data) {
-      context["@AD_USER_ID@"] = this.data.userId;
-      context["@#AD_USER_ID@"] = this.data.userId;
-      context["@#AD_ROLE_ID@"] = this.data.defaultRoleId;
-      context["@#AD_CLIENT_ID@"] = this.data.client;
-      context["@#AD_ORG_ID@"] = this.data.organization;
-    }
-
-    return context;
-  }
 }
 
 const user = new User();
