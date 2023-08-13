@@ -26,13 +26,33 @@ export const userSlice = createSlice({
       state.user = action.payload;
     },
     logout: () => initialState,
+    setData: (state, action: PayloadAction<any>) => {
+      state.data = action.payload.data;
+    },
+    setToken: (state, action: PayloadAction<any>) => {
+      state.token = action.payload.token;
+    },
+    setUser: (state, action: PayloadAction<any>) => {
+      state.user = action.payload.user;
+    },
     setLanguage: (state, action: PayloadAction<any>) => {
       state.selectedLanguage = action.payload.selectedLanguage;
+    },
+    setStoredEnviromentsUrl: (state, action: PayloadAction<any>) => {
+      state.storedEnviromentsUrl = action.payload.storedEnviromentsUrl;
     }
   }
 });
 
-export const { login, logout, setLanguage } = userSlice.actions;
+export const {
+  login,
+  logout,
+  setLanguage,
+  setData,
+  setToken,
+  setUser,
+  setStoredEnviromentsUrl
+} = userSlice.actions;
 
 export const selectData = (state: RootState) => state.user.data;
 export const selectUser = (state: RootState) => state.user.user;

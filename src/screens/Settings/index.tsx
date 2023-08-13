@@ -34,6 +34,8 @@ import { deviceStyles as styles } from "./deviceStyles";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useAppSelector } from "../../../redux";
+import { selectToken, selectUser } from "../../../redux/user";
 
 const Settings = (props) => {
   //Images
@@ -55,7 +57,8 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
 
   const { dispatch } = useContext(ContainerContext);
-
+  const tokenRedux = useAppSelector(selectToken);
+  const userRedux = useAppSelector(selectUser);
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
@@ -74,6 +77,8 @@ const Settings = (props) => {
       setModalUrl(url ? url.toString() : tmpUrl);
     };
     fetchUrlAndLogo();
+    console.log("tokenRedux", tokenRedux);
+    console.log("userRedux", userRedux);
   }, []);
 
   const loadServerLogo = (url) => {

@@ -9,6 +9,8 @@ import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import App from "./App";
 import { ContainerProvider } from "./src/contexts/ContainerContext";
+import { Provider } from "react-redux";
+import store from "./redux";
 
 interface Language {
   id: string;
@@ -120,11 +122,13 @@ const AppContainer = () => {
     ]
   );
   return (
-    <MainAppContext.Provider value={value}>
-      <ContainerProvider>
-        <App />
-      </ContainerProvider>
-    </MainAppContext.Provider>
+    <Provider store={store}>
+      <MainAppContext.Provider value={value}>
+        <ContainerProvider>
+          <App />
+        </ContainerProvider>
+      </MainAppContext.Provider>
+    </Provider>
   );
 };
 

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { User } from "./src/stores";
+import React, { useContext, useEffect } from "react";
 import { LoadingScreen } from "./src/components";
 import { Provider as PaperProvider } from "react-native-paper";
 import MainAppContext from "./src/contexts/MainAppContext";
@@ -17,8 +16,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import getImageProfile from "./src/helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
 import Toast from "react-native-toast-message";
-import { Provider } from "react-redux";
-import store from "./redux";
+import { useAppSelector } from "./redux";
+import { selectToken, selectUser } from "./redux/user";
+import { useUser } from "./hook/useUser";
 
 interface Props {}
 type RootStackParamList = {
@@ -31,6 +31,10 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App: React.FC<Props> = () => {
   const { setToken, token } = useContext(MainAppContext);
   const { dispatch, state } = useContext(ContainerContext);
+  const { reloadUserData } = useUser();
+
+  const tokenRedux = useAppSelector(selectToken);
+  const userRedux = useAppSelector(selectUser);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -40,12 +44,11 @@ const App: React.FC<Props> = () => {
         Orientation.lockToPortrait();
       }
       await setUrl();
-      await User.loadToken();
       const url = await getUrl();
       dispatch({ type: SET_URL, url: url });
 
-      if (User.token) {
-        await User.reloadUserData(User.token);
+      if (userRedux) {
+        await reloadUserData(userRedux);
         await getImageProfile(dispatch);
         setToken(true);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
@@ -60,34 +63,32 @@ const App: React.FC<Props> = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <PaperProvider theme={defaultTheme}>
-        <NavigationContainer>
-          <Stack.Navigator>
-            {state.loadingScreen ? (
-              <Stack.Screen
-                name="LoadingScreen"
-                component={LoadingScreen}
-                options={{ headerShown: false }}
-              />
-            ) : token ? (
-              <Stack.Screen
-                name="HomeStack"
-                component={HomeStack}
-                options={{ headerShown: false }}
-              />
-            ) : (
-              <Stack.Screen
-                name="LoginStack"
-                component={LoginStack}
-                options={{ headerShown: false }}
-              />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-        <Toast />
-      </PaperProvider>
-    </Provider>
+    <PaperProvider theme={defaultTheme}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {state.loadingScreen ? (
+            <Stack.Screen
+              name="LoadingScreen"
+              component={LoadingScreen}
+              options={{ headerShown: false }}
+            />
+          ) : token ? (
+            <Stack.Screen
+              name="HomeStack"
+              component={HomeStack}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            <Stack.Screen
+              name="LoginStack"
+              component={LoginStack}
+              options={{ headerShown: false }}
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Toast />
+    </PaperProvider>
   );
 };
 

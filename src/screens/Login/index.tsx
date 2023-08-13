@@ -22,6 +22,7 @@ import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+// import { useUser } from "../../../hook/useUser";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -47,6 +48,8 @@ const LoginFunctional = (props) => {
   const [error, setError] = useState<boolean>(false);
   const { setToken } = useContext(MainAppContext);
   const { dispatch } = useContext(ContainerContext);
+
+  // const { login } = useUser();
 
   let listViewRef: KeyboardAwareScrollView;
 
