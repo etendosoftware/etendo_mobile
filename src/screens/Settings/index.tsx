@@ -1,6 +1,5 @@
 //Imports
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import PickerList from "../../components/List";
 import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog, Portal } from "react-native-paper";
@@ -13,8 +12,6 @@ import {
 import { version } from "../../../package.json";
 import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
-import FormContext from "../../contexts/FormContext";
-import { IField } from "../../components/Field";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
@@ -32,7 +29,6 @@ const Settings = (props) => {
   const defaultLogo = require("../../../assets/your-company.png");
   //Context
   const mainAppContext = useContext(MainAppContext);
-  const { getRecordContext } = useContext(FormContext);
   //States
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);
@@ -289,6 +285,7 @@ const Settings = (props) => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);
               }}
+              disabled={!!User?.token}
               displayKey="value"
               dataPicker={storedDataUrl.map((data) => ({ value: data }))}
               height={43}
@@ -390,7 +387,7 @@ const Settings = (props) => {
                     placeholder={locale.t("Settings:InputPlaceholder")}
                     value={valueEnvUrl}
                     onChangeText={setEnv}
-                    height={45}
+                    height={50}
                   />
                   <View style={{ height: 12 }} />
                   <ButtonUI
