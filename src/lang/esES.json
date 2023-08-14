@@ -64,6 +64,7 @@
   "Settings:ChangeURL": "Cambiar URL",
   "Settings:NewLink": "Agregar link +",
   "Settings:UpdateLink": "Modificar link +",
+  "Settings:Search": "Buscar",
   "UpdateDialog:Title": "Etendo Core desactualizado",
   "UpdateDialog:Text": "Esta aplicación requiere Etendo Core %{appMinCoreVersion} o mayor y actualmente esta en la versión %{coreVersion}. \nPor favor actualice o cambie de servidor para poder seguir utilizando la app",
   "Profile:Title": "Perfil",
