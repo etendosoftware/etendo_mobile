@@ -39,7 +39,7 @@ const Settings = (props) => {
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
+  const [displayLanguage, setDisplayLanguage] = useState<string>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
@@ -80,14 +80,10 @@ const Settings = (props) => {
     setHasErrorLogo(true);
   };
 
-  const onChangeModalPicker = async (field: IField, value: string) => {
-    setSelectedLanguage(value ? value : field.toString());
+  const handleLanguage = (label: string, value: string) => {
     const { changeLanguage } = mainAppContext;
-    changeLanguage(value ? value : field.toString());
-  };
-
-  const onChangePicker = (item: string) => {
-    setSelectedLanguage(item);
+    changeLanguage(value);
+    setDisplayLanguage(label);
   };
 
   const addUrl = async () => {
@@ -258,7 +254,6 @@ const Settings = (props) => {
   const handleOptionSelected = async ({ value }: ISelectPicker) => {
     await User.saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(value);
-    const tmpLogo = loadServerLogo(value);
     setShowChangeURLModal(false);
     setModalUrl(value);
     setUrl(tmpUrl);
@@ -285,30 +280,20 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <FormContext.Provider
-              value={{
-                getRecordContext,
-                onChangePicker: onChangeModalPicker,
-                onChangeSelection: onChangePicker
+            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:InputPlaceholder")}
+              value={url}
+              onOptionSelected={(option: ISelectPicker) => {
+                handleOptionSelected(option);
+                setHasErrorLogo(false);
               }}
-            >
-              <Text style={styles.languageText}>
-                {locale.t("Settings:URL")}
-              </Text>
-              <Input
-                typeField="picker"
-                placeholder={locale.t("Settings:InputPlaceholder")}
-                value={url}
-                onOptionSelected={(option: ISelectPicker) => {
-                  handleOptionSelected(option);
-                  setHasErrorLogo(false);
-                }}
-                displayKey="value"
-                dataPicker={storedDataUrl.map((data) => ({ value: data }))}
-                height={43}
-                centerText={true}
-              />
-            </FormContext.Provider>
+              displayKey="value"
+              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+              height={43}
+              centerText={true}
+            />
             {!User?.token ? (
               <ButtonUI
                 height={40}
@@ -347,32 +332,22 @@ const Settings = (props) => {
           </View>
 
           <View style={styles.languageContainerStyles}>
-            <FormContext.Provider
-              value={{
-                getRecordContext,
-                onChangePicker: onChangeModalPicker,
-                onChangeSelection: onChangePicker
+            <Text style={styles.languageText}>
+              {locale.t("Settings:Language")}
+            </Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:Language")}
+              value={displayLanguage}
+              onOptionSelected={(option: any) => {
+                const { label, value } = option;
+                handleLanguage(label, value);
               }}
-            >
-              <Text style={styles.languageText}>
-                {locale.t("Settings:Language")}
-              </Text>
-              <PickerList
-                pickerItems={languages}
-                field={{
-                  id: "Language Field",
-                  name: "",
-                  readOnly: false,
-                  column: { updatable: true },
-                  columnName: null
-                }}
-                value={
-                  selectedLanguage
-                    ? selectedLanguage
-                    : mainAppContext.selectedLanguage
-                }
-              />
-            </FormContext.Provider>
+              displayKey="label"
+              dataPicker={languages}
+              height={43}
+              centerText={true}
+            />
           </View>
 
           <Portal>

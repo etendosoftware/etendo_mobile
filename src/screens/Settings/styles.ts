@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     paddingRight: 20,
     borderColor: NEUTRAL_30,
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     marginRight: 20
   },
   urlTitle: {
