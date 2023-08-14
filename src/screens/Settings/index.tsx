@@ -168,6 +168,14 @@ const Settings = (props) => {
       setClicked(false);
     };
 
+    const getIconSource = (clickDelete, clicked) => {
+      return clickDelete
+        ? require("../../../assets/icons/trash.png")
+        : clicked
+        ? require("../../../assets/icons/radio-focused.png")
+        : require("../../../assets/icons/radio-default.png");
+    };
+
     return (
       <View style={[styles.urlItem, clicked && styles.urlItemBackgroundFilled]}>
         <TouchableOpacity
@@ -177,22 +185,10 @@ const Settings = (props) => {
             handleOptionSelected({ value: item });
           }}
         >
-          {clickDelete ? (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/trash.png")}
-            />
-          ) : clicked ? (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/radio-focused.png")}
-            />
-          ) : (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/radio-default.png")}
-            />
-          )}
+          <Image
+            style={styles.iconImage}
+            source={getIconSource(clickDelete, clicked)}
+          />
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
