@@ -255,7 +255,6 @@ const Settings = (props) => {
     setUrl(tmpUrl);
     dispatch({ type: SET_URL, url: tmpUrl });
   };
-  const handlePickerOptions = isTablet ? 6 : 8;
   return (
     <>
       <View style={styles.container}>
@@ -290,7 +289,7 @@ const Settings = (props) => {
               dataPicker={storedDataUrl.map((data) => ({ value: data }))}
               height={43}
               centerText={true}
-              showOptionsAmount={handlePickerOptions}
+              showOptionsAmount={6}
               placeholderSearch={locale.t("Settings:Search")}
             />
             {!User?.token ? (

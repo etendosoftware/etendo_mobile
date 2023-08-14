@@ -124,12 +124,13 @@ const styles = StyleSheet.create({
   },
   dialogNewUrl: {
     backgroundColor: TERCIARY_50,
-    width: 330,
+    width: "85%",
     height: 525,
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
-    padding: 10
+    paddingBottom:130,
+    paddingHorizontal:10
   },
   dialogNewUrlTablet: {
     backgroundColor: TERCIARY_50,
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     border: PRIMARY_100,
     backgroundColor: NEUTRAL_100,
-    marginVertical: 8
+    marginVertical: 4
   },
   urlItemBackgroundFilled: {
     backgroundColor: TERCIARY_100
@@ -281,8 +282,8 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_100,
     height: 50,
     width: 50,
-    right: -290,
-    top: -35,
+    right: "-93%",
+    top: -20,
     zIndex: 900,
     borderRadius: 100,
     justifyContent: "center",
