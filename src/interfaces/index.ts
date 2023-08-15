@@ -14,3 +14,7 @@ export interface IRoute {
     key: string;
   }[];
 }
+
+export interface ISelectPicker {
+  value: string;
+}

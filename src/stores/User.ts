@@ -87,14 +87,11 @@ class User {
     }
   }
 
-  async loadEnviromentsUrl() {
+  async loadEnviromentsUrl(): Promise<string[]> {
     let storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
-    if (storedEnviromentsUrl) {
-      storedEnviromentsUrl = JSON.parse(storedEnviromentsUrl);
-    }
-    return storedEnviromentsUrl;
+    return storedEnviromentsUrl ? JSON.parse(storedEnviromentsUrl) : [];
   }
 
   getContext(record?, fields?, entityName?) {
