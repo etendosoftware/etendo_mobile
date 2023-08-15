@@ -21,6 +21,7 @@ import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { ISelectPicker } from "../../interfaces";
+import { UrlItem } from "../../components/UrlItem";
 
 const Settings = (props) => {
   //Images
@@ -137,105 +138,6 @@ const Settings = (props) => {
   useEffect(() => {
     setHasErrorLogo(false);
   }, [url]);
-
-  const UrlItem = useCallback(({ item }) => {
-    const [clicked, setClicked] = useState(false);
-    const [clickDelete, setClickDelete] = useState(false);
-
-    const handleEdit = () => {
-      setValueEnvUrl(item);
-      deleteUrl(item);
-      setIsUpdating(true);
-    };
-
-    const handleTrash = () => {
-      setClickDelete(!clickDelete);
-      setClicked(!clicked);
-    };
-
-    const handleConfirm = async () => {
-      deleteUrl(item);
-      setClickDelete(false);
-      setClicked(false);
-      if (!url || !modalUrl) {
-        setUrl(null);
-        resetLocalUrl();
-      }
-    };
-
-    const handleDelete = () => {
-      setClickDelete(!clickDelete);
-      setClicked(false);
-    };
-
-    const getIconSource = (clickDelete, clicked) => {
-      return clickDelete
-        ? require("../../../assets/icons/trash.png")
-        : clicked
-        ? require("../../../assets/icons/radio-focused.png")
-        : require("../../../assets/icons/radio-default.png");
-    };
-
-    return (
-      <View style={[styles.urlItem, clicked && styles.urlItemBackgroundFilled]}>
-        <TouchableOpacity
-          style={styles.urlItemContainer}
-          onPress={() => {
-            !clickDelete && setClicked(!clicked);
-            handleOptionSelected({ value: item });
-          }}
-        >
-          <Image
-            style={styles.iconImage}
-            source={getIconSource(clickDelete, clicked)}
-          />
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[styles.urlListed, styles.urlItemContainerElem]}
-          >
-            {item}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            clickDelete ? handleConfirm() : handleEdit();
-          }}
-          style={styles.actionIcon}
-        >
-          {clickDelete ? (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/confirm.png")}
-            />
-          ) : (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/edit.png")}
-            />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            clickDelete ? handleDelete() : handleTrash();
-          }}
-          style={styles.actionIcon}
-        >
-          {clickDelete ? (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/delete.png")}
-            />
-          ) : (
-            <Image
-              style={styles.iconImage}
-              source={require("../../../assets/icons/trash.png")}
-            />
-          )}
-        </TouchableOpacity>
-      </View>
-    );
-  }, []);
 
   const setEnv = useCallback((value: any) => {
     setValueEnvUrl(value);
@@ -371,11 +273,7 @@ const Settings = (props) => {
               </Dialog.Title>
 
               <Dialog.Content>
-                <View
-                  style={{
-                    marginTop: 16
-                  }}
-                >
+                <View>
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
@@ -412,7 +310,20 @@ const Settings = (props) => {
                   >
                     {storedDataUrl.length ? (
                       storedDataUrl.map((item, index) => {
-                        return <UrlItem key={index} item={item} />;
+                        return (
+                          <UrlItem
+                            key={index}
+                            item={item}
+                            setValueEnvUrl={setValueEnvUrl}
+                            deleteUrl={deleteUrl}
+                            setIsUpdating={setIsUpdating}
+                            modalUrl={modalUrl}
+                            url={url}
+                            setUrl={setUrl}
+                            resetLocalUrl={resetLocalUrl}
+                            handleOptionSelected={handleOptionSelected}
+                          />
+                        );
                       })
                     ) : (
                       <Text style={styles.notUrlEnvList}>

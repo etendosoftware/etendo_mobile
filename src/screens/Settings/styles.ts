@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
-    paddingBottom:130,
-    paddingHorizontal:10
+    paddingBottom: 130,
+    paddingHorizontal: 10
   },
   dialogNewUrlTablet: {
     backgroundColor: TERCIARY_50,
@@ -139,7 +139,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifySelf: "center",
     borderRadius: 24,
-    padding: 30
+    paddingHorizontal: 30,
+    paddingTop: 35,
+    paddingBottom:120
   },
   listUrlItems: {
     height: "48%",
@@ -294,8 +296,8 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_100,
     height: 50,
     width: 50,
-    right: -525,
-    top: -55,
+    right: -515,
+    top: -50,
     zIndex: 900,
     borderRadius: 100,
     justifyContent: "center",
