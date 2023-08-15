@@ -32,9 +32,35 @@ function getParsedModule(code, moduleName, packages) {
 }
 
 export async function fetchComponent(id, url, navigation) {
+  const fullUrl = `${url}/${id}?timestamp=${+new Date()}`;
+  const toast =  ()=> {return Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:NetworkError"),
+          visibilityTime: 7000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40
+        });}
+  async function isConnected() {
+    try {
+      const response = await fetch(fullUrl);
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+  const connection = await isConnected();
+  if (!connection) {
+    return {
+      default: () => {
+        navigation.navigate("Home");
+        toast()
+      }
+    };
+  }
   try {
-    const urlToFetch = `${url}/${id}?timestamp=${+new Date()}`;
-    const responseChange = await fetch(urlToFetch, { method: "HEAD" });
+    const responseChange = await fetch(fullUrl, { method: "HEAD" });
     const lastModifiedNew = responseChange.headers.get("last-modified");
 
     const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
@@ -44,7 +70,7 @@ export async function fetchComponent(id, url, navigation) {
 
     let component;
     if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
-      const response = await fetch(urlToFetch);
+      const response = await fetch(fullUrl);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -63,21 +89,11 @@ export async function fetchComponent(id, url, navigation) {
         throw new Error("Component not found in storage");
       }
     }
-
     return component.default;
   } catch (error) {
     return () => {
       navigation.navigate("Home");
-      Toast.show({
-        type: "error",
-        position: "bottom",
-        text1: locale.t("UrlFetchFailed", { url: url }),
-        visibilityTime: 5000,
-        autoHide: true,
-        topOffset: 30,
-        bottomOffset: 40
-      });
-      return <React.Fragment />;
+      toast()
     };
   }
 }
