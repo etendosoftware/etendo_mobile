@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { deviceStyles as styles } from "../screens/Settings/deviceStyles";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 

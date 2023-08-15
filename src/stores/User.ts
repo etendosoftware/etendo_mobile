@@ -87,7 +87,7 @@ class User {
     }
   }
 
-  async loadEnviromentsUrl(): Promise<String[]> {
+  async loadEnviromentsUrl(): Promise<string[]> {
     let storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
