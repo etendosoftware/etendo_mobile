@@ -29,15 +29,12 @@ export const useUser = () => {
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
-    console.log("token", token);
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const currentEnviromentsUrl = await loadEnviromentsUrl();
-    console.log("currentLanguage", currentLanguage);
-    console.log("currentEnviromentsUrl", currentEnviromentsUrl);
     dispatch(setToken(token));
     dispatch(setUser(user));
     dispatch(setLanguage(currentLanguage));
-    // dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
+    dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
 
     await reloadUserData(null, user);
 
@@ -68,13 +65,17 @@ export const useUser = () => {
     );
 
     dispatch(setLanguage(loadLanguage()));
-    // dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
+    dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
   };
 
   // Savings
   const saveEnviromentsUrl = async (storedEnviromentsUrl) => {
     if (storedEnviromentsUrl && storedEnviromentsUrl.length) {
       dispatch(setStoredEnviromentsUrl(storedEnviromentsUrl));
+      await AsyncStorage.setItem(
+        "storedEnviromentsUrl",
+        JSON.stringify(storedEnviromentsUrl)
+      );
     }
   };
 
