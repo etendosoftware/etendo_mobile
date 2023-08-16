@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
 import locale from "../../i18n/locale";
-import { User } from "../../stores";
 import {
   getOrganizationName,
   getClientName,
@@ -15,6 +14,8 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
 import { ContainerContext } from "../../contexts/ContainerContext";
+import { selectData } from "../../../redux/user";
+import { useAppSelector } from "../../../redux";
 
 const Profile = (props) => {
   //States
@@ -23,14 +24,15 @@ const Profile = (props) => {
   const [client, setClient] = useState<string>("");
   const [warehouse, setWarehouse] = useState<string>("");
   const { state } = useContext(ContainerContext);
+  const data = useAppSelector(selectData);
 
   useEffect(() => {
-    if (User.data) {
+    if (data) {
       Promise.all([
-        getOrganizationName(),
-        getRoleName(),
-        getWarehouseName(),
-        getClientName()
+        getOrganizationName(data),
+        getRoleName(data),
+        getWarehouseName(data),
+        getClientName(data)
       ])
         .then((values) => {
           const [org, role, warehouse, client] = values;
@@ -72,10 +74,10 @@ const Profile = (props) => {
           <View style={styles.getProfilePictureStyle}>
             <ShowProfilePicture
               bindaryData={state?.bindaryImg}
-              username={User.data.username}
+              username={data.username}
             />
           </View>
-          <Text style={styles.userNameStyle}>{User.data.username}</Text>
+          <Text style={styles.userNameStyle}>{data.username}</Text>
         </View>
       </View>
       <View style={styles.accountDataContainer}>

@@ -20,7 +20,6 @@ import {
 } from "react-native-paper";
 import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
-import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { defaultTheme } from "../../themes";
@@ -35,7 +34,14 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAppSelector } from "../../../redux";
-import { selectToken, selectUser } from "../../../redux/user";
+import {
+  selectData,
+  selectSelectedLanguage,
+  selectToken,
+  selectUser
+} from "../../../redux/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../../hook/useUser";
 
 const Settings = (props) => {
   //Images
@@ -57,15 +63,20 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
 
   const { dispatch } = useContext(ContainerContext);
-  const tokenRedux = useAppSelector(selectToken);
+  const token = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
+  const languageRedux = useAppSelector(selectSelectedLanguage);
+  const dataRedux = useAppSelector(selectData);
+
+  const { loadEnviromentsUrl, saveEnviromentsUrl } = useUser();
+
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
       const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
       const tmpDefaultLogo = require(defaultLogoUri);
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
-      let storedEnviromentsUrl = await User.loadEnviromentsUrl();
+      let storedEnviromentsUrl = await loadEnviromentsUrl();
 
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
@@ -77,8 +88,10 @@ const Settings = (props) => {
       setModalUrl(url ? url.toString() : tmpUrl);
     };
     fetchUrlAndLogo();
-    console.log("tokenRedux", tokenRedux);
+    console.log("tokenRedux", token);
     console.log("userRedux", userRedux);
+    console.log("languageRedux", languageRedux);
+    console.log("dataRedux", dataRedux);
   }, []);
 
   const loadServerLogo = (url) => {
@@ -93,7 +106,7 @@ const Settings = (props) => {
   };
 
   const showChangeURLModalFn = () => {
-    if (!User.token) {
+    if (!token) {
       setShowChangeURLModal(true);
     }
   };
@@ -105,7 +118,7 @@ const Settings = (props) => {
 
   const changeURL = async () => {
     if (!modalUrl || modalUrl == "") return;
-    await User.saveEnviromentsUrl(storedDataUrl);
+    await saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(modalUrl);
     const tmpLogo = loadServerLogo(url);
 
@@ -218,9 +231,7 @@ const Settings = (props) => {
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={
-              User?.token
-                ? handleBackButtonPress
-                : handleBackButtonPressWithLogin
+              token ? handleBackButtonPress : handleBackButtonPressWithLogin
             }
           />
         </View>
@@ -230,7 +241,7 @@ const Settings = (props) => {
               <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
               <Text style={styles.urlDescription}>{url}</Text>
             </View>
-            {!User?.token ? (
+            {!token ? (
               <ButtonUI
                 height={45}
                 width={118}
@@ -269,6 +280,8 @@ const Settings = (props) => {
               <Text style={styles.languageText}>
                 {locale.t("Settings:Language")}
               </Text>
+              {/* 
+              TO-DO: Delete PickerList and components related to it
               <PickerList
                 pickerItems={languages}
                 field={{
@@ -283,7 +296,7 @@ const Settings = (props) => {
                     ? selectedLanguage
                     : mainAppContext.selectedLanguage
                 }
-              />
+              /> */}
             </FormContext.Provider>
           </View>
 

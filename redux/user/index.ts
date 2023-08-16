@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { IData } from "../../src/interfaces";
 
 export interface UserState {
-  data: any;
+  data: IData;
   token: string;
   user: string;
   selectedLanguage: string;
@@ -22,30 +23,26 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<any>) => {
-      state.user = action.payload;
-    },
     logout: () => initialState,
     setData: (state, action: PayloadAction<any>) => {
-      state.data = action.payload.data;
+      state.data = action.payload;
     },
     setToken: (state, action: PayloadAction<any>) => {
-      state.token = action.payload.token;
+      state.token = action.payload;
     },
     setUser: (state, action: PayloadAction<any>) => {
-      state.user = action.payload.user;
+      state.user = action.payload;
     },
     setLanguage: (state, action: PayloadAction<any>) => {
-      state.selectedLanguage = action.payload.selectedLanguage;
+      state.selectedLanguage = action.payload;
     },
     setStoredEnviromentsUrl: (state, action: PayloadAction<any>) => {
-      state.storedEnviromentsUrl = action.payload.storedEnviromentsUrl;
+      state.storedEnviromentsUrl = action.payload;
     }
   }
 });
 
 export const {
-  login,
   logout,
   setLanguage,
   setData,

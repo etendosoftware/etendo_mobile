@@ -6,9 +6,17 @@ import {
 } from "@react-navigation/native";
 import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
-import { User } from "../stores";
+import {
+  selectSelectedLanguage,
+  selectToken,
+  selectUser
+} from "../../redux/user";
+import { useAppSelector } from "../../redux";
 
 const HomePage = ({ route, navigation }: any) => {
+  const token = useAppSelector(selectToken);
+  const user = useAppSelector(selectUser);
+  const language = useAppSelector(selectSelectedLanguage);
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
     const url = route.params.url;
@@ -28,9 +36,9 @@ const HomePage = ({ route, navigation }: any) => {
               url={url}
               children={childNavigation}
               navigationContainer={navigation}
-              token={User.token}
-              user={User.user}
-              language={User.loadLanguage()}
+              token={token}
+              user={user}
+              language={language}
             />
           </NavigationContainer>
         </View>

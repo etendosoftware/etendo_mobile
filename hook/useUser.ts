@@ -21,24 +21,32 @@ export const useUser = () => {
   const user = useAppSelector(selectUser);
 
   const login = async (user, pass) => {
-    await OBRest.loginWithUserAndPassword(user, pass);
+    try {
+      await OBRest.loginWithUserAndPassword(user, pass);
+    } catch (ignored) {}
 
     // TODO: this should be changed to a boolean isLoggedIn
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
-    const currentLanguage = await loadLanguage();
-    const currentEnviromentsUrl = await loadEnviromentsUrl();
     console.log("token", token);
+    const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
+    const currentEnviromentsUrl = await loadEnviromentsUrl();
+    console.log("currentLanguage", currentLanguage);
+    console.log("currentEnviromentsUrl", currentEnviromentsUrl);
     dispatch(setToken(token));
     dispatch(setUser(user));
     dispatch(setLanguage(currentLanguage));
-    dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
+    // dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
 
-    await reloadUserData();
+    await reloadUserData(null, user);
+
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("user", user);
   };
 
-  const reloadUserData = async (storedToken?) => {
+  const reloadUserData = async (storedToken?: string, username?: string) => {
+    console.log("user🥴🥴", user, username);
     if (storedToken) {
       dispatch(setToken(storedToken));
       OBRest.loginWithToken(storedToken);
@@ -48,7 +56,7 @@ export const useUser = () => {
 
     dispatch(
       setData({
-        username: user,
+        username: username ? username : user,
         userId: context?.getUserId(),
         defaultRoleId: context?.getRoleId(),
         defaultWarehouseId: context?.getWarehouseId(),
@@ -60,7 +68,7 @@ export const useUser = () => {
     );
 
     dispatch(setLanguage(loadLanguage()));
-    dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
+    // dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
   };
 
   // Savings

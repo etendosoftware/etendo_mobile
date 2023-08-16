@@ -1,7 +1,7 @@
 // Importing required modules and libraries
 import React, { useContext, useState } from "react";
 import { View, Image, TouchableOpacity, Dimensions } from "react-native";
-import { User, Windows } from "../../stores";
+import { User, Windows, logout } from "../../stores";
 import locale from "../../i18n/locale";
 import { Dialog, Text, Button } from "react-native-paper";
 import { Snackbar } from "../../globals";
@@ -22,7 +22,8 @@ import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-// import { useUser } from "../../../hook/useUser";
+import { useUser } from "../../../hook/useUser";
+import { useAppDispatch } from "../../../redux";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -49,7 +50,8 @@ const LoginFunctional = (props) => {
   const { setToken } = useContext(MainAppContext);
   const { dispatch } = useContext(ContainerContext);
 
-  // const { login } = useUser();
+  const { login } = useUser();
+  const dispatch2 = useAppDispatch();
 
   let listViewRef: KeyboardAwareScrollView;
 
@@ -69,7 +71,8 @@ const LoginFunctional = (props) => {
         if (validateCredentials()) {
           demo();
         }
-        await User.login(username, password);
+        // await User.login(username, password);
+        await login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
           setToken(true);
@@ -81,7 +84,7 @@ const LoginFunctional = (props) => {
         setError(true);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
         if (error.message.includes("Invalid user name or password")) {
-          await User.logout();
+          dispatch2(logout);
           Toast.show({
             type: "error",
             position: "bottom",

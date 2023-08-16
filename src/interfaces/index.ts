@@ -14,3 +14,20 @@ export interface IRoute {
     key: string;
   }[];
 }
+
+export interface Language {
+  id: string;
+  value: string;
+  label: string;
+}
+
+export interface IData {
+  username: string;
+  userId: string;
+  defaultRoleId: string;
+  defaultWarehouseId: string;
+  roleId: string;
+  warehouseId: string;
+  organization: string;
+  client: string;
+}
