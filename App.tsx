@@ -17,7 +17,7 @@ import getImageProfile from "./src/helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
 import Toast from "react-native-toast-message";
 import { useAppSelector } from "./redux";
-import { selectToken, selectUser } from "./redux/user";
+import { selectData, selectToken, selectUser } from "./redux/user";
 import { useUser } from "./hook/useUser";
 
 interface Props {}
@@ -35,6 +35,7 @@ const App: React.FC<Props> = () => {
 
   const tokenRedux = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
+  const data = useAppSelector(selectData);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -49,10 +50,10 @@ const App: React.FC<Props> = () => {
 
       if (userRedux) {
         await reloadUserData(userRedux);
-        await getImageProfile(dispatch);
+        await getImageProfile(dispatch, data);
         setToken(true);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
-        await loadDynamic(dispatch);
+        await loadDynamic(dispatch, tokenRedux);
       } else {
         setToken(false);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });

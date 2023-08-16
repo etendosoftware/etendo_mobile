@@ -13,6 +13,8 @@ import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDro
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
+import { selectData } from "../../../redux/user";
+import { useAppSelector } from "../../../redux";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -25,6 +27,7 @@ interface Props {
   coreVersion: string;
 }
 const HomeFunction = (props: Props) => {
+  const data = useAppSelector(selectData);
   const context = useContext(ContainerContext);
 
   const getBackground = () => {
@@ -43,7 +46,7 @@ const HomeFunction = (props: Props) => {
   };
 
   const getNameInBody = () => {
-    return User?.data?.username ? User?.data?.username + "!" : null;
+    return data?.username ? data?.username + "!" : null;
   };
 
   return (

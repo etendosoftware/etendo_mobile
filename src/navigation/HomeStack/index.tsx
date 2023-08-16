@@ -13,7 +13,7 @@ import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/compo
 import User from "../../stores/User";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import { logout } from "../../stores";
+// import { logout } from "../../stores";
 import pkg from "../../../package.json";
 import {
   StackNavigationProp,
@@ -24,6 +24,9 @@ import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
+import { logout, selectData } from "../../../redux/user";
+import { useAppDispatch, useAppSelector } from "../../../redux";
+import { useUser } from "../../../hook/useUser";
 
 type RootStackParamList = {
   Home: any;
@@ -39,6 +42,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const context = useContext(ContainerContext);
+  const data = useAppSelector(selectData);
+  const dispatch = useAppDispatch();
   const { setToken } = useContext(MainAppContext);
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
@@ -107,7 +112,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     route: keyof RootStackParamList | "logout"
   ) => {
     if (route === "logout") {
-      await logout();
+      dispatch(logout);
       setToken(false);
       return;
     }
@@ -152,7 +157,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             onOptionSelectedProfile={async (route?: string) => {
               await onOptionPressHandle(route as keyof RootStackParamList);
             }}
-            name={User?.data?.username}
+            name={data?.username}
             onPressLogo={() => {
               navigation.navigate("Home");
             }}
