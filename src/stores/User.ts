@@ -1,6 +1,7 @@
 import { observable, action } from "mobx";
 import { OBRest } from "etrest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ca } from "date-fns/locale";
 
 class User {
   @observable loading: any;
@@ -54,12 +55,15 @@ class User {
   }
 
   async login(user, pass) {
-    await OBRest.loginWithUserAndPassword(user, pass);
+    try {
+      await OBRest.loginWithUserAndPassword(user, pass);
+    } catch (ignored) {}
 
     // TODO: this should be changed to a boolean isLoggedIn
     this.token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
+    console.log("this.token", this.token);
     this.user = user;
     await this.reloadUserData();
     await this.saveToken();
@@ -68,10 +72,11 @@ class User {
   }
 
   async saveLanguage(selectedLanguage) {
-    await AsyncStorage.setItem(
-      "selectedLanguage",
-      selectedLanguage ? selectedLanguage : this.selectedLanguage
-    );
+    const currentLanguage = selectedLanguage
+      ? selectedLanguage
+      : this.selectedLanguage;
+    await AsyncStorage.setItem("selectedLanguage", currentLanguage);
+    return currentLanguage;
   }
 
   loadLanguage() {
@@ -92,31 +97,6 @@ class User {
       "storedEnviromentsUrl"
     );
     return storedEnviromentsUrl ? JSON.parse(storedEnviromentsUrl) : [];
-  }
-
-  getContext(record?, fields?, entityName?) {
-    const context = {};
-
-    if (record && fields && entityName) {
-      Object.keys(fields).forEach((key) => {
-        if (fields[key].column.storedInSession) {
-          context["@" + entityName + "." + fields[key].columnName + "@"] =
-            record[key];
-        }
-      });
-      context[`@${entityName}.id@`] = record.id;
-    }
-
-    // Add session variables to context
-    if (this.data) {
-      context["@AD_USER_ID@"] = this.data.userId;
-      context["@#AD_USER_ID@"] = this.data.userId;
-      context["@#AD_ROLE_ID@"] = this.data.defaultRoleId;
-      context["@#AD_CLIENT_ID@"] = this.data.client;
-      context["@#AD_ORG_ID@"] = this.data.organization;
-    }
-
-    return context;
   }
 }
 

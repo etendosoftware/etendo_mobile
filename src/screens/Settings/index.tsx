@@ -10,7 +10,6 @@ import {
   resetLocalUrl
 } from "../../ob-api/ob";
 import { version } from "../../../package.json";
-import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
@@ -22,6 +21,16 @@ import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { ISelectPicker } from "../../interfaces";
 import { UrlItem } from "../../components/UrlItem";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useAppSelector } from "../../../redux";
+import {
+  selectData,
+  selectSelectedLanguage,
+  selectToken,
+  selectUser
+} from "../../../redux/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../../hook/useUser";
 
 const Settings = (props) => {
   //Images
@@ -42,12 +51,19 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const { dispatch } = useContext(ContainerContext);
+  const token = useAppSelector(selectToken);
+  const userRedux = useAppSelector(selectUser);
+  const languageRedux = useAppSelector(selectSelectedLanguage);
+  const dataRedux = useAppSelector(selectData);
+
+  const { loadEnviromentsUrl, saveEnviromentsUrl } = useUser();
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
-      let storedEnviromentsUrl = await User.loadEnviromentsUrl();
+      let storedEnviromentsUrl = await loadEnviromentsUrl();
+
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
@@ -56,6 +72,10 @@ const Settings = (props) => {
       setModalUrl(url ? url.toString() : tmpUrl);
     };
     fetchUrlAndLogo();
+    console.log("tokenRedux", token);
+    console.log("userRedux", userRedux);
+    console.log("languageRedux", languageRedux);
+    console.log("dataRedux", dataRedux);
   }, []);
 
   const loadServerLogo = (url: string) => {
@@ -63,7 +83,7 @@ const Settings = (props) => {
   };
 
   const showChangeURLModalFn = () => {
-    if (!User.token) {
+    if (!token) {
       setShowChangeURLModal(true);
     }
   };
@@ -71,6 +91,19 @@ const Settings = (props) => {
   const hideChangeURLModal = () => {
     setShowChangeURLModal(false);
     setModalUrl(url);
+  };
+
+  const changeURL = async () => {
+    if (!modalUrl || modalUrl == "") return;
+    await saveEnviromentsUrl(storedDataUrl);
+    const tmpUrl = await setUrlOB(modalUrl);
+    const tmpLogo = loadServerLogo(url);
+
+    setShowChangeURLModal(false);
+    setModalUrl(url);
+    setUrl(tmpUrl);
+    setLogo(tmpLogo);
+    dispatch({ type: SET_URL, url: tmpUrl });
   };
 
   const onLogoError = () => {
@@ -165,32 +198,17 @@ const Settings = (props) => {
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={
-              User?.token
-                ? handleBackButtonPress
-                : handleBackButtonPressWithLogin
+              token ? handleBackButtonPress : handleBackButtonPressWithLogin
             }
           />
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
-            <Input
-              typeField="picker"
-              placeholder={locale.t("Settings:InputPlaceholder")}
-              value={url}
-              onOptionSelected={(option: ISelectPicker) => {
-                handleOptionSelected(option);
-                setHasErrorLogo(false);
-              }}
-              disabled={!!User?.token}
-              displayKey="value"
-              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
-              height={43}
-              centerText={true}
-              showOptionsAmount={6}
-              placeholderSearch={locale.t("Settings:Search")}
-            />
-            {!User?.token ? (
+            <View style={styles.urlTextsContainer}>
+              <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
+              <Text style={styles.urlDescription}>{url}</Text>
+            </View>
+            {!token ? (
               <ButtonUI
                 height={40}
                 width={130}
@@ -239,11 +257,27 @@ const Settings = (props) => {
                 const { label, value } = option;
                 handleLanguage(label, value);
               }}
-              displayKey="label"
-              dataPicker={languages}
-              height={43}
-              centerText={true}
-            />
+            >
+              <Text style={styles.languageText}>
+                {locale.t("Settings:Language")}
+              </Text>
+              {/* 
+              TO-DO: Delete PickerList and components related to it
+              <PickerList
+                pickerItems={languages}
+                field={{
+                  id: "Language Field",
+                  name: "",
+                  readOnly: false,
+                  column: { updatable: true },
+                  columnName: null
+                }}
+                value={
+                  selectedLanguage
+                    ? selectedLanguage
+                    : mainAppContext.selectedLanguage
+                }
+              /> */}
           </View>
 
           <Portal>
