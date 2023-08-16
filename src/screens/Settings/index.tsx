@@ -19,7 +19,6 @@ import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
-import { ISelectPicker } from "../../interfaces";
 import { UrlItem } from "../../components/UrlItem";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAppSelector } from "../../../redux";
@@ -50,6 +49,7 @@ const Settings = (props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
+
   const { dispatch } = useContext(ContainerContext);
   const token = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
@@ -93,19 +93,6 @@ const Settings = (props) => {
     setModalUrl(url);
   };
 
-  const changeURL = async () => {
-    if (!modalUrl || modalUrl == "") return;
-    await saveEnviromentsUrl(storedDataUrl);
-    const tmpUrl = await setUrlOB(modalUrl);
-    const tmpLogo = loadServerLogo(url);
-
-    setShowChangeURLModal(false);
-    setModalUrl(url);
-    setUrl(tmpUrl);
-    setLogo(tmpLogo);
-    dispatch({ type: SET_URL, url: tmpUrl });
-  };
-
   const onLogoError = () => {
     setHasErrorLogo(true);
   };
@@ -126,15 +113,15 @@ const Settings = (props) => {
       return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
-    await User.saveEnviromentsUrl([...storedDataUrl, currentValue]);
+    await saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
     setIsUpdating(false);
   };
 
   const deleteUrl = async (item: string) => {
-    const storedEnviromentsUrl = await User.loadEnviromentsUrl();
+    const storedEnviromentsUrl = await loadEnviromentsUrl();
     let filteredItems = storedEnviromentsUrl.filter((url) => url !== item);
-    await User.saveEnviromentsUrl(filteredItems);
+    await saveEnviromentsUrl(filteredItems);
     setStoredDataUrl(filteredItems);
   };
 
@@ -178,14 +165,15 @@ const Settings = (props) => {
 
   const { languages } = mainAppContext;
 
-  const handleOptionSelected = async ({ value }: ISelectPicker) => {
-    await User.saveEnviromentsUrl(storedDataUrl);
+  const handleOptionSelected = async ({ value }) => {
+    await saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(value);
     setShowChangeURLModal(false);
     setModalUrl(value);
     setUrl(tmpUrl);
     dispatch({ type: SET_URL, url: tmpUrl });
   };
+
   return (
     <>
       <View style={styles.container}>
@@ -204,10 +192,23 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <View style={styles.urlTextsContainer}>
-              <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
-              <Text style={styles.urlDescription}>{url}</Text>
-            </View>
+            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:InputPlaceholder")}
+              value={url}
+              onOptionSelected={(option: any) => {
+                handleOptionSelected(option);
+                setHasErrorLogo(false);
+              }}
+              disabled={!!token}
+              displayKey="value"
+              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+              height={43}
+              centerText={true}
+              showOptionsAmount={6}
+              placeholderSearch={locale.t("Settings:Search")}
+            />
             {!token ? (
               <ButtonUI
                 height={40}
@@ -257,27 +258,11 @@ const Settings = (props) => {
                 const { label, value } = option;
                 handleLanguage(label, value);
               }}
-            >
-              <Text style={styles.languageText}>
-                {locale.t("Settings:Language")}
-              </Text>
-              {/* 
-              TO-DO: Delete PickerList and components related to it
-              <PickerList
-                pickerItems={languages}
-                field={{
-                  id: "Language Field",
-                  name: "",
-                  readOnly: false,
-                  column: { updatable: true },
-                  columnName: null
-                }}
-                value={
-                  selectedLanguage
-                    ? selectedLanguage
-                    : mainAppContext.selectedLanguage
-                }
-              /> */}
+              displayKey="label"
+              dataPicker={languages}
+              height={43}
+              centerText={true}
+            />
           </View>
 
           <Portal>
