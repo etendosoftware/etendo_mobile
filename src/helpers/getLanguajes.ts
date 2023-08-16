@@ -45,7 +45,7 @@ const inBoth = (list1: Language[], list2: Language[]): Language[] => {
   return result;
 };
 
-const getServerLanguages = async () => {
+export const getServerLanguages = async () => {
   return Languages.getLanguages();
 };
 
@@ -71,4 +71,9 @@ export const languageDefault = async () => {
   } catch (error) {
     console.log("Error", error);
   }
+};
+
+export const changeLanguage = async (input: string, setLenguageRedux: any) => {
+  locale.setCurrentLanguage(input);
+  await setLenguageRedux(input);
 };

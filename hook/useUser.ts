@@ -12,6 +12,7 @@ import {
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getServerLanguages } from "../src/helpers/getLanguajes";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -43,7 +44,6 @@ export const useUser = () => {
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
-    console.log("user🥴🥴", user, username);
     if (storedToken) {
       dispatch(setToken(storedToken));
       OBRest.loginWithToken(storedToken);
@@ -66,6 +66,7 @@ export const useUser = () => {
 
     dispatch(setLanguage(loadLanguage()));
     dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
+    // console.log("getServerLanguages()", await getServerLanguages());
   };
 
   // Savings
@@ -92,12 +93,17 @@ export const useUser = () => {
     return selectedLanguage;
   };
 
+  const setCurrentLanguage = (value: string) => {
+    dispatch(setLanguage(value));
+  };
+
   return {
     login,
     reloadUserData,
     saveEnviromentsUrl,
     saveToken,
     loadEnviromentsUrl,
-    loadLanguage
+    loadLanguage,
+    setCurrentLanguage
   };
 };

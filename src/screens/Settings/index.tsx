@@ -30,6 +30,7 @@ import {
 } from "../../../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../../hook/useUser";
+import { changeLanguage } from "../../helpers/getLanguajes";
 
 const Settings = (props) => {
   //Images
@@ -56,7 +57,11 @@ const Settings = (props) => {
   const languageRedux = useAppSelector(selectSelectedLanguage);
   const dataRedux = useAppSelector(selectData);
 
-  const { loadEnviromentsUrl, saveEnviromentsUrl } = useUser();
+  const {
+    loadEnviromentsUrl,
+    saveEnviromentsUrl,
+    setCurrentLanguage
+  } = useUser();
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -97,9 +102,8 @@ const Settings = (props) => {
     setHasErrorLogo(true);
   };
 
-  const handleLanguage = (label: string, value: string) => {
-    const { changeLanguage } = mainAppContext;
-    changeLanguage(value);
+  const handleLanguage = async (label: string, value: string) => {
+    await changeLanguage(value, setCurrentLanguage);
     setDisplayLanguage(label);
   };
 
