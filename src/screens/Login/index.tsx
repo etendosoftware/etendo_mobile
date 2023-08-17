@@ -22,8 +22,8 @@ import getImageProfile from "../../helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useUser } from "../../../hook/useUser";
-import { useAppDispatch, useAppSelector } from "../../../redux";
-import { logout, selectData, selectToken } from "../../../redux/user";
+import { useAppSelector } from "../../../redux";
+import { selectData, selectToken } from "../../../redux/user";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -53,8 +53,7 @@ const LoginFunctional = (props) => {
   const data = useAppSelector(selectData);
   const token = useAppSelector(selectToken);
 
-  const { login } = useUser();
-  const dispatch2 = useAppDispatch();
+  const { login, logout } = useUser();
 
   let listViewRef: KeyboardAwareScrollView;
 
@@ -86,7 +85,7 @@ const LoginFunctional = (props) => {
         setError(true);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
         if (error.message.includes("Invalid user name or password")) {
-          dispatch2(logout);
+          await logout();
           Toast.show({
             type: "error",
             position: "bottom",

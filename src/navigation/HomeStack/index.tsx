@@ -10,7 +10,6 @@ import Home from "../../screens/Home";
 import Settings from "../../screens/Settings";
 import Profile from "../../screens/Profile";
 import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
-import User from "../../stores/User";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 // import { logout } from "../../stores";
@@ -24,8 +23,8 @@ import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
-import { logout, selectData } from "../../../redux/user";
-import { useAppDispatch, useAppSelector } from "../../../redux";
+import { selectData } from "../../../redux/user";
+import { useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
 
 type RootStackParamList = {
@@ -43,7 +42,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const context = useContext(ContainerContext);
   const data = useAppSelector(selectData);
-  const dispatch = useAppDispatch();
+  const { logout } = useUser();
   const { setToken } = useContext(MainAppContext);
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
@@ -112,7 +111,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     route: keyof RootStackParamList | "logout"
   ) => {
     if (route === "logout") {
-      dispatch(logout);
+      await logout();
       setToken(false);
       return;
     }

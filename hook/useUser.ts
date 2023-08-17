@@ -101,6 +101,15 @@ export const useUser = () => {
     dispatch(setLanguage(value));
   };
 
+  const logout = async () => {
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user");
+    await AsyncStorage.removeItem("data");
+    dispatch(setToken(null));
+    dispatch(setUser(null));
+    dispatch(setData(null));
+  };
+
   return {
     login,
     reloadUserData,
@@ -109,6 +118,7 @@ export const useUser = () => {
     loadEnviromentsUrl,
     loadLanguage,
     setCurrentLanguage,
-    atAppInit
+    atAppInit,
+    logout
   };
 };
