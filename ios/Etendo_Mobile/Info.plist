@@ -26,6 +26,8 @@
 	<string>bEm30QfySeImEkOlq8Wo_DNlMUAiKMbKOXct2</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.business</string>
+  <key>NSCameraUsageDescription</key>
+  <string>$(PRODUCT_NAME) needs access to your Camera.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
