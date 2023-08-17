@@ -33,6 +33,19 @@ const App: React.FC<Props> = () => {
   const data = useAppSelector(selectData);
   const loadingScreen = useAppSelector(selectLoadingScreen);
 
+interface Props {}
+type RootStackParamList = {
+  HomeStack: any;
+  LoginStack: any;
+  LoadingScreen: any;
+};
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const App: React.FC<Props> = () => {
+  const { setToken, token } = useContext(MainAppContext);
+  const { dispatch, state } = useContext(ContainerContext);
+
+  // get camera permission
   useEffect(() => {
     const fetchInitialData = async () => {
       if (isTablet()) {
