@@ -38,8 +38,6 @@ export const useUser = () => {
     try {
       await OBRest.loginWithUserAndPassword(user, pass);
     } catch (ignored) {}
-
-    // TODO: this should be changed to a boolean isLoggedIn
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");

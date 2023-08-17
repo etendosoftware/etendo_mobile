@@ -10,7 +10,6 @@ import {
   resetLocalUrl
 } from "../../ob-api/ob";
 import { version } from "../../../package.json";
-import MainAppContext from "../../contexts/MainAppContext";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
@@ -20,7 +19,6 @@ import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAppSelector } from "../../../redux";
 import {
   selectData,
@@ -29,17 +27,14 @@ import {
   selectToken,
   selectUser
 } from "../../../redux/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../../hook/useUser";
-import { changeLanguage, getLanguages } from "../../helpers/getLanguajes";
+import { changeLanguage } from "../../helpers/getLanguajes";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
-  //Context
-  const mainAppContext = useContext(MainAppContext);
   //States
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);

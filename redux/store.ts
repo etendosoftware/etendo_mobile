@@ -9,10 +9,12 @@ import {
 } from "redux-persist";
 
 import userReducer from "./user";
+import windowReducer from "./window";
 
 const rootReducer = combineReducers({
-  user: userReducer
-  // here we will add reducers !
+  user: userReducer,
+  window: windowReducer
+  // here we will add more reducers !
 });
 
 const store = configureStore({
