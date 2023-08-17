@@ -6,6 +6,7 @@ export const YELLOW_30 = "#FEF7D0";
 export const NEUTRAL_10 = "#121212";
 export const NEUTRAL_30 = "#E0E0E0";
 export const NEUTRAL_60 = "#666666";
+export const NEUTRAL_80 = "#424242";
 export const NEUTRAL_100 = "#F5F5F5";
 
 export const GREY_BLUE = "#808695";
@@ -29,6 +30,7 @@ export const GREY_40 = "#999999";
 export const GREY_10 = "#E5E5E5";
 export const GREY_5 = "#F2F2F2";
 
+export const TERCIARY_50 = "#EDF1FF";
 export const TERCIARY_100 = "#E2E7FF";
 
 export const QUATERNARY_100 = "#7182FF";

@@ -1,74 +1,56 @@
 //Imports
-import React, { useEffect, useState, useContext } from "react";
-import PickerList from "../../components/List";
-import {
-  View,
-  ScrollView,
-  Image,
-  TextInput,
-  TouchableOpacity
-} from "react-native";
+import React, { useEffect, useState, useContext, useCallback } from "react";
+import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
 import locale from "../../i18n/locale";
+import { withTheme, Dialog, Portal } from "react-native-paper";
 import {
-  List,
-  withTheme,
-  Button,
-  Dialog,
-  Portal,
-  Text,
-  Divider
-} from "react-native-paper";
-import { setUrl as setUrlOB, getUrl, formatUrl } from "../../ob-api/ob";
+  setUrl as setUrlOB,
+  getUrl,
+  formatUrl,
+  resetLocalUrl
+} from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import { User } from "../../stores";
 import MainAppContext from "../../contexts/MainAppContext";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { defaultTheme } from "../../themes";
-import FormContext from "../../contexts/FormContext";
-import { IField } from "../../components/Field";
-import { Picker } from "@react-native-picker/picker";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
 import { ContainerContext } from "../../contexts/ContainerContext";
 import { SET_URL } from "../../contexts/actionsTypes";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { PRIMARY_100 } from "../../styles/colors";
+import Input from "etendo-ui-library/dist-native/components/input/Input";
+import { ISelectPicker } from "../../interfaces";
+import { UrlItem } from "../../components/UrlItem";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const defaultLogoUri = "../../../assets/logo.png";
+  const notFoundLogo = require("../../../assets/unlink.png");
+  const defaultLogo = require("../../../assets/your-company.png");
   //Context
   const mainAppContext = useContext(MainAppContext);
-  const { getRecordContext } = useContext(FormContext);
   //States
   const [url, setUrl] = useState<string>(null);
   const [modalUrl, setModalUrl] = useState<string>(null);
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
-  const [logo, setLogo] = useState<string>(null);
-  const [defaultLogo, setDefaultLogo] = useState<string>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(null);
-  const [showAddUrl, setShowAddUrl] = useState<boolean>(false);
-  const [currentAddUrl, setCurrentAddUrl] = useState<string>("");
+  const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
+
+  const [displayLanguage, setDisplayLanguage] = useState<string>(null);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
-
+  const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const { dispatch } = useContext(ContainerContext);
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpUrl = await getUrl();
-      const tmpLogo = loadServerLogo(url); // Note: loadServerLogo should be a function in scope.
-      const tmpDefaultLogo = require(defaultLogoUri);
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       let storedEnviromentsUrl = await User.loadEnviromentsUrl();
-
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
-      setDefaultLogo(tmpDefaultLogo);
-      setLogo(tmpLogo);
       setUrl(tmpUrl);
       setAppVersion(tmpAppVersion);
       setModalUrl(url ? url.toString() : tmpUrl);
@@ -76,15 +58,8 @@ const Settings = (props) => {
     fetchUrlAndLogo();
   }, []);
 
-  const loadServerLogo = (url) => {
-    let logo;
-    if (url) {
-      const logoUrl = url + logoUri;
-      logo = { uri: logoUrl };
-    } else {
-      logo = require(defaultLogoUri);
-    }
-    return logo;
+  const loadServerLogo = (url: string) => {
+    return url ? { uri: url + logoUri } : defaultLogo;
   };
 
   const showChangeURLModalFn = () => {
@@ -98,88 +73,36 @@ const Settings = (props) => {
     setModalUrl(url);
   };
 
-  const changeURL = async () => {
-    if (!modalUrl || modalUrl == "") return;
-    await User.saveEnviromentsUrl(storedDataUrl);
-    const tmpUrl = await setUrlOB(modalUrl);
-    const tmpLogo = loadServerLogo(url);
-
-    setShowChangeURLModal(false);
-    setModalUrl(url);
-    setUrl(tmpUrl);
-    setLogo(tmpLogo);
-    dispatch({ type: SET_URL, url: tmpUrl });
-  };
-
   const onLogoError = () => {
-    Toast.show({
-      type: "info",
-      position: "bottom",
-      text1: locale.t("LoginScreen:LogoNotFound"),
-      visibilityTime: 3000,
-      autoHide: true
-    });
+    setHasErrorLogo(true);
   };
 
-  const onChangeModalPicker = async (field: IField, value: string) => {
-    setSelectedLanguage(value ? value : field.toString());
+  const handleLanguage = (label: string, value: string) => {
     const { changeLanguage } = mainAppContext;
-    changeLanguage(value ? value : field.toString());
-  };
-
-  const onChangePicker = (item: string) => {
-    setSelectedLanguage(item);
+    changeLanguage(value);
+    setDisplayLanguage(label);
   };
 
   const addUrl = async () => {
-    let currentValue = currentAddUrl;
-    if (!currentValue || currentValue == "") return;
+    let currentValue = valueEnvUrl;
+    if (
+      !currentValue ||
+      currentValue == "" ||
+      storedDataUrl.some((url) => url == formatUrl(valueEnvUrl))
+    )
+      return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
-    setCurrentAddUrl([]);
+    await User.saveEnviromentsUrl([...storedDataUrl, currentValue]);
+    setValueEnvUrl("");
+    setIsUpdating(false);
   };
 
-  const renderUrlItems = (items) => {
-    if (items.length !== 0) {
-      return items.map((item) => {
-        return (
-          <List.Item
-            key={item}
-            titleNumberOfLines={1}
-            titleEllipsizeMode="tail"
-            title={item}
-            right={() => (
-              <TouchableOpacity
-                onPress={() => {
-                  let filteredItems = storedDataUrl.filter(
-                    (url) => url !== item
-                  );
-                  setStoredDataUrl(filteredItems);
-                }}
-              >
-                <Icon
-                  name="delete-empty"
-                  size={25}
-                  color={defaultTheme.colors.primary}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        );
-      });
-    } else {
-      return (
-        <Text allowFontScaling={false} style={styles.NotItemList}>
-          {locale.t("ShowLoadUrl:NotItemList")}
-        </Text>
-      );
-    }
-  };
-
-  const renderPickerItems = (items) => {
-    return items?.map((item) => (
-      <Picker.Item key={item} label={item} value={item} />
-    ));
+  const deleteUrl = async (item: string) => {
+    const storedEnviromentsUrl = await User.loadEnviromentsUrl();
+    let filteredItems = storedEnviromentsUrl.filter((url) => url !== item);
+    await User.saveEnviromentsUrl(filteredItems);
+    setStoredDataUrl(filteredItems);
   };
 
   const getAppVersion = async () => {
@@ -200,7 +123,36 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
+  const LogoImage = () => {
+    return (
+      <Image
+        style={styles.logoImageStyles}
+        source={hasErrorLogo ? notFoundLogo : loadServerLogo(url)}
+        onError={onLogoError}
+        height={100}
+        width={200}
+      />
+    );
+  };
+
+  useEffect(() => {
+    setHasErrorLogo(false);
+  }, [url]);
+
+  const setEnv = useCallback((value: any) => {
+    setValueEnvUrl(value);
+  }, []);
+
   const { languages } = mainAppContext;
+
+  const handleOptionSelected = async ({ value }: ISelectPicker) => {
+    await User.saveEnviromentsUrl(storedDataUrl);
+    const tmpUrl = await setUrlOB(value);
+    setShowChangeURLModal(false);
+    setModalUrl(value);
+    setUrl(tmpUrl);
+    dispatch({ type: SET_URL, url: tmpUrl });
+  };
   return (
     <>
       <View style={styles.container}>
@@ -221,17 +173,30 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <View style={styles.urlTextsContainer}>
-              <Text style={styles.urlTitle}>{locale.t("Settings:URL")}</Text>
-              <Text style={styles.urlDescription}>{url}</Text>
-            </View>
+            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:InputPlaceholder")}
+              value={url}
+              onOptionSelected={(option: ISelectPicker) => {
+                handleOptionSelected(option);
+                setHasErrorLogo(false);
+              }}
+              disabled={!!User?.token}
+              displayKey="value"
+              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+              height={43}
+              centerText={true}
+              showOptionsAmount={6}
+              placeholderSearch={locale.t("Settings:Search")}
+            />
             {!User?.token ? (
               <ButtonUI
-                height={45}
-                width={118}
+                height={40}
+                width={130}
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
-                text={locale.t("Settings:ChangeURL")}
+                text={locale.t("Settings:NewLink")}
               />
             ) : (
               <Text
@@ -242,146 +207,130 @@ const Settings = (props) => {
               </Text>
             )}
           </View>
+
           <View style={styles.logoContainerStyles}>
             <Text style={styles.logoTitleStyles}>
               {locale.t("Settings:Logo")}
             </Text>
-            <Image
-              style={styles.logoImageStyles}
-              defaultSource={defaultLogo}
-              source={logo}
-              onError={onLogoError}
-            />
+            <View style={styles.findingImageContainer}>
+              <LogoImage />
+              {hasErrorLogo && (
+                <View>
+                  <Text style={styles.logoTitleStyles}>
+                    {locale.t("Settings:ImageNotFound")}
+                  </Text>
+                  <Text style={styles.logoSubTitle}>
+                    {locale.t("Settings:ImageNotFoundServer")}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
+
           <View style={styles.languageContainerStyles}>
-            <FormContext.Provider
-              value={{
-                getRecordContext,
-                onChangePicker: onChangeModalPicker,
-                onChangeSelection: onChangePicker
+            <Text style={styles.languageText}>
+              {locale.t("Settings:Language")}
+            </Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:Language")}
+              value={displayLanguage}
+              onOptionSelected={(option: any) => {
+                const { label, value } = option;
+                handleLanguage(label, value);
               }}
-            >
-              <Text style={styles.languageText}>
-                {locale.t("Settings:Language")}
-              </Text>
-              <PickerList
-                pickerItems={languages}
-                field={{
-                  id: "Language Field",
-                  name: "",
-                  readOnly: false,
-                  column: { updatable: true },
-                  columnName: null
-                }}
-                value={
-                  selectedLanguage
-                    ? selectedLanguage
-                    : mainAppContext.selectedLanguage
-                }
-              />
-            </FormContext.Provider>
+              displayKey="label"
+              dataPicker={languages}
+              height={43}
+              centerText={true}
+            />
           </View>
 
           <Portal>
-            <Dialog visible={showChangeURLModal} onDismiss={hideChangeURLModal}>
-              <Dialog.Title>
-                {locale.t("Settings:ChangeServerURL")}
-              </Dialog.Title>
-              <Dialog.Content>
-                <Picker
-                  selectedValue={modalUrl}
-                  onValueChange={(newModalUrl) => setModalUrl(newModalUrl)}
-                  itemStyle={{ paddingLeft: 15, marginLeft: 15 }}
+            <Dialog
+              visible={showChangeURLModal}
+              onDismiss={hideChangeURLModal}
+              style={styles.dialogNewUrl}
+            >
+              <View style={styles.containerClose}>
+                <TouchableOpacity
+                  activeOpacity={0.2}
+                  style={styles.buttonClose}
+                  onPress={() => setShowChangeURLModal(false)}
                 >
-                  <Picker.Item
-                    key="disabled"
-                    label={locale.t("ShowLoadUrl:PickerLabel")}
-                    value=""
-                  />
-                  {renderPickerItems(storedDataUrl)}
-                </Picker>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.accent,
-                    marginRight: 10
-                  }}
-                  onPress={() => setShowAddUrl(true)}
-                >
-                  {" "}
-                  {locale.t("ShowLoadUrl:Add")}
-                </Button>
-                <Button
-                  style={{
-                    width: 110,
-                    backgroundColor: defaultTheme.colors.backgroundSecondary
-                  }}
-                  onPress={changeURL}
-                >
-                  {locale.t("Save")}
-                </Button>
-              </Dialog.Actions>
-            </Dialog>
+                  <Image source={require("../../../assets/icons/close.png")} />
+                </TouchableOpacity>
+              </View>
 
-            <Dialog visible={showAddUrl}>
-              <Dialog.Title>{locale.t("ShowLoadUrl:AddUrl")}</Dialog.Title>
+              <Dialog.Title
+                style={{
+                  fontSize: 25,
+                  fontWeight: "700",
+                  color: PRIMARY_100
+                }}
+              >
+                {locale.t("Settings:AddNewURL")}
+              </Dialog.Title>
+
               <Dialog.Content>
-                <Text>{locale.t("ShowLoadUrl:EnvironmentUrl")}</Text>
-                <TextInput
-                  allowFontScaling={false}
-                  placeholder={locale.t("ShowLoadUrl:Example")}
-                  onChangeText={(newCurrentAddUrl) =>
-                    setCurrentAddUrl(newCurrentAddUrl)
-                  }
-                  defaultValue={currentAddUrl}
-                  textContentType="URL"
-                />
-                <Dialog.Actions style={{ marginTop: 20 }}>
-                  <Button
-                    style={{
-                      backgroundColor: defaultTheme.colors.accent,
-                      width: 120,
-                      marginRight: 10
+                <View>
+                  <Text style={styles.urlEnvList}>
+                    {locale.t("Settings:EnviromentURL")}
+                  </Text>
+                  <Input
+                    typeField="textInput"
+                    placeholder={locale.t("Settings:InputPlaceholder")}
+                    value={valueEnvUrl}
+                    onChangeText={setEnv}
+                    height={50}
+                  />
+                  <View style={{ height: 12 }} />
+                  <ButtonUI
+                    width="100%"
+                    height={50}
+                    typeStyle="secondary"
+                    onPress={() => {
+                      addUrl();
                     }}
-                    onPress={() => addUrl()}
-                  >
-                    {locale.t("ShowLoadUrl:Add")}
-                  </Button>
-                  <Button
-                    style={{
-                      width: 120,
-                      backgroundColor: defaultTheme.colors.backgroundSecondary
-                    }}
-                    onPress={() => setShowAddUrl(false)}
-                  >
-                    {locale.t("ShowLoadUrl:Close")}
-                  </Button>
-                </Dialog.Actions>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: 10
-                  }}
-                >
-                  <Divider style={{ padding: 1, flexGrow: 1 }} />
-                  <Text
-                    allowFontScaling={false}
-                    style={{
-                      textAlignVertical: "center",
-                      margin: 10,
-                      fontSize: 15
-                    }}
-                  >
+                    text={
+                      isUpdating
+                        ? locale.t("Settings:UpdateLink")
+                        : locale.t("Settings:NewLink")
+                    }
+                  />
+                </View>
+                <View style={{ marginTop: 32 }}>
+                  <Text style={styles.urlEnvList}>
                     {locale.t("ShowLoadUrl:ItemList")}
                   </Text>
-                  <Divider style={{ padding: 1, flexGrow: 1 }} />
-                </View>
-                <View style={{ height: 200 }}>
-                  <ScrollView>{renderUrlItems(storedDataUrl)}</ScrollView>
+                  <ScrollView
+                    style={styles.listUrlItems}
+                    persistentScrollbar={true}
+                    showsVerticalScrollIndicator={true}
+                  >
+                    {storedDataUrl.length ? (
+                      storedDataUrl.map((item, index) => {
+                        return (
+                          <UrlItem
+                            key={index}
+                            item={item}
+                            setValueEnvUrl={setValueEnvUrl}
+                            deleteUrl={deleteUrl}
+                            setIsUpdating={setIsUpdating}
+                            modalUrl={modalUrl}
+                            url={url}
+                            setUrl={setUrl}
+                            resetLocalUrl={resetLocalUrl}
+                            handleOptionSelected={handleOptionSelected}
+                          />
+                        );
+                      })
+                    ) : (
+                      <Text style={styles.notUrlEnvList}>
+                        {locale.t("Settings:NotEnviromentURL")}
+                      </Text>
+                    )}
+                  </ScrollView>
                 </View>
               </Dialog.Content>
             </Dialog>

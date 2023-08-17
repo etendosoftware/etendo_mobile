@@ -4,7 +4,10 @@ import {
   NEUTRAL_100,
   NEUTRAL_30,
   NEUTRAL_60,
+  NEUTRAL_80,
   PRIMARY_100,
+  TERCIARY_100,
+  TERCIARY_50,
   WHITE
 } from "../../styles/colors";
 import { defaultTheme } from "../../themes";
@@ -101,8 +104,10 @@ const styles = StyleSheet.create({
     width: "33%",
     flexDirection: "column",
     borderRightWidth: 1,
+    paddingRight: 20,
     borderColor: NEUTRAL_30,
-    justifyContent: "space-between"
+    justifyContent: "flex-start",
+    marginRight: 20
   },
   urlTitle: {
     fontFamily: "Inter-SemiBold",
@@ -116,6 +121,32 @@ const styles = StyleSheet.create({
     color: NEUTRAL_10,
     lineHeight: 22,
     fontSize: 14
+  },
+  dialogNewUrl: {
+    backgroundColor: TERCIARY_50,
+    width: "85%",
+    height: 525,
+    alignSelf: "center",
+    justifySelf: "center",
+    borderRadius: 24,
+    paddingBottom: 130,
+    paddingHorizontal: 10
+  },
+  dialogNewUrlTablet: {
+    backgroundColor: TERCIARY_50,
+    width: 580,
+    height: 570,
+    alignSelf: "center",
+    justifySelf: "center",
+    borderRadius: 24,
+    paddingHorizontal: 30,
+    paddingTop: 35,
+    paddingBottom:120
+  },
+  listUrlItems: {
+    height: "48%",
+    marginTop: 8,
+    paddingRight: 12
   },
   CahngeUrlTextConfirmation: {
     color: NEUTRAL_60,
@@ -147,11 +178,28 @@ const styles = StyleSheet.create({
     color: NEUTRAL_60,
     paddingBottom: 8
   },
+  logoSubTitle: {
+    fontSize: 12,
+    marginBottom: 16,
+    fontWeight: "normal",
+    color: NEUTRAL_60
+  },
+  logoSubTitleTablet: {
+    fontSize: 12,
+    fontWeight: "normal",
+    color: NEUTRAL_60,
+    paddingBottom: 8
+  },
+  findingImageContainer: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
   logoImage: {
-    resizeMode: "contain"
+    resizeMode: "contain",
+    marginBottom: 16
   },
   logoImageTablet: {
-    width: "80%"
+    width: "100%"
   },
   languageContainer: {
     marginVertical: 24,
@@ -160,7 +208,7 @@ const styles = StyleSheet.create({
   },
   languageContainerTablet: {
     width: "33%",
-    paddingHorizontal: 20
+    paddingLeft: 20
   },
   languageText: {
     fontFamily: "Inter-SemiBold",
@@ -168,6 +216,110 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     paddingBottom: 8
+  },
+  urlEnvList: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    fontSize: 18,
+    lineHeight: 18,
+    paddingBottom: 8,
+    fontWeight: "600"
+  },
+  notUrlEnvList: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_80,
+    fontSize: 18,
+    lineHeight: 18,
+    fontWeight: "500"
+  },
+  urlListed: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_80,
+    fontSize: 14,
+    lineHeight: 14,
+    fontWeight: "500"
+  },
+  urlItem: {
+    width: "100%",
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    borderWidth: 1,
+    border: PRIMARY_100,
+    backgroundColor: NEUTRAL_100,
+    marginVertical: 4
+  },
+  urlItemBackgroundFilled: {
+    backgroundColor: TERCIARY_100
+  },
+  urlItemContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginLeft: 16,
+    height: "100%"
+  },
+  urlItemContainerElem: {
+    marginHorizontal: 8,
+    width: "65%"
+  },
+  urlItemContainerElemTablet: {
+    marginHorizontal: 8,
+    width: "75%"
+  },
+  actionIcon: {
+    marginHorizontal: 20,
+
+    width: 25,
+    height: 25
+  },
+  iconImage: {
+    width: 20,
+    height: 20
+  },
+  containerClose: {
+    backgroundColor: PRIMARY_100,
+    height: 50,
+    width: 50,
+    right: "-93%",
+    top: -20,
+    zIndex: 900,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: -40
+  },
+  containerCloseTablet: {
+    backgroundColor: PRIMARY_100,
+    height: 50,
+    width: 50,
+    right: -515,
+    top: -50,
+    zIndex: 900,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: -40
+  },
+  buttonClose: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%"
+  },
+  dialogTitle: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    lineHeight: 18,
+    paddingBottom: 8,
+    fontWeight: "800"
+  },
+  dialogContent: {
+    justifyContent: "center",
+    alignItems: "center"
   },
   copyrightTablet: {
     flex: 1,

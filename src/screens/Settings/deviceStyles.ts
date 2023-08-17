@@ -14,16 +14,26 @@ export const deviceStyles = {
   languageContainerStyles: isDeviceTablet
     ? styleSheet.languageContainerTablet
     : styleSheet.languageContainer,
-  logoImageStyles: isDeviceTablet
-    ? styleSheet.logoImageTablet
-    : styleSheet.logoImage,
+  logoImageStyles: styleSheet.logoImage,
   logoTitleStyles: isDeviceTablet
     ? styleSheet.logoTitleTablet
     : styleSheet.logoTitle,
+  logoSubTitle: isDeviceTablet
+    ? styleSheet.logoSubTitleTablet
+    : styleSheet.logoSubTitle,
   backContainer: isDeviceTablet
     ? styleSheet.backContainerTablet
     : styleSheet.backContainerMobile,
-
+  dialogNewUrl: isDeviceTablet
+    ? styleSheet.dialogNewUrlTablet
+    : styleSheet.dialogNewUrl,
+  containerClose: isDeviceTablet
+    ? styleSheet.containerCloseTablet
+    : styleSheet.containerClose,
+  urlItemContainerElem: isDeviceTablet
+    ? styleSheet.urlItemContainerElemTablet
+    : styleSheet.urlItemContainerElem,
+  listUrlItems: styleSheet.listUrlItems,
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
   settingsTitle: styleSheet.settingsTitle,
@@ -32,6 +42,18 @@ export const deviceStyles = {
   urlDescription: styleSheet.urlDescription,
   CahngeUrlTextConfirmation: styleSheet.CahngeUrlTextConfirmation,
   languageText: styleSheet.languageText,
+  urlEnvList: styleSheet.urlEnvList,
+  dialogTitle: styleSheet.dialogTitle,
+  dialogContent: styleSheet.dialogContent,
+  notUrlEnvList: styleSheet.notUrlEnvList,
+  urlListed: styleSheet.urlListed,
+  urlItem: styleSheet.urlItem,
+  urlItemBackgroundFilled: styleSheet.urlItemBackgroundFilled,
+  urlItemContainer: styleSheet.urlItemContainer,
+  actionIcon: styleSheet.actionIcon,
+  iconImage: styleSheet.iconImage,
+  buttonClose: styleSheet.buttonClose,
+  findingImageContainer: styleSheet.findingImageContainer,
   copyrightTablet: styleSheet.copyrightTablet,
   backIcon: styleSheet.backIcon
 };
