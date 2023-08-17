@@ -8,11 +8,13 @@ import {
   setData,
   setLanguage,
   setStoredEnviromentsUrl,
+  setStoredLanguages,
   setToken,
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getServerLanguages } from "../src/helpers/getLanguajes";
+import { getLanguages } from "../src/helpers/getLanguajes";
+import { Language } from "../src/interfaces";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +22,17 @@ export const useUser = () => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
+
+  // Important: this method is called in App.tsx,
+  // all that is setted here is available in the whole app (redux)
+  const atAppInit = async (user: string, languages: Language[]) => {
+    const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
+    const currentEnviromentsUrl = await loadEnviromentsUrl();
+    await reloadUserData(user);
+    dispatch(setLanguage(currentLanguage));
+    dispatch(setStoredLanguages(languages));
+    dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
+  };
 
   const login = async (user, pass) => {
     try {
@@ -30,15 +43,9 @@ export const useUser = () => {
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
-    const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
-    const currentEnviromentsUrl = await loadEnviromentsUrl();
+    await reloadUserData(null, user);
     dispatch(setToken(token));
     dispatch(setUser(user));
-    dispatch(setLanguage(currentLanguage));
-    dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
-
-    await reloadUserData(null, user);
-
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user", user);
   };
@@ -63,10 +70,6 @@ export const useUser = () => {
         client: context?.getClientId()
       })
     );
-
-    dispatch(setLanguage(loadLanguage()));
-    dispatch(setStoredEnviromentsUrl(loadEnviromentsUrl()));
-    // console.log("getServerLanguages()", await getServerLanguages());
   };
 
   // Savings
@@ -84,6 +87,7 @@ export const useUser = () => {
     await AsyncStorage.setItem("token", tokenP ? tokenP : token);
     await AsyncStorage.setItem("user", userP ? userP : user);
   };
+
   // Loaders
   const loadEnviromentsUrl = () => {
     return storedEnviromentsUrl;
@@ -104,6 +108,7 @@ export const useUser = () => {
     saveToken,
     loadEnviromentsUrl,
     loadLanguage,
-    setCurrentLanguage
+    setCurrentLanguage,
+    atAppInit
   };
 };

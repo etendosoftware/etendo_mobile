@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { IData } from "../../src/interfaces";
+import { IData, Language } from "../../src/interfaces";
 
 export interface UserState {
   data: IData;
   token: string;
   user: string;
   selectedLanguage: string;
-  storedEnviromentsUrl: any;
+  storedLanguages: Language[];
+  storedEnviromentsUrl: string[];
 }
 
 const initialState: UserState = {
@@ -16,7 +17,8 @@ const initialState: UserState = {
   token: undefined,
   user: undefined, // username
   selectedLanguage: undefined,
-  storedEnviromentsUrl: undefined
+  storedLanguages: [],
+  storedEnviromentsUrl: []
 };
 
 export const userSlice = createSlice({
@@ -36,6 +38,9 @@ export const userSlice = createSlice({
     setLanguage: (state, action: PayloadAction<any>) => {
       state.selectedLanguage = action.payload;
     },
+    setStoredLanguages: (state, action: PayloadAction<any>) => {
+      state.storedLanguages = action.payload;
+    },
     setStoredEnviromentsUrl: (state, action: PayloadAction<any>) => {
       state.storedEnviromentsUrl = action.payload;
     }
@@ -44,10 +49,11 @@ export const userSlice = createSlice({
 
 export const {
   logout,
-  setLanguage,
   setData,
   setToken,
   setUser,
+  setLanguage,
+  setStoredLanguages,
   setStoredEnviromentsUrl
 } = userSlice.actions;
 
@@ -58,5 +64,7 @@ export const selectSelectedLanguage = (state: RootState) =>
   state.user.selectedLanguage;
 export const selectStoredEnviromentsUrl = (state: RootState) =>
   state.user.storedEnviromentsUrl;
+export const selectStoredLanguages = (state: RootState) =>
+  state.user.storedLanguages;
 
 export default userSlice.reducer;

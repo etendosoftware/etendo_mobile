@@ -25,12 +25,13 @@ import { useAppSelector } from "../../../redux";
 import {
   selectData,
   selectSelectedLanguage,
+  selectStoredLanguages,
   selectToken,
   selectUser
 } from "../../../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../../hook/useUser";
-import { changeLanguage } from "../../helpers/getLanguajes";
+import { changeLanguage, getLanguages } from "../../helpers/getLanguajes";
 
 const Settings = (props) => {
   //Images
@@ -56,6 +57,7 @@ const Settings = (props) => {
   const userRedux = useAppSelector(selectUser);
   const languageRedux = useAppSelector(selectSelectedLanguage);
   const dataRedux = useAppSelector(selectData);
+  const languagesListRedux = useAppSelector(selectStoredLanguages);
 
   const {
     loadEnviromentsUrl,
@@ -77,10 +79,11 @@ const Settings = (props) => {
       setModalUrl(url ? url.toString() : tmpUrl);
     };
     fetchUrlAndLogo();
-    console.log("tokenRedux", token);
-    console.log("userRedux", userRedux);
-    console.log("languageRedux", languageRedux);
-    console.log("dataRedux", dataRedux);
+    console.log("🟩 tokenRedux", token);
+    console.log("🟩 userRedux", userRedux);
+    console.log("🟩 languageRedux", languageRedux);
+    console.log("🟩 dataRedux", dataRedux);
+    console.log("🟩 languagesListRedux", languagesListRedux);
   }, []);
 
   const loadServerLogo = (url: string) => {
@@ -166,8 +169,6 @@ const Settings = (props) => {
   const setEnv = useCallback((value: any) => {
     setValueEnvUrl(value);
   }, []);
-
-  const { languages } = mainAppContext;
 
   const handleOptionSelected = async ({ value }) => {
     await saveEnviromentsUrl(storedDataUrl);
@@ -263,7 +264,7 @@ const Settings = (props) => {
                 handleLanguage(label, value);
               }}
               displayKey="label"
-              dataPicker={languages}
+              dataPicker={languagesListRedux}
               height={43}
               centerText={true}
             />

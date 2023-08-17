@@ -19,6 +19,7 @@ import Toast from "react-native-toast-message";
 import { useAppSelector } from "./redux";
 import { selectData, selectToken, selectUser } from "./redux/user";
 import { useUser } from "./hook/useUser";
+import { getLanguages } from "./src/helpers/getLanguajes";
 
 interface Props {}
 type RootStackParamList = {
@@ -31,7 +32,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App: React.FC<Props> = () => {
   const { setToken, token } = useContext(MainAppContext);
   const { dispatch, state } = useContext(ContainerContext);
-  const { reloadUserData } = useUser();
+  const { atAppInit } = useUser();
 
   const tokenRedux = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
@@ -49,7 +50,6 @@ const App: React.FC<Props> = () => {
       dispatch({ type: SET_URL, url: url });
 
       if (userRedux) {
-        await reloadUserData(userRedux);
         await getImageProfile(dispatch, data);
         setToken(true);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
@@ -58,6 +58,7 @@ const App: React.FC<Props> = () => {
         setToken(false);
         dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
       }
+      await atAppInit(userRedux, await getLanguages());
     };
 
     fetchInitialData();
