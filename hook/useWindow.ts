@@ -10,9 +10,12 @@ export const useWindow = () => {
 
   const loadWindows = async () => {
     try {
-      const response = await ADWindow.getWindows(selectedLanguage);
-      dispatch(setWindows(response.windows));
-      dispatch(setMenuItems(getMenuItems()));
+      const response = await ADWindow.getWindows("en_US");
+      dispatch(setWindows(response?.windows));
+      const items = getMenuItems(response?.windows);
+      console.log("🔷items", items);
+      console.log("🔷response", response);
+      dispatch(setMenuItems(items));
     } catch (error) {
       throw new Error(error);
     }
@@ -29,7 +32,7 @@ export const useWindow = () => {
     });
   };
 
-  const getMenuItems = () => {
+  const getMenuItems = (windows: any) => {
     return windows?.map((win) => {
       return {
         key: win.id,

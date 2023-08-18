@@ -26,6 +26,8 @@ import { drawerData } from "./dataDrawer";
 import { selectData } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
+import { selectMenuItems } from "../../../redux/window";
+import { useWindow } from "../../../hook/useWindow";
 
 type RootStackParamList = {
   Home: any;
@@ -42,7 +44,9 @@ const Stack = createStackNavigator<RootStackParamList>();
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const context = useContext(ContainerContext);
   const data = useAppSelector(selectData);
+  const menuItems = useAppSelector(selectMenuItems);
   const { logout } = useUser();
+  const { loadWindows } = useWindow();
   const { setToken } = useContext(MainAppContext);
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
@@ -78,6 +82,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
+    console.log("entra", menuItems);
+  }, []);
+
+  useEffect(() => {
     if (!isTablet()) {
       if (homeStackNavBarMobileValidator(routeName)) {
         setShowNavbar(true);
@@ -100,12 +108,8 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   }, [routeName]);
 
   useEffect(() => {
-    const itemsDrawer = context?.state?.menuItems.map((item: any) => {
-      return { route: item.name, label: item.name };
-    });
-
-    setDataDrawer(itemsDrawer);
-  }, [context?.state?.menuItems]);
+    console.log("🥶itemsDrawer", menuItems);
+  }, [menuItems]);
 
   const onOptionPressHandle = async (
     route: keyof RootStackParamList | "logout"
@@ -172,20 +176,26 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name={"Settings"} component={Settings} />
           <Stack.Screen name={"Profile"} component={Profile} />
-          {context?.state?.menuItems.map((menuItem: any, index: number) => {
-            const params = { ...menuItem };
-            if (params.component) {
-              delete params.component;
-            }
-            return (
-              <Stack.Screen
-                key={"drawerItems" + index}
-                name={menuItem.name}
-                component={menuItem.component ? menuItem.component : MainScreen}
-                initialParams={params}
-              />
-            );
-          })}
+          {menuItems.length ? (
+            menuItems?.map((menuItem: any, index: number) => {
+              const params = { ...menuItem };
+              if (params.component) {
+                delete params.component;
+              }
+              return (
+                <Stack.Screen
+                  key={"drawerItems" + index}
+                  name={menuItem.name}
+                  component={
+                    menuItem.component ? menuItem.component : MainScreen
+                  }
+                  initialParams={params}
+                />
+              );
+            })
+          ) : (
+            <></>
+          )}
         </Stack.Navigator>
         <View>
           <DrawerLateral

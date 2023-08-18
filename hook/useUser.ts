@@ -15,9 +15,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLanguages } from "../src/helpers/getLanguajes";
 import { Language } from "../src/interfaces";
+import { ADWindow } from "../src/ob-api/objects";
+import { setWindows } from "../redux/window";
+import { useWindow } from "./useWindow";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
+  const { loadWindows } = useWindow();
   const selectedLanguage = useAppSelector(selectSelectedLanguage);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const token = useAppSelector(selectToken);
@@ -46,6 +50,7 @@ export const useUser = () => {
     dispatch(setUser(user));
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user", user);
+    await loadWindows();
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
