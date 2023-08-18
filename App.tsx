@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { User } from "./src/stores";
 import { LoadingScreen } from "./src/components";
 import { Provider as PaperProvider } from "react-native-paper";
@@ -17,6 +17,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import getImageProfile from "./src/helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
 import Toast from "react-native-toast-message";
+import { Camera } from "react-native-vision-camera";
 
 interface Props {}
 type RootStackParamList = {
@@ -29,6 +30,15 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App: React.FC<Props> = () => {
   const { setToken, token } = useContext(MainAppContext);
   const { dispatch, state } = useContext(ContainerContext);
+
+  // get camera permission
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
+  const checkPermission = async () => {
+    await Camera.requestCameraPermission();
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
