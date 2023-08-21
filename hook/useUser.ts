@@ -34,7 +34,6 @@ export const useUser = () => {
     dispatch(setLanguage(currentLanguage));
     dispatch(setStoredLanguages(languages));
     dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
-    await loadWindows();
   };
 
   const login = async (user, pass) => {
@@ -49,7 +48,7 @@ export const useUser = () => {
     dispatch(setUser(user));
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user", user);
-    await loadWindows();
+    await loadWindows(token);
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {

@@ -17,9 +17,9 @@ export const useWindow = () => {
   const windows = useAppSelector(selectWindows);
   const token = useAppSelector(selectToken);
 
-  const loadWindows = async () => {
+  const loadWindows = async (token) => {
     try {
-      await loadDynamic();
+      await loadDynamic(token);
       dispatch(setLoadingScreen(false));
     } catch (error) {
       throw new Error(error);
@@ -49,7 +49,7 @@ export const useWindow = () => {
     });
   };
 
-  const loadDynamic = async () => {
+  const loadDynamic = async (token) => {
     dispatch(setLoading(true));
     let storedEnviromentsUrl = await getUrl();
     const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;

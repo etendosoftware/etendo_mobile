@@ -54,7 +54,6 @@ const LoginFunctional = (props) => {
   const token = useAppSelector(selectToken);
 
   const { login, logout } = useUser();
-  const { loadDynamic } = useWindow();
 
   let listViewRef: KeyboardAwareScrollView;
 
@@ -80,7 +79,6 @@ const LoginFunctional = (props) => {
           setToken(true);
           await getImageProfile(dispatch, data);
           dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
-          await loadDynamic();
         }
       } catch (error) {
         setError(true);
@@ -179,7 +177,6 @@ const LoginFunctional = (props) => {
     await setUrlOB(demoUrl);
     await login(AdminUsername, AdminPassword);
     await getImageProfile(dispatch, data);
-    await loadDynamic();
     dispatch({ type: SET_URL, url: demoUrl });
     setToken(true);
     dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
