@@ -13,11 +13,9 @@ import {
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getLanguages } from "../src/helpers/getLanguajes";
 import { Language } from "../src/interfaces";
-import { ADWindow } from "../src/ob-api/objects";
-import { setWindows } from "../redux/window";
 import { useWindow } from "./useWindow";
+import { getUrl, setUrl } from "../src/ob-api/ob";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +34,7 @@ export const useUser = () => {
     dispatch(setLanguage(currentLanguage));
     dispatch(setStoredLanguages(languages));
     dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
+    await loadWindows();
   };
 
   const login = async (user, pass) => {
@@ -113,6 +112,12 @@ export const useUser = () => {
     dispatch(setData(null));
   };
 
+  const setUrlGlobal = async () => {
+    await setUrl();
+    const url = await getUrl();
+    saveEnviromentsUrl(url);
+  };
+
   return {
     login,
     reloadUserData,
@@ -122,6 +127,7 @@ export const useUser = () => {
     loadLanguage,
     setCurrentLanguage,
     atAppInit,
-    logout
+    logout,
+    setUrlGlobal
   };
 };

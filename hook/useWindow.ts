@@ -1,21 +1,26 @@
 import { useAppDispatch, useAppSelector } from "../redux";
-import { selectSelectedLanguage } from "../redux/user";
-import { ADWindow } from "../src/ob-api/objects";
-import { selectWindows, setMenuItems, setWindows } from "../redux/window";
+import { selectToken } from "../redux/user";
+import {
+  selectWindows,
+  setAppData,
+  setLoading,
+  setLoadingScreen,
+  setLogged,
+  setMenuItems,
+  setWindows
+} from "../redux/window";
+import { getUrl } from "../src/ob-api/ob";
+const method = "GET";
 
 export const useWindow = () => {
   const dispatch = useAppDispatch();
-  const selectedLanguage = useAppSelector(selectSelectedLanguage);
   const windows = useAppSelector(selectWindows);
+  const token = useAppSelector(selectToken);
 
   const loadWindows = async () => {
     try {
-      const response = await ADWindow.getWindows("en_US");
-      dispatch(setWindows(response?.windows));
-      const items = getMenuItems(response?.windows);
-      console.log("🔷items", items);
-      console.log("🔷response", response);
-      dispatch(setMenuItems(items));
+      await loadDynamic();
+      dispatch(setLoadingScreen(false));
     } catch (error) {
       throw new Error(error);
     }
@@ -44,5 +49,33 @@ export const useWindow = () => {
     });
   };
 
-  return { loadWindows, unloadWindows, getWindow, getMenuItems };
+  const loadDynamic = async () => {
+    dispatch(setLoading(true));
+    let storedEnviromentsUrl = await getUrl();
+    const callUrlApps = `${storedEnviromentsUrl}/sws/com.etendoerp.dynamic.app.userApp`;
+    await fetch(callUrlApps, {
+      method: method,
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      mode: "no-cors"
+    })
+      .then(async (callApps) => {
+        const data = await callApps.json();
+        dispatch(setAppData(data.data));
+        dispatch(setLogged(true));
+      })
+      .catch((err) => {
+        dispatch(setAppData([]));
+        dispatch(setLogged(true));
+        console.log(err);
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+        dispatch(setLoadingScreen(false));
+      });
+  };
+
+  return { loadWindows, unloadWindows, getWindow, getMenuItems, loadDynamic };
 };

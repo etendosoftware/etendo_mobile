@@ -27,7 +27,5 @@ export default class ADWindow {
       [],
       null
     );
-    console.log("🔴 res", res);
-    return res;
   }
 }

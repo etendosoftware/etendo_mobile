@@ -17,13 +17,13 @@ import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 import { References } from "../../constants/References";
 import MainAppContext from "../../contexts/MainAppContext";
-import loadDynamic from "../../helpers/loadDynamic";
 import getImageProfile from "../../helpers/getImageProfile";
 import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useUser } from "../../../hook/useUser";
 import { useAppSelector } from "../../../redux";
 import { selectData, selectToken } from "../../../redux/user";
+import { useWindow } from "../../../hook/useWindow";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -54,6 +54,7 @@ const LoginFunctional = (props) => {
   const token = useAppSelector(selectToken);
 
   const { login, logout } = useUser();
+  const { loadDynamic } = useWindow();
 
   let listViewRef: KeyboardAwareScrollView;
 
@@ -79,7 +80,7 @@ const LoginFunctional = (props) => {
           setToken(true);
           await getImageProfile(dispatch, data);
           dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
-          await loadDynamic(dispatch, token);
+          await loadDynamic();
         }
       } catch (error) {
         setError(true);
@@ -178,7 +179,7 @@ const LoginFunctional = (props) => {
     await setUrlOB(demoUrl);
     await login(AdminUsername, AdminPassword);
     await getImageProfile(dispatch, data);
-    await loadDynamic(dispatch, token);
+    await loadDynamic();
     dispatch({ type: SET_URL, url: demoUrl });
     setToken(true);
     dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
