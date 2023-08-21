@@ -7,7 +7,6 @@ import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
 import { isTablet } from "../../../hook/isTablet";
-import { User } from "../../stores";
 import { deviceStyles } from "./deviceStyles";
 import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
@@ -15,6 +14,7 @@ import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
 import { selectData } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
+import { selectMenuItems } from "../../../redux/window";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -29,6 +29,7 @@ interface Props {
 const HomeFunction = (props: Props) => {
   const data = useAppSelector(selectData);
   const context = useContext(ContainerContext);
+  const menuItems = useAppSelector(selectMenuItems);
 
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
@@ -55,7 +56,7 @@ const HomeFunction = (props: Props) => {
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             <>
-              {context?.state?.menuItems.map((menuItem: any, index: number) => {
+              {menuItems.map((menuItem: any, index: number) => {
                 return (
                   <View key={"CardDropdown" + index} style={{ marginLeft: 35 }}>
                     <CardDropdown

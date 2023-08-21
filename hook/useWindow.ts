@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../redux";
-import { selectToken } from "../redux/user";
+import { selectSelectedUrl, selectToken } from "../redux/user";
 import {
   selectWindows,
   setAppData,
@@ -16,6 +16,7 @@ export const useWindow = () => {
   const dispatch = useAppDispatch();
   const windows = useAppSelector(selectWindows);
   const token = useAppSelector(selectToken);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
 
   const loadWindows = async (token) => {
     try {
@@ -63,7 +64,7 @@ export const useWindow = () => {
     })
       .then(async (callApps) => {
         const data = await callApps.json();
-        dispatch(setAppData(data.data));
+        await listWindows(data.data);
         dispatch(setLogged(true));
       })
       .catch((err) => {
@@ -75,6 +76,23 @@ export const useWindow = () => {
         dispatch(setLoading(false));
         dispatch(setLoadingScreen(false));
       });
+  };
+
+  const DEV_URL = "http://10.0.2.2:3000";
+
+  const listWindows = async (appsData: any[]) => {
+    const mi = appsData.map((app: any) => {
+      const path = app.path.split("/");
+      const __id = app.etdappAppVersionIsDev ? path[path.length - 1] : app.path;
+      return {
+        name: app.etdappAppName,
+        __id: __id,
+        url: app.etdappAppVersionIsDev ? `${DEV_URL}` : selectedUrl,
+        isDev: app.etdappAppVersionIsDev
+      };
+    });
+    dispatch(setAppData([...appsData]));
+    dispatch(setMenuItems([...mi]));
   };
 
   return { loadWindows, unloadWindows, getWindow, getMenuItems, loadDynamic };

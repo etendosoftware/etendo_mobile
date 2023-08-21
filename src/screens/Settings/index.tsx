@@ -19,13 +19,16 @@ import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
-import { useAppSelector } from "../../../redux";
+import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectData,
   selectSelectedLanguage,
+  selectSelectedUrl,
+  selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
-  selectUser
+  selectUser,
+  setSelectedUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
@@ -48,11 +51,14 @@ const Settings = (props) => {
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
 
   const { dispatch } = useContext(ContainerContext);
+  const dispatchRedux = useAppDispatch();
   const token = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
   const languageRedux = useAppSelector(selectSelectedLanguage);
   const dataRedux = useAppSelector(selectData);
   const languagesListRedux = useAppSelector(selectStoredLanguages);
+  const storedEnviromentsUrlRedux = useAppSelector(selectStoredEnviromentsUrl);
+  const selectedUrlRedux = useAppSelector(selectSelectedUrl);
 
   const {
     loadEnviromentsUrl,
@@ -79,6 +85,9 @@ const Settings = (props) => {
     console.log("🟩 languageRedux", languageRedux);
     console.log("🟩 dataRedux", dataRedux);
     console.log("🟩 languagesListRedux", languagesListRedux);
+    console.log("🟩 languagesListRedux", languagesListRedux);
+    console.log("🟩 storedEnviromentsUrlRedux", storedEnviromentsUrlRedux);
+    console.log("🟩 selectedUrlRedux", selectedUrlRedux);
   }, []);
 
   const loadServerLogo = (url: string) => {
@@ -166,6 +175,7 @@ const Settings = (props) => {
   }, []);
 
   const handleOptionSelected = async ({ value }) => {
+    dispatchRedux(setSelectedUrl(value));
     await saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(value);
     setShowChangeURLModal(false);
