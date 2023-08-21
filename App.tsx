@@ -16,6 +16,7 @@ import { selectData, selectToken, selectUser } from "./redux/user";
 import { useUser } from "./hook/useUser";
 import { getLanguages } from "./src/helpers/getLanguajes";
 import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
+import { Camera } from "react-native-vision-camera";
 
 interface Props {}
 type RootStackParamList = {
@@ -51,7 +52,12 @@ const App: React.FC<Props> = () => {
     };
 
     fetchInitialData();
+    checkPermission();
   }, []);
+
+  const checkPermission = async () => {
+    await Camera.requestCameraPermission();
+  };
 
   return (
     <PaperProvider theme={defaultTheme}>
