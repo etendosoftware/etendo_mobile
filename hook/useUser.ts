@@ -30,10 +30,18 @@ export const useUser = () => {
   // all that is setted here is available in the whole app (redux)
   const atAppInit = async (languages: ILanguage[]) => {
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
+    const storedEnviromentsUrl = await AsyncStorage.getItem(
+      "storedEnviromentsUrl"
+    );
     const currentEnviromentsUrl = await loadEnviromentsUrl();
     dispatch(setLanguage(currentLanguage));
     dispatch(setStoredLanguages(languages));
-    dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
+    dispatch(
+      setStoredEnviromentsUrl([
+        ...currentEnviromentsUrl,
+        JSON.parse(storedEnviromentsUrl)
+      ])
+    );
   };
 
   const login = async (user, pass) => {
