@@ -33,7 +33,6 @@ const App: React.FC<Props> = () => {
   const data = useAppSelector(selectData);
   const loadingScreen = useAppSelector(selectLoadingScreen);
 
-  // get camera permission
   useEffect(() => {
     const fetchInitialData = async () => {
       if (isTablet()) {
