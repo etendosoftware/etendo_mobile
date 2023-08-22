@@ -5,6 +5,7 @@ import { IData, Language } from "../../src/interfaces";
 
 export interface UserState {
   data: IData;
+  bindaryImg: any;
   token: string;
   user: string;
   selectedLanguage: string;
@@ -15,6 +16,7 @@ export interface UserState {
 
 const initialState: UserState = {
   data: undefined,
+  bindaryImg: undefined,
   token: undefined,
   user: undefined, // username
   selectedLanguage: undefined,
@@ -29,6 +31,9 @@ export const userSlice = createSlice({
   reducers: {
     setData: (state, action: PayloadAction<any>) => {
       state.data = action.payload;
+    },
+    setBindaryImg: (state, action: PayloadAction<any>) => {
+      state.bindaryImg = action.payload;
     },
     setToken: (state, action: PayloadAction<any>) => {
       state.token = action.payload;
@@ -53,6 +58,7 @@ export const userSlice = createSlice({
 
 export const {
   setData,
+  setBindaryImg,
   setToken,
   setUser,
   setLanguage,
@@ -62,6 +68,7 @@ export const {
 } = userSlice.actions;
 
 export const selectData = (state: RootState) => state.user.data;
+export const selectBindaryImg = (state: RootState) => state.user.bindaryImg;
 export const selectUser = (state: RootState) => state.user.user;
 export const selectToken = (state: RootState) => state.user.token;
 export const selectSelectedUrl = (state: RootState) => state.user.selectedUrl;

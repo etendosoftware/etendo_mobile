@@ -9,7 +9,6 @@ import { isTablet } from "./hook/isTablet";
 import HomeStack from "./src/navigation/HomeStack";
 import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import getImageProfile from "./src/helpers/getImageProfile";
 import Toast from "react-native-toast-message";
 import { useAppDispatch, useAppSelector } from "./redux";
 import { selectData, selectToken, selectUser } from "./redux/user";
@@ -27,7 +26,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const { atAppInit, setUrlGlobal } = useUser();
+  const { atAppInit, setUrlGlobal, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const tokenRedux = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
@@ -44,8 +43,7 @@ const App: React.FC<Props> = () => {
       await setUrlGlobal();
       console.log("userRedux", userRedux);
       if (userRedux) {
-        // TODO: get image profile in useUser
-        // await getImageProfile(dispatch, data);
+        await getImageProfile(data);
       }
       dispatch(setLoadingScreen(false));
       await atAppInit(userRedux, await getLanguages());
