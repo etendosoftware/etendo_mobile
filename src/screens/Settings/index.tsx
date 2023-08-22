@@ -1,5 +1,5 @@
 //Imports
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog, Portal } from "react-native-paper";
@@ -14,8 +14,6 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
-import { ContainerContext } from "../../contexts/ContainerContext";
-import { SET_URL } from "../../contexts/actionsTypes";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
@@ -50,7 +48,6 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
 
-  const { dispatch } = useContext(ContainerContext);
   const dispatchRedux = useAppDispatch();
   const token = useAppSelector(selectToken);
   const userRedux = useAppSelector(selectUser);
@@ -181,7 +178,6 @@ const Settings = (props) => {
     setShowChangeURLModal(false);
     setModalUrl(value);
     setUrl(tmpUrl);
-    dispatch({ type: SET_URL, url: tmpUrl });
   };
 
   return (

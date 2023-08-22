@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
-import { ContainerContext } from "../../contexts/ContainerContext";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
@@ -14,7 +13,7 @@ import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
 import { selectData } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
-import { selectMenuItems } from "../../../redux/window";
+import { selectLoading, selectMenuItems } from "../../../redux/window";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -28,7 +27,7 @@ interface Props {
 }
 const HomeFunction = (props: Props) => {
   const data = useAppSelector(selectData);
-  const context = useContext(ContainerContext);
+  const loading = useAppSelector(selectLoading);
   const menuItems = useAppSelector(selectMenuItems);
 
   const getBackground = () => {
@@ -68,7 +67,7 @@ const HomeFunction = (props: Props) => {
                 );
               })}
             </>
-            {context?.state?.loading && <LoadingHome />}
+            {loading && <LoadingHome />}
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>

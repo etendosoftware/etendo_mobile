@@ -1,5 +1,5 @@
 // Importing required modules and libraries
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { View, Image, TouchableOpacity, Dimensions } from "react-native";
 import locale from "../../i18n/locale";
 import { Dialog, Text, Button } from "react-native-paper";
@@ -11,19 +11,15 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { isTablet, isTabletSmall } from "../../helpers/IsTablet";
-import { ContainerContext } from "../../contexts/ContainerContext";
 import styleSheet from "./styles";
 import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 import { References } from "../../constants/References";
-import MainAppContext from "../../contexts/MainAppContext";
-import getImageProfile from "../../helpers/getImageProfile";
-import { SET_LOADING_SCREEN, SET_URL } from "../../contexts/actionsTypes";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useUser } from "../../../hook/useUser";
-import { useAppSelector } from "../../../redux";
-import { selectData, selectToken } from "../../../redux/user";
-import { useWindow } from "../../../hook/useWindow";
+import { useAppSelector, useAppDispatch } from "../../../redux";
+import { selectData, setSelectedUrl } from "../../../redux/user";
+import { setLoadingScreen } from "../../../redux/window";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -44,16 +40,12 @@ const LoginFunctional = (props) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
-  const [storedDataUrl, setStoredDataUrl] = useState<string[]>([]);
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const { setToken } = useContext(MainAppContext);
-  const { dispatch } = useContext(ContainerContext);
 
   const data = useAppSelector(selectData);
-  const token = useAppSelector(selectToken);
-
-  const { login, logout } = useUser();
+  const dispatch = useAppDispatch();
+  const { login, logout, getImageProfile } = useUser();
 
   let listViewRef: KeyboardAwareScrollView;
 
@@ -67,7 +59,7 @@ const LoginFunctional = (props) => {
 
   const submitLogin = async () => {
     try {
-      dispatch({ type: SET_LOADING_SCREEN, loadingScreen: true });
+      dispatch(setLoadingScreen(true));
       try {
         setError(false);
         if (validateCredentials()) {
@@ -76,13 +68,12 @@ const LoginFunctional = (props) => {
         await login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
-          setToken(true);
-          await getImageProfile(dispatch, data);
-          dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
+          await getImageProfile(data);
+          dispatch(setLoadingScreen(false));
         }
       } catch (error) {
         setError(true);
-        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
+        dispatch(setLoadingScreen(false));
         if (error.message.includes("Invalid user name or password")) {
           await logout();
           Toast.show({
@@ -122,7 +113,7 @@ const LoginFunctional = (props) => {
     } catch (error) {
       Snackbar.showError(error.message);
       console.error(error);
-      dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
+      dispatch(setLoadingScreen(false));
     }
   };
 
@@ -172,14 +163,13 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-    dispatch({ type: SET_LOADING_SCREEN, loadingScreen: true });
+    dispatch(setLoadingScreen(true));
 
     await setUrlOB(demoUrl);
     await login(AdminUsername, AdminPassword);
-    await getImageProfile(dispatch, data);
-    dispatch({ type: SET_URL, url: demoUrl });
-    setToken(true);
-    dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
+    await getImageProfile(data);
+    dispatch(setSelectedUrl(demoUrl));
+    dispatch(setLoadingScreen(false));
   };
 
   const welcomeText = (): string => {
@@ -356,8 +346,6 @@ const LoginFunctional = (props) => {
 };
 
 const Login = (props) => {
-  const { dispatch } = useContext(ContainerContext);
-
-  return <LoginFunctional {...props} dispatch={dispatch} />;
+  return <LoginFunctional {...props} />;
 };
 export default Login;

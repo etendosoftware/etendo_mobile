@@ -1,5 +1,5 @@
 //Imports
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
 import locale from "../../i18n/locale";
 import {
@@ -13,8 +13,7 @@ import { isTablet } from "../../../hook/isTablet";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
-import { ContainerContext } from "../../contexts/ContainerContext";
-import { selectData } from "../../../redux/user";
+import { selectBindaryImg, selectData } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
 
 const Profile = (props) => {
@@ -23,8 +22,8 @@ const Profile = (props) => {
   const [org, setOrg] = useState<string>("");
   const [client, setClient] = useState<string>("");
   const [warehouse, setWarehouse] = useState<string>("");
-  const { state } = useContext(ContainerContext);
   const data = useAppSelector(selectData);
+  const bindaryImg = useAppSelector(selectBindaryImg);
 
   useEffect(() => {
     if (data) {
@@ -73,7 +72,7 @@ const Profile = (props) => {
         <View style={styles.getUserDataStyle}>
           <View style={styles.getProfilePictureStyle}>
             <ShowProfilePicture
-              bindaryData={state?.bindaryImg}
+              bindaryData={bindaryImg}
               username={data.username}
             />
           </View>

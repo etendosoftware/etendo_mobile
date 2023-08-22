@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import MainAppContext from "../../contexts/MainAppContext";
-import { ContainerContext } from "../../contexts/ContainerContext";
+import React, { useEffect, useState } from "react";
 import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
 import { SafeAreaView, StatusBar, View, Image } from "react-native";
 import { PRIMARY_100 } from "../../styles/colors";
@@ -12,7 +10,6 @@ import Profile from "../../screens/Profile";
 import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-// import { logout } from "../../stores";
 import pkg from "../../../package.json";
 import {
   StackNavigationProp,
@@ -23,11 +20,10 @@ import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
-import { selectData } from "../../../redux/user";
+import { selectBindaryImg, selectData } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
 import { selectMenuItems } from "../../../redux/window";
-import { useWindow } from "../../../hook/useWindow";
 
 type RootStackParamList = {
   Home: any;
@@ -42,12 +38,10 @@ type HomeStackProps = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
-  const context = useContext(ContainerContext);
   const data = useAppSelector(selectData);
   const menuItems = useAppSelector(selectMenuItems);
+  const bindaryImg = useAppSelector(selectBindaryImg);
   const { logout } = useUser();
-  const { loadWindows } = useWindow();
-  const { setToken } = useContext(MainAppContext);
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
 
@@ -121,7 +115,6 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   ) => {
     if (route === "logout") {
       await logout();
-      setToken(false);
       return;
     }
     navigation.navigate(route);
@@ -136,10 +129,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Navbar
             title={locale.t("WelcomeToEtendoHome")}
             profileImage={
-              context?.state?.bindaryImg && (
+              bindaryImg && (
                 <Image
                   source={{
-                    uri: `data:image/jpeg;base64,${context?.state?.bindaryImg}`
+                    uri: `data:image/jpeg;base64,${bindaryImg}`
                   }}
                 />
               )

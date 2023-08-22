@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import MainAppContext from "./src/contexts/MainAppContext";
 import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
 import App from "./App";
-import { ContainerProvider } from "./src/contexts/ContainerContext";
 import { Provider } from "react-redux";
 import store from "./redux";
 import { Language } from "./src/interfaces";
@@ -37,11 +35,7 @@ const AppContainer = () => {
 
   return (
     <Provider store={store}>
-      <MainAppContext.Provider value={value}>
-        <ContainerProvider>
-          <App />
-        </ContainerProvider>
-      </MainAppContext.Provider>
+      <App />
     </Provider>
   );
 };
