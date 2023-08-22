@@ -41,7 +41,6 @@ const App: React.FC<Props> = () => {
         Orientation.lockToPortrait();
       }
       await setUrlGlobal();
-      console.log("userRedux", userRedux);
       if (userRedux) {
         await getImageProfile(data);
       }

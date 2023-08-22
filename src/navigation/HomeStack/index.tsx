@@ -76,10 +76,6 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    console.log("entra", menuItems);
-  }, []);
-
-  useEffect(() => {
     if (!isTablet()) {
       if (homeStackNavBarMobileValidator(routeName)) {
         setShowNavbar(true);
@@ -102,7 +98,6 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   }, [routeName]);
 
   useEffect(() => {
-    console.log("🥶itemsDrawer", menuItems);
     const itemsDrawer = menuItems.map((item: any) => {
       return { route: item.name, label: item.name };
     });

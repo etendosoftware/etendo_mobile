@@ -50,12 +50,7 @@ const Settings = (props) => {
 
   const dispatchRedux = useAppDispatch();
   const token = useAppSelector(selectToken);
-  const userRedux = useAppSelector(selectUser);
-  const languageRedux = useAppSelector(selectSelectedLanguage);
-  const dataRedux = useAppSelector(selectData);
   const languagesListRedux = useAppSelector(selectStoredLanguages);
-  const storedEnviromentsUrlRedux = useAppSelector(selectStoredEnviromentsUrl);
-  const selectedUrlRedux = useAppSelector(selectSelectedUrl);
 
   const {
     loadEnviromentsUrl,
@@ -77,14 +72,6 @@ const Settings = (props) => {
       setModalUrl(url ? url.toString() : tmpUrl);
     };
     fetchUrlAndLogo();
-    console.log("🟩 tokenRedux", token);
-    console.log("🟩 userRedux", userRedux);
-    console.log("🟩 languageRedux", languageRedux);
-    console.log("🟩 dataRedux", dataRedux);
-    console.log("🟩 languagesListRedux", languagesListRedux);
-    console.log("🟩 languagesListRedux", languagesListRedux);
-    console.log("🟩 storedEnviromentsUrlRedux", storedEnviromentsUrlRedux);
-    console.log("🟩 selectedUrlRedux", selectedUrlRedux);
   }, []);
 
   const loadServerLogo = (url: string) => {
