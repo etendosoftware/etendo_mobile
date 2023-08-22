@@ -109,6 +109,11 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
 
   useEffect(() => {
     console.log("🥶itemsDrawer", menuItems);
+    const itemsDrawer = menuItems.map((item: any) => {
+      return { route: item.name, label: item.name };
+    });
+
+    setDataDrawer(itemsDrawer);
   }, [menuItems]);
 
   const onOptionPressHandle = async (
