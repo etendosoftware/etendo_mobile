@@ -14,7 +14,7 @@ import {
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { IData, Language } from "../src/interfaces";
+import { IData, ILanguage } from "../src/interfaces";
 import { useWindow } from "./useWindow";
 import { getUrl, setUrl } from "../src/ob-api/ob";
 
@@ -28,7 +28,7 @@ export const useUser = () => {
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
-  const atAppInit = async (user: string, languages: Language[]) => {
+  const atAppInit = async (user: string, languages: ILanguage[]) => {
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const currentEnviromentsUrl = await loadEnviromentsUrl();
     await reloadUserData(user);

@@ -15,7 +15,7 @@ export interface IRoute {
   }[];
 }
 
-export interface Language {
+export interface ILanguage {
   id: string;
   value: string;
   label: string;

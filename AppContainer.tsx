@@ -4,11 +4,11 @@ import { isTablet } from "./hook/isTablet";
 import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux";
-import { Language } from "./src/interfaces";
+import { ILanguage } from "./src/interfaces";
 import { languageDefault } from "./src/helpers/getLanguajes";
 
 const AppContainer = () => {
-  const [languages, setLanguages] = useState<Language[]>([]);
+  const [languages, setLanguages] = useState<ILanguage[]>([]);
   const [token, setToken] = useState<boolean>(false);
 
   useEffect(() => {

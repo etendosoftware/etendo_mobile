@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { IData, Language } from "../../src/interfaces";
+import { IData, ILanguage } from "../../src/interfaces";
 
 export interface UserState {
   data: IData;
@@ -10,7 +10,7 @@ export interface UserState {
   user: string;
   selectedLanguage: string;
   selectedUrl: string;
-  storedLanguages: Language[];
+  storedLanguages: ILanguage[];
   storedEnviromentsUrl: string[];
 }
 

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supportedLocales } from "../i18n/config";
-import { Language } from "../interfaces";
+import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
 
@@ -28,8 +28,8 @@ export const getLanguages = async () => {
     : inBoth(appLanguages, etendoLocalLanguages);
 };
 
-const inBoth = (list1: Language[], list2: Language[]): Language[] => {
-  let result: Language[] = [];
+const inBoth = (list1: ILanguage[], list2: ILanguage[]): ILanguage[] => {
+  let result: ILanguage[] = [];
 
   for (const element of list1) {
     let item1 = element,
