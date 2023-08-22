@@ -28,8 +28,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App: React.FC<Props> = () => {
   const { atAppInit, setUrlGlobal, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
-  const tokenRedux = useAppSelector(selectToken);
-  const userRedux = useAppSelector(selectUser);
+  const token = useAppSelector(selectToken);
+  const user = useAppSelector(selectUser);
   const data = useAppSelector(selectData);
   const loadingScreen = useAppSelector(selectLoadingScreen);
 
@@ -41,7 +41,7 @@ const App: React.FC<Props> = () => {
         Orientation.lockToPortrait();
       }
       await setUrlGlobal();
-      if (userRedux) {
+      if (user) {
         await getImageProfile(data);
       }
       dispatch(setLoadingScreen(false));
@@ -66,7 +66,7 @@ const App: React.FC<Props> = () => {
               component={LoadingScreen}
               options={{ headerShown: false }}
             />
-          ) : tokenRedux ? (
+          ) : token ? (
             <Stack.Screen
               name="HomeStack"
               component={HomeStack}

@@ -1,5 +1,5 @@
 import React, { useMemo, Suspense } from "react";
-import { fetchComponent } from "./utils";
+import { fetchComponent } from "../utils";
 import LoadingScreen from "./LoadingScreen";
 
 const DynamicComponent = ({ __id, url, children, ...props }: any) => {

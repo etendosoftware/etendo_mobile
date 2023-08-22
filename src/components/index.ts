@@ -1,6 +1,4 @@
 import LoadingScreen from "./LoadingScreen";
-import Field from "./Field";
-import Modal from "./Modal";
-import List from "./List";
+import LoadingHome from "./LoadingHome";
 import ShowProfilePicture from "./ShowProfilePicture";
-export { LoadingScreen, Modal, List, Field, ShowProfilePicture };
+export { LoadingScreen, LoadingHome, ShowProfilePicture };

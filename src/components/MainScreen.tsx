@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import {
   NavigationContainer,
   useNavigationContainerRef
@@ -54,17 +54,3 @@ const HomePage = ({ route, navigation }: any) => {
 };
 
 export default HomePage;
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "blue",
-    borderColor: "blue",
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 10
-  },
-  buttonText: {
-    color: "white"
-  },
-  backgroundStyle: {}
-});

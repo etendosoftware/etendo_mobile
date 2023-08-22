@@ -19,7 +19,7 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
-  selectSelectedLanguage,
+  selectSelectedLanguage as selectSelectedLanguageRedux,
   selectStoredLanguages,
   selectToken,
   setSelectedUrl
@@ -45,10 +45,10 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
 
-  const dispatchRedux = useAppDispatch();
+  const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
-  const languagesListRedux = useAppSelector(selectStoredLanguages);
-  const selectSelectedLanguageRedux = useAppSelector(selectSelectedLanguage);
+  const languagesList = useAppSelector(selectStoredLanguages);
+  const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
 
   const {
     loadEnviromentsUrl,
@@ -157,7 +157,7 @@ const Settings = (props) => {
   }, []);
 
   const handleOptionSelected = async ({ value }) => {
-    dispatchRedux(setSelectedUrl(value));
+    dispatch(setSelectedUrl(value));
     await saveEnviromentsUrl(storedDataUrl);
     const tmpUrl = await setUrlOB(value);
     setShowChangeURLModal(false);
@@ -247,14 +247,14 @@ const Settings = (props) => {
               value={
                 displayLanguage
                   ? displayLanguage
-                  : getLanguageName(selectSelectedLanguageRedux)
+                  : getLanguageName(selectSelectedLanguage)
               }
               onOptionSelected={(option: any) => {
                 const { label, value } = option;
                 handleLanguage(label, value);
               }}
               displayKey="label"
-              dataPicker={languagesListRedux}
+              dataPicker={languagesList}
               height={43}
               centerText={true}
             />
