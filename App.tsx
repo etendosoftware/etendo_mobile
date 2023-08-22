@@ -45,7 +45,7 @@ const App: React.FC<Props> = () => {
         await getImageProfile(data);
       }
       dispatch(setLoadingScreen(false));
-      await atAppInit(userRedux, await getLanguages());
+      await atAppInit(await getLanguages());
     };
 
     fetchInitialData();

@@ -19,17 +19,14 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
-  selectData,
   selectSelectedLanguage,
-  selectSelectedUrl,
-  selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
-  selectUser,
   setSelectedUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
+import { getLanguageName } from "../../i18n/config";
 
 const Settings = (props) => {
   //Images
@@ -51,6 +48,7 @@ const Settings = (props) => {
   const dispatchRedux = useAppDispatch();
   const token = useAppSelector(selectToken);
   const languagesListRedux = useAppSelector(selectStoredLanguages);
+  const selectSelectedLanguageRedux = useAppSelector(selectSelectedLanguage);
 
   const {
     loadEnviromentsUrl,
@@ -246,7 +244,11 @@ const Settings = (props) => {
             <Input
               typeField="picker"
               placeholder={locale.t("Settings:Language")}
-              value={displayLanguage}
+              value={
+                displayLanguage
+                  ? displayLanguage
+                  : getLanguageName(selectSelectedLanguageRedux)
+              }
               onOptionSelected={(option: any) => {
                 const { label, value } = option;
                 handleLanguage(label, value);

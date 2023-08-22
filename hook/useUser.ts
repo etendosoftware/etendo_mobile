@@ -28,10 +28,9 @@ export const useUser = () => {
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
-  const atAppInit = async (user: string, languages: ILanguage[]) => {
+  const atAppInit = async (languages: ILanguage[]) => {
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const currentEnviromentsUrl = await loadEnviromentsUrl();
-    await reloadUserData(user);
     dispatch(setLanguage(currentLanguage));
     dispatch(setStoredLanguages(languages));
     dispatch(setStoredEnviromentsUrl(currentEnviromentsUrl));
