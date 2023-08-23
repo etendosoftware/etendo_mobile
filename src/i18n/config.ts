@@ -10,7 +10,7 @@ export const supportedLocales = {
 };
 
 export const getLanguageName = (language: string) => {
-  const formattedLanguage = language ? language.replace("_", "-") : "en-US";
+  const formattedLanguage = language.replace("_", "-");
   return supportedLocales[formattedLanguage]
     ? supportedLocales[formattedLanguage].name
     : null;

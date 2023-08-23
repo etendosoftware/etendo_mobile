@@ -13,9 +13,10 @@ import Toast from "react-native-toast-message";
 import { useAppDispatch, useAppSelector } from "./redux";
 import { selectData, selectToken, selectUser } from "./redux/user";
 import { useUser } from "./hook/useUser";
-import { getLanguages } from "./src/helpers/getLanguajes";
+import { getLanguages, languageDefault } from "./src/helpers/getLanguajes";
 import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
 import { Camera } from "react-native-vision-camera";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {}
 type RootStackParamList = {
@@ -43,6 +44,7 @@ const App: React.FC<Props> = () => {
       if (user) {
         await getImageProfile(data);
       }
+      await languageDefault();
       dispatch(setLoadingScreen(false));
       await atAppInit(await getLanguages());
     };

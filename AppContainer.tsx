@@ -14,7 +14,6 @@ const AppContainer = () => {
       } else {
         Orientation.lockToPortrait();
       }
-      await languageDefault();
     };
     fetchInitialData();
   }, []);

@@ -106,10 +106,6 @@ const Settings = (props) => {
       return;
     currentValue = formatUrl(currentValue);
     setStoredDataUrl([...storedDataUrl, currentValue]);
-    console.log("🟡 [...storedDataUrl, currentValue]", [
-      ...storedDataUrl,
-      currentValue
-    ]);
     await saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
     setIsUpdating(false);
