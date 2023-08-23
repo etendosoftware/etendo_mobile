@@ -1,10 +1,10 @@
 import React from "react";
-import packages from "./packages";
+import packages from "../components/packages";
 import Toast from "react-native-toast-message";
 import locale from "../i18n/locale";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function getParsedModule(code, moduleName, packages) {
+function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
     const _this = Object.create(packages);
     function require(name) {
@@ -31,17 +31,19 @@ function getParsedModule(code, moduleName, packages) {
   }
 }
 
-export async function fetchComponent(id, url, navigation) {
+export async function fetchComponent(id: any, url: any, navigation: any) {
   const fullUrl = `${url}/${id}?timestamp=${+new Date()}`;
-  const toast =  ()=> {return Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("LoginScreen:NetworkError"),
-          visibilityTime: 7000,
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40
-        });}
+  const toast = () => {
+    return Toast.show({
+      type: "error",
+      position: "bottom",
+      text1: locale.t("LoginScreen:NetworkError"),
+      visibilityTime: 7000,
+      autoHide: true,
+      topOffset: 30,
+      bottomOffset: 40
+    });
+  };
   async function isConnected() {
     try {
       const response = await fetch(fullUrl);
@@ -55,7 +57,7 @@ export async function fetchComponent(id, url, navigation) {
     return {
       default: () => {
         navigation.navigate("Home");
-        toast()
+        toast();
       }
     };
   }
@@ -93,7 +95,7 @@ export async function fetchComponent(id, url, navigation) {
   } catch (error) {
     return () => {
       navigation.navigate("Home");
-      toast()
+      toast();
     };
   }
 }

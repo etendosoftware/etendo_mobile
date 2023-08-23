@@ -1,23 +1,22 @@
-import React, { useContext, useEffect } from "react";
-import { User } from "./src/stores";
+import React, { useEffect } from "react";
 import { LoadingScreen } from "./src/components";
 import { Provider as PaperProvider } from "react-native-paper";
-import MainAppContext from "./src/contexts/MainAppContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { defaultTheme } from "./src/themes";
 
 import Orientation from "react-native-orientation-locker";
 import { isTablet } from "./hook/isTablet";
-import { ContainerContext } from "./src/contexts/ContainerContext";
-import loadDynamic from "./src/helpers/loadDynamic";
-import { getUrl, setUrl } from "./src/ob-api/ob";
 import HomeStack from "./src/navigation/HomeStack";
 import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import getImageProfile from "./src/helpers/getImageProfile";
-import { SET_LOADING_SCREEN, SET_URL } from "./src/contexts/actionsTypes";
 import Toast from "react-native-toast-message";
+import { useAppDispatch, useAppSelector } from "./redux";
+import { selectData, selectToken, selectUser } from "./redux/user";
+import { useUser } from "./hook/useUser";
+import { getLanguages, languageDefault } from "./src/helpers/getLanguajes";
+import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
 import { Camera } from "react-native-vision-camera";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {}
 type RootStackParamList = {
@@ -28,17 +27,12 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const { setToken, token } = useContext(MainAppContext);
-  const { dispatch, state } = useContext(ContainerContext);
-
-  // get camera permission
-  useEffect(() => {
-    checkPermission();
-  }, []);
-
-  const checkPermission = async () => {
-    await Camera.requestCameraPermission();
-  };
+  const { atAppInit, getImageProfile } = useUser();
+  const dispatch = useAppDispatch();
+  const token = useAppSelector(selectToken);
+  const user = useAppSelector(selectUser);
+  const data = useAppSelector(selectData);
+  const loadingScreen = useAppSelector(selectLoadingScreen);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -47,31 +41,27 @@ const App: React.FC<Props> = () => {
       } else {
         Orientation.lockToPortrait();
       }
-      await setUrl();
-      await User.loadToken();
-      const url = await getUrl();
-      dispatch({ type: SET_URL, url: url });
-
-      if (User.token) {
-        await User.reloadUserData(User.token);
-        await getImageProfile(dispatch);
-        setToken(true);
-        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
-        await loadDynamic(dispatch);
-      } else {
-        setToken(false);
-        dispatch({ type: SET_LOADING_SCREEN, loadingScreen: false });
+      if (user) {
+        await getImageProfile(data);
       }
+      await languageDefault();
+      dispatch(setLoadingScreen(false));
+      await atAppInit(await getLanguages());
     };
 
     fetchInitialData();
+    checkPermission();
   }, []);
+
+  const checkPermission = async () => {
+    await Camera.requestCameraPermission();
+  };
 
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
         <Stack.Navigator>
-          {state.loadingScreen ? (
+          {loadingScreen ? (
             <Stack.Screen
               name="LoadingScreen"
               component={LoadingScreen}

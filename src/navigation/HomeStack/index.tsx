@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import MainAppContext from "../../contexts/MainAppContext";
-import { ContainerContext } from "../../contexts/ContainerContext";
+import React, { useEffect, useState } from "react";
 import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
 import { SafeAreaView, StatusBar, View, Image } from "react-native";
 import { PRIMARY_100 } from "../../styles/colors";
@@ -10,10 +8,8 @@ import Home from "../../screens/Home";
 import Settings from "../../screens/Settings";
 import Profile from "../../screens/Profile";
 import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
-import User from "../../stores/User";
 import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import { logout } from "../../stores";
 import pkg from "../../../package.json";
 import {
   StackNavigationProp,
@@ -24,6 +20,10 @@ import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
+import { selectBindaryImg, selectData } from "../../../redux/user";
+import { useAppSelector } from "../../../redux";
+import { useUser } from "../../../hook/useUser";
+import { selectMenuItems } from "../../../redux/window";
 
 type RootStackParamList = {
   Home: any;
@@ -38,8 +38,10 @@ type HomeStackProps = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
-  const context = useContext(ContainerContext);
-  const { setToken } = useContext(MainAppContext);
+  const data = useAppSelector(selectData);
+  const menuItems = useAppSelector(selectMenuItems);
+  const bindaryImg = useAppSelector(selectBindaryImg);
+  const { logout } = useUser();
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
 
@@ -96,19 +98,18 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   }, [routeName]);
 
   useEffect(() => {
-    const itemsDrawer = context?.state?.menuItems.map((item: any) => {
+    const itemsDrawer = menuItems.map((item: any) => {
       return { route: item.name, label: item.name };
     });
 
     setDataDrawer(itemsDrawer);
-  }, [context?.state?.menuItems]);
+  }, [menuItems]);
 
   const onOptionPressHandle = async (
     route: keyof RootStackParamList | "logout"
   ) => {
     if (route === "logout") {
       await logout();
-      setToken(false);
       return;
     }
     navigation.navigate(route);
@@ -123,10 +124,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Navbar
             title={locale.t("WelcomeToEtendoHome")}
             profileImage={
-              context?.state?.bindaryImg && (
+              bindaryImg && (
                 <Image
                   source={{
-                    uri: `data:image/jpeg;base64,${context?.state?.bindaryImg}`
+                    uri: `data:image/jpeg;base64,${bindaryImg}`
                   }}
                 />
               )
@@ -152,7 +153,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             onOptionSelectedProfile={async (route?: string) => {
               await onOptionPressHandle(route as keyof RootStackParamList);
             }}
-            name={User?.data?.username}
+            name={data?.username}
             onPressLogo={() => {
               navigation.navigate("Home");
             }}
@@ -168,20 +169,26 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name={"Settings"} component={Settings} />
           <Stack.Screen name={"Profile"} component={Profile} />
-          {context?.state?.menuItems.map((menuItem: any, index: number) => {
-            const params = { ...menuItem };
-            if (params.component) {
-              delete params.component;
-            }
-            return (
-              <Stack.Screen
-                key={"drawerItems" + index}
-                name={menuItem.name}
-                component={menuItem.component ? menuItem.component : MainScreen}
-                initialParams={params}
-              />
-            );
-          })}
+          {menuItems.length ? (
+            menuItems?.map((menuItem: any, index: number) => {
+              const params = { ...menuItem };
+              if (params.component) {
+                delete params.component;
+              }
+              return (
+                <Stack.Screen
+                  key={"drawerItems" + index}
+                  name={menuItem.name}
+                  component={
+                    menuItem.component ? menuItem.component : MainScreen
+                  }
+                  initialParams={params}
+                />
+              );
+            })
+          ) : (
+            <></>
+          )}
         </Stack.Navigator>
         <View>
           <DrawerLateral

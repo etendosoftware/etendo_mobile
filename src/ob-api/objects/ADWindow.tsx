@@ -21,7 +21,7 @@ export default class ADWindow {
    * @returns A promise for the webservice call
    */
   static async getWindows(language) {
-    return OBRest.getInstance().callWebService(
+    const res = await OBRest.getInstance().callWebService(
       `com.smf.mobile.utils.Window?language=${language}`,
       "GET",
       [],

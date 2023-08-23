@@ -141,10 +141,15 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 30,
     paddingTop: 35,
-    paddingBottom:120
+    paddingBottom: 120
+  },
+  listUrlItemsTablet: {
+    height: "48%",
+    marginTop: 8,
+    paddingRight: 12
   },
   listUrlItems: {
-    height: "48%",
+    height: "54%",
     marginTop: 8,
     paddingRight: 12
   },
