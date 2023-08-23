@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { deviceStyles as styles } from "../screens/Settings/deviceStyles";
 import { View, Image, Text, TouchableOpacity } from "react-native";
+import { isTablet } from "../helpers/IsTablet";
 
 export const UrlItem = ({
   item,
@@ -41,15 +42,6 @@ export const UrlItem = ({
     setClicked(false);
   };
 
-  const getIconSource = (clickDelete, clicked) => {
-    if (clickDelete) {
-      return require("../../assets/icons/trash.png");
-    } else if (clicked) {
-      return require("../../assets/icons/radio-focused.png");
-    }
-    return require("../../assets/icons/radio-default.png");
-  };
-
   return (
     <View style={[styles.urlItem, clicked && styles.urlItemBackgroundFilled]}>
       <TouchableOpacity
@@ -59,14 +51,22 @@ export const UrlItem = ({
           handleOptionSelected({ value: item });
         }}
       >
-        <Image
-          style={styles.iconImage}
-          source={getIconSource(clickDelete, clicked)}
-        />
+        {clickDelete && (
+          <Image
+            style={styles.iconImage}
+            source={require("../../assets/icons/trash.png")}
+          />
+        )}
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={[styles.urlListed, styles.urlItemContainerElem]}
+          style={[
+            styles.urlListed,
+            styles.urlItemContainerElem,
+            {
+              width: !clickDelete || isTablet() ? "80%" : "75%"
+            }
+          ]}
         >
           {item}
         </Text>
