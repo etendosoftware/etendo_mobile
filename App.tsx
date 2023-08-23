@@ -26,7 +26,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const { atAppInit, setUrlGlobal, getImageProfile } = useUser();
+  const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
@@ -40,7 +40,6 @@ const App: React.FC<Props> = () => {
       } else {
         Orientation.lockToPortrait();
       }
-      await setUrlGlobal();
       if (user) {
         await getImageProfile(data);
       }

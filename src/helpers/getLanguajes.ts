@@ -49,7 +49,7 @@ export const getServerLanguages = async () => {
   return Languages.getLanguages();
 };
 
-const loadLanguage = async () => {
+export const loadLanguage = async () => {
   return AsyncStorage.getItem("selectedLanguage");
 };
 

@@ -36,12 +36,13 @@ export const useUser = () => {
     const currentEnviromentsUrl = await loadEnviromentsUrl();
     dispatch(setLanguage(currentLanguage));
     dispatch(setStoredLanguages(languages));
-    dispatch(
-      setStoredEnviromentsUrl([
-        ...currentEnviromentsUrl,
-        JSON.parse(storedEnviromentsUrl)
-      ])
-    );
+    storedEnviromentsUrl &&
+      dispatch(
+        setStoredEnviromentsUrl([
+          ...currentEnviromentsUrl,
+          ...JSON.parse(storedEnviromentsUrl)
+        ])
+      );
   };
 
   const login = async (user, pass) => {
@@ -119,12 +120,6 @@ export const useUser = () => {
     dispatch(setData(null));
   };
 
-  const setUrlGlobal = async () => {
-    await setUrl();
-    const url = await getUrl();
-    saveEnviromentsUrl(url);
-  };
-
   const getImageProfile = async (data: IData) => {
     try {
       const imageIdCriteria = OBRest.getInstance().createCriteria("ADUser");
@@ -149,7 +144,6 @@ export const useUser = () => {
     setCurrentLanguage,
     atAppInit,
     logout,
-    setUrlGlobal,
     getImageProfile
   };
 };
