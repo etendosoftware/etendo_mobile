@@ -11,12 +11,14 @@ export interface WindowState {
   logged: boolean;
   menuItems: any[];
   windows: any[];
+  isDemo: boolean;
 }
 
 const initialState: WindowState = {
   appsData: [],
   bindaryImg: "",
   error: null,
+  isDemo: false,
   loading: false,
   loadingScreen: true,
   logged: false,
@@ -36,6 +38,9 @@ export const windowSlice = createSlice({
     },
     setError: (state, action: PayloadAction<any>) => {
       state.error = action.payload;
+    },
+    setIsDemo: (state, action: PayloadAction<any>) => {
+      state.isDemo = action.payload;
     },
     setLoading: (state, action: PayloadAction<any>) => {
       state.loading = action.payload;
@@ -59,6 +64,7 @@ export const {
   setAppData,
   setBindaryImg,
   setError,
+  setIsDemo,
   setLoading,
   setLoadingScreen,
   setLogged,
@@ -69,6 +75,7 @@ export const {
 export const selectAppData = (state: RootState) => state.window.appsData;
 export const selectBinaryImg = (state: RootState) => state.window.bindaryImg;
 export const selectError = (state: RootState) => state.window.error;
+export const selectIsDemo = (state: RootState) => state.window.isDemo;
 export const selectLoading = (state: RootState) => state.window.loading;
 export const selectLoadingScreen = (state: RootState) =>
   state.window.loadingScreen;
