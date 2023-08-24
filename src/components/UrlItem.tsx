@@ -64,7 +64,13 @@ export const UrlItem = ({
             styles.urlListed,
             styles.urlItemContainerElem,
             {
-              width: !clickDelete || isTablet() ? "80%" : "75%"
+              width: !clickDelete
+                ? isTablet()
+                  ? "90%"
+                  : "80%"
+                : isTablet()
+                ? "85%"
+                : "75%"
             }
           ]}
         >

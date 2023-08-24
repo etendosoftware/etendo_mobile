@@ -8,6 +8,7 @@ import {
   setBindaryImg,
   setData,
   setLanguage,
+  setSelectedUrl,
   setStoredEnviromentsUrl,
   setStoredLanguages,
   setToken,
@@ -17,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IData, ILanguage } from "../src/interfaces";
 import { useWindow } from "./useWindow";
 import { getUrl, setUrl } from "../src/ob-api/ob";
+import { selectIsDemo, setIsDemo } from "../redux/window";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -25,6 +27,7 @@ export const useUser = () => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
+  const isDemo = useAppSelector(selectIsDemo);
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
@@ -115,6 +118,12 @@ export const useUser = () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
+    await AsyncStorage.removeItem("baseUrl");
+
+    if (isDemo) {
+      dispatch(setSelectedUrl(null));
+      dispatch(setIsDemo(false));
+    }
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setData(null));

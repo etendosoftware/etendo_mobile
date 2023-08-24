@@ -19,7 +19,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useUser } from "../../../hook/useUser";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import { selectData, setSelectedUrl } from "../../../redux/user";
-import { setLoadingScreen } from "../../../redux/window";
+import { setIsDemo, setLoadingScreen } from "../../../redux/window";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -170,6 +170,7 @@ const LoginFunctional = (props) => {
     await getImageProfile(data);
     dispatch(setSelectedUrl(demoUrl));
     dispatch(setLoadingScreen(false));
+    dispatch(setIsDemo(true));
   };
 
   const welcomeText = (): string => {
