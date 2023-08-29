@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getLanguageSupported, supportedLocales } from "../i18n/config";
+import { formatLanguageUnderscore, supportedLocales } from "../i18n/config";
 import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
@@ -12,8 +12,9 @@ function getCurrentLanguage() {
       ? NativeModules.SettingsManager.settings.AppleLocale ||
         NativeModules.SettingsManager.settings.AppleLanguages[0]
       : NativeModules.I18nManager.localeIdentifier;
-  const languageFormattedSupported = getLanguageSupported(
-    deviceLanguageAbbreviation.slice(0, 2)
+  const languageFormattedSupported = formatLanguageUnderscore(
+    deviceLanguageAbbreviation.slice(0, 2),
+    true
   );
   return languageFormattedSupported;
 }
@@ -89,24 +90,6 @@ export const languageDefault = async () => {
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
   await setLenguageRedux(input);
-};
-
-export const formatLanguageUnderscore = (
-  language: string,
-  dash?: boolean
-): string => {
-  switch (language) {
-    case "en":
-    case "en-US":
-    case "en_US":
-      return dash ? "en-US" : "en_US";
-    case "es":
-    case "es-ES":
-    case "es_ES":
-      return dash ? "es-ES" : "es_ES";
-    default:
-      return "en_US";
-  }
 };
 
 export const formatObjectLanguage = (language: string): ILanguage => {

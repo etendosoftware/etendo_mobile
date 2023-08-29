@@ -9,21 +9,27 @@ export const supportedLocales = {
   }
 };
 
-const supportedLocalesAbbreviations = {
-  en: "en-US",
-  es: "es-ES"
+export const formatLanguageUnderscore = (
+  language: string,
+  dash?: boolean
+): string => {
+  switch (language) {
+    case "en":
+    case "en-US":
+    case "en_US":
+      return dash ? "en-US" : "en_US";
+    case "es":
+    case "es-ES":
+    case "es_ES":
+      return dash ? "es-ES" : "es_ES";
+    default:
+      return dash ? "en-US" : "en_US";
+  }
 };
 
 export const getLanguageName = (language: string) => {
-  const formattedLanguage = language ? language.replace("_", "-") : "en-US";
+  const formattedLanguage = formatLanguageUnderscore(language, true);
   return supportedLocales[formattedLanguage]
     ? supportedLocales[formattedLanguage].name
     : null;
-};
-
-export const getLanguageSupported = (languageDevice: string): string => {
-  if (supportedLocalesAbbreviations[languageDevice]) {
-    return supportedLocalesAbbreviations[languageDevice];
-  }
-  return supportedLocalesAbbreviations.en;
 };
