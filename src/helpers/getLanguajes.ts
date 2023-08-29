@@ -1,9 +1,24 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supportedLocales } from "../i18n/config";
+import { getLanguageSupported, supportedLocales } from "../i18n/config";
 import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
+import { NativeModules, Platform } from "react-native";
 
+// Gets the current device language
+function getCurrentLanguage() {
+  const deviceLanguageAbbreviation =
+    Platform.OS === "ios"
+      ? NativeModules.SettingsManager.settings.AppleLocale ||
+        NativeModules.SettingsManager.settings.AppleLanguages[0]
+      : NativeModules.I18nManager.localeIdentifier;
+  const languageFormattedSupported = getLanguageSupported(
+    deviceLanguageAbbreviation.slice(0, 2)
+  );
+  return languageFormattedSupported;
+}
+
+// Get the languages supported by the app: from OBrest and localSupported
 export const getLanguages = async () => {
   let etendoLanguages: any[] = [];
   try {
@@ -16,13 +31,8 @@ export const getLanguages = async () => {
 
   const localLanguages = Object.keys(supportedLocales);
   const appLanguages = localLanguages.map((localLanguage) => {
-    return {
-      id: localLanguage,
-      value: localLanguage.replace("-", "_"),
-      label: supportedLocales[localLanguage].name
-    };
+    return formatObjectLanguage(localLanguage);
   });
-
   return etendoLanguages.length === 0
     ? appLanguages
     : inBoth(appLanguages, etendoLocalLanguages);
@@ -45,27 +55,30 @@ const inBoth = (list1: ILanguage[], list2: ILanguage[]): ILanguage[] => {
   return result;
 };
 
+// Gets the languages supported by the server
 export const getServerLanguages = async () => {
   return Languages.getLanguages();
 };
 
+// Gets the language stored
 export const loadLanguage = async () => {
   return AsyncStorage.getItem("selectedLanguage");
 };
 
+// Saves the language selected in localstorage
 const saveLanguage = async (selectedLanguage) => {
   await AsyncStorage.setItem("selectedLanguage", selectedLanguage);
 };
 
+// Sets a language by default
 export const languageDefault = async () => {
   locale.init();
   try {
     let storagedLanguage = await loadLanguage();
-    if (storagedLanguage) {
-      locale.setCurrentLanguage(storagedLanguage);
-    } else {
-      storagedLanguage = locale.getDeviceLocale().replace("-", "_");
+    if (!storagedLanguage) {
+      storagedLanguage = getCurrentLanguage();
     }
+    locale.setCurrentLanguage(storagedLanguage);
     await saveLanguage(storagedLanguage);
     return storagedLanguage;
   } catch (error) {
@@ -76,4 +89,31 @@ export const languageDefault = async () => {
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
   await setLenguageRedux(input);
+};
+
+export const formatLanguageUnderscore = (
+  language: string,
+  dash?: boolean
+): string => {
+  switch (language) {
+    case "en":
+    case "en-US":
+    case "en_US":
+      return dash ? "en-US" : "en_US";
+    case "es":
+    case "es-ES":
+    case "es_ES":
+      return dash ? "es-ES" : "es_ES";
+    default:
+      return "en_US";
+  }
+};
+
+export const formatObjectLanguage = (language: string): ILanguage => {
+  const localLanguage = formatLanguageUnderscore(language, true);
+  return {
+    id: localLanguage,
+    value: formatLanguageUnderscore(language, false),
+    label: supportedLocales[localLanguage].name
+  };
 };

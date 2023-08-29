@@ -321,7 +321,7 @@ const Settings = (props) => {
                     persistentScrollbar={true}
                     showsVerticalScrollIndicator={true}
                   >
-                    {storedDataUrl.length ? (
+                    {storedDataUrl?.length ? (
                       storedDataUrl.map((item, index) => {
                         return (
                           <UrlItem
@@ -353,8 +353,7 @@ const Settings = (props) => {
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
           <Text allowFontScaling={false}>
-            {" "}
-            {locale.t("Settings:AppVersion", { version: appVersion })}{" "}
+            {locale.t("Settings:AppVersion", { version: appVersion })}
           </Text>
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>

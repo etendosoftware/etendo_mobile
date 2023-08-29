@@ -46,7 +46,7 @@ const App: React.FC<Props> = () => {
       }
       await languageDefault();
       dispatch(setLoadingScreen(false));
-      await atAppInit(await getLanguages());
+      await atAppInit();
     };
 
     fetchInitialData();

@@ -19,6 +19,11 @@ import { IData, ILanguage } from "../src/interfaces";
 import { useWindow } from "./useWindow";
 import { getUrl, setUrl } from "../src/ob-api/ob";
 import { selectIsDemo, setIsDemo } from "../redux/window";
+import {
+  formatObjectLanguage,
+  getLanguages,
+  languageDefault
+} from "../src/helpers/getLanguajes";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -31,14 +36,14 @@ export const useUser = () => {
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
-  const atAppInit = async (languages: ILanguage[]) => {
+  const atAppInit = async () => {
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
     const currentEnviromentsUrl = await loadEnviromentsUrl();
     dispatch(setLanguage(currentLanguage));
-    dispatch(setStoredLanguages(languages));
+    dispatch(setStoredLanguages([formatObjectLanguage(currentLanguage)]));
     storedEnviromentsUrl &&
       dispatch(
         setStoredEnviromentsUrl([
@@ -61,6 +66,8 @@ export const useUser = () => {
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user", user);
     await loadWindows(token);
+    const languages = await getLanguages();
+    dispatch(setStoredLanguages(languages));
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
@@ -119,6 +126,7 @@ export const useUser = () => {
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("baseUrl");
+    await AsyncStorage.removeItem("selectedLanguage");
 
     if (isDemo) {
       dispatch(setSelectedUrl(null));
@@ -127,6 +135,10 @@ export const useUser = () => {
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setData(null));
+    dispatch(setStoredLanguages(null));
+    dispatch(setLanguage(null));
+    await languageDefault();
+    await atAppInit();
   };
 
   const getImageProfile = async (data: IData) => {
