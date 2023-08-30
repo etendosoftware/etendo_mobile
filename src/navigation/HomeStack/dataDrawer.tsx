@@ -1,6 +1,7 @@
 import React from "react";
 import { HomeIcon } from "etendo-ui-library/dist-native/assets/images/icons/HomeIcon";
 import { DrawerDataContentType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
+import locale from "../../i18n/locale";
 
 export const drawerData = (dataDrawer: any): DrawerDataContentType[] => {
   return [
@@ -11,7 +12,7 @@ export const drawerData = (dataDrawer: any): DrawerDataContentType[] => {
     {
       sectionType: "sections",
       dataSection: dataDrawer,
-      titleSection: "Applications"
+      titleSection: locale.t("Drawer:Applications")
     }
   ];
 };
