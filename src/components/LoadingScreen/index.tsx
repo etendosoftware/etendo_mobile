@@ -8,7 +8,6 @@ const LoadingScreen = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    locale.init();
     setVisible(true);
   }, []);
 

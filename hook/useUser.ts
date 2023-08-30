@@ -24,6 +24,8 @@ import {
   getLanguages,
   languageDefault
 } from "../src/helpers/getLanguajes";
+import locale from "../src/i18n/locale";
+import { formatLanguageUnderscore } from "../src/i18n/config";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -68,6 +70,8 @@ export const useUser = () => {
     await loadWindows(token);
     const languages = await getLanguages();
     dispatch(setStoredLanguages(languages));
+    const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
+    locale.setCurrentLanguage(formatLanguageUnderscore(currentLanguage, true));
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
@@ -125,10 +129,11 @@ export const useUser = () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
-    await AsyncStorage.removeItem("baseUrl");
     await AsyncStorage.removeItem("selectedLanguage");
 
     if (isDemo) {
+      await AsyncStorage.removeItem("baseUrl");
+      await AsyncStorage.removeItem("selectedUrl");
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
     }

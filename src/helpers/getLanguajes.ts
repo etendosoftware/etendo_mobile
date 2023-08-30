@@ -30,13 +30,20 @@ export const getLanguages = async () => {
     return { id: f.id, value: f.language, label: f.name };
   });
 
-  const localLanguages = Object.keys(supportedLocales);
-  const appLanguages = localLanguages.map((localLanguage) => {
-    return formatObjectLanguage(localLanguage);
-  });
-  return etendoLanguages.length === 0
-    ? appLanguages
-    : inBoth(appLanguages, etendoLocalLanguages);
+  const languageSelected = await loadLanguage();
+  const languageSelectedFormatted = formatLanguageUnderscore(languageSelected);
+
+  const localLanguage = [formatObjectLanguage(languageSelected)];
+
+  const isCurrentInLngList = etendoLanguages?.some(
+    (item: any) =>
+      item.language === languageSelectedFormatted ||
+      item.language === languageSelected
+  );
+
+  return etendoLanguages.length === 0 || !isCurrentInLngList
+    ? localLanguage
+    : inBoth(etendoLocalLanguages, localLanguage);
 };
 
 const inBoth = (list1: ILanguage[], list2: ILanguage[]): ILanguage[] => {
@@ -75,13 +82,10 @@ const saveLanguage = async (selectedLanguage) => {
 export const languageDefault = async () => {
   locale.init();
   try {
-    let storagedLanguage = await loadLanguage();
-    if (!storagedLanguage) {
-      storagedLanguage = getCurrentLanguage();
-    }
-    locale.setCurrentLanguage(storagedLanguage);
-    await saveLanguage(storagedLanguage);
-    return storagedLanguage;
+    let currentLanguage = getCurrentLanguage();
+    locale.setCurrentLanguage(formatLanguageUnderscore(currentLanguage, true));
+    await saveLanguage(currentLanguage);
+    return currentLanguage;
   } catch (error) {
     console.log("Error", error);
   }
