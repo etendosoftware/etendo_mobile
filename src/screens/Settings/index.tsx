@@ -29,6 +29,7 @@ import {
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Settings = (props) => {
   //Images
@@ -66,7 +67,8 @@ const Settings = (props) => {
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
-      setUrl(selectedUrl);
+      const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+      setUrl(selectedUrl || selectedUrlStored);
       setAppVersion(tmpAppVersion);
       setModalUrl(url ? url.toString() : selectedUrl);
     };
@@ -109,6 +111,7 @@ const Settings = (props) => {
     setStoredDataUrl([...storedDataUrl, currentValue]);
     await saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
+    atChooseOption(currentValue);
     setIsUpdating(false);
   };
 
@@ -157,12 +160,17 @@ const Settings = (props) => {
     setValueEnvUrl(value);
   }, []);
 
-  const handleOptionSelected = async ({ value }) => {
+  const atChooseOption = async (value: string) => {
     dispatch(setSelectedUrl(value));
+    await AsyncStorage.setItem("selectedUrl", value);
     const tmpUrl = await setUrlOB(value);
-    setShowChangeURLModal(false);
-    setModalUrl(value);
     setUrl(tmpUrl);
+    setModalUrl(value);
+  };
+
+  const handleOptionSelected = async ({ value }) => {
+    await atChooseOption(value);
+    setShowChangeURLModal(false);
   };
 
   return (
