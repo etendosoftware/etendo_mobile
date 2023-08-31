@@ -3,6 +3,8 @@ import packages from "../components/packages";
 import Toast from "react-native-toast-message";
 import locale from "../i18n/locale";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isTablet } from "../../hook/isTablet";
+import Orientation from "react-native-orientation-locker";
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
@@ -99,3 +101,11 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     };
   }
 }
+
+export const deviceOrientation = () => {
+  if (isTablet()) {
+    Orientation.lockToLandscape();
+  } else {
+    Orientation.lockToPortrait();
+  }
+};

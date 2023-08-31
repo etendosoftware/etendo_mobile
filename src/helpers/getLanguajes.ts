@@ -1,5 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { formatLanguageUnderscore, supportedLocales } from "../i18n/config";
+import {
+  formatLanguageUnderscore,
+  languageByDefault,
+  supportedLocales
+} from "../i18n/config";
 import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
@@ -32,35 +36,16 @@ export const getLanguages = async () => {
 
   const languageSelected = await loadLanguage();
   const languageSelectedFormatted = formatLanguageUnderscore(languageSelected);
-
-  const localLanguage = [formatObjectLanguage(languageSelected)];
+  const supportedLanguages = getSupportedLanguages();
 
   const isCurrentInLngList = etendoLanguages?.some(
     (item: any) =>
       item.language === languageSelectedFormatted ||
       item.language === languageSelected
   );
-
   return etendoLanguages.length === 0 || !isCurrentInLngList
-    ? localLanguage
-    : inBoth(etendoLocalLanguages, localLanguage);
-};
-
-const inBoth = (list1: ILanguage[], list2: ILanguage[]): ILanguage[] => {
-  let result: ILanguage[] = [];
-
-  for (const element of list1) {
-    let item1 = element,
-      found = false;
-    for (let j = 0; j < list2.length && !found; j++) {
-      found = item1.value === list2[j].value;
-    }
-    if (found) {
-      result.push(item1);
-    }
-  }
-
-  return result;
+    ? [formatObjectLanguage(languageByDefault())]
+    : findIntersection(etendoLocalLanguages, supportedLanguages);
 };
 
 // Gets the languages supported by the server
@@ -103,4 +88,28 @@ export const formatObjectLanguage = (language: string): ILanguage => {
     value: formatLanguageUnderscore(language, false),
     label: supportedLocales[localLanguage].name
   };
+};
+
+const findIntersection = (
+  arr1: ILanguage[],
+  arr2: ILanguage[]
+): ILanguage[] => {
+  const map: { [value: string]: ILanguage } = {};
+
+  for (const lang of arr1) {
+    map[lang.value] = lang;
+  }
+
+  const intersection: ILanguage[] = arr2.filter(
+    (lang) => map[lang.value] !== undefined
+  );
+
+  return intersection;
+};
+
+export const getSupportedLanguages = () => {
+  const localLanguages = Object.keys(supportedLocales);
+  return localLanguages.map((localLanguage) => {
+    return formatObjectLanguage(localLanguage);
+  });
 };

@@ -1,10 +1,10 @@
 export const supportedLocales = {
   "en-US": {
-    name: "English",
+    name: "English (USA)",
     loadTranslations: () => require("../lang/enUS.json")
   },
   "es-ES": {
-    name: "Español",
+    name: "Spanish (Spain)",
     loadTranslations: () => require("../lang/esES.json")
   }
 };
@@ -32,4 +32,8 @@ export const getLanguageName = (language: string) => {
   return supportedLocales[formattedLanguage]
     ? supportedLocales[formattedLanguage].name
     : null;
+};
+
+export const languageByDefault = () => {
+  return formatLanguageUnderscore("", true);
 };

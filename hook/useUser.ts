@@ -15,13 +15,12 @@ import {
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { IData, ILanguage } from "../src/interfaces";
+import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { getUrl, setUrl } from "../src/ob-api/ob";
 import { selectIsDemo, setIsDemo } from "../redux/window";
 import {
-  formatObjectLanguage,
   getLanguages,
+  getSupportedLanguages,
   languageDefault
 } from "../src/helpers/getLanguajes";
 import locale from "../src/i18n/locale";
@@ -43,16 +42,11 @@ export const useUser = () => {
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
-    const currentEnviromentsUrl = await loadEnviromentsUrl();
     dispatch(setLanguage(currentLanguage));
-    dispatch(setStoredLanguages([formatObjectLanguage(currentLanguage)]));
+    const appLanguages = getSupportedLanguages();
+    dispatch(setStoredLanguages(appLanguages));
     storedEnviromentsUrl &&
-      dispatch(
-        setStoredEnviromentsUrl([
-          ...currentEnviromentsUrl,
-          ...JSON.parse(storedEnviromentsUrl)
-        ])
-      );
+      dispatch(setStoredEnviromentsUrl([...JSON.parse(storedEnviromentsUrl)]));
   };
 
   const login = async (user, pass) => {

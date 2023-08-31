@@ -20,6 +20,7 @@ import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectSelectedLanguage as selectSelectedLanguageRedux,
+  selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
@@ -51,6 +52,7 @@ const Settings = (props) => {
   const languagesList = useAppSelector(selectStoredLanguages);
   const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
 
   const {
     loadEnviromentsUrl,
@@ -60,14 +62,13 @@ const Settings = (props) => {
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
-      const tmpUrl = await getUrl();
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
-      setUrl(tmpUrl);
+      setUrl(selectedUrl);
       setAppVersion(tmpAppVersion);
-      setModalUrl(url ? url.toString() : tmpUrl);
+      setModalUrl(url ? url.toString() : selectedUrl);
     };
     fetchUrlAndLogo();
   }, []);
