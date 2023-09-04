@@ -17,7 +17,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { selectIsDemo, setIsDemo } from "../redux/window";
+import { selectIsDemo, setIsDemo, setLoadingScreen } from "../redux/window";
 import {
   getLanguages,
   getSupportedLanguages,
@@ -38,11 +38,16 @@ export const useUser = () => {
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
   const atAppInit = async () => {
+    const currentToken = await AsyncStorage.getItem("token");
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
+    const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
+    dispatch(setToken(currentToken));
     dispatch(setLanguage(currentLanguage));
+    dispatch(setData(dataUser ? dataUser : null));
+    currentToken && (await reloadUserData(currentToken, dataUser?.username));
     const appLanguages = getSupportedLanguages();
     dispatch(setStoredLanguages(appLanguages));
     storedEnviromentsUrl &&
@@ -71,23 +76,29 @@ export const useUser = () => {
   const reloadUserData = async (storedToken?: string, username?: string) => {
     if (storedToken) {
       dispatch(setToken(storedToken));
-      OBRest.loginWithToken(storedToken);
+      dispatch(setLoadingScreen(true));
+      try {
+        const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+        OBRest.init(new URL(selectedUrlStored), storedToken);
+        OBRest.loginWithToken(storedToken);
+        await loadWindows(storedToken);
+      } catch (ignored) {}
     }
 
     let context = OBRest.getInstance().getOBContext();
+    const dataUser = {
+      username: username ? username : user,
+      userId: context?.getUserId(),
+      defaultRoleId: context?.getRoleId(),
+      defaultWarehouseId: context?.getWarehouseId(),
+      roleId: context?.getRoleId(),
+      warehouseId: context?.getWarehouseId(),
+      organization: context?.getOrganizationId(),
+      client: context?.getClientId()
+    };
 
-    dispatch(
-      setData({
-        username: username ? username : user,
-        userId: context?.getUserId(),
-        defaultRoleId: context?.getRoleId(),
-        defaultWarehouseId: context?.getWarehouseId(),
-        roleId: context?.getRoleId(),
-        warehouseId: context?.getWarehouseId(),
-        organization: context?.getOrganizationId(),
-        client: context?.getClientId()
-      })
-    );
+    dispatch(setData(dataUser));
+    await AsyncStorage.setItem("dataUser", JSON.stringify(dataUser));
   };
 
   // Savings

@@ -65,8 +65,13 @@ const saveLanguage = async (selectedLanguage) => {
 
 // Sets a language by default
 export const languageDefault = async () => {
-  locale.init();
   try {
+    const languageStored = await loadLanguage();
+    if (languageStored) {
+      locale.setCurrentLanguage(formatLanguageUnderscore(languageStored, true));
+      return languageStored;
+    }
+    locale.init();
     let currentLanguage = getCurrentLanguage();
     locale.setCurrentLanguage(formatLanguageUnderscore(currentLanguage, true));
     await saveLanguage(currentLanguage);
@@ -78,6 +83,7 @@ export const languageDefault = async () => {
 
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
+  await saveLanguage(input);
   await setLenguageRedux(input);
 };
 
