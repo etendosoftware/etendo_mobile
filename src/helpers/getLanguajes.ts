@@ -91,7 +91,7 @@ export const languageDefault = async () => {
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
   await saveLanguage(input);
-  await setLenguageRedux(input);
+  await setLenguageRedux();
 };
 
 export const formatObjectLanguage = (language: string): ILanguage => {

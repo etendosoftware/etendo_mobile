@@ -19,6 +19,7 @@ import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
 import { selectIsDemo, setIsDemo } from "../redux/window";
 import {
+  changeLanguage,
   getLanguages,
   getSupportedLanguages,
   languageDefault
@@ -84,7 +85,10 @@ export const useUser = () => {
     const languageToSet = languages.isCurrentInlist
       ? currentLanguage
       : languageByDefault();
-    locale.setCurrentLanguage(formatLanguageUnderscore(languageToSet, true));
+    const languageFormatted = formatLanguageUnderscore(languageToSet, true);
+    await changeLanguage(languageFormatted, () =>
+      dispatch(setLanguage(languageFormatted))
+    );
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {

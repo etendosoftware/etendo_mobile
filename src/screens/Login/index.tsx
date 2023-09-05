@@ -59,6 +59,7 @@ const LoginFunctional = (props) => {
   };
 
   const submitLogin = async () => {
+    dispatch(setLoadingScreen(true));
     try {
       try {
         setError(false);
