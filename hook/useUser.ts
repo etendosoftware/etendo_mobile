@@ -17,14 +17,18 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { selectIsDemo, setIsDemo, setLoadingScreen } from "../redux/window";
+import { selectIsDemo, setIsDemo } from "../redux/window";
 import {
   getLanguages,
   getSupportedLanguages,
   languageDefault
 } from "../src/helpers/getLanguajes";
 import locale from "../src/i18n/locale";
-import { formatLanguageUnderscore } from "../src/i18n/config";
+import {
+  formatLanguageUnderscore,
+  languageByDefault
+} from "../src/i18n/config";
+import { setUrl } from "../src/ob-api/ob";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -38,12 +42,17 @@ export const useUser = () => {
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
   const atAppInit = async () => {
+    // Async storage
     const currentToken = await AsyncStorage.getItem("token");
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
     const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
+    const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+
+    // Set redux
+    dispatch(setSelectedUrl(selectedUrlStored));
     dispatch(setToken(currentToken));
     dispatch(setLanguage(currentLanguage));
     dispatch(setData(dataUser ? dataUser : null));
@@ -52,6 +61,8 @@ export const useUser = () => {
     dispatch(setStoredLanguages(appLanguages));
     storedEnviromentsUrl &&
       dispatch(setStoredEnviromentsUrl([...JSON.parse(storedEnviromentsUrl)]));
+    // Other actions
+    await setUrl(selectedUrlStored);
   };
 
   const login = async (user, pass) => {
@@ -68,15 +79,17 @@ export const useUser = () => {
     await AsyncStorage.setItem("user", user);
     await loadWindows(token);
     const languages = await getLanguages();
-    dispatch(setStoredLanguages(languages));
+    dispatch(setStoredLanguages(languages.list));
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
-    locale.setCurrentLanguage(formatLanguageUnderscore(currentLanguage, true));
+    const languageToSet = languages.isCurrentInlist
+      ? currentLanguage
+      : languageByDefault();
+    locale.setCurrentLanguage(formatLanguageUnderscore(languageToSet, true));
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
     if (storedToken) {
       dispatch(setToken(storedToken));
-      dispatch(setLoadingScreen(true));
       try {
         const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
         OBRest.init(new URL(selectedUrlStored), storedToken);

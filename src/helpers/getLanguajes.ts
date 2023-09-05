@@ -43,9 +43,16 @@ export const getLanguages = async () => {
       item.language === languageSelectedFormatted ||
       item.language === languageSelected
   );
-  return etendoLanguages.length === 0 || !isCurrentInLngList
-    ? [formatObjectLanguage(languageByDefault())]
-    : findIntersection(etendoLocalLanguages, supportedLanguages);
+
+  const languageList =
+    etendoLanguages.length === 0 || !isCurrentInLngList
+      ? [formatObjectLanguage(languageByDefault())]
+      : findIntersection(etendoLocalLanguages, supportedLanguages);
+
+  return {
+    list: languageList,
+    isCurrentInlist: isCurrentInLngList
+  };
 };
 
 // Gets the languages supported by the server
