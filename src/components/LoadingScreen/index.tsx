@@ -10,12 +10,15 @@ import { selectSelectedLanguage } from "../../../redux/user";
 
 const LoadingScreen = () => {
   const [visible, setVisible] = useState(false);
+  const [isLocaled, setIsLocaled] = useState(false);
   const selectedLanguageRedux = useAppSelector(selectSelectedLanguage);
   useEffect(() => {
     const getLanguageLocal = async () => {
       const languageStored = await AsyncStorage.getItem("selectedLanguage");
-      if (!languageStored || !selectedLanguageRedux) {
+      const hasLanguage = !languageStored || !selectedLanguageRedux;
+      if (hasLanguage) {
         await languageDefault();
+        setIsLocaled(hasLanguage);
       }
     };
     getLanguageLocal();
@@ -28,7 +31,9 @@ const LoadingScreen = () => {
       overlayColor={defaultTheme.colors.primary}
       textStyle={{ color: defaultTheme.colors.surface }}
       visible={visible}
-      textContent={locale.t("LoadingScreen:loadingText")}
+      textContent={
+        isLocaled ? locale.t("LoadingScreen:loadingText") : "Loading..."
+      }
     />
   );
 };
