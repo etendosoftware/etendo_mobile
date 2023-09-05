@@ -5,14 +5,16 @@ import locale from "../../i18n/locale";
 import { defaultTheme } from "../../themes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { languageDefault } from "../../helpers/getLanguajes";
+import { useAppSelector } from "../../../redux";
+import { selectSelectedLanguage } from "../../../redux/user";
 
 const LoadingScreen = () => {
   const [visible, setVisible] = useState(false);
-
+  const selectedLanguageRedux = useAppSelector(selectSelectedLanguage);
   useEffect(() => {
     const getLanguageLocal = async () => {
-      const language = await AsyncStorage.getItem("selectedLanguage");
-      if (!language) {
+      const languageStored = await AsyncStorage.getItem("selectedLanguage");
+      if (!languageStored || !selectedLanguageRedux) {
         await languageDefault();
       }
     };
