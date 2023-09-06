@@ -42,6 +42,7 @@ import * as Ionicons from "react-native-vector-icons/Ionicons";
 import * as FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as AntDesign from "react-native-vector-icons/AntDesign";
 import * as MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as ReactNativeDatePicker from "react-native-date-picker";
 import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
@@ -61,7 +62,7 @@ const Packages = {
   "date-fns": () => DateFns,
   "prop-types": () => PropTypes,
   "rn-placeholder": () => RnPlaceholder,
-
+  "react-native-date-picker": () => ReactNativeDatePicker,
   "@react-native-community/datetimepicker": () => DatetimePicker,
   "@react-native-community/masked-view": () => MaskedView,
   "@react-native-picker/picker": () => Picker,
