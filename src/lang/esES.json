@@ -33,6 +33,7 @@
   "ShowLoadUrl:Add": "Añadir",
   "ShowLoadUrl:PickerLabel": "Seleccionar URL",
   "LoadingScreen:loadingText": "Cargando...",
+  "LoadingScreen:downloadingText": "Descargando...",
   "LoginScreen:Title": "Inicio de sesión",
   "LoginScreen:LoginButtonTitle": "Iniciar sesión",
   "LoginScreen:UserPassIncorrect": "Usuario o contraseña incorrectos",

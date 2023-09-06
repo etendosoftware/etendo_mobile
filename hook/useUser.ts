@@ -17,7 +17,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { selectIsDemo, setIsDemo } from "../redux/window";
+import { selectIsDemo, setIsDemo, setIsSubapp } from "../redux/window";
 import {
   changeLanguage,
   getLanguages,
@@ -159,6 +159,7 @@ export const useUser = () => {
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
     }
+    dispatch(setIsSubapp(false));
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setData(null));

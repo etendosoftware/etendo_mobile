@@ -33,6 +33,7 @@
   "ShowLoadUrl:Add": "Add",
   "ShowLoadUrl:PickerLabel": "Select Url",
   "LoadingScreen:loadingText": "Loading...",
+  "LoadingScreen:downloadingText": "Downloading...",
   "LoginScreen:Title": "Etendo Mobile",
   "LoginScreen:LoginButtonTitle": "Login",
   "LoginScreen:UserPassIncorrect": "Incorrect User or Password",

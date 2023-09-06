@@ -21,9 +21,9 @@ import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
 import { selectBindaryImg, selectData } from "../../../redux/user";
-import { useAppSelector } from "../../../redux";
+import { useAppDispatch, useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
-import { selectMenuItems } from "../../../redux/window";
+import { selectMenuItems, setIsSubapp } from "../../../redux/window";
 
 type RootStackParamList = {
   Home: any;
@@ -41,6 +41,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const data = useAppSelector(selectData);
   const menuItems = useAppSelector(selectMenuItems);
   const bindaryImg = useAppSelector(selectBindaryImg);
+  const dispatch = useAppDispatch();
   const { logout } = useUser();
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
@@ -103,6 +104,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     });
 
     setDataDrawer(itemsDrawer);
+    dispatch(setIsSubapp(false));
   }, [menuItems]);
 
   const onOptionPressHandle = async (
@@ -202,6 +204,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
               setCurrentIndex(currentIndex);
               navigation.navigate(route as keyof RootStackParamList);
               setShowDrawer(false);
+              dispatch(setIsSubapp(true));
             }}
             onCloseDrawer={() => {
               setShowDrawer(false);
