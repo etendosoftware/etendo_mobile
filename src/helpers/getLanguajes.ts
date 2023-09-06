@@ -1,9 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supportedLocales } from "../i18n/config";
+import {
+  formatLanguageUnderscore,
+  languageByDefault,
+  supportedLocales
+} from "../i18n/config";
 import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
+import { NativeModules, Platform } from "react-native";
 
+// Gets the current device language
+function getCurrentLanguage() {
+  const deviceLanguageAbbreviation =
+    Platform.OS === "ios"
+      ? NativeModules.SettingsManager.settings.AppleLocale ||
+        NativeModules.SettingsManager.settings.AppleLanguages[0]
+      : NativeModules.I18nManager.localeIdentifier;
+  const languageFormattedSupported = formatLanguageUnderscore(
+    deviceLanguageAbbreviation.slice(0, 2),
+    true
+  );
+  return languageFormattedSupported;
+}
+
+// Get the languages supported by the app: from OBrest and localSupported
 export const getLanguages = async () => {
   let etendoLanguages: any[] = [];
   try {
@@ -14,60 +34,55 @@ export const getLanguages = async () => {
     return { id: f.id, value: f.language, label: f.name };
   });
 
-  const localLanguages = Object.keys(supportedLocales);
-  const appLanguages = localLanguages.map((localLanguage) => {
-    return {
-      id: localLanguage,
-      value: localLanguage.replace("-", "_"),
-      label: supportedLocales[localLanguage].name
-    };
-  });
+  const languageSelected = await loadLanguage();
+  const languageSelectedFormatted = formatLanguageUnderscore(languageSelected);
+  const supportedLanguages = getSupportedLanguages();
 
-  return etendoLanguages.length === 0
-    ? appLanguages
-    : inBoth(appLanguages, etendoLocalLanguages);
+  const isCurrentInLngList = etendoLanguages?.some(
+    (item: any) =>
+      item.language === languageSelectedFormatted ||
+      item.language === languageSelected
+  );
+
+  const languageList =
+    etendoLanguages.length === 0 || !isCurrentInLngList
+      ? [formatObjectLanguage(languageByDefault())]
+      : findIntersection(etendoLocalLanguages, supportedLanguages);
+
+  return {
+    list: languageList,
+    isCurrentInlist: isCurrentInLngList
+  };
 };
 
-const inBoth = (list1: ILanguage[], list2: ILanguage[]): ILanguage[] => {
-  let result: ILanguage[] = [];
-
-  for (const element of list1) {
-    let item1 = element,
-      found = false;
-    for (let j = 0; j < list2.length && !found; j++) {
-      found = item1.value === list2[j].value;
-    }
-    if (found) {
-      result.push(item1);
-    }
-  }
-
-  return result;
-};
-
+// Gets the languages supported by the server
 export const getServerLanguages = async () => {
   return Languages.getLanguages();
 };
 
+// Gets the language stored
 export const loadLanguage = async () => {
   return AsyncStorage.getItem("selectedLanguage");
 };
 
+// Saves the language selected in localstorage
 const saveLanguage = async (selectedLanguage) => {
   await AsyncStorage.setItem("selectedLanguage", selectedLanguage);
 };
 
+// Sets a language by default
 export const languageDefault = async () => {
-  locale.init();
   try {
-    let storagedLanguage = await loadLanguage();
-    if (storagedLanguage) {
-      locale.setCurrentLanguage(storagedLanguage);
-    } else {
-      storagedLanguage = locale.getDeviceLocale().replace("-", "_");
+    const languageStored = await loadLanguage();
+    if (languageStored) {
+      locale.setCurrentLanguage(formatLanguageUnderscore(languageStored, true));
+      return languageStored;
     }
-    await saveLanguage(storagedLanguage);
-    return storagedLanguage;
+    locale.init();
+    let currentLanguage = getCurrentLanguage();
+    locale.setCurrentLanguage(formatLanguageUnderscore(currentLanguage, true));
+    await saveLanguage(currentLanguage);
+    return currentLanguage;
   } catch (error) {
     console.log("Error", error);
   }
@@ -75,5 +90,39 @@ export const languageDefault = async () => {
 
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
-  await setLenguageRedux(input);
+  await saveLanguage(input);
+  await setLenguageRedux();
+};
+
+export const formatObjectLanguage = (language: string): ILanguage => {
+  const localLanguage = formatLanguageUnderscore(language, true);
+  return {
+    id: localLanguage,
+    value: formatLanguageUnderscore(language, false),
+    label: supportedLocales[localLanguage].name
+  };
+};
+
+const findIntersection = (
+  arr1: ILanguage[],
+  arr2: ILanguage[]
+): ILanguage[] => {
+  const map: { [value: string]: ILanguage } = {};
+
+  for (const lang of arr1) {
+    map[lang.value] = lang;
+  }
+
+  const intersection: ILanguage[] = arr2.filter(
+    (lang) => map[lang.value] !== undefined
+  );
+
+  return intersection;
+};
+
+export const getSupportedLanguages = () => {
+  const localLanguages = Object.keys(supportedLocales);
+  return localLanguages.map((localLanguage) => {
+    return formatObjectLanguage(localLanguage);
+  });
 };

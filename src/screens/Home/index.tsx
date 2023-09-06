@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
@@ -11,7 +11,7 @@ import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDro
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
-import { selectData } from "../../../redux/user";
+import { selectData, selectSelectedLanguage } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
 import { selectLoading, selectMenuItems } from "../../../redux/window";
 
@@ -88,7 +88,10 @@ const HomeFunction = (props: Props) => {
 
 const Home = (props: any) => {
   const navigation = useNavigation();
+  const selectedLanguage = useAppSelector(selectSelectedLanguage);
   Etendo.globalNav = navigation;
+  // Force to re-render when language changes at login
+  useEffect(() => {}, [locale, selectedLanguage]);
 
   return <HomeFunction {...props} />;
 };

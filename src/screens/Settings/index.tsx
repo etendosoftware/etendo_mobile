@@ -20,6 +20,7 @@ import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectSelectedLanguage as selectSelectedLanguageRedux,
+  selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
@@ -28,6 +29,7 @@ import {
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Settings = (props) => {
   //Images
@@ -51,6 +53,7 @@ const Settings = (props) => {
   const languagesList = useAppSelector(selectStoredLanguages);
   const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
 
   const {
     loadEnviromentsUrl,
@@ -60,14 +63,14 @@ const Settings = (props) => {
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
-      const tmpUrl = await getUrl();
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       if (storedEnviromentsUrl) {
         setStoredDataUrl(storedEnviromentsUrl);
       }
-      setUrl(tmpUrl);
+      const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+      setUrl(selectedUrl || selectedUrlStored);
       setAppVersion(tmpAppVersion);
-      setModalUrl(url ? url.toString() : tmpUrl);
+      setModalUrl(url ? url.toString() : selectedUrl);
     };
     fetchUrlAndLogo();
   }, []);
@@ -108,6 +111,7 @@ const Settings = (props) => {
     setStoredDataUrl([...storedDataUrl, currentValue]);
     await saveEnviromentsUrl([...storedDataUrl, currentValue]);
     setValueEnvUrl("");
+    atChooseOption(currentValue);
     setIsUpdating(false);
   };
 
@@ -156,12 +160,17 @@ const Settings = (props) => {
     setValueEnvUrl(value);
   }, []);
 
-  const handleOptionSelected = async ({ value }) => {
+  const atChooseOption = async (value: string) => {
     dispatch(setSelectedUrl(value));
+    await AsyncStorage.setItem("selectedUrl", value);
     const tmpUrl = await setUrlOB(value);
-    setShowChangeURLModal(false);
-    setModalUrl(value);
     setUrl(tmpUrl);
+    setModalUrl(value);
+  };
+
+  const handleOptionSelected = async ({ value }) => {
+    await atChooseOption(value);
+    setShowChangeURLModal(false);
   };
 
   return (
@@ -321,7 +330,7 @@ const Settings = (props) => {
                     persistentScrollbar={true}
                     showsVerticalScrollIndicator={true}
                   >
-                    {storedDataUrl.length ? (
+                    {storedDataUrl?.length ? (
                       storedDataUrl.map((item, index) => {
                         return (
                           <UrlItem
@@ -353,8 +362,7 @@ const Settings = (props) => {
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
           <Text allowFontScaling={false}>
-            {" "}
-            {locale.t("Settings:AppVersion", { version: appVersion })}{" "}
+            {locale.t("Settings:AppVersion", { version: appVersion })}
           </Text>
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>

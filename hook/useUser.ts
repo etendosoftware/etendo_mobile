@@ -15,10 +15,21 @@ import {
   setUser
 } from "../redux/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { IData, ILanguage } from "../src/interfaces";
+import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { getUrl, setUrl } from "../src/ob-api/ob";
-import { selectIsDemo, setIsDemo } from "../redux/window";
+import { selectIsDemo, setIsDemo, setIsSubapp } from "../redux/window";
+import {
+  changeLanguage,
+  getLanguages,
+  getSupportedLanguages,
+  languageDefault
+} from "../src/helpers/getLanguajes";
+import locale from "../src/i18n/locale";
+import {
+  formatLanguageUnderscore,
+  languageByDefault
+} from "../src/i18n/config";
+import { setUrl } from "../src/ob-api/ob";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -31,21 +42,28 @@ export const useUser = () => {
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
-  const atAppInit = async (languages: ILanguage[]) => {
+  const atAppInit = async () => {
+    // Async storage
+    const currentToken = await AsyncStorage.getItem("token");
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"
     );
-    const currentEnviromentsUrl = await loadEnviromentsUrl();
+    const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
+    const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+
+    // Set redux
+    dispatch(setSelectedUrl(selectedUrlStored));
+    dispatch(setToken(currentToken));
     dispatch(setLanguage(currentLanguage));
-    dispatch(setStoredLanguages(languages));
+    dispatch(setData(dataUser ? dataUser : null));
+    currentToken && (await reloadUserData(currentToken, dataUser?.username));
+    const appLanguages = getSupportedLanguages();
+    dispatch(setStoredLanguages(appLanguages));
     storedEnviromentsUrl &&
-      dispatch(
-        setStoredEnviromentsUrl([
-          ...currentEnviromentsUrl,
-          ...JSON.parse(storedEnviromentsUrl)
-        ])
-      );
+      dispatch(setStoredEnviromentsUrl([...JSON.parse(storedEnviromentsUrl)]));
+    // Other actions
+    await setUrl(selectedUrlStored);
   };
 
   const login = async (user, pass) => {
@@ -61,28 +79,43 @@ export const useUser = () => {
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user", user);
     await loadWindows(token);
+    const languages = await getLanguages();
+    dispatch(setStoredLanguages(languages.list));
+    const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
+    const languageToSet = languages.isCurrentInlist
+      ? currentLanguage
+      : languageByDefault();
+    const languageFormatted = formatLanguageUnderscore(languageToSet, true);
+    await changeLanguage(languageFormatted, () =>
+      dispatch(setLanguage(languageFormatted))
+    );
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
     if (storedToken) {
       dispatch(setToken(storedToken));
-      OBRest.loginWithToken(storedToken);
+      try {
+        const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+        OBRest.init(new URL(selectedUrlStored), storedToken);
+        OBRest.loginWithToken(storedToken);
+        await loadWindows(storedToken);
+      } catch (ignored) {}
     }
 
     let context = OBRest.getInstance().getOBContext();
+    const dataUser = {
+      username: username ? username : user,
+      userId: context?.getUserId(),
+      defaultRoleId: context?.getRoleId(),
+      defaultWarehouseId: context?.getWarehouseId(),
+      roleId: context?.getRoleId(),
+      warehouseId: context?.getWarehouseId(),
+      organization: context?.getOrganizationId(),
+      client: context?.getClientId()
+    };
 
-    dispatch(
-      setData({
-        username: username ? username : user,
-        userId: context?.getUserId(),
-        defaultRoleId: context?.getRoleId(),
-        defaultWarehouseId: context?.getWarehouseId(),
-        roleId: context?.getRoleId(),
-        warehouseId: context?.getWarehouseId(),
-        organization: context?.getOrganizationId(),
-        client: context?.getClientId()
-      })
-    );
+    dispatch(setData(dataUser));
+    await AsyncStorage.setItem("dataUser", JSON.stringify(dataUser));
   };
 
   // Savings
@@ -118,15 +151,22 @@ export const useUser = () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
-    await AsyncStorage.removeItem("baseUrl");
+    await AsyncStorage.removeItem("selectedLanguage");
 
     if (isDemo) {
+      await AsyncStorage.removeItem("baseUrl");
+      await AsyncStorage.removeItem("selectedUrl");
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
     }
+    dispatch(setIsSubapp(false));
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setData(null));
+    dispatch(setStoredLanguages(null));
+    dispatch(setLanguage(null));
+    await languageDefault();
+    await atAppInit();
   };
 
   const getImageProfile = async (data: IData) => {

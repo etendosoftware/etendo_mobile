@@ -20,6 +20,7 @@ import { useUser } from "../../../hook/useUser";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import { selectData, setSelectedUrl } from "../../../redux/user";
 import { setIsDemo, setLoadingScreen } from "../../../redux/window";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -58,8 +59,8 @@ const LoginFunctional = (props) => {
   };
 
   const submitLogin = async () => {
+    dispatch(setLoadingScreen(true));
     try {
-      dispatch(setLoadingScreen(true));
       try {
         setError(false);
         if (validateCredentials()) {
@@ -166,6 +167,8 @@ const LoginFunctional = (props) => {
     dispatch(setLoadingScreen(true));
 
     await setUrlOB(demoUrl);
+    await AsyncStorage.setItem("baseUrl", demoUrl);
+    await AsyncStorage.setItem("selectedUrl", demoUrl);
     await login(AdminUsername, AdminPassword);
     await getImageProfile(data);
     dispatch(setSelectedUrl(demoUrl));
