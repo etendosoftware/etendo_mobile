@@ -14,6 +14,9 @@ export const deviceStyles = {
   languageContainerStyles: isDeviceTablet
     ? styleSheet.languageContainerTablet
     : styleSheet.languageContainer,
+  debugContainerStyles: isDeviceTablet
+    ? styleSheet.debugContainerTablet
+    : styleSheet.debugContainer,
   logoImageStyles: styleSheet.logoImage,
   logoTitleStyles: isDeviceTablet
     ? styleSheet.logoTitleTablet
@@ -57,5 +60,6 @@ export const deviceStyles = {
   buttonClose: styleSheet.buttonClose,
   findingImageContainer: styleSheet.findingImageContainer,
   copyrightTablet: styleSheet.copyrightTablet,
-  backIcon: styleSheet.backIcon
+  backIcon: styleSheet.backIcon,
+  debugText: styleSheet.debugText
 };

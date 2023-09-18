@@ -47,6 +47,7 @@ const Settings = (props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
+  const [debugUrl, setDebugUrl] = useState<string>("");
 
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -268,6 +269,31 @@ const Settings = (props) => {
             />
           </View>
 
+          {!isTablet() && (
+            <View style={styles.debugContainerStyles}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={debugUrl}
+                onChangeText={(value) => setDebugUrl(value)}
+                height={43}
+                centerText={true}
+              />
+              <ButtonUI
+                height={40}
+                width={90}
+                typeStyle="primary"
+                onPress={() => {
+                  console.log("Debug URL guardado:", debugUrl);
+                }}
+                text={locale.t("Settings:Save")}
+              />
+            </View>
+          )}
+
           <Portal>
             <Dialog
               visible={showChangeURLModal}
@@ -358,7 +384,37 @@ const Settings = (props) => {
             </Dialog>
           </Portal>
         </View>
+
+        {isTablet() && (
+          <View style={styles.containerCardStyle}>
+            <View style={styles.containerUrlStyle}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={debugUrl}
+                onChangeText={(value) => setDebugUrl(value)}
+                height={43}
+                centerText={true}
+              />
+              <ButtonUI
+                height={40}
+                width={90}
+                typeStyle="primary"
+                onPress={() => {
+                  console.log("Debug URL guardado:", debugUrl);
+                }}
+                text={locale.t("Settings:Save")}
+              />
+            </View>
+            <View style={styles.logoContainerStyles} />
+            <View style={styles.languageContainerStyles} />
+          </View>
+        )}
       </View>
+
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
           <Text allowFontScaling={false}>

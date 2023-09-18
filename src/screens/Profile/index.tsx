@@ -44,7 +44,7 @@ const Profile = (props) => {
           console.log(err);
         });
     }
-  }, []);
+  }, [data]);
 
   const getBackgroundProfile = () => {
     return isTablet()

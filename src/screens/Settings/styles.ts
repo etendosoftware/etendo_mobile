@@ -213,8 +213,28 @@ const styles = StyleSheet.create({
   },
   languageContainerTablet: {
     width: "33%",
-    paddingLeft: 20
+    paddingLeft: 20,
+    marginVertical: 0
   },
+  debugText: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_60,
+    fontSize: 12,
+    lineHeight: 18,
+    paddingBottom: 8
+  },
+  debugContainerTablet: {
+    width: "100%",
+    borderTopWidth: 0
+  },
+  debugContainer: {
+    paddingVertical: 24,
+    marginHorizontal: 20,
+    fontFamily: "Inter-SemiBold",
+    borderTopWidth: 1,
+    borderTopColor: NEUTRAL_30
+  },
+
   languageText: {
     fontFamily: "Inter-SemiBold",
     color: NEUTRAL_60,
