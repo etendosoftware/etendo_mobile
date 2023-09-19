@@ -189,12 +189,11 @@ const Settings = (props) => {
     if (data) {
       Promise.all([getRoleName(data)])
         .then((values) => {
-          console.log("values", values);
           const [role] = values;
           setRole(role);
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function(error) {
+          console.error(error);
         });
     }
   }, [data]);
@@ -426,9 +425,7 @@ const Settings = (props) => {
                 height={40}
                 width={90}
                 typeStyle="primary"
-                onPress={() => {
-                  console.log("Debug URL guardado:", debugUrl);
-                }}
+                onPress={() => {}}
                 text={locale.t("Settings:Save")}
               />
             </View>
