@@ -19,6 +19,7 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
+  selectData,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
@@ -30,6 +31,12 @@ import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getClientName,
+  getOrganizationName,
+  getRoleName,
+  getWarehouseName
+} from "../../globals/getRoleInformation";
 
 const Settings = (props) => {
   //Images
@@ -41,7 +48,7 @@ const Settings = (props) => {
   const [modalUrl, setModalUrl] = useState<string>(null);
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
-
+  const [role, setRole] = useState<string>("");
   const [displayLanguage, setDisplayLanguage] = useState<string>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
@@ -174,6 +181,24 @@ const Settings = (props) => {
     setShowChangeURLModal(false);
   };
 
+  // use redux
+  const data = useAppSelector(selectData);
+
+  // use effect to get role
+  useEffect(() => {
+    if (data) {
+      Promise.all([getRoleName(data)])
+        .then((values) => {
+          console.log("values", values);
+          const [role] = values;
+          setRole(role);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    }
+  }, [data]);
+
   return (
     <>
       <View style={styles.container}>
@@ -269,7 +294,7 @@ const Settings = (props) => {
             />
           </View>
 
-          {!isTablet() && (
+          {!isTablet() && role === "System Administrator" && (
             <View style={styles.debugContainerStyles}>
               <Text style={styles.debugText}>
                 {locale.t("Settings:DebugURL")}
@@ -286,9 +311,7 @@ const Settings = (props) => {
                 height={40}
                 width={90}
                 typeStyle="primary"
-                onPress={() => {
-                  console.log("Debug URL guardado:", debugUrl);
-                }}
+                onPress={() => {}}
                 text={locale.t("Settings:Save")}
               />
             </View>
@@ -385,7 +408,7 @@ const Settings = (props) => {
           </Portal>
         </View>
 
-        {isTablet() && (
+        {isTablet() && role === "System Administrator" && (
           <View style={styles.containerCardStyle}>
             <View style={styles.containerUrlStyle}>
               <Text style={styles.debugText}>
