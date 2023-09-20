@@ -1,5 +1,11 @@
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux";
-import { selectSelectedUrl, selectToken } from "../redux/user";
+import {
+  selectDevUrl,
+  selectSelectedUrl,
+  selectToken,
+  setDevUrl
+} from "../redux/user";
 import {
   selectWindows,
   setAppData,
@@ -17,6 +23,7 @@ export const useWindow = () => {
   const windows = useAppSelector(selectWindows);
   const token = useAppSelector(selectToken);
   const selectedUrl = useAppSelector(selectSelectedUrl);
+  const devUrl = useAppSelector(selectDevUrl);
 
   const loadWindows = async (token) => {
     try {
@@ -26,6 +33,10 @@ export const useWindow = () => {
       throw new Error(error);
     }
   };
+
+  useEffect(() => {
+    dispatch(setDevUrl(devUrl));
+  }, [devUrl]);
 
   const unloadWindows = () => {
     dispatch(setWindows([]));
@@ -78,8 +89,6 @@ export const useWindow = () => {
       });
   };
 
-  const DEV_URL = "http://10.0.2.2:3000";
-
   const listWindows = async (appsData: any[]) => {
     const mi = appsData.map((app: any) => {
       const path = app.path.split("/");
@@ -87,7 +96,7 @@ export const useWindow = () => {
       return {
         name: app.etdappAppName,
         __id: __id,
-        url: app.etdappAppVersionIsDev ? `${DEV_URL}` : selectedUrl,
+        url: app.etdappAppVersionIsDev ? devUrl : selectedUrl,
         isDev: app.etdappAppVersionIsDev
       };
     });

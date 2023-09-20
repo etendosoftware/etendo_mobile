@@ -62,6 +62,7 @@
   "Settings:Language": "Idioma",
   "Settings:DebugURL": "Url de Depuración",
   "Settings:DebugURLPlaceholder": "Ingresa la URL de desarrollo",
+  "Settings:DebugURLSaved": "URL de depuración guardada",
   "Settings:Save": "Guardar",
   "Settings:ImageNotFound": "Imagen no encontrada",
   "Settings:ImageNotFoundServer": "El servidor no pudo encontrar el logo de la empresa.",

@@ -63,6 +63,7 @@
   "Settings:Save": "Save",
   "Settings:DebugURL": "Debug URL",
   "Settings:DebugURLPlaceholder": "Enter development URL",
+  "Settings:DebugURLSaved": "Development URL saved",
   "Settings:Server": "Server",
   "Settings:ChangeURL": "Change URL",
   "Settings:NewLink": "Add new Link +",

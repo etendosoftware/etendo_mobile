@@ -44,7 +44,7 @@ export const useUser = () => {
   // all that is setted here is available in the whole app (redux)
   const atAppInit = async () => {
     // Async storage
-    const currentToken = token;
+    const currentToken = await AsyncStorage.getItem("token");
     const currentLanguage = await AsyncStorage.getItem("selectedLanguage");
     const storedEnviromentsUrl = await AsyncStorage.getItem(
       "storedEnviromentsUrl"

@@ -9,12 +9,13 @@ import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import { useAppDispatch, useAppSelector } from "./redux";
-import { selectData, selectToken, selectUser } from "./redux/user";
+import { selectData, selectToken, selectUser, setDevUrl } from "./redux/user";
 import { useUser } from "./hook/useUser";
 import { languageDefault } from "./src/helpers/getLanguajes";
 import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
 import { Camera } from "react-native-vision-camera";
 import { deviceOrientation } from "./src/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {}
 type RootStackParamList = {
@@ -43,8 +44,22 @@ const App: React.FC<Props> = () => {
       await atAppInit();
     };
 
+    const fetchDevURL = async () => {
+      try {
+        const fetchedDevUrl = await AsyncStorage.getItem("debugURL");
+        if (fetchedDevUrl) {
+          dispatch(setDevUrl(fetchedDevUrl));
+        } else {
+          dispatch(setDevUrl("http://10.0.2.2:3000"));
+        }
+      } catch (error) {
+        console.error("Error fetching debugURL:", error);
+      }
+    };
+
     fetchInitialData();
     checkPermission();
+    fetchDevURL();
   }, []);
 
   const checkPermission = async () => {

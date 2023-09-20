@@ -22,30 +22,38 @@ import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectData,
+  selectDevUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
+  setDevUrl,
   setSelectedUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  getClientName,
-  getOrganizationName,
-  getRoleName,
-  getWarehouseName
-} from "../../globals/getRoleInformation";
+import { getRoleName } from "../../globals/getRoleInformation";
+import Toast from "react-native-toast-message";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
-  //States
+
+  // use redux
+  const dispatch = useAppDispatch();
+  const token = useAppSelector(selectToken);
+  const languagesList = useAppSelector(selectStoredLanguages);
+  const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
+  const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
+  const devUrl = useAppSelector(selectDevUrl);
+
+  // local states
   const [url, setUrl] = useState<string>("");
   const [modalUrl, setModalUrl] = useState<string>("");
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
@@ -56,15 +64,6 @@ const Settings = (props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
-  const [debugUrl, setDebugUrl] = useState<string>("");
-
-  // use redux
-  const dispatch = useAppDispatch();
-  const token = useAppSelector(selectToken);
-  const languagesList = useAppSelector(selectStoredLanguages);
-  const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
-  const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
-  const selectedUrl = useAppSelector(selectSelectedUrl);
 
   const {
     loadEnviromentsUrl,
@@ -197,6 +196,20 @@ const Settings = (props) => {
     }
   }, [data]);
 
+  // save debug URL
+  const saveDebugURL = async () => {
+    await AsyncStorage.setItem("debugURL", devUrl);
+    dispatch(setDevUrl(devUrl));
+    // show toastify
+    Toast.show({
+      type: "success",
+      position: "bottom",
+      text1: locale.t("Settings:DebugURLSaved"),
+      visibilityTime: 3000,
+      autoHide: true
+    });
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -300,8 +313,8 @@ const Settings = (props) => {
               <Input
                 typeField="textInput"
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={debugUrl}
-                onChangeText={(value) => setDebugUrl(value)}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
                 height={43}
                 centerText={true}
               />
@@ -309,7 +322,7 @@ const Settings = (props) => {
                 height={40}
                 width={90}
                 typeStyle="primary"
-                onPress={() => {}}
+                onPress={saveDebugURL}
                 text={locale.t("Settings:Save")}
               />
             </View>
@@ -417,8 +430,8 @@ const Settings = (props) => {
               <Input
                 typeField="textInput"
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={debugUrl}
-                onChangeText={(value) => setDebugUrl(value)}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
                 height={43}
                 centerText={true}
               />
