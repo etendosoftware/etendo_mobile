@@ -13,8 +13,9 @@ import { isTablet } from "../../../hook/isTablet";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
-import { selectBindaryImg, selectData } from "../../../redux/user";
+import { selectBindaryImg, selectData, selectToken } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
+import { OBRest } from "etrest";
 
 const Profile = (props) => {
   //States
@@ -23,10 +24,12 @@ const Profile = (props) => {
   const [client, setClient] = useState<string>("");
   const [warehouse, setWarehouse] = useState<string>("");
   const data = useAppSelector(selectData);
+  const token = useAppSelector(selectToken);
   const bindaryImg = useAppSelector(selectBindaryImg);
 
   useEffect(() => {
     if (data) {
+      OBRest.loginWithToken(token);
       Promise.all([
         getOrganizationName(data),
         getRoleName(data),
@@ -35,10 +38,10 @@ const Profile = (props) => {
       ])
         .then((values) => {
           const [org, role, warehouse, client] = values;
-          setRole(role);
           setOrg(org);
-          setClient(client);
+          setRole(role);
           setWarehouse(warehouse);
+          setClient(client);
         })
         .catch(function(err) {
           console.log(err);
