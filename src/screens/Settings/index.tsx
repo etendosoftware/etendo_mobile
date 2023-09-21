@@ -37,6 +37,7 @@ import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getRoleName } from "../../globals/getRoleInformation";
 import Toast from "react-native-toast-message";
+import { References } from "../../constants/References";
 
 const Settings = (props) => {
   //Images
@@ -305,7 +306,7 @@ const Settings = (props) => {
             />
           </View>
 
-          {!isTablet() && role === "System Administrator" && (
+          {!isTablet() && role === References.SystemAdministrator && (
             <View style={styles.debugContainerStyles}>
               <Text style={styles.debugText}>
                 {locale.t("Settings:DebugURL")}
@@ -421,7 +422,7 @@ const Settings = (props) => {
           </Modal>
         </View>
 
-        {isTablet() && role === "System Administrator" && (
+        {isTablet() && role === References.SystemAdministrator && (
           <View style={styles.containerCardStyle}>
             <View style={styles.containerUrlStyle}>
               <Text style={styles.debugText}>
