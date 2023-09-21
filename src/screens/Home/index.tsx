@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
@@ -11,9 +11,15 @@ import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDro
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
-import { selectData, selectSelectedLanguage } from "../../../redux/user";
+import {
+  selectData,
+  selectSelectedLanguage,
+  selectSelectedUrl,
+  selectToken
+} from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
 import { selectLoading, selectMenuItems } from "../../../redux/window";
+import { OBRest } from "etrest";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -29,6 +35,13 @@ const HomeFunction = (props: Props) => {
   const data = useAppSelector(selectData);
   const loading = useAppSelector(selectLoading);
   const menuItems = useAppSelector(selectMenuItems);
+  const token = useAppSelector(selectToken);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
+
+  useMemo(() => {
+    OBRest.init(new URL(selectedUrl), token);
+    OBRest.loginWithToken(token);
+  }, [])
 
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
