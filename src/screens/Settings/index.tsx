@@ -1,11 +1,17 @@
 //Imports
-import React, { useEffect, useState, useCallback } from "react";
-import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  ScrollView,
+  Image,
+  Text,
+  TouchableOpacity,
+  Modal
+} from "react-native";
 import locale from "../../i18n/locale";
-import { withTheme, Dialog, Portal } from "react-native-paper";
+import { withTheme, Dialog } from "react-native-paper";
 import {
   setUrl as setUrlOB,
-  getUrl,
   formatUrl,
   resetLocalUrl
 } from "../../ob-api/ob";
@@ -37,16 +43,16 @@ const Settings = (props) => {
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
   //States
-  const [url, setUrl] = useState<string>(null);
-  const [modalUrl, setModalUrl] = useState<string>(null);
+  const [url, setUrl] = useState<string>("");
+  const [modalUrl, setModalUrl] = useState<string>("");
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
 
-  const [displayLanguage, setDisplayLanguage] = useState<string>(null);
+  const [displayLanguage, setDisplayLanguage] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
-  const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
+  const [valueEnvUrl, setValueEnvUrl] = useState<string>("");
 
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -156,10 +162,6 @@ const Settings = (props) => {
     setHasErrorLogo(false);
   }, [url]);
 
-  const setEnv = useCallback((value: any) => {
-    setValueEnvUrl(value);
-  }, []);
-
   const atChooseOption = async (value: string) => {
     dispatch(setSelectedUrl(value));
     await AsyncStorage.setItem("selectedUrl", value);
@@ -268,7 +270,7 @@ const Settings = (props) => {
             />
           </View>
 
-          <Portal>
+          <Modal visible={showChangeURLModal} transparent>
             <Dialog
               visible={showChangeURLModal}
               onDismiss={hideChangeURLModal}
@@ -300,10 +302,12 @@ const Settings = (props) => {
                     {locale.t("Settings:EnviromentURL")}
                   </Text>
                   <Input
-                    typeField="textInput"
+                    typeField={"textInput"}
                     placeholder={locale.t("Settings:InputPlaceholder")}
                     value={valueEnvUrl}
-                    onChangeText={setEnv}
+                    onChangeText={(valueEnvUrl) => {
+                      setValueEnvUrl(valueEnvUrl);
+                    }}
                     height={50}
                   />
                   <View style={{ height: 12 }} />
@@ -356,7 +360,7 @@ const Settings = (props) => {
                 </View>
               </Dialog.Content>
             </Dialog>
-          </Portal>
+          </Modal>
         </View>
       </View>
       {isTablet() ? (
