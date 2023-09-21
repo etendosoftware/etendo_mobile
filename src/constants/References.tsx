@@ -21,5 +21,6 @@ export enum References {
   PAttribute = "35",
   Button = "28",
   AdminUsername = "admin",
-  AdminPassword = "admin" 
+  AdminPassword = "admin",
+  SystemAdministrator = "System Administrator"
 }

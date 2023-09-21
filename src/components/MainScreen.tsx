@@ -9,7 +9,6 @@ import { Etendo } from "../helpers/Etendo";
 import {
   selectData,
   selectSelectedLanguage,
-  selectSelectedUrl,
   selectToken,
   selectUser
 } from "../../redux/user";
@@ -20,10 +19,9 @@ const HomePage = ({ route, navigation }: any) => {
   const user = useAppSelector(selectUser);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
-  const selectedUrl = useAppSelector(selectSelectedUrl);
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = selectedUrl;
+    const url = route.params.url;
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
 

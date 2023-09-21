@@ -9,12 +9,8 @@ import {
   Modal
 } from "react-native";
 import locale from "../../i18n/locale";
-import { withTheme, Dialog } from "react-native-paper";
-import {
-  setUrl as setUrlOB,
-  formatUrl,
-  resetLocalUrl
-} from "../../ob-api/ob";
+import { withTheme, Dialog, Portal } from "react-native-paper";
+import { setUrl as setUrlOB, formatUrl, resetLocalUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
@@ -25,41 +21,50 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
+  selectData,
+  selectDevUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
   selectToken,
+  setDevUrl,
   setSelectedUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRoleName } from "../../globals/getRoleInformation";
+import Toast from "react-native-toast-message";
+import { References } from "../../constants/References";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
-  //States
-  const [url, setUrl] = useState<string>("");
-  const [modalUrl, setModalUrl] = useState<string>("");
-  const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
-  const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
 
-  const [displayLanguage, setDisplayLanguage] = useState<string>("");
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
-  const [storedDataUrl, setStoredDataUrl] = useState([]);
-  const [appVersion, setAppVersion] = useState<string>(version);
-  const [valueEnvUrl, setValueEnvUrl] = useState<string>("");
-
+  // use redux
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
   const languagesList = useAppSelector(selectStoredLanguages);
   const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
+  const devUrl = useAppSelector(selectDevUrl);
+
+  // local states
+  const [url, setUrl] = useState<string>("");
+  const [modalUrl, setModalUrl] = useState<string>("");
+  const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
+  const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
+  const [displayLanguage, setDisplayLanguage] = useState<string>(null);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [storedDataUrl, setStoredDataUrl] = useState([]);
+  const [appVersion, setAppVersion] = useState<string>(version);
+  const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
 
   const {
     loadEnviromentsUrl,
@@ -175,6 +180,37 @@ const Settings = (props) => {
     setShowChangeURLModal(false);
   };
 
+  // use redux
+  const data = useAppSelector(selectData);
+
+  // use effect to get role
+  useEffect(() => {
+    if (data) {
+      Promise.all([getRoleName(data)])
+        .then((values) => {
+          const [role] = values;
+          setRole(role);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    }
+  }, [data]);
+
+  // save debug URL
+  const saveDebugURL = async () => {
+    await AsyncStorage.setItem("debugURL", devUrl);
+    dispatch(setDevUrl(devUrl));
+    // show toastify
+    Toast.show({
+      type: "success",
+      position: "bottom",
+      text1: locale.t("Settings:DebugURLSaved"),
+      visibilityTime: 3000,
+      autoHide: true
+    });
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -270,6 +306,29 @@ const Settings = (props) => {
             />
           </View>
 
+          {!isTablet() && role === References.SystemAdministrator && (
+            <View style={styles.debugContainerStyles}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
+                height={43}
+                centerText={true}
+              />
+              <ButtonUI
+                height={40}
+                width={90}
+                typeStyle="primary"
+                onPress={saveDebugURL}
+                text={locale.t("Settings:Save")}
+              />
+            </View>
+          )}
+
           <Modal visible={showChangeURLModal} transparent>
             <Dialog
               visible={showChangeURLModal}
@@ -362,7 +421,35 @@ const Settings = (props) => {
             </Dialog>
           </Modal>
         </View>
+
+        {isTablet() && role === References.SystemAdministrator && (
+          <View style={styles.containerCardStyle}>
+            <View style={styles.containerUrlStyle}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
+                height={43}
+                centerText={true}
+              />
+              <ButtonUI
+                height={40}
+                width={90}
+                typeStyle="primary"
+                onPress={saveDebugURL}
+                text={locale.t("Settings:Save")}
+              />
+            </View>
+            <View style={styles.logoContainerStyles} />
+            <View style={styles.languageContainerStyles} />
+          </View>
+        )}
       </View>
+
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
           <Text allowFontScaling={false}>
