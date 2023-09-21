@@ -38,12 +38,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getRoleName } from "../../globals/getRoleInformation";
 import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
+import { selectIsDemo } from "../../../redux/window";
 
 const Settings = (props) => {
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
+  const demoUrl = "https://demo.etendo.cloud/etendo/";
 
   // use redux
   const dispatch = useAppDispatch();
@@ -53,6 +55,7 @@ const Settings = (props) => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const devUrl = useAppSelector(selectDevUrl);
+  const isDemoTry = useAppSelector(selectIsDemo);
 
   // local states
   const [url, setUrl] = useState<string>("");
@@ -234,6 +237,7 @@ const Settings = (props) => {
               typeField="picker"
               placeholder={locale.t("Settings:InputPlaceholder")}
               value={
+                isDemoTry ? demoUrl :
                 storedEnviromentsUrl.length == 1
                   ? storedEnviromentsUrl
                   : storedEnviromentsUrl.length > 1
