@@ -233,7 +233,13 @@ const Settings = (props) => {
             <Input
               typeField="picker"
               placeholder={locale.t("Settings:InputPlaceholder")}
-              value={url}
+              value={
+                storedEnviromentsUrl.length == 1
+                  ? storedEnviromentsUrl
+                  : storedEnviromentsUrl.length > 1
+                  ? url
+                  : null
+              }
               onOptionSelected={(option: any) => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);

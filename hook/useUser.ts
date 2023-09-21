@@ -120,7 +120,7 @@ export const useUser = () => {
 
   // Savings
   const saveEnviromentsUrl = async (storedEnviromentsUrl) => {
-    if (storedEnviromentsUrl && storedEnviromentsUrl.length) {
+    if (storedEnviromentsUrl) {
       dispatch(setStoredEnviromentsUrl(storedEnviromentsUrl));
       await AsyncStorage.setItem(
         "storedEnviromentsUrl",
