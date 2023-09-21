@@ -30,7 +30,6 @@ import {
   languageByDefault
 } from "../src/i18n/config";
 import { setUrl } from "../src/ob-api/ob";
-import { getOrganizationName } from "../src/globals/getRoleInformation";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -100,8 +99,6 @@ export const useUser = () => {
         OBRest.init(new URL(selectedUrlStored), storedToken);
         OBRest.loginWithToken(storedToken);
         await loadWindows(storedToken);
-        const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
-        const algo = await getOrganizationName(dataUser);
       } catch (ignored) {}
     }
 
