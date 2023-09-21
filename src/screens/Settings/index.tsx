@@ -439,7 +439,7 @@ const Settings = (props) => {
                 height={40}
                 width={90}
                 typeStyle="primary"
-                onPress={() => {}}
+                onPress={saveDebugURL}
                 text={locale.t("Settings:Save")}
               />
             </View>
