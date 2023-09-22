@@ -25,7 +25,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
 const windowDimensions = Dimensions.get("window");
-const demoUrl = "https://demo.etendo.cloud/etendo/";
 const url = getUrl();
 
 const deviceIsATablet = isTablet();
@@ -54,7 +53,7 @@ const LoginFunctional = (props) => {
     return (
       username === AdminUsername &&
       password === AdminPassword &&
-      url.toString() === demoUrl
+      url.toString() === References.DemoUrl
     );
   };
 
@@ -166,12 +165,12 @@ const LoginFunctional = (props) => {
   const demo = async () => {
     dispatch(setLoadingScreen(true));
 
-    await setUrlOB(demoUrl);
-    await AsyncStorage.setItem("baseUrl", demoUrl);
-    await AsyncStorage.setItem("selectedUrl", demoUrl);
+    await setUrlOB(References.DemoUrl);
+    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
     await login(AdminUsername, AdminPassword);
     await getImageProfile(data);
-    dispatch(setSelectedUrl(demoUrl));
+    dispatch(setSelectedUrl(References.DemoUrl));
     dispatch(setLoadingScreen(false));
     dispatch(setIsDemo(true));
   };

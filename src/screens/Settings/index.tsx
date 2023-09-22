@@ -45,7 +45,6 @@ const Settings = (props) => {
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
   const defaultLogo = require("../../../assets/your-company.png");
-  const demoUrl = "https://demo.etendo.cloud/etendo/";
 
   // use redux
   const dispatch = useAppDispatch();
@@ -237,7 +236,7 @@ const Settings = (props) => {
               typeField="picker"
               placeholder={locale.t("Settings:InputPlaceholder")}
               value={
-                isDemoTry ? demoUrl :
+                isDemoTry ? References.DemoUrl :
                 storedEnviromentsUrl.length == 1
                   ? storedEnviromentsUrl
                   : storedEnviromentsUrl.length > 1
