@@ -18,7 +18,11 @@ import { References } from "../../constants/References";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useUser } from "../../../hook/useUser";
 import { useAppSelector, useAppDispatch } from "../../../redux";
-import { selectData, setSelectedUrl } from "../../../redux/user";
+import {
+  selectData,
+  setSelectedUrl,
+  setStoredEnviromentsUrl
+} from "../../../redux/user";
 import { setIsDemo, setLoadingScreen } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -44,6 +48,7 @@ const LoginFunctional = (props) => {
   const [error, setError] = useState<boolean>(false);
 
   const data = useAppSelector(selectData);
+  const storedEnviromentsUrl = AsyncStorage.getItem("storedEnviromentsUrl");
   const dispatch = useAppDispatch();
   const { login, logout, getImageProfile } = useUser();
 
@@ -173,6 +178,13 @@ const LoginFunctional = (props) => {
     dispatch(setSelectedUrl(References.DemoUrl));
     dispatch(setLoadingScreen(false));
     dispatch(setIsDemo(true));
+    await AsyncStorage.setItem("isDemoTry", "Y");
+    dispatch(
+      setStoredEnviromentsUrl([
+        ...(await storedEnviromentsUrl),
+        References.DemoUrl
+      ])
+    );
   };
 
   const welcomeText = (): string => {
@@ -251,7 +263,7 @@ const LoginFunctional = (props) => {
                 height={43}
                 width={98}
                 typeStyle="terciary"
-                onPress={async () => await demo()}
+                onPress={() => demo()}
                 text={locale.t("DemoTry")}
               />
             </View>

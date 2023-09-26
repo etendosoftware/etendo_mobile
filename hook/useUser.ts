@@ -152,6 +152,7 @@ export const useUser = () => {
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
+    await AsyncStorage.removeItem("isDemoTry");
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");
