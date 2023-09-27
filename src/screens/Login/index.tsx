@@ -73,6 +73,7 @@ const LoginFunctional = (props) => {
           dispatch(setLoadingScreen(false));
         }
       } catch (error) {
+        console.log("error.message: ", error.message);
         setError(true);
         dispatch(setLoadingScreen(false));
         if (error.message.includes("Invalid user name or password")) {
@@ -98,6 +99,17 @@ const LoginFunctional = (props) => {
             type: "error",
             position: "bottom",
             text1: locale.t("LoginScreen:NetworkError"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        } else if (
+          error.message.includes("undefined") &&
+          error.message.includes("replace")
+        ) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("LoginScreen:ServerError"),
             visibilityTime: 3000,
             autoHide: true
           });

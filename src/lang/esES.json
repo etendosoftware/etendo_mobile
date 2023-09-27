@@ -40,6 +40,7 @@
   "LoginScreen:URLNotFound": "Error de servidor. Verifica URL en configuración.",
   "LoginScreen:LogoNotFound": "Atención: No se ha encontrado el logo.",
   "LoginScreen:NetworkError": "Acceso al servidor fallido.",
+  "LoginScreen:ServerError": "Error de servidor. Verifica configuración.",
   "Drawer:Applications": "Aplicaciones",
   "Home:ChooseFromTheMenu": "Elige una entrada desde el menú.",
   "Home:Title": "Inicio",
