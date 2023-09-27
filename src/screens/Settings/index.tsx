@@ -77,13 +77,15 @@ const Settings = (props) => {
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
-      if (storedEnviromentsUrl) {
+      if (storedEnviromentsUrl.length > 0) {
         setStoredDataUrl(storedEnviromentsUrl);
+        const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+        setUrl(selectedUrl || selectedUrlStored);
+        setAppVersion(tmpAppVersion);
+        setModalUrl(url ? url.toString() : selectedUrl);
+      } else {
+        await AsyncStorage.removeItem("selectedUrl");
       }
-      const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
-      setUrl(selectedUrl || selectedUrlStored);
-      setAppVersion(tmpAppVersion);
-      setModalUrl(url ? url.toString() : selectedUrl);
     };
     fetchUrlAndLogo();
   }, []);
@@ -236,8 +238,9 @@ const Settings = (props) => {
               typeField="picker"
               placeholder={locale.t("Settings:InputPlaceholder")}
               value={
-                isDemoTry ? References.DemoUrl :
-                storedEnviromentsUrl.length == 1
+                isDemoTry
+                  ? References.DemoUrl
+                  : storedEnviromentsUrl.length == 1
                   ? storedEnviromentsUrl
                   : storedEnviromentsUrl.length > 1
                   ? url
