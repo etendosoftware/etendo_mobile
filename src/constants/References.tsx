@@ -23,5 +23,6 @@ export enum References {
   AdminUsername = "admin",
   AdminPassword = "admin",
   SystemAdministrator = "System Administrator",
-  DemoUrl= "https://demo.etendo.cloud/etendo/"
+  DemoUrl= "https://demo.etendo.cloud/etendo/",
+  YES = "YES"
 }

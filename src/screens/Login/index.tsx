@@ -178,7 +178,7 @@ const LoginFunctional = (props) => {
     dispatch(setSelectedUrl(References.DemoUrl));
     dispatch(setLoadingScreen(false));
     dispatch(setIsDemo(true));
-    await AsyncStorage.setItem("isDemoTry", "Y");
+    await AsyncStorage.setItem("isDemoTry", References.YES);
     dispatch(
       setStoredEnviromentsUrl([
         ...(await storedEnviromentsUrl),
