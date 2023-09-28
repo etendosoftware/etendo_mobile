@@ -39,7 +39,7 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     return Toast.show({
       type: "error",
       position: "bottom",
-      text1: locale.t("LoginScreen:NetworkError"),
+      text1: locale.t("LoginScreen:ServerError"),
       visibilityTime: 7000,
       autoHide: true,
       topOffset: 30,
