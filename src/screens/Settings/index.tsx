@@ -91,7 +91,9 @@ const Settings = (props) => {
   }, []);
 
   const loadServerLogo = (url: string) => {
-    return url ? { uri: url + logoUri } : defaultLogo;
+    return url && storedEnviromentsUrl.length > 0
+      ? { uri: url + logoUri }
+      : defaultLogo;
   };
 
   const showChangeURLModalFn = () => {
