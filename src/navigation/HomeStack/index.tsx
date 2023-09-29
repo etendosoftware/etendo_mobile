@@ -8,7 +8,7 @@ import Home from "../../screens/Home";
 import Settings from "../../screens/Settings";
 import Profile from "../../screens/Profile";
 import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
-import { UserNoBorder } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorder";
+import { UserNoBorderIcon } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorderIcon";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import pkg from "../../../package.json";
 import {
@@ -125,6 +125,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         {showNavbar && (
           <Navbar
             title={locale.t("WelcomeToEtendoHome")}
+            isVisibleMenu={showNavbar}
             profileImage={
               bindaryImg && (
                 <Image
@@ -134,10 +135,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
                 />
               )
             }
-            optionsProfile={[
+            profileOptions={[
               {
                 title: locale.t("Profile"),
-                image: <UserNoBorder />,
+                image: <UserNoBorderIcon />,
                 route: "Profile"
               },
               {
@@ -159,7 +160,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             onPressLogo={() => {
               navigation.navigate("Home");
             }}
-            onPressMenuBurger={() => {
+            onPressMenu={() => {
               setShowDrawer(true);
             }}
           />
