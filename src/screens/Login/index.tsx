@@ -18,14 +18,17 @@ import { References } from "../../constants/References";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useUser } from "../../../hook/useUser";
 import { useAppSelector, useAppDispatch } from "../../../redux";
-import { selectData, setSelectedUrl } from "../../../redux/user";
+import {
+  selectData,
+  setSelectedUrl,
+  setStoredEnviromentsUrl
+} from "../../../redux/user";
 import { setIsDemo, setLoadingScreen } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
 const windowDimensions = Dimensions.get("window");
-const demoUrl = "https://demo.etendo.cloud/etendo/";
 const url = getUrl();
 
 const deviceIsATablet = isTablet();
@@ -45,6 +48,7 @@ const LoginFunctional = (props) => {
   const [error, setError] = useState<boolean>(false);
 
   const data = useAppSelector(selectData);
+  const storedEnviromentsUrl = AsyncStorage.getItem("storedEnviromentsUrl");
   const dispatch = useAppDispatch();
   const { login, logout, getImageProfile } = useUser();
 
@@ -54,7 +58,7 @@ const LoginFunctional = (props) => {
     return (
       username === AdminUsername &&
       password === AdminPassword &&
-      url.toString() === demoUrl
+      url.toString() === References.DemoUrl
     );
   };
 
@@ -178,14 +182,21 @@ const LoginFunctional = (props) => {
   const demo = async () => {
     dispatch(setLoadingScreen(true));
 
-    await setUrlOB(demoUrl);
-    await AsyncStorage.setItem("baseUrl", demoUrl);
-    await AsyncStorage.setItem("selectedUrl", demoUrl);
+    await setUrlOB(References.DemoUrl);
+    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
     await login(AdminUsername, AdminPassword);
     await getImageProfile(data);
-    dispatch(setSelectedUrl(demoUrl));
+    dispatch(setSelectedUrl(References.DemoUrl));
     dispatch(setLoadingScreen(false));
     dispatch(setIsDemo(true));
+    await AsyncStorage.setItem("isDemoTry", References.YES);
+    dispatch(
+      setStoredEnviromentsUrl([
+        ...(await storedEnviromentsUrl),
+        References.DemoUrl
+      ])
+    );
   };
 
   const welcomeText = (): string => {
@@ -264,7 +275,7 @@ const LoginFunctional = (props) => {
                 height={43}
                 width={98}
                 typeStyle="terciary"
-                onPress={async () => await demo()}
+                onPress={() => demo()}
                 text={locale.t("DemoTry")}
               />
             </View>
