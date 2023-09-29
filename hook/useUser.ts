@@ -120,7 +120,7 @@ export const useUser = () => {
 
   // Savings
   const saveEnviromentsUrl = async (storedEnviromentsUrl) => {
-    if (storedEnviromentsUrl && storedEnviromentsUrl.length) {
+    if (storedEnviromentsUrl) {
       dispatch(setStoredEnviromentsUrl(storedEnviromentsUrl));
       await AsyncStorage.setItem(
         "storedEnviromentsUrl",
@@ -152,6 +152,7 @@ export const useUser = () => {
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
+    await AsyncStorage.removeItem("isDemoTry");
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");

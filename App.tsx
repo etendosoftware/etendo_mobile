@@ -12,10 +12,11 @@ import { useAppDispatch, useAppSelector } from "./redux";
 import { selectData, selectToken, selectUser, setDevUrl } from "./redux/user";
 import { useUser } from "./hook/useUser";
 import { languageDefault } from "./src/helpers/getLanguajes";
-import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
+import { selectLoadingScreen, setIsDemo, setLoadingScreen } from "./redux/window";
 import { Camera } from "react-native-vision-camera";
 import { deviceOrientation } from "./src/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { References } from "./src/constants/References";
 
 interface Props {}
 type RootStackParamList = {
@@ -41,6 +42,10 @@ const App: React.FC<Props> = () => {
       }
       await languageDefault();
       dispatch(setLoadingScreen(false));
+      const IsDemoTry = await AsyncStorage.getItem("isDemoTry");
+      if (IsDemoTry === References.YES){
+        dispatch(setIsDemo(true))
+      }
       await atAppInit();
     };
 

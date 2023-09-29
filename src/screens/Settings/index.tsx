@@ -38,6 +38,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getRoleName } from "../../globals/getRoleInformation";
 import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
+import { selectIsDemo } from "../../../redux/window";
 
 const Settings = (props) => {
   //Images
@@ -53,6 +54,7 @@ const Settings = (props) => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const devUrl = useAppSelector(selectDevUrl);
+  const isDemoTry = useAppSelector(selectIsDemo);
 
   // local states
   const [url, setUrl] = useState<string>("");
@@ -75,19 +77,23 @@ const Settings = (props) => {
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
-      if (storedEnviromentsUrl) {
+      if (storedEnviromentsUrl.length > 0) {
         setStoredDataUrl(storedEnviromentsUrl);
+        const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+        setUrl(selectedUrl || selectedUrlStored);
+        setAppVersion(tmpAppVersion);
+        setModalUrl(url ? url.toString() : selectedUrl);
+      } else {
+        await AsyncStorage.removeItem("selectedUrl");
       }
-      const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
-      setUrl(selectedUrl || selectedUrlStored);
-      setAppVersion(tmpAppVersion);
-      setModalUrl(url ? url.toString() : selectedUrl);
     };
     fetchUrlAndLogo();
   }, []);
 
   const loadServerLogo = (url: string) => {
-    return url ? { uri: url + logoUri } : defaultLogo;
+    return url && storedEnviromentsUrl.length > 0
+      ? { uri: url + logoUri }
+      : defaultLogo;
   };
 
   const showChangeURLModalFn = () => {
@@ -233,7 +239,15 @@ const Settings = (props) => {
             <Input
               typeField="picker"
               placeholder={locale.t("Settings:InputPlaceholder")}
-              value={url}
+              value={
+                isDemoTry
+                  ? References.DemoUrl
+                  : storedEnviromentsUrl.length == 1
+                  ? storedEnviromentsUrl
+                  : storedEnviromentsUrl.length > 1
+                  ? url
+                  : null
+              }
               onOptionSelected={(option: any) => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);

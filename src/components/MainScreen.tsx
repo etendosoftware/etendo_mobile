@@ -13,15 +13,18 @@ import {
   selectUser
 } from "../../redux/user";
 import { useAppSelector } from "../../redux";
+import { selectIsDemo } from "../../redux/window";
+import { References } from "../constants/References";
 
 const HomePage = ({ route, navigation }: any) => {
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
+  const isDemoTry = useAppSelector(selectIsDemo);
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = route.params.url;
+    const url = isDemoTry ? References.DemoUrl : route.params.url;
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
 
