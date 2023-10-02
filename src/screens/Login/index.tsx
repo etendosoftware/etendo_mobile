@@ -262,8 +262,6 @@ const LoginFunctional = (props) => {
           <View style={styles.buttonsDemoSettings}>
             <View style={styles.buttonDemo}>
               <ButtonUI
-                height={43}
-                width={98}
                 typeStyle="terciary"
                 onPress={() => demo()}
                 text={locale.t("DemoTry")}
@@ -274,9 +272,7 @@ const LoginFunctional = (props) => {
                 onPress={() => props.navigation.navigate("Settings")}
                 text={locale.t("Settings")}
                 typeStyle="whiteBorder"
-                height={47}
-                width={110}
-                image={<ConfigurationIcon style={styles.configurationImage} />}
+                iconLeft={<ConfigurationIcon style={styles.configurationImage} />}
               />
             </View>
           </View>
