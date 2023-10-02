@@ -15,6 +15,7 @@ import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
+import { MoreIcon } from "etendo-ui-library/dist-native/assets/images/icons/MoreIcon";
 import { deviceStyles as styles } from "./deviceStyles";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
@@ -269,6 +270,7 @@ const Settings = (props) => {
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
                 text={locale.t("Settings:NewLink")}
+                iconRight={<MoreIcon/>}
               />
             ) : (
               <Text
