@@ -170,23 +170,41 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
+    try {
+    dispatch(setLoadingScreen(true));
     dispatch(setLoadingScreen(true));
 
-    await setUrlOB(References.DemoUrl);
-    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
-    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
-    await login(AdminUsername, AdminPassword);
-    await getImageProfile(data);
-    dispatch(setSelectedUrl(References.DemoUrl));
-    dispatch(setLoadingScreen(false));
-    dispatch(setIsDemo(true));
-    await AsyncStorage.setItem("isDemoTry", References.YES);
-    dispatch(
-      setStoredEnviromentsUrl([
-        ...(await storedEnviromentsUrl),
-        References.DemoUrl
-      ])
-    );
+      dispatch(setLoadingScreen(true));
+
+      await setUrlOB(References.DemoUrl);
+      await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+      await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+      await login(AdminUsername, AdminPassword);
+      await getImageProfile(data);
+      const image = await getImageProfile(data);
+      if (image == undefined) {
+        dispatch(setLoadingScreen(false));
+        throw new Error(locale.t("LoginScreen:ServerError"));
+      }
+      dispatch(setSelectedUrl(References.DemoUrl));
+      dispatch(setLoadingScreen(false));
+      dispatch(setIsDemo(true));
+      await AsyncStorage.setItem("isDemoTry", References.YES);
+      dispatch(
+        setStoredEnviromentsUrl([
+          ...(await storedEnviromentsUrl),
+          References.DemoUrl
+        ])
+      );
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: error.message,
+        visibilityTime: 3000,
+        autoHide: true
+      });
+    }
   };
 
   const welcomeText = (): string => {
