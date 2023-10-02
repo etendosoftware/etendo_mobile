@@ -76,7 +76,6 @@ const LoginFunctional = (props) => {
         dispatch(setLoadingScreen(false));
       }
     } catch (error) {
-      console.log('error.message', error.message)
       setError(true);
       dispatch(setLoadingScreen(false));
       if (error.message.includes("Request failed with status code 401")) {
@@ -111,7 +110,6 @@ const LoginFunctional = (props) => {
         error.message.includes("undefined") &&
         error.message.includes("replace")
       ) {
-
         Toast.show({
           type: "error",
           position: "bottom",
@@ -170,9 +168,8 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-    try {
-    dispatch(setLoadingScreen(true));
-    dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
 
       dispatch(setLoadingScreen(true));
 
@@ -180,11 +177,17 @@ const LoginFunctional = (props) => {
       await AsyncStorage.setItem("baseUrl", References.DemoUrl);
       await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
       await login(AdminUsername, AdminPassword);
+      const loginStatus = await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
-      const image = await getImageProfile(data);
-      if (image == undefined) {
+      if (loginStatus.includes("Network Error")) {
         dispatch(setLoadingScreen(false));
-        throw new Error(locale.t("LoginScreen:ServerError"));
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:NetworkError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
       }
       dispatch(setSelectedUrl(References.DemoUrl));
       dispatch(setLoadingScreen(false));
@@ -196,15 +199,6 @@ const LoginFunctional = (props) => {
           References.DemoUrl
         ])
       );
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        position: "bottom",
-        text1: error.message,
-        visibilityTime: 3000,
-        autoHide: true
-      });
-    }
   };
 
   const welcomeText = (): string => {
