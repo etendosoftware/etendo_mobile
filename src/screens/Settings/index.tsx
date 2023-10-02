@@ -263,15 +263,14 @@ const Settings = (props) => {
               placeholderSearch={locale.t("Settings:Search")}
             />
             {!token ? (
-              <ButtonUI
-                height={40}
-                width={140}
-                paddingVertical={0}
-                typeStyle="primary"
-                onPress={showChangeURLModalFn}
-                text={locale.t("Settings:NewLink")}
-                iconRight={<MoreIcon/>}
-              />
+              <View style={styles.containerAddLinkStyle}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={showChangeURLModalFn}
+                  text={locale.t("Settings:NewLink")}
+                  iconRight={<MoreIcon />}
+                />
+              </View>
             ) : (
               <Text
                 allowFontScaling={false}
