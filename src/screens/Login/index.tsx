@@ -65,71 +65,61 @@ const LoginFunctional = (props) => {
   const submitLogin = async () => {
     dispatch(setLoadingScreen(true));
     try {
-      try {
-        setError(false);
-        if (validateCredentials()) {
-          demo();
-        }
-        await login(username, password);
-        const isCoreVersionBeingChecked = await checkCoreCompatibility();
-        if (!isCoreVersionBeingChecked) {
-          await getImageProfile(data);
-          dispatch(setLoadingScreen(false));
-        }
-      } catch (error) {
-        console.log("error.message: ", error.message);
-        setError(true);
+      setError(false);
+      if (validateCredentials()) {
+        demo();
+      }
+      await login(username, password);
+      const isCoreVersionBeingChecked = await checkCoreCompatibility();
+      if (!isCoreVersionBeingChecked) {
+        await getImageProfile(data);
         dispatch(setLoadingScreen(false));
-        if (error.message.includes("Invalid user name or password")) {
-          await logout();
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("ErrorUserPassword"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        }
-        if (error.message.includes("OBRest instance not initialized")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:URLNotFound"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        } else if (error.message.includes("Network Error")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:NetworkError"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        } else if (
-          error.message.includes("undefined") &&
-          error.message.includes("replace")
-        ) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:ServerError"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        } else {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: error.message,
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        }
       }
     } catch (error) {
-      Snackbar.showError(error.message);
-      console.error(error);
+      console.log('error.message', error.message)
+      setError(true);
+      dispatch(setLoadingScreen(false));
+      if (error.message.includes("Request failed with status code 401")) {
+        await logout();
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("ErrorUserPassword"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (error.message.includes("OBRest instance not initialized")) {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:URLNotFound"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (error.message.includes("Network Error")) {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:NetworkError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (
+        error.message.includes("undefined") &&
+        error.message.includes("replace")
+      ) {
+
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:ServerError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
       dispatch(setLoadingScreen(false));
     }
   };

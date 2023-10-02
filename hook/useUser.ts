@@ -69,7 +69,9 @@ export const useUser = () => {
   const login = async (user, pass) => {
     try {
       await OBRest.loginWithUserAndPassword(user, pass);
-    } catch (ignored) {}
+    } catch (error) {
+      return error.message;
+    }
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
