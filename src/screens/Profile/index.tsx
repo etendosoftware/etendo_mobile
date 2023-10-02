@@ -61,8 +61,9 @@ const Profile = (props) => {
         <View style={styles.pageTitleStyle}>
           <Text style={styles.profileTitleStyle}>{locale.t("Profile")}</Text>
           <ButtonUI
-            image={<BackIcon style={styles.backIcon} />}
-            height={32}
+            iconLeft={<BackIcon style={styles.backIcon} />}
+            height={40}
+            paddingVertical={0}
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}

@@ -9,7 +9,7 @@ import {
   Modal
 } from "react-native";
 import locale from "../../i18n/locale";
-import { withTheme, Dialog, Portal } from "react-native-paper";
+import { withTheme, Dialog } from "react-native-paper";
 import { setUrl as setUrlOB, formatUrl, resetLocalUrl } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
@@ -223,8 +223,9 @@ const Settings = (props) => {
         <View style={styles.backContainer}>
           <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
           <ButtonUI
-            image={<BackIcon style={styles.backIcon} />}
-            height={32}
+            iconLeft={<BackIcon style={styles.backIcon} />}
+            height={40}
+            paddingVertical={0}
             width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
@@ -263,7 +264,8 @@ const Settings = (props) => {
             {!token ? (
               <ButtonUI
                 height={40}
-                width={130}
+                width={140}
+                paddingVertical={0}
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
                 text={locale.t("Settings:NewLink")}
