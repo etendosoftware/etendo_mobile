@@ -36,10 +36,10 @@ import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getRoleName } from "../../globals/getRoleInformation";
 import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
+import { useOberest } from "../../../hook/useObrest";
 
 const Settings = (props) => {
   //Images
@@ -57,6 +57,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
 
+  const { getRoleName } = useOberest(selectedUrl, token);
   // local states
   const [url, setUrl] = useState<string>("");
   const [modalUrl, setModalUrl] = useState<string>("");
@@ -270,7 +271,7 @@ const Settings = (props) => {
                 typeStyle="primary"
                 onPress={showChangeURLModalFn}
                 text={locale.t("Settings:NewLink")}
-                iconRight={<MoreIcon/>}
+                iconRight={<MoreIcon />}
               />
             ) : (
               <Text

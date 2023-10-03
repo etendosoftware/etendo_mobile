@@ -2,20 +2,19 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
 import locale from "../../i18n/locale";
-import {
-  getOrganizationName,
-  getClientName,
-  getWarehouseName,
-  getRoleName
-} from "../../globals/getRoleInformation";
 import { ShowProfilePicture } from "../../components";
 import { isTablet } from "../../../hook/isTablet";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
 import { deviceStyles as styles } from "./deviceStyles";
-import { selectBindaryImg, selectData, selectToken } from "../../../redux/user";
+import {
+  selectBindaryImg,
+  selectData,
+  selectSelectedUrl,
+  selectToken
+} from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
-import { OBRest } from "etrest";
+import { useOberest } from "../../../hook/useObrest";
 
 const Profile = (props) => {
   //States
@@ -26,10 +25,17 @@ const Profile = (props) => {
   const data = useAppSelector(selectData);
   const token = useAppSelector(selectToken);
   const bindaryImg = useAppSelector(selectBindaryImg);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
+
+  const {
+    getOrganizationName,
+    getRoleName,
+    getWarehouseName,
+    getClientName
+  } = useOberest(selectedUrl, token);
 
   useEffect(() => {
     if (data) {
-      OBRest.loginWithToken(token);
       Promise.all([
         getOrganizationName(data),
         getRoleName(data),

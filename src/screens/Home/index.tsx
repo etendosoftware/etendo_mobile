@@ -22,6 +22,7 @@ import { selectLoading, selectMenuItems } from "../../../redux/window";
 import { OBRest } from "etrest";
 import { References } from "../../constants/References";
 import { useUser } from "../../../hook/useUser";
+import { useOberest } from "../../../hook/useObrest";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -52,6 +53,7 @@ const HomeFunction = (props: Props) => {
   useEffect(() => {
     !data.username && logout();
   }, [data]);
+  // useOberest(selectedUrl, token);
 
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
