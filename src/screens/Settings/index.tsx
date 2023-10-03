@@ -227,7 +227,6 @@ const Settings = (props) => {
             iconLeft={<BackIcon style={styles.backIcon} />}
             height={40}
             paddingVertical={0}
-            width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={
