@@ -53,7 +53,6 @@ const HomeFunction = (props: Props) => {
   useEffect(() => {
     !data.username && logout();
   }, [data]);
-  // useOberest(selectedUrl, token);
 
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
