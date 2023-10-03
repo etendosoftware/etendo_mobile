@@ -15,6 +15,7 @@ import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
 import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
+import { MoreIcon } from "etendo-ui-library/dist-native/assets/images/icons/MoreIcon";
 import { deviceStyles as styles } from "./deviceStyles";
 import { PRIMARY_100 } from "../../styles/colors";
 import Input from "etendo-ui-library/dist-native/components/input/Input";
@@ -35,10 +36,10 @@ import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getRoleName } from "../../globals/getRoleInformation";
 import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
+import { useEtrest } from "../../../hook/useEtrest";
 
 const Settings = (props) => {
   //Images
@@ -56,6 +57,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
 
+  const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
   const [url, setUrl] = useState<string>("");
   const [modalUrl, setModalUrl] = useState<string>("");
@@ -226,7 +228,6 @@ const Settings = (props) => {
             iconLeft={<BackIcon style={styles.backIcon} />}
             height={40}
             paddingVertical={0}
-            width={84}
             typeStyle="terciary"
             text={locale.t("Back")}
             onPress={
@@ -262,14 +263,14 @@ const Settings = (props) => {
               placeholderSearch={locale.t("Settings:Search")}
             />
             {!token ? (
-              <ButtonUI
-                height={40}
-                width={140}
-                paddingVertical={0}
-                typeStyle="primary"
-                onPress={showChangeURLModalFn}
-                text={locale.t("Settings:NewLink")}
-              />
+              <View style={styles.containerAddLinkStyle}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={showChangeURLModalFn}
+                  text={locale.t("Settings:NewLink")}
+                  iconRight={<MoreIcon />}
+                />
+              </View>
             ) : (
               <Text
                 allowFontScaling={false}
