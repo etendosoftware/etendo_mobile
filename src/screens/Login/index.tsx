@@ -88,7 +88,7 @@ const LoginFunctional = (props) => {
           autoHide: true
         });
       }
-      if (error.message.includes("OBRest instance not initialized")) {
+      if (error.message.includes("OBRest instance not initialized") || error.message.includes("Request failed with status code 404")) {
         Toast.show({
           type: "error",
           position: "bottom",
