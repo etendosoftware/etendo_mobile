@@ -109,6 +109,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     marginRight: 20
   },
+  containerAddLinkStyle: {
+    alignSelf: "flex-start",
+    marginTop: 16
+  },
   urlTitle: {
     fontFamily: "Inter-SemiBold",
     color: NEUTRAL_60,
