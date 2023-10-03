@@ -174,7 +174,8 @@ const styleSheet = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "500",
     fontSize: 14,
-    lineHeight: 22
+    lineHeight: 22,
+    color: NEUTRAL_60
   },
   descriptionStyleLast: {
     fontFamily: "Inter-Regular",
