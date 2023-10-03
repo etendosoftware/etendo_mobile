@@ -69,7 +69,6 @@ const styleSheet = StyleSheet.create({
   },
   userDataTablet: {
     flexDirection: "row",
-    alignContent: "space-around",
     marginLeft: 32
   },
   profilePicture: {
@@ -93,9 +92,7 @@ const styleSheet = StyleSheet.create({
     color: PRIMARY_100,
     marginTop: 62
   },
-  accountDataContainer: {
-    marginTop: 75
-  },
+
   informationCardTablet: {
     display: "flex",
     flexDirection: "row",
