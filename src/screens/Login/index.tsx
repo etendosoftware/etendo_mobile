@@ -23,7 +23,7 @@ import {
   setSelectedUrl,
   setStoredEnviromentsUrl
 } from "../../../redux/user";
-import { setIsDemo, setLoadingScreen } from "../../../redux/window";
+import { setIsDemo, setLoadingScreen, setError, selectError } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Constants
@@ -45,9 +45,9 @@ const LoginFunctional = (props) => {
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
 
   const data = useAppSelector(selectData);
+  const error = useAppSelector(selectError);
   const storedEnviromentsUrl = AsyncStorage.getItem("storedEnviromentsUrl");
   const dispatch = useAppDispatch();
   const { login, logout, getImageProfile } = useUser();
@@ -63,10 +63,10 @@ const LoginFunctional = (props) => {
   };
 
   const submitLogin = async () => {
-    dispatch(setLoadingScreen(true));
     try {
+      dispatch(setLoadingScreen(true));
       try {
-        setError(false);
+        dispatch(setError(false));
         if (validateCredentials()) {
           demo();
         }
@@ -77,10 +77,9 @@ const LoginFunctional = (props) => {
           dispatch(setLoadingScreen(false));
         }
       } catch (error) {
-        setError(true);
+        dispatch(setError(true));
         dispatch(setLoadingScreen(false));
         if (error.message.includes("Invalid user name or password")) {
-          await logout();
           Toast.show({
             type: "error",
             position: "bottom",
@@ -301,7 +300,7 @@ const LoginFunctional = (props) => {
                 value={username}
                 onChangeText={(username) => {
                   setUsername(username);
-                  if (error) setError(false);
+                  if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t("User")}
                 fontSize={16}
@@ -321,7 +320,7 @@ const LoginFunctional = (props) => {
                 value={password}
                 onChangeText={(password) => {
                   setPassword(password);
-                  if (error) setError(false);
+                  if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t("Password")}
                 fontSize={16}
