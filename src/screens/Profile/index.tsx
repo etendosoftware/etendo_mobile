@@ -14,7 +14,7 @@ import {
   selectToken
 } from "../../../redux/user";
 import { useAppSelector } from "../../../redux";
-import { useEterest } from "../../../hook/useEtrest";
+import { useEtrest } from "../../../hook/useEtrest";
 
 const Profile = (props) => {
   //States
@@ -32,7 +32,7 @@ const Profile = (props) => {
     getRoleName,
     getWarehouseName,
     getClientName
-  } = useEterest(selectedUrl, token);
+  } = useEtrest(selectedUrl, token);
 
   useEffect(() => {
     if (data) {

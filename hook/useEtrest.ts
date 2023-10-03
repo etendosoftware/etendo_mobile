@@ -4,7 +4,7 @@ import { IData } from "../src/interfaces";
 import { IRecord } from "../src/types";
 import { useUser } from "./useUser";
 
-export const useEterest = (selectedUrl: string, token: string) => {
+export const useEtrest = (selectedUrl: string, token: string) => {
   const { logout } = useUser();
   const [error, setError] = useState<Error | null>(null);
 

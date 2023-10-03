@@ -39,7 +39,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
-import { useEterest } from "../../../hook/useEtrest";
+import { useEtrest } from "../../../hook/useEtrest";
 
 const Settings = (props) => {
   //Images
@@ -57,7 +57,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
 
-  const { getRoleName } = useEterest(selectedUrl, token);
+  const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
   const [url, setUrl] = useState<string>("");
   const [modalUrl, setModalUrl] = useState<string>("");
