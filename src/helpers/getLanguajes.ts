@@ -84,7 +84,7 @@ export const languageDefault = async () => {
     await saveLanguage(currentLanguage);
     return currentLanguage;
   } catch (error) {
-    console.log("Error", error);
+    console.error("Error", error);
   }
 };
 

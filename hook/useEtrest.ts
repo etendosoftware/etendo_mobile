@@ -4,7 +4,7 @@ import { IData } from "../src/interfaces";
 import { IRecord } from "../src/types";
 import { useUser } from "./useUser";
 
-export const useOberest = (selectedUrl: string, token: string) => {
+export const useEterest = (selectedUrl: string, token: string) => {
   const { logout } = useUser();
   const [error, setError] = useState<Error | null>(null);
 
@@ -28,7 +28,7 @@ export const useOberest = (selectedUrl: string, token: string) => {
       let org: IRecord = await criteria.uniqueResult();
       return org.name;
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
       setError(new Error(`Failed to fetch organizationName: ${error.message}`));
       throw error;
     }
@@ -41,7 +41,7 @@ export const useOberest = (selectedUrl: string, token: string) => {
       let client: IRecord = await criteria.uniqueResult();
       return client.name;
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
       setError(new Error(`Failed to fetch getClientName: ${error.message}`));
       throw error;
     }
@@ -54,7 +54,7 @@ export const useOberest = (selectedUrl: string, token: string) => {
       let warehouse: IRecord = await criteria.uniqueResult();
       return warehouse?.name;
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
       setError(new Error(`Failed to fetch getWarehouseName: ${error.message}`));
       throw error;
     }
@@ -67,7 +67,7 @@ export const useOberest = (selectedUrl: string, token: string) => {
       let role: IRecord = await criteria.uniqueResult();
       return role.name;
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
       setError(new Error(`Failed to fetch getRoleName: ${error.message}`));
       throw error;
     }
