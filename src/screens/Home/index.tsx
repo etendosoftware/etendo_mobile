@@ -49,10 +49,6 @@ const HomeFunction = (props: Props) => {
     OBRest.loginWithToken(token);
   }, []);
 
-  useEffect(() => {
-    !data.username && logout();
-  }, [data]);
-
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;
   };
