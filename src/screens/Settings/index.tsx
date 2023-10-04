@@ -56,6 +56,7 @@ const Settings = (props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
+  const data = useAppSelector(selectData);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
@@ -114,7 +115,7 @@ const Settings = (props) => {
   };
 
   const handleLanguage = async (label: string, value: string) => {
-    await changeLanguage(value, setCurrentLanguage);
+    await changeLanguage(value, setCurrentLanguage(value));
     setDisplayLanguage(label);
   };
 
@@ -188,12 +189,8 @@ const Settings = (props) => {
     setShowChangeURLModal(false);
   };
 
-  // use redux
-  const data = useAppSelector(selectData);
-
-  // use effect to get role
   useEffect(() => {
-    if (data) {
+    if (data?.roleId && token) {
       Promise.all([getRoleName(data)])
         .then((values) => {
           const [role] = values;
@@ -203,7 +200,7 @@ const Settings = (props) => {
           console.error(error);
         });
     }
-  }, [data]);
+  }, [data, token]);
 
   // save debug URL
   const saveDebugURL = async () => {
@@ -245,7 +242,7 @@ const Settings = (props) => {
                 isDemoTry
                   ? References.DemoUrl
                   : storedEnviromentsUrl.length == 1
-                  ? storedEnviromentsUrl
+                  ? storedEnviromentsUrl[0]
                   : storedEnviromentsUrl.length > 1
                   ? url
                   : null

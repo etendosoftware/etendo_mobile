@@ -23,7 +23,12 @@ import {
   setSelectedUrl,
   setStoredEnviromentsUrl
 } from "../../../redux/user";
-import { setIsDemo, setLoadingScreen, setError, selectError } from "../../../redux/window";
+import {
+  setIsDemo,
+  setLoadingScreen,
+  setError,
+  selectError
+} from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Constants
@@ -168,12 +173,26 @@ const LoginFunctional = (props) => {
 
   const demo = async () => {
     dispatch(setLoadingScreen(true));
+    dispatch(setLoadingScreen(true));
+
+    dispatch(setLoadingScreen(true));
 
     await setUrlOB(References.DemoUrl);
     await AsyncStorage.setItem("baseUrl", References.DemoUrl);
     await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
     await login(AdminUsername, AdminPassword);
+    const loginStatus = await login(AdminUsername, AdminPassword);
     await getImageProfile(data);
+    if (loginStatus.includes("Network Error")) {
+      dispatch(setLoadingScreen(false));
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: locale.t("LoginScreen:NetworkError"),
+        visibilityTime: 3000,
+        autoHide: true
+      });
+    }
     dispatch(setSelectedUrl(References.DemoUrl));
     dispatch(setLoadingScreen(false));
     dispatch(setIsDemo(true));
@@ -269,7 +288,9 @@ const LoginFunctional = (props) => {
                 onPress={() => props.navigation.navigate("Settings")}
                 text={locale.t("Settings")}
                 typeStyle="whiteBorder"
-                iconLeft={<ConfigurationIcon style={styles.configurationImage} />}
+                iconLeft={
+                  <ConfigurationIcon style={styles.configurationImage} />
+                }
               />
             </View>
           </View>

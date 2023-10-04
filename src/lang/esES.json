@@ -39,7 +39,8 @@
   "LoginScreen:UserPassIncorrect": "Usuario o contraseña incorrectos",
   "LoginScreen:URLNotFound": "Error de servidor. Verifica URL en configuración.",
   "LoginScreen:LogoNotFound": "Atención: No se ha encontrado el logo.",
-  "LoginScreen:NetworkError": "Acceso al servidor fallido.",
+  "LoginScreen:NetworkError": "Acceso al servidor fallido. Error de conexión.",
+  "LoginScreen:ServerError": "Error de servidor. Verifica configuración.",
   "Drawer:Applications": "Aplicaciones",
   "Home:ChooseFromTheMenu": "Elige una entrada desde el menú.",
   "Home:Title": "Inicio",
@@ -95,6 +96,6 @@
   "WelcomeToEtendoLogin": "Bienvenido a Etendo!",
   "WelcomeToEtendoHome": "Bienvenido a Etendo,",
   "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
-  "ErrorUserPassword": "Usuario o contraseña son incorrectos",
+  "ErrorUserPassword": "Credenciales incorrectos o sin autorización.",
   "UrlFetchFailed": "Falló al renderizar la url '%{url}'"
 }
