@@ -18,7 +18,7 @@ export interface WindowState {
 const initialState: WindowState = {
   appsData: [],
   bindaryImg: "",
-  error: null,
+  error: false,
   isDemo: false,
   isSubapp: false,
   loading: false,

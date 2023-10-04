@@ -23,7 +23,12 @@ import {
   setSelectedUrl,
   setStoredEnviromentsUrl
 } from "../../../redux/user";
-import { setIsDemo, setLoadingScreen } from "../../../redux/window";
+import {
+  setIsDemo,
+  setLoadingScreen,
+  setError,
+  selectError
+} from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Constants
@@ -45,9 +50,9 @@ const LoginFunctional = (props) => {
   const [password, setPassword] = useState<string>("");
   const [coreVersion, setCoreVersion] = useState<string>("");
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
 
   const data = useAppSelector(selectData);
+  const error = useAppSelector(selectError);
   const storedEnviromentsUrl = AsyncStorage.getItem("storedEnviromentsUrl");
   const dispatch = useAppDispatch();
   const { login, logout, getImageProfile } = useUser();
@@ -63,61 +68,60 @@ const LoginFunctional = (props) => {
   };
 
   const submitLogin = async () => {
-    dispatch(setLoadingScreen(true));
     try {
-      setError(false);
-      if (validateCredentials()) {
-        demo();
-      }
-      await login(username, password);
-      const isCoreVersionBeingChecked = await checkCoreCompatibility();
-      if (!isCoreVersionBeingChecked) {
-        await getImageProfile(data);
+      dispatch(setLoadingScreen(true));
+      try {
+        dispatch(setError(false));
+        if (validateCredentials()) {
+          demo();
+        }
+        await login(username, password);
+        const isCoreVersionBeingChecked = await checkCoreCompatibility();
+        if (!isCoreVersionBeingChecked) {
+          await getImageProfile(data);
+          dispatch(setLoadingScreen(false));
+        }
+      } catch (error) {
+        dispatch(setError(true));
         dispatch(setLoadingScreen(false));
+        if (error.message.includes("Invalid user name or password")) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("ErrorUserPassword"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        }
+        if (error.message.includes("OBRest instance not initialized")) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("LoginScreen:URLNotFound"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        } else if (error.message.includes("Network Error")) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: locale.t("LoginScreen:NetworkError"),
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: error.message,
+            visibilityTime: 3000,
+            autoHide: true
+          });
+        }
       }
     } catch (error) {
-      setError(true);
-      dispatch(setLoadingScreen(false));
-      if (error.message.includes("Request failed with status code 401")) {
-        await logout();
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("ErrorUserPassword"),
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
-      if (error.message.includes("OBRest instance not initialized") || error.message.includes("Request failed with status code 404")) {
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("LoginScreen:URLNotFound"),
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
-      if (error.message.includes("Network Error")) {
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("LoginScreen:NetworkError"),
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
-      if (
-        error.message.includes("undefined") &&
-        error.message.includes("replace")
-      ) {
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("LoginScreen:ServerError"),
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
+      Snackbar.showError(error.message);
+      console.error(error);
       dispatch(setLoadingScreen(false));
     }
   };
@@ -168,37 +172,37 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-      dispatch(setLoadingScreen(true));
-      dispatch(setLoadingScreen(true));
+    dispatch(setLoadingScreen(true));
+    dispatch(setLoadingScreen(true));
 
-      dispatch(setLoadingScreen(true));
+    dispatch(setLoadingScreen(true));
 
-      await setUrlOB(References.DemoUrl);
-      await AsyncStorage.setItem("baseUrl", References.DemoUrl);
-      await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
-      await login(AdminUsername, AdminPassword);
-      const loginStatus = await login(AdminUsername, AdminPassword);
-      await getImageProfile(data);
-      if (loginStatus.includes("Network Error")) {
-        dispatch(setLoadingScreen(false));
-        Toast.show({
-          type: "error",
-          position: "bottom",
-          text1: locale.t("LoginScreen:NetworkError"),
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
-      dispatch(setSelectedUrl(References.DemoUrl));
+    await setUrlOB(References.DemoUrl);
+    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+    await login(AdminUsername, AdminPassword);
+    const loginStatus = await login(AdminUsername, AdminPassword);
+    await getImageProfile(data);
+    if (loginStatus.includes("Network Error")) {
       dispatch(setLoadingScreen(false));
-      dispatch(setIsDemo(true));
-      await AsyncStorage.setItem("isDemoTry", References.YES);
-      dispatch(
-        setStoredEnviromentsUrl([
-          ...(await storedEnviromentsUrl),
-          References.DemoUrl
-        ])
-      );
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: locale.t("LoginScreen:NetworkError"),
+        visibilityTime: 3000,
+        autoHide: true
+      });
+    }
+    dispatch(setSelectedUrl(References.DemoUrl));
+    dispatch(setLoadingScreen(false));
+    dispatch(setIsDemo(true));
+    await AsyncStorage.setItem("isDemoTry", References.YES);
+    dispatch(
+      setStoredEnviromentsUrl([
+        ...(await storedEnviromentsUrl),
+        References.DemoUrl
+      ])
+    );
   };
 
   const welcomeText = (): string => {
@@ -284,7 +288,9 @@ const LoginFunctional = (props) => {
                 onPress={() => props.navigation.navigate("Settings")}
                 text={locale.t("Settings")}
                 typeStyle="whiteBorder"
-                iconLeft={<ConfigurationIcon style={styles.configurationImage} />}
+                iconLeft={
+                  <ConfigurationIcon style={styles.configurationImage} />
+                }
               />
             </View>
           </View>
@@ -315,7 +321,7 @@ const LoginFunctional = (props) => {
                 value={username}
                 onChangeText={(username) => {
                   setUsername(username);
-                  if (error) setError(false);
+                  if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t("User")}
                 fontSize={16}
@@ -335,7 +341,7 @@ const LoginFunctional = (props) => {
                 value={password}
                 onChangeText={(password) => {
                   setPassword(password);
-                  if (error) setError(false);
+                  if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t("Password")}
                 fontSize={16}

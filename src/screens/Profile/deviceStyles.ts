@@ -12,7 +12,7 @@ export const deviceStyles = {
     ? styleSheet.imageHeaderTablet
     : styleSheet.imageHeader,
   accountDataContainer: isDeviceTablet
-    ? styleSheet.accountDataContainer
+    ? null
     : styleSheet.accountDataContainerMobile,
   accountTitleStyle: isDeviceTablet
     ? styleSheet.accountTitleTablet
