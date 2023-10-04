@@ -65,59 +65,59 @@ const LoginFunctional = (props) => {
   const submitLogin = async () => {
     dispatch(setLoadingScreen(true));
     try {
-      try {
-        setError(false);
-        if (validateCredentials()) {
-          demo();
-        }
-        await login(username, password);
-        const isCoreVersionBeingChecked = await checkCoreCompatibility();
-        if (!isCoreVersionBeingChecked) {
-          await getImageProfile(data);
-          dispatch(setLoadingScreen(false));
-        }
-      } catch (error) {
-        setError(true);
+      setError(false);
+      if (validateCredentials()) {
+        demo();
+      }
+      await login(username, password);
+      const isCoreVersionBeingChecked = await checkCoreCompatibility();
+      if (!isCoreVersionBeingChecked) {
+        await getImageProfile(data);
         dispatch(setLoadingScreen(false));
-        if (error.message.includes("Invalid user name or password")) {
-          await logout();
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("ErrorUserPassword"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        }
-        if (error.message.includes("OBRest instance not initialized")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:URLNotFound"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        } else if (error.message.includes("Network Error")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:NetworkError"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        } else {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: error.message,
-            visibilityTime: 3000,
-            autoHide: true
-          });
-        }
       }
     } catch (error) {
-      Snackbar.showError(error.message);
-      console.error(error);
+      setError(true);
+      dispatch(setLoadingScreen(false));
+      if (error.message.includes("Request failed with status code 401")) {
+        await logout();
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("ErrorUserPassword"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (error.message.includes("OBRest instance not initialized") || error.message.includes("Request failed with status code 404")) {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:URLNotFound"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (error.message.includes("Network Error")) {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:NetworkError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      if (
+        error.message.includes("undefined") &&
+        error.message.includes("replace")
+      ) {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:ServerError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
       dispatch(setLoadingScreen(false));
     }
   };
@@ -168,23 +168,37 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-    dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
 
-    await setUrlOB(References.DemoUrl);
-    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
-    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
-    await login(AdminUsername, AdminPassword);
-    await getImageProfile(data);
-    dispatch(setSelectedUrl(References.DemoUrl));
-    dispatch(setLoadingScreen(false));
-    dispatch(setIsDemo(true));
-    await AsyncStorage.setItem("isDemoTry", References.YES);
-    dispatch(
-      setStoredEnviromentsUrl([
-        ...(await storedEnviromentsUrl),
-        References.DemoUrl
-      ])
-    );
+      dispatch(setLoadingScreen(true));
+
+      await setUrlOB(References.DemoUrl);
+      await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+      await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+      await login(AdminUsername, AdminPassword);
+      const loginStatus = await login(AdminUsername, AdminPassword);
+      await getImageProfile(data);
+      if (loginStatus.includes("Network Error")) {
+        dispatch(setLoadingScreen(false));
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: locale.t("LoginScreen:NetworkError"),
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+      dispatch(setSelectedUrl(References.DemoUrl));
+      dispatch(setLoadingScreen(false));
+      dispatch(setIsDemo(true));
+      await AsyncStorage.setItem("isDemoTry", References.YES);
+      dispatch(
+        setStoredEnviromentsUrl([
+          ...(await storedEnviromentsUrl),
+          References.DemoUrl
+        ])
+      );
   };
 
   const welcomeText = (): string => {
