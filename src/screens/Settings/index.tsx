@@ -114,7 +114,7 @@ const Settings = (props) => {
   };
 
   const handleLanguage = async (label: string, value: string) => {
-    await changeLanguage(value, setCurrentLanguage);
+    await changeLanguage(value, setCurrentLanguage(value));
     setDisplayLanguage(label);
   };
 
@@ -245,7 +245,7 @@ const Settings = (props) => {
                 isDemoTry
                   ? References.DemoUrl
                   : storedEnviromentsUrl.length == 1
-                  ? storedEnviromentsUrl
+                  ? storedEnviromentsUrl[0]
                   : storedEnviromentsUrl.length > 1
                   ? url
                   : null
