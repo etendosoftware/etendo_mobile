@@ -38,6 +38,7 @@ type HomeStackProps = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
+  locale.init();
   const data = useAppSelector(selectData);
   const menuItems = useAppSelector(selectMenuItems);
   const bindaryImg = useAppSelector(selectBindaryImg);
