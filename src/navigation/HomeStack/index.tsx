@@ -20,7 +20,11 @@ import styles from "./style";
 import { useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
-import { selectBindaryImg, selectData } from "../../../redux/user";
+import {
+  selectBindaryImg,
+  selectData,
+  selectSelectedLanguage
+} from "../../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
 import { selectMenuItems, setIsSubapp } from "../../../redux/window";
@@ -42,6 +46,9 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const menuItems = useAppSelector(selectMenuItems);
   const bindaryImg = useAppSelector(selectBindaryImg);
   const dispatch = useAppDispatch();
+  locale.init();
+  const language = useAppSelector(selectSelectedLanguage);
+  locale.setCurrentLanguage(language);
   const { logout } = useUser();
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
