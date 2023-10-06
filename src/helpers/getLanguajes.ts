@@ -8,6 +8,7 @@ import { ILanguage } from "../interfaces";
 import Languages from "../ob-api/objects/Languages";
 import locale from "../i18n/locale";
 import { NativeModules, Platform } from "react-native";
+import languageCurrentInitialize from "../../constant";
 
 // Gets the current device language
 function getCurrentLanguage() {
@@ -90,6 +91,7 @@ export const languageDefault = async () => {
 
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
+  languageCurrentInitialize.set(input);
   await saveLanguage(input);
   await setLenguageRedux();
 };

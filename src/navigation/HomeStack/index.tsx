@@ -17,7 +17,7 @@ import {
 } from "@react-navigation/stack";
 import MainScreen from "../../components/MainScreen";
 import styles from "./style";
-import { useNavigationState } from "@react-navigation/native";
+import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
 import {
@@ -28,6 +28,10 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
 import { selectMenuItems, setIsSubapp } from "../../../redux/window";
+import { changeLanguage, loadLanguage } from "../../helpers/getLanguajes";
+import { formatLanguageUnderscore } from "../../i18n/config";
+import lengauge from "../../../constant";
+import languageCurrentInitialize from "../../../constant";
 
 type RootStackParamList = {
   Home: any;
@@ -46,9 +50,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const menuItems = useAppSelector(selectMenuItems);
   const bindaryImg = useAppSelector(selectBindaryImg);
   const dispatch = useAppDispatch();
-  locale.init();
-  const language = useAppSelector(selectSelectedLanguage);
-  locale.setCurrentLanguage(language);
+
   const { logout } = useUser();
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return "";
@@ -82,6 +84,22 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const homeStackNavBarMobileValidator = (routeName: string) => {
     return validRoutesMobile.includes(routeName);
   };
+
+  const { setCurrentLanguage } = useUser();
+
+  useFocusEffect(() => {
+    if (languageCurrentInitialize.get()) {
+      const getLanguageLocal = async () => {
+        await changeLanguage(
+          languageCurrentInitialize.get(),
+          setCurrentLanguage(languageCurrentInitialize.get())
+        );
+      };
+      locale.initTranslation();
+
+      getLanguageLocal();
+    }
+  });
 
   useEffect(() => {
     if (!isTablet()) {
