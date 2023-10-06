@@ -20,18 +20,14 @@ import styles from "./style";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { isTablet } from "../../helpers/IsTablet";
 import { drawerData } from "./dataDrawer";
-import {
-  selectBindaryImg,
-  selectData,
-  selectSelectedLanguage
-} from "../../../redux/user";
+import { selectBindaryImg, selectData } from "../../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import { useUser } from "../../../hook/useUser";
 import { selectMenuItems, setIsSubapp } from "../../../redux/window";
-import { changeLanguage, loadLanguage } from "../../helpers/getLanguajes";
-import { formatLanguageUnderscore } from "../../i18n/config";
-import lengauge from "../../../constant";
-import languageCurrentInitialize from "../../../constant";
+import {
+  changeLanguage,
+  languageCurrentInitialize
+} from "../../helpers/getLanguajes";
 
 type RootStackParamList = {
   Home: any;

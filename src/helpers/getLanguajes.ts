@@ -128,3 +128,12 @@ export const getSupportedLanguages = () => {
     return formatObjectLanguage(localLanguage);
   });
 };
+
+let language: string = "";
+
+export const languageCurrentInitialize = {
+  get: () => language,
+  set: (newLanguage: string) => {
+    language = newLanguage;
+  }
+};
