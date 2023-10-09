@@ -67,6 +67,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16
   },
+  fullContainer: {
+    flex: 1,
+    backgroundColor: WHITE
+  },
   listSection: {
     width: "100%",
     fontSize: 20,

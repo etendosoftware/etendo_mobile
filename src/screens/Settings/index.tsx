@@ -222,7 +222,7 @@ const Settings = (props) => {
 
   return (
     <KeyboardAwareScrollView
-      style={{ flex: 1, backgroundColor: "white" }}
+      style={styles.fullContainer}
       ref={(ref: KeyboardAwareScrollView) => {
         listViewRef = ref;
       }}
