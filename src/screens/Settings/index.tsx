@@ -40,8 +40,12 @@ import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Settings = (props) => {
+  // Declare a variable 'listViewRef' that will hold a reference to the KeyboardAwareScrollView component
+  let listViewRef: KeyboardAwareScrollView;
+
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
@@ -217,7 +221,13 @@ const Settings = (props) => {
   };
 
   return (
-    <>
+    <KeyboardAwareScrollView
+      style={{ flex: 1, backgroundColor: "white" }}
+      ref={(ref: KeyboardAwareScrollView) => {
+        listViewRef = ref;
+      }}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.container}>
         <View style={styles.backContainer}>
           <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
@@ -472,7 +482,7 @@ const Settings = (props) => {
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
       ) : null}
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 

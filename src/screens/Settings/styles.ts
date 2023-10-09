@@ -352,9 +352,7 @@ const styles = StyleSheet.create({
   },
   copyrightTablet: {
     flex: 1,
-    position: "absolute",
-    bottom: 68,
-    left: 32
+    marginLeft: 32
   }
 });
 
