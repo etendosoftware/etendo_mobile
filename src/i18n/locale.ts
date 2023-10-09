@@ -35,6 +35,19 @@ const locale = {
       this.currentDateLocale = dateLocales[fallbackLanguage.replace("-", "")];
     }
   },
+  initTranslation() {
+    // Load fallback translation
+    if (config.supportedLocales[Localization.locale]) {
+      i18n.translations[Localization.locale] = config.supportedLocales[
+        Localization.locale
+      ].loadTranslations();
+    } else {
+      i18n.translations[fallbackLanguage] = config.supportedLocales[
+        fallbackLanguage
+      ].loadTranslations();
+      this.currentDateLocale = dateLocales[fallbackLanguage.replace("-", "")];
+    }
+  },
 
   t(trl, params?): string {
     return i18n.t(trl, params);
@@ -50,7 +63,10 @@ const locale = {
       ].loadTranslations();
     }
   },
-
+  setLocal(locale) {
+    const newLocal = locale.replace("_", "-");
+    i18n.locale = newLocal;
+  },
   formatDate(date, formatStr) {
     try {
       return format(date, formatStr, { locale: this.getDeviceLocaleForDate() });

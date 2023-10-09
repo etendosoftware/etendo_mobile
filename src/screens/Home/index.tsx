@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
 import locale from "../../i18n/locale";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
