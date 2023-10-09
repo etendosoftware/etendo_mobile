@@ -90,6 +90,7 @@ export const languageDefault = async () => {
 
 export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
+  languageCurrentInitialize.set(input);
   await saveLanguage(input);
   await setLenguageRedux();
 };
@@ -125,4 +126,13 @@ export const getSupportedLanguages = () => {
   return localLanguages.map((localLanguage) => {
     return formatObjectLanguage(localLanguage);
   });
+};
+
+let language: string = "";
+
+export const languageCurrentInitialize = {
+  get: () => language,
+  set: (newLanguage: string) => {
+    language = newLanguage;
+  }
 };
