@@ -243,8 +243,8 @@ const styles = StyleSheet.create({
     borderTopColor: NEUTRAL_30
   },
   saveButtonContainer: {
-    width: "100%",
-    marginTop: 8
+    alignSelf: "flex-start",
+    marginTop: 16
   },
   languageText: {
     fontFamily: "Inter-SemiBold",

@@ -463,8 +463,6 @@ const Settings = (props) => {
               />
               <View style={styles.saveButtonContainer}>
                 <ButtonUI
-                  height={40}
-                  width={90}
                   typeStyle="primary"
                   onPress={saveDebugURL}
                   text={locale.t("Settings:Save")}
