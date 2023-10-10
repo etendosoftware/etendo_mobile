@@ -227,6 +227,7 @@ const Settings = (props) => {
         listViewRef = ref;
       }}
       keyboardShouldPersistTaps="handled"
+      extraScrollHeight={150}
     >
       <View style={styles.container}>
         <View style={styles.backContainer}>
@@ -343,13 +344,15 @@ const Settings = (props) => {
                 height={43}
                 centerText={true}
               />
-              <ButtonUI
-                height={40}
-                width={90}
-                typeStyle="primary"
-                onPress={saveDebugURL}
-                text={locale.t("Settings:Save")}
-              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  height={40}
+                  width={90}
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
+                />
+              </View>
             </View>
           )}
 
@@ -460,13 +463,15 @@ const Settings = (props) => {
                 height={43}
                 centerText={true}
               />
-              <ButtonUI
-                height={40}
-                width={90}
-                typeStyle="primary"
-                onPress={saveDebugURL}
-                text={locale.t("Settings:Save")}
-              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  height={40}
+                  width={90}
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
+                />
+              </View>
             </View>
             <View style={styles.logoContainerStyles} />
             <View style={styles.languageContainerStyles} />

@@ -63,5 +63,6 @@ export const deviceStyles = {
   backIcon: styleSheet.backIcon,
   debugText: styleSheet.debugText,
   containerAddLinkStyle: styleSheet.containerAddLinkStyle,
-  fullContainer: styleSheet.fullContainer
+  fullContainer: styleSheet.fullContainer,
+  saveButtonContainer: styleSheet.saveButtonContainer
 };
