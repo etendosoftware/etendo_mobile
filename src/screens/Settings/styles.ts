@@ -67,6 +67,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16
   },
+  fullContainer: {
+    flex: 1,
+    backgroundColor: WHITE
+  },
   listSection: {
     width: "100%",
     fontSize: 20,
@@ -238,7 +242,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: NEUTRAL_30
   },
-
+  saveButtonContainer: {
+    alignSelf: "flex-start",
+    marginTop: 16
+  },
   languageText: {
     fontFamily: "Inter-SemiBold",
     color: NEUTRAL_60,
@@ -301,7 +308,6 @@ const styles = StyleSheet.create({
   },
   actionIcon: {
     marginHorizontal: 20,
-
     width: 25,
     height: 25
   },
@@ -352,9 +358,7 @@ const styles = StyleSheet.create({
   },
   copyrightTablet: {
     flex: 1,
-    position: "absolute",
-    bottom: 68,
-    left: 32
+    marginLeft: 32
   }
 });
 

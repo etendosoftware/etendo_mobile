@@ -40,8 +40,12 @@ import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Settings = (props) => {
+  // Declare a variable 'listViewRef' that will hold a reference to the KeyboardAwareScrollView component
+  let listViewRef: KeyboardAwareScrollView;
+
   //Images
   const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
   const notFoundLogo = require("../../../assets/unlink.png");
@@ -217,7 +221,14 @@ const Settings = (props) => {
   };
 
   return (
-    <>
+    <KeyboardAwareScrollView
+      style={styles.fullContainer}
+      ref={(ref: KeyboardAwareScrollView) => {
+        listViewRef = ref;
+      }}
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={150}
+    >
       <View style={styles.container}>
         <View style={styles.backContainer}>
           <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
@@ -333,13 +344,13 @@ const Settings = (props) => {
                 height={43}
                 centerText={true}
               />
-              <ButtonUI
-                height={40}
-                width={90}
-                typeStyle="primary"
-                onPress={saveDebugURL}
-                text={locale.t("Settings:Save")}
-              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
+                />
+              </View>
             </View>
           )}
 
@@ -450,13 +461,13 @@ const Settings = (props) => {
                 height={43}
                 centerText={true}
               />
-              <ButtonUI
-                height={40}
-                width={90}
-                typeStyle="primary"
-                onPress={saveDebugURL}
-                text={locale.t("Settings:Save")}
-              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
+                />
+              </View>
             </View>
             <View style={styles.logoContainerStyles} />
             <View style={styles.languageContainerStyles} />
@@ -472,7 +483,7 @@ const Settings = (props) => {
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
       ) : null}
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 
