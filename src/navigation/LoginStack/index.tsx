@@ -24,7 +24,7 @@ const LoginStack: React.FC<LoginStackProps> = ({ navigation }) => {
     <>
       <SafeAreaView style={styles.containerBackground} />
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor={PRIMARY_100} />
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_100} />
         <Stack.Navigator
           initialRouteName={"Login"}
           screenOptions={{ headerShown: false }}

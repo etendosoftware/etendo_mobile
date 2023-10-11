@@ -36,10 +36,10 @@ import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
+import { Toast } from "../../utils/Toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Settings = (props) => {
@@ -144,6 +144,10 @@ const Settings = (props) => {
     let filteredItems = storedEnviromentsUrl.filter((url) => url !== item);
     await saveEnviromentsUrl(filteredItems);
     setStoredDataUrl(filteredItems);
+    if (selectedUrl == item) {
+      dispatch(setSelectedUrl(null));
+      await AsyncStorage.removeItem("selectedUrl");
+    }
   };
 
   const getAppVersion = async () => {
@@ -211,13 +215,7 @@ const Settings = (props) => {
     await AsyncStorage.setItem("debugURL", devUrl);
     dispatch(setDevUrl(devUrl));
     // show toastify
-    Toast.show({
-      type: "success",
-      position: "bottom",
-      text1: locale.t("Settings:DebugURLSaved"),
-      visibilityTime: 3000,
-      autoHide: true
-    });
+    Toast("Settings:DebugURLSaved");
   };
 
   return (
@@ -252,7 +250,7 @@ const Settings = (props) => {
               value={
                 isDemoTry
                   ? References.DemoUrl
-                  : storedEnviromentsUrl.length == 1
+                  : storedEnviromentsUrl.length == 1 && url
                   ? storedEnviromentsUrl[0]
                   : storedEnviromentsUrl.length > 1
                   ? url

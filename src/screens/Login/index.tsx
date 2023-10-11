@@ -12,7 +12,6 @@ import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
 import { isTablet, isTabletSmall } from "../../helpers/IsTablet";
 import styleSheet from "./styles";
-import Toast from "react-native-toast-message";
 import { deviceStyles as styles } from "./deviceStyles";
 import { References } from "../../constants/References";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -20,6 +19,7 @@ import { useUser } from "../../../hook/useUser";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectData,
+  selectSelectedUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl
 } from "../../../redux/user";
@@ -30,6 +30,7 @@ import {
   selectError
 } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Toast } from "../../utils/Toast";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -53,8 +54,8 @@ const LoginFunctional = (props) => {
 
   const data = useAppSelector(selectData);
   const error = useAppSelector(selectError);
-  const storedEnviromentsUrl = AsyncStorage.getItem("storedEnviromentsUrl");
   const dispatch = useAppDispatch();
+  const selectedUrl = useAppSelector(selectSelectedUrl);
   const { login, logout, getImageProfile } = useUser();
 
   let listViewRef: KeyboardAwareScrollView;
@@ -70,8 +71,11 @@ const LoginFunctional = (props) => {
   const submitLogin = async () => {
     try {
       dispatch(setLoadingScreen(true));
+      dispatch(setError(false));
       try {
-        dispatch(setError(false));
+        if (!selectedUrl) {
+          throw new Error("LoginScreen:URLNotFound");
+        }
         if (validateCredentials()) {
           demo();
         }
@@ -85,38 +89,14 @@ const LoginFunctional = (props) => {
         dispatch(setError(true));
         dispatch(setLoadingScreen(false));
         if (error.message.includes("Invalid user name or password")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("ErrorUserPassword"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
+          Toast("ErrorUserPassword");
         }
         if (error.message.includes("OBRest instance not initialized")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:URLNotFound"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
+          Toast("LoginScreen:URLNotFound");
         } else if (error.message.includes("Network Error")) {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: locale.t("LoginScreen:NetworkError"),
-            visibilityTime: 3000,
-            autoHide: true
-          });
+          Toast("LoginScreen:NetworkError");
         } else {
-          Toast.show({
-            type: "error",
-            position: "bottom",
-            text1: error.message,
-            visibilityTime: 3000,
-            autoHide: true
-          });
+          Toast(error.message);
         }
       }
     } catch (error) {
@@ -172,37 +152,40 @@ const LoginFunctional = (props) => {
   };
 
   const demo = async () => {
-    dispatch(setLoadingScreen(true));
-    dispatch(setLoadingScreen(true));
+    try {
+      dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
 
-    dispatch(setLoadingScreen(true));
+      dispatch(setLoadingScreen(true));
 
-    await setUrlOB(References.DemoUrl);
-    await AsyncStorage.setItem("baseUrl", References.DemoUrl);
-    await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
-    await login(AdminUsername, AdminPassword);
-    const loginStatus = await login(AdminUsername, AdminPassword);
-    await getImageProfile(data);
-    if (loginStatus.includes("Network Error")) {
+      await setUrlOB(References.DemoUrl);
+      await AsyncStorage.setItem("baseUrl", References.DemoUrl);
+      await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+      await login(AdminUsername, AdminPassword);
+      await getImageProfile(data);
+      dispatch(setSelectedUrl(References.DemoUrl));
+      dispatch(setIsDemo(true));
+      await AsyncStorage.setItem("isDemoTry", References.YES);
+      const storedEnviromentsUrl = await AsyncStorage.getItem(
+        "storedEnviromentsUrl"
+      );
+
+      const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
+        ? JSON.parse(storedEnviromentsUrl)
+        : [];
+
+      dispatch(
+        setStoredEnviromentsUrl([
+          ...storedEnviromentsUrlParsed,
+          References.DemoUrl
+        ])
+      );
+    } catch (error) {
+      Toast("LoginScreen:NetworkError");
+      throw error;
+    } finally {
       dispatch(setLoadingScreen(false));
-      Toast.show({
-        type: "error",
-        position: "bottom",
-        text1: locale.t("LoginScreen:NetworkError"),
-        visibilityTime: 3000,
-        autoHide: true
-      });
     }
-    dispatch(setSelectedUrl(References.DemoUrl));
-    dispatch(setLoadingScreen(false));
-    dispatch(setIsDemo(true));
-    await AsyncStorage.setItem("isDemoTry", References.YES);
-    dispatch(
-      setStoredEnviromentsUrl([
-        ...(await storedEnviromentsUrl),
-        References.DemoUrl
-      ])
-    );
   };
 
   const welcomeText = (): string => {

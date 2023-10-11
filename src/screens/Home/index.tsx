@@ -17,11 +17,14 @@ import {
   selectSelectedUrl,
   selectToken
 } from "../../../redux/user";
-import { useAppSelector } from "../../../redux";
-import { selectLoading, selectMenuItems } from "../../../redux/window";
+import { useAppDispatch, useAppSelector } from "../../../redux";
+import {
+  selectLoading,
+  selectMenuItems,
+  setIsSubapp
+} from "../../../redux/window";
 import { OBRest } from "etrest";
 import { References } from "../../constants/References";
-import { useUser } from "../../../hook/useUser";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -39,7 +42,7 @@ const HomeFunction = (props: Props) => {
   const menuItems = useAppSelector(selectMenuItems);
   const token = useAppSelector(selectToken);
   const selectedUrl = useAppSelector(selectSelectedUrl);
-  const { logout } = useUser();
+  const dispatch = useAppDispatch();
 
   useMemo(() => {
     selectedUrl
@@ -80,7 +83,10 @@ const HomeFunction = (props: Props) => {
                     <CardDropdown
                       title={menuItem.name}
                       image={<StarIcon />}
-                      onPress={() => props.navigation.navigate(menuItem.name)}
+                      onPress={() => {
+                        dispatch(setIsSubapp(true));
+                        props.navigation.navigate(menuItem.name);
+                      }}
                     />
                   </View>
                 );
