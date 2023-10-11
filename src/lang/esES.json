@@ -97,5 +97,6 @@
   "WelcomeToEtendoHome": "Bienvenido a Etendo,",
   "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
   "ErrorUserPassword": "Credenciales incorrectos o sin autorización.",
-  "UrlFetchFailed": "Falló al renderizar la url '%{url}'"
+  "UrlFetchFailed": "Falló al renderizar la url '%{url}'",
+  "NoInternetConnection": "Sin Conexión a Internet"
 }

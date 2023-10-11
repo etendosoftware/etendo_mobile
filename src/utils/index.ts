@@ -5,6 +5,7 @@ import { isTablet } from "../../hook/isTablet";
 import Orientation from "react-native-orientation-locker";
 import { Toast } from "./Toast";
 import { storeKey } from "./KeyStorage";
+import NetInfo from "@react-native-community/netinfo";
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
@@ -101,4 +102,10 @@ export const deviceOrientation = () => {
   } else {
     Orientation.lockToPortrait();
   }
+};
+
+// Check if the internet is available
+export const internetIsAvailable = async () => {
+  const netInfo = await NetInfo.fetch();
+  return netInfo.isConnected;
 };

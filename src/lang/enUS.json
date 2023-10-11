@@ -97,5 +97,6 @@
   "WelcomeToEtendoHome": "Welcome to Etendo,",
   "EnterCredentials": "Enter your credentials to access your account.",
   "ErrorUserPassword": "Credentials are incorrect or unauthorized.",
-  "UrlFetchFailed": "Failed to Render url '%{url}'"
+  "UrlFetchFailed": "Failed to Render url '%{url}'",
+  "NoInternetConnection": "No Internet Connection"
 }
