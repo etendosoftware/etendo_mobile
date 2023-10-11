@@ -31,6 +31,8 @@ import {
 } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "../../utils/Toast";
+import { internetIsAvailable } from "../../utils";
+import { OBRest } from "etrest";
 
 // Constants
 const MIN_CORE_VERSION = "3.0.202201";
@@ -70,8 +72,11 @@ const LoginFunctional = (props) => {
 
   const submitLogin = async () => {
     try {
-      dispatch(setLoadingScreen(true));
-      dispatch(setError(false));
+      if (!(await internetIsAvailable())) {
+        Toast("NoInternetConnection");
+        return;
+      }
+
       try {
         if (!selectedUrl) {
           throw new Error("LoginScreen:URLNotFound");
@@ -79,11 +84,18 @@ const LoginFunctional = (props) => {
         if (validateCredentials()) {
           demo();
         }
+        dispatch(setError(false));
+        const isCredentialsValid = await checkCredentials(username, password);
+        if (!isCredentialsValid) {
+          Toast("ErrorUserPassword");
+          return;
+        }
+
+        dispatch(setLoadingScreen(true));
         await login(username, password);
         const isCoreVersionBeingChecked = await checkCoreCompatibility();
         if (!isCoreVersionBeingChecked) {
           await getImageProfile(data);
-          dispatch(setLoadingScreen(false));
         }
       } catch (error) {
         dispatch(setError(true));
@@ -103,6 +115,17 @@ const LoginFunctional = (props) => {
       Snackbar.showError(error.message);
       console.error(error);
       dispatch(setLoadingScreen(false));
+    } finally {
+      dispatch(setLoadingScreen(false));
+    }
+  };
+
+  const checkCredentials = async (username, password) => {
+    try {
+      await OBRest.loginWithUserAndPassword(username, password);
+      return true;
+    } catch (error) {
+      return false;
     }
   };
 
@@ -153,8 +176,10 @@ const LoginFunctional = (props) => {
 
   const demo = async () => {
     try {
-      dispatch(setLoadingScreen(true));
-      dispatch(setLoadingScreen(true));
+      if (!(await internetIsAvailable())) {
+        Toast("NoInternetConnection");
+        return;
+      }
 
       dispatch(setLoadingScreen(true));
 
