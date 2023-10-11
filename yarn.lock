@@ -1367,11 +1367,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
   integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
 
-"@react-native-community/netinfo@^9.4.1":
-  version "9.4.1"
-  resolved "https://repo.futit.cloud/repository/npm-group/@react-native-community/netinfo/-/netinfo-9.4.1.tgz#7b880758adca65fe47ee866cf7b00416b9dcc192"
-  integrity sha512-dAbY5mfw+6Kas/GJ6QX9AZyY+K+eq9ad4Su6utoph/nxyH3whp5cMSgRNgE2VhGQVRZ/OG0qq3IaD3+wzoqJXw==
-
 "@react-native-community/slider@^4.2.1":
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.4.3.tgz#9b9dc639b88f5bfda72bd72a9dff55cbf9f777ed"

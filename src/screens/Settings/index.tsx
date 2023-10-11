@@ -339,8 +339,7 @@ const Settings = (props) => {
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
                 value={devUrl}
                 onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={43}
-                centerText={true}
+                height={50}
               />
               <View style={styles.saveButtonContainer}>
                 <ButtonUI
@@ -456,8 +455,7 @@ const Settings = (props) => {
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
                 value={devUrl}
                 onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={43}
-                centerText={true}
+                height={50}
               />
               <View style={styles.saveButtonContainer}>
                 <ButtonUI
