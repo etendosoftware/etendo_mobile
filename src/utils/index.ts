@@ -1,10 +1,10 @@
 import React from "react";
 import packages from "../components/packages";
-import Toast from "react-native-toast-message";
-import locale from "../i18n/locale";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTablet } from "../../hook/isTablet";
 import Orientation from "react-native-orientation-locker";
+import { Toast } from "./Toast";
+import { storeKey } from "./KeyStorage";
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
@@ -36,15 +36,7 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
 export async function fetchComponent(id: any, url: any, navigation: any) {
   const fullUrl = `${url}/${id}?timestamp=${+new Date()}`;
   const toast = () => {
-    return Toast.show({
-      type: "error",
-      position: "bottom",
-      text1: locale.t("LoginScreen:NetworkError"),
-      visibilityTime: 7000,
-      autoHide: true,
-      topOffset: 30,
-      bottomOffset: 40
-    });
+    return Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
   };
   async function isConnected() {
     try {
@@ -59,7 +51,7 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     return {
       default: () => {
         navigation.navigate("Home");
-        toast();
+        Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
       }
     };
   }
@@ -82,6 +74,7 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
       await AsyncStorage.setItem(id, data);
       const date = responseChange.headers.get("date");
       await AsyncStorage.setItem(dateLastDownBundleKey, date);
+      storeKey(dateLastDownBundleKey);
       component = { default: getParsedModule(data, id, packages) };
     } else {
       const existingCode = await AsyncStorage.getItem(id);
@@ -97,7 +90,7 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
   } catch (error) {
     return () => {
       navigation.navigate("Home");
-      toast();
+      Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
     };
   }
 }

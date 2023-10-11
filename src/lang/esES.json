@@ -56,7 +56,7 @@
   "Settings:AddNewURL": "Agregar nueva URL",
   "Settings:EnviromentURL": "URL del entorno",
   "Settings:NotEnviromentURL": "No hay ninguna URL añadida aún",
-  "Settings:InputPlaceholder": "Ingresar url, ej.: https://address/context",
+  "Settings:InputPlaceholder": "Ingresar URL",
   "Settings:ChangeURLLogoutConfirmation": "Es necesario cerrar sesión para cambiar la URL del servidor.",
   "Settings:AppVersion": "V %{version}",
   "Settings:Logo": "Logo",

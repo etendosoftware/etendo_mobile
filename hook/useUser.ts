@@ -30,6 +30,8 @@ import {
   languageByDefault
 } from "../src/i18n/config";
 import { setUrl } from "../src/ob-api/ob";
+import { eraseItems } from "../src/utils/KeyStorage";
+import { References } from "../src/constants/References";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +53,7 @@ export const useUser = () => {
     );
     const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
     const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
-
+    const IsDemoTry = await AsyncStorage.getItem("isDemoTry");
     // Set redux
     dispatch(setSelectedUrl(selectedUrlStored));
     dispatch(setToken(currentToken));
@@ -62,6 +64,9 @@ export const useUser = () => {
     dispatch(setStoredLanguages(appLanguages));
     storedEnviromentsUrl &&
       dispatch(setStoredEnviromentsUrl([...JSON.parse(storedEnviromentsUrl)]));
+    if (IsDemoTry === References.YES) {
+      dispatch(setIsDemo(true));
+    }
     // Other actions
     await setUrl(selectedUrlStored);
   };
@@ -70,7 +75,7 @@ export const useUser = () => {
     try {
       await OBRest.loginWithUserAndPassword(user, pass);
     } catch (error) {
-      return error.message;
+      throw new Error(error.message);
     }
     const token = OBRest.getInstance()
       .getAxios()
@@ -154,11 +159,11 @@ export const useUser = () => {
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
-    await AsyncStorage.removeItem("isDemoTry");
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");
       await AsyncStorage.removeItem("selectedUrl");
+      await AsyncStorage.removeItem("isDemoTry");
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
     }
@@ -168,6 +173,8 @@ export const useUser = () => {
     dispatch(setData(null));
     dispatch(setStoredLanguages(null));
     dispatch(setLanguage(null));
+    OBRest.init(new URL("#"), null);
+    await eraseItems();
     await languageDefault();
     await atAppInit();
   };

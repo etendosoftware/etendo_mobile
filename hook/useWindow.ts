@@ -1,11 +1,6 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux";
-import {
-  selectDevUrl,
-  selectSelectedUrl,
-  selectToken,
-  setDevUrl
-} from "../redux/user";
+import { selectDevUrl, selectSelectedUrl, setDevUrl } from "../redux/user";
 import {
   selectWindows,
   setAppData,
@@ -21,7 +16,6 @@ const method = "GET";
 export const useWindow = () => {
   const dispatch = useAppDispatch();
   const windows = useAppSelector(selectWindows);
-  const token = useAppSelector(selectToken);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const devUrl = useAppSelector(selectDevUrl);
 
@@ -90,18 +84,27 @@ export const useWindow = () => {
   };
 
   const listWindows = async (appsData: any[]) => {
-    const mi = appsData.map((app: any) => {
-      const path = app.path.split("/");
-      const __id = app.etdappAppVersionIsDev ? path[path.length - 1] : app.path;
-      return {
-        name: app.etdappAppName,
-        __id: __id,
-        url: app.etdappAppVersionIsDev ? devUrl : selectedUrl,
-        isDev: app.etdappAppVersionIsDev
-      };
-    });
-    dispatch(setAppData([...appsData]));
-    dispatch(setMenuItems([...mi]));
+    try {
+      const mi = appsData
+        ? appsData.map((app: any) => {
+            const path = app.path.split("/");
+            const __id = app.etdappAppVersionIsDev
+              ? path[path.length - 1]
+              : app.path;
+            return {
+              name: app.etdappAppName,
+              __id: __id,
+              url: app.etdappAppVersionIsDev ? devUrl : selectedUrl,
+              isDev: app.etdappAppVersionIsDev
+            };
+          })
+        : [];
+      dispatch(setAppData([...appsData]));
+      dispatch(setMenuItems([...mi]));
+    } catch (error) {
+      dispatch(setAppData([]));
+      dispatch(setMenuItems([]));
+    }
   };
 
   return { loadWindows, unloadWindows, getWindow, getMenuItems, loadDynamic };

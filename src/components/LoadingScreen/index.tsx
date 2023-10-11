@@ -20,8 +20,8 @@ const LoadingScreen = () => {
       const hasLanguage = !languageStored || !selectedLanguageRedux;
       if (hasLanguage) {
         await languageDefault();
-        setIsLocaled(hasLanguage);
       }
+      setIsLocaled(true);
     };
     getLanguageLocal();
     setVisible(true);

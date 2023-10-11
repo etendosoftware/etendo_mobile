@@ -142,7 +142,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     <>
       <SafeAreaView style={styles.containerBackground} />
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor={PRIMARY_100} />
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_100} />
         {showNavbar && (
           <Navbar
             title={locale.t("WelcomeToEtendoHome")}
