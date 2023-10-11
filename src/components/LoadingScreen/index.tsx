@@ -8,9 +8,9 @@ import { languageDefault } from "../../helpers/getLanguajes";
 import { useAppSelector } from "../../../redux";
 import { selectSelectedLanguage } from "../../../redux/user";
 import { selectIsSubapp } from "../../../redux/window";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 const LoadingScreen = () => {
-  const [visible, setVisible] = useState(false);
   const [isLocaled, setIsLocaled] = useState(false);
   const selectedLanguageRedux = useAppSelector(selectSelectedLanguage);
   const isSubappRedux = useAppSelector(selectIsSubapp);
@@ -24,7 +24,6 @@ const LoadingScreen = () => {
       setIsLocaled(true);
     };
     getLanguageLocal();
-    setVisible(true);
   }, []);
 
   const textLoading = () => {
@@ -36,14 +35,28 @@ const LoadingScreen = () => {
   };
 
   return (
-    <Spinner
-      color={defaultTheme.colors.accent}
-      overlayColor={defaultTheme.colors.primary}
-      textStyle={{ color: defaultTheme.colors.surface }}
-      visible={visible}
-      textContent={textLoading()}
-    />
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color={defaultTheme.colors.accent} />
+      <Text style={styles.text}>{textLoading()}</Text>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: defaultTheme.colors.primary,
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  text: {
+    color: defaultTheme.colors.surface,
+    marginTop: 30,
+    fontSize: 20,
+    fontWeight: "bold"
+  }
+});
 
 export default withTheme(LoadingScreen);
