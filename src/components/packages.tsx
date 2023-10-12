@@ -43,6 +43,7 @@ import * as FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as AntDesign from "react-native-vector-icons/AntDesign";
 import * as MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ReactNativeDatePicker from "react-native-date-picker";
+import * as EtendoUiLibrary from "etendo-ui-library";
 import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
@@ -74,6 +75,7 @@ const Packages = {
   "react-native-vision-camera": () => ReactNativeVisionCamera,
   "react-native-orientation-locker": () => ReactNativeOrientationLocker,
   "vision-camera-code-scanner": () => VisionCameraCodeScanner,
+  "etendo-ui-library": () => EtendoUiLibrary,
   "@sentry/react-native": () => Sentry,
   color: () => Color,
   axios: () => Axios,
