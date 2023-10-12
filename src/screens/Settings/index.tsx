@@ -215,7 +215,7 @@ const Settings = (props) => {
     await AsyncStorage.setItem("debugURL", devUrl);
     dispatch(setDevUrl(devUrl));
     // show toastify
-    Toast("Settings:DebugURLSaved");
+    Toast("Settings:DebugURLSaved", { type: "success" });
   };
 
   return (
@@ -226,6 +226,7 @@ const Settings = (props) => {
       }}
       keyboardShouldPersistTaps="handled"
       extraScrollHeight={150}
+      enableOnAndroid={true}
     >
       <View style={styles.container}>
         <View style={styles.backContainer}>
