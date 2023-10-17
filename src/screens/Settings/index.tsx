@@ -215,7 +215,7 @@ const Settings = (props) => {
     await AsyncStorage.setItem("debugURL", devUrl);
     dispatch(setDevUrl(devUrl));
     // show toastify
-    Toast("Settings:DebugURLSaved");
+    Toast("Settings:DebugURLSaved", { type: "success" });
   };
 
   return (
@@ -226,6 +226,7 @@ const Settings = (props) => {
       }}
       keyboardShouldPersistTaps="handled"
       extraScrollHeight={150}
+      enableOnAndroid={true}
     >
       <View style={styles.container}>
         <View style={styles.backContainer}>
@@ -339,8 +340,7 @@ const Settings = (props) => {
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
                 value={devUrl}
                 onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={43}
-                centerText={true}
+                height={50}
               />
               <View style={styles.saveButtonContainer}>
                 <ButtonUI
@@ -456,8 +456,7 @@ const Settings = (props) => {
                 placeholder={locale.t("Settings:DebugURLPlaceholder")}
                 value={devUrl}
                 onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={43}
-                centerText={true}
+                height={50}
               />
               <View style={styles.saveButtonContainer}>
                 <ButtonUI
