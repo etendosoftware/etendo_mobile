@@ -57,7 +57,6 @@ export const useUser = () => {
     // Set redux
     dispatch(setSelectedUrl(selectedUrlStored));
     dispatch(setToken(currentToken));
-    dispatch(setLanguage(currentLanguage));
     dispatch(setData(dataUser ? dataUser : null));
     currentToken && (await reloadUserData(currentToken, dataUser?.username));
     const appLanguages = getSupportedLanguages();
@@ -68,6 +67,7 @@ export const useUser = () => {
       dispatch(setIsDemo(true));
     }
     // Other actions
+    await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
     await setUrl(selectedUrlStored);
   };
 
