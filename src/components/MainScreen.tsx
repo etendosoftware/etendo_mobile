@@ -44,6 +44,7 @@ const HomePage = ({ route, navigation }: any) => {
               token={token}
               user={data.username}
               language={language}
+              dataUser={data}
             />
           </NavigationContainer>
         </View>
