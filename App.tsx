@@ -41,25 +41,12 @@ const App: React.FC<Props> = () => {
       }
       await languageDefault();
       dispatch(setLoadingScreen(false));
+      // Important: Do not add any other code here, this is for the root component only.
+      // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
       await atAppInit();
     };
-
-    const fetchDevURL = async () => {
-      try {
-        const fetchedDevUrl = await AsyncStorage.getItem("debugURL");
-        if (fetchedDevUrl) {
-          dispatch(setDevUrl(fetchedDevUrl));
-        } else {
-          dispatch(setDevUrl("http://10.0.2.2:3000"));
-        }
-      } catch (error) {
-        console.error("Error fetching debugURL:", error);
-      }
-    };
-
     fetchInitialData();
     checkPermission();
-    fetchDevURL();
   }, []);
 
   const checkPermission = async () => {

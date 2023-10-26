@@ -4,6 +4,7 @@ import { selectDevUrl, selectSelectedUrl, setDevUrl } from "../redux/user";
 import {
   selectWindows,
   setAppData,
+  setIsDeveloperMode,
   setLoading,
   setLoadingScreen,
   setLogged,
@@ -11,6 +12,7 @@ import {
   setWindows
 } from "../redux/window";
 import { getUrl } from "../src/ob-api/ob";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const method = "GET";
 
 export const useWindow = () => {
@@ -99,8 +101,13 @@ export const useWindow = () => {
             };
           })
         : [];
+      let [{ isDev = false }] = mi;
+      dispatch(setIsDeveloperMode(isDev));
       dispatch(setAppData([...appsData]));
       dispatch(setMenuItems([...mi]));
+      await AsyncStorage.setItem("isDeveloperMode", JSON.stringify(isDev));
+      await AsyncStorage.setItem("appData", JSON.stringify([...appsData]));
+      await AsyncStorage.setItem("menuItems", JSON.stringify([...mi]));
     } catch (error) {
       dispatch(setAppData([]));
       dispatch(setMenuItems([]));

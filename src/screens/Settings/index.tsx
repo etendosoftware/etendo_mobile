@@ -37,7 +37,7 @@ import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { References } from "../../constants/References";
-import { selectIsDemo } from "../../../redux/window";
+import { selectIsDemo, selectIsDeveloperMode } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
 import { Toast } from "../../utils/Toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -61,6 +61,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
+  const isDeveloperMode = useAppSelector(selectIsDeveloperMode);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
@@ -210,11 +211,9 @@ const Settings = (props) => {
     }
   }, [data, token]);
 
-  // save debug URL
   const saveDebugURL = async () => {
     await AsyncStorage.setItem("debugURL", devUrl);
     dispatch(setDevUrl(devUrl));
-    // show toastify
     Toast("Settings:DebugURLSaved", { type: "success" });
   };
 
@@ -330,27 +329,29 @@ const Settings = (props) => {
             />
           </View>
 
-          {!isTablet() && role === References.SystemAdministrator && (
-            <View style={styles.debugContainerStyles}>
-              <Text style={styles.debugText}>
-                {locale.t("Settings:DebugURL")}
-              </Text>
-              <Input
-                typeField="textInput"
-                placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={devUrl}
-                onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={50}
-              />
-              <View style={styles.saveButtonContainer}>
-                <ButtonUI
-                  typeStyle="primary"
-                  onPress={saveDebugURL}
-                  text={locale.t("Settings:Save")}
+          {!isTablet() &&
+            role === References.SystemAdministrator &&
+            isDeveloperMode && (
+              <View style={styles.debugContainerStyles}>
+                <Text style={styles.debugText}>
+                  {locale.t("Settings:DebugURL")}
+                </Text>
+                <Input
+                  typeField="textInput"
+                  placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                  value={devUrl}
+                  onChangeText={(value) => dispatch(setDevUrl(value))}
+                  height={50}
                 />
+                <View style={styles.saveButtonContainer}>
+                  <ButtonUI
+                    typeStyle="primary"
+                    onPress={saveDebugURL}
+                    text={locale.t("Settings:Save")}
+                  />
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
           <Modal visible={showChangeURLModal} transparent>
             <Dialog
@@ -445,31 +446,33 @@ const Settings = (props) => {
           </Modal>
         </View>
 
-        {isTablet() && role === References.SystemAdministrator && (
-          <View style={styles.containerCardStyle}>
-            <View style={styles.containerUrlStyle}>
-              <Text style={styles.debugText}>
-                {locale.t("Settings:DebugURL")}
-              </Text>
-              <Input
-                typeField="textInput"
-                placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={devUrl}
-                onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={50}
-              />
-              <View style={styles.saveButtonContainer}>
-                <ButtonUI
-                  typeStyle="primary"
-                  onPress={saveDebugURL}
-                  text={locale.t("Settings:Save")}
+        {isTablet() &&
+          role === References.SystemAdministrator &&
+          isDeveloperMode && (
+            <View style={styles.containerCardStyle}>
+              <View style={styles.containerUrlStyle}>
+                <Text style={styles.debugText}>
+                  {locale.t("Settings:DebugURL")}
+                </Text>
+                <Input
+                  typeField="textInput"
+                  placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                  value={devUrl}
+                  onChangeText={(value) => dispatch(setDevUrl(value))}
+                  height={50}
                 />
+                <View style={styles.saveButtonContainer}>
+                  <ButtonUI
+                    typeStyle="primary"
+                    onPress={saveDebugURL}
+                    text={locale.t("Settings:Save")}
+                  />
+                </View>
               </View>
+              <View style={styles.logoContainerStyles} />
+              <View style={styles.languageContainerStyles} />
             </View>
-            <View style={styles.logoContainerStyles} />
-            <View style={styles.languageContainerStyles} />
-          </View>
-        )}
+          )}
       </View>
 
       {isTablet() ? (

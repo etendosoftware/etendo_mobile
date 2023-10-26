@@ -13,6 +13,7 @@ export interface WindowState {
   windows: any[];
   isDemo: boolean;
   isSubapp: boolean;
+  isDeveloperMode: boolean;
 }
 
 const initialState: WindowState = {
@@ -20,6 +21,7 @@ const initialState: WindowState = {
   bindaryImg: "",
   error: false,
   isDemo: false,
+  isDeveloperMode: false,
   isSubapp: false,
   loading: false,
   loadingScreen: true,
@@ -43,6 +45,9 @@ export const windowSlice = createSlice({
     },
     setIsDemo: (state, action: PayloadAction<any>) => {
       state.isDemo = action.payload;
+    },
+    setIsDeveloperMode: (state, action: PayloadAction<any>) => {
+      state.isDeveloperMode = action.payload;
     },
     setIsSubapp: (state, action: PayloadAction<any>) => {
       state.isSubapp = action.payload;
@@ -70,6 +75,7 @@ export const {
   setBindaryImg,
   setError,
   setIsDemo,
+  setIsDeveloperMode,
   setIsSubapp,
   setLoading,
   setLoadingScreen,
@@ -82,6 +88,8 @@ export const selectAppData = (state: RootState) => state.window.appsData;
 export const selectBinaryImg = (state: RootState) => state.window.bindaryImg;
 export const selectError = (state: RootState) => state.window.error;
 export const selectIsDemo = (state: RootState) => state.window.isDemo;
+export const selectIsDeveloperMode = (state: RootState) =>
+  state.window.isDeveloperMode;
 export const selectIsSubapp = (state: RootState) => state.window.isSubapp;
 export const selectLoading = (state: RootState) => state.window.loading;
 export const selectLoadingScreen = (state: RootState) =>
