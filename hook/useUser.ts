@@ -223,7 +223,10 @@ export const useUser = () => {
         AsyncStorage.setItem("debugURL", URLProd);
         dispatch(setDevUrl(URLProd));
       }
-    } catch (error) {}
+    } catch (_error) {
+      AsyncStorage.setItem("debugURL", "");
+      dispatch(setDevUrl(""));
+    }
   };
 
   return {
