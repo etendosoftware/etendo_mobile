@@ -7,6 +7,7 @@ import {
   selectUser,
   setBindaryImg,
   setData,
+  setDevUrl,
   setLanguage,
   setSelectedUrl,
   setStoredEnviromentsUrl,
@@ -17,14 +18,21 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
-import { selectIsDemo, setIsDemo, setIsSubapp } from "../redux/window";
+import {
+  selectIsDemo,
+  selectIsDeveloperMode,
+  setAppData,
+  setIsDemo,
+  setIsDeveloperMode,
+  setIsSubapp,
+  setMenuItems
+} from "../redux/window";
 import {
   changeLanguage,
   getLanguages,
   getSupportedLanguages,
   languageDefault
 } from "../src/helpers/getLanguajes";
-import locale from "../src/i18n/locale";
 import {
   formatLanguageUnderscore,
   languageByDefault
@@ -41,6 +49,7 @@ export const useUser = () => {
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
   const isDemo = useAppSelector(selectIsDemo);
+  const isDeveloperMode = useAppSelector(selectIsDeveloperMode);
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
@@ -54,10 +63,16 @@ export const useUser = () => {
     const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
     const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
     const IsDemoTry = await AsyncStorage.getItem("isDemoTry");
+    const IsDeveloperMode = await AsyncStorage.getItem("isDeveloperMode");
+    const appData = await AsyncStorage.getItem("appData");
+    const menuItems = await AsyncStorage.getItem("menuItems");
     // Set redux
     dispatch(setSelectedUrl(selectedUrlStored));
     dispatch(setToken(currentToken));
     dispatch(setData(dataUser ? dataUser : null));
+    dispatch(setIsDeveloperMode(IsDeveloperMode));
+    dispatch(setMenuItems(JSON.parse(menuItems)));
+    dispatch(setAppData(JSON.parse(appData)));
     currentToken && (await reloadUserData(currentToken, dataUser?.username));
     const appLanguages = getSupportedLanguages();
     dispatch(setStoredLanguages(appLanguages));
@@ -67,8 +82,9 @@ export const useUser = () => {
       dispatch(setIsDemo(true));
     }
     // Other actions
-    await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
+    await fetchDevURL(selectedUrlStored);
     await setUrl(selectedUrlStored);
+    await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
   };
 
   const login = async (user, pass) => {
@@ -189,6 +205,23 @@ export const useUser = () => {
       const imageList: any[] = await imageCriteria.list();
       if (imageList.length && imageList[0]?.bindaryData) {
         dispatch(setBindaryImg(imageList[0].bindaryData));
+      }
+    } catch (error) {}
+  };
+
+  const fetchDevURL = async (URLProd: string) => {
+    try {
+      if (!isDeveloperMode) {
+        const fetchedDevUrl = await AsyncStorage.getItem("debugURL");
+        if (fetchedDevUrl) {
+          dispatch(setDevUrl(fetchedDevUrl));
+        } else {
+          await AsyncStorage.setItem("debugURL", References.LocalURLDev);
+          dispatch(setDevUrl(fetchedDevUrl));
+        }
+      } else {
+        AsyncStorage.setItem("debugURL", URLProd);
+        dispatch(setDevUrl(URLProd));
       }
     } catch (error) {}
   };
