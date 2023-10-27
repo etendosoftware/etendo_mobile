@@ -2,6 +2,7 @@ import { OBRest, Restrictions } from "etrest";
 import { useAppDispatch, useAppSelector } from "../redux";
 import {
   selectSelectedLanguage,
+  selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectToken,
   selectUser,
@@ -20,7 +21,6 @@ import { IData } from "../src/interfaces";
 import { useWindow } from "./useWindow";
 import {
   selectIsDemo,
-  selectIsDeveloperMode,
   setAppData,
   setIsDemo,
   setIsDeveloperMode,
@@ -43,13 +43,13 @@ import { References } from "../src/constants/References";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
-  const { loadWindows } = useWindow();
+  const { loadWindows, fetchDevURL } = useWindow();
   const selectedLanguage = useAppSelector(selectSelectedLanguage);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectUser);
   const isDemo = useAppSelector(selectIsDemo);
-  const isDeveloperMode = useAppSelector(selectIsDeveloperMode);
+  const selectedUrl = useAppSelector(selectSelectedUrl);
 
   // Important: this method is called in App.tsx,
   // all that is setted here is available in the whole app (redux)
@@ -70,7 +70,9 @@ export const useUser = () => {
     dispatch(setSelectedUrl(selectedUrlStored));
     dispatch(setToken(currentToken));
     dispatch(setData(dataUser ? dataUser : null));
-    dispatch(setIsDeveloperMode(IsDeveloperMode));
+    dispatch(
+      setIsDeveloperMode(IsDeveloperMode ? JSON.parse(IsDeveloperMode) : false)
+    );
     dispatch(setMenuItems(JSON.parse(menuItems)));
     dispatch(setAppData(JSON.parse(appData)));
     currentToken && (await reloadUserData(currentToken, dataUser?.username));
@@ -82,7 +84,6 @@ export const useUser = () => {
       dispatch(setIsDemo(true));
     }
     // Other actions
-    await fetchDevURL(selectedUrlStored);
     await setUrl(selectedUrlStored);
     await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
   };
@@ -96,6 +97,7 @@ export const useUser = () => {
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
+    await fetchDevURL(selectedUrl);
     await reloadUserData(null, user);
     dispatch(setToken(token));
     dispatch(setUser(user));
@@ -175,6 +177,8 @@ export const useUser = () => {
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
+    await AsyncStorage.removeItem("isDeveloperMode");
+    await AsyncStorage.removeItem("debugURL");
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");
@@ -183,6 +187,9 @@ export const useUser = () => {
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
     }
+
+    dispatch(setDevUrl(null));
+    dispatch(setIsDeveloperMode(false));
     dispatch(setIsSubapp(false));
     dispatch(setToken(null));
     dispatch(setUser(null));
@@ -207,26 +214,6 @@ export const useUser = () => {
         dispatch(setBindaryImg(imageList[0].bindaryData));
       }
     } catch (error) {}
-  };
-
-  const fetchDevURL = async (URLProd: string) => {
-    try {
-      if (!isDeveloperMode) {
-        const fetchedDevUrl = await AsyncStorage.getItem("debugURL");
-        if (fetchedDevUrl) {
-          dispatch(setDevUrl(fetchedDevUrl));
-        } else {
-          await AsyncStorage.setItem("debugURL", References.LocalURLDev);
-          dispatch(setDevUrl(fetchedDevUrl));
-        }
-      } else {
-        AsyncStorage.setItem("debugURL", URLProd);
-        dispatch(setDevUrl(URLProd));
-      }
-    } catch (_error) {
-      AsyncStorage.setItem("debugURL", "");
-      dispatch(setDevUrl(""));
-    }
   };
 
   return {
