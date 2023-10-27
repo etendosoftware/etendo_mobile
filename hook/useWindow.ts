@@ -13,6 +13,7 @@ import {
 } from "../redux/window";
 import { getUrl } from "../src/ob-api/ob";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { References } from "../src/constants/References";
 const method = "GET";
 
 export const useWindow = () => {
@@ -105,6 +106,7 @@ export const useWindow = () => {
       dispatch(setIsDeveloperMode(isDev));
       dispatch(setAppData([...appsData]));
       dispatch(setMenuItems([...mi]));
+      await fetchDevURL(selectedUrl, isDev);
       await AsyncStorage.setItem("isDeveloperMode", JSON.stringify(isDev));
       await AsyncStorage.setItem("appData", JSON.stringify([...appsData]));
       await AsyncStorage.setItem("menuItems", JSON.stringify([...mi]));
@@ -114,5 +116,30 @@ export const useWindow = () => {
     }
   };
 
-  return { loadWindows, unloadWindows, getWindow, getMenuItems, loadDynamic };
+  const fetchDevURL = async (URLProd: string, isDev?: boolean) => {
+    try {
+      const isDeveloperMode = !!isDev
+        ? !!isDev
+        : await AsyncStorage.getItem("isDeveloperMode");
+      if (isDeveloperMode) {
+        await AsyncStorage.setItem("debugURL", References.LocalURLDev);
+        dispatch(setDevUrl(References.LocalURLDev));
+      } else {
+        await AsyncStorage.setItem("debugURL", URLProd);
+        dispatch(setDevUrl(URLProd));
+      }
+    } catch (_error) {
+      AsyncStorage.setItem("debugURL", "");
+      dispatch(setDevUrl(""));
+    }
+  };
+
+  return {
+    loadWindows,
+    unloadWindows,
+    fetchDevURL,
+    getWindow,
+    getMenuItems,
+    loadDynamic
+  };
 };

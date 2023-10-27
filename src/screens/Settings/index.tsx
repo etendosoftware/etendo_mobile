@@ -329,29 +329,27 @@ const Settings = (props) => {
             />
           </View>
 
-          {!isTablet() &&
-            role === References.SystemAdministrator &&
-            isDeveloperMode && (
-              <View style={styles.debugContainerStyles}>
-                <Text style={styles.debugText}>
-                  {locale.t("Settings:DebugURL")}
-                </Text>
-                <Input
-                  typeField="textInput"
-                  placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                  value={devUrl}
-                  onChangeText={(value) => dispatch(setDevUrl(value))}
-                  height={50}
+          {!isTablet() && role === References.SystemAdministrator && (
+            <View style={styles.debugContainerStyles}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
+                height={50}
+              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
                 />
-                <View style={styles.saveButtonContainer}>
-                  <ButtonUI
-                    typeStyle="primary"
-                    onPress={saveDebugURL}
-                    text={locale.t("Settings:Save")}
-                  />
-                </View>
               </View>
-            )}
+            </View>
+          )}
 
           <Modal visible={showChangeURLModal} transparent>
             <Dialog
@@ -446,33 +444,31 @@ const Settings = (props) => {
           </Modal>
         </View>
 
-        {isTablet() &&
-          role === References.SystemAdministrator &&
-          isDeveloperMode && (
-            <View style={styles.containerCardStyle}>
-              <View style={styles.containerUrlStyle}>
-                <Text style={styles.debugText}>
-                  {locale.t("Settings:DebugURL")}
-                </Text>
-                <Input
-                  typeField="textInput"
-                  placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                  value={devUrl}
-                  onChangeText={(value) => dispatch(setDevUrl(value))}
-                  height={50}
+        {isTablet() && role === References.SystemAdministrator && (
+          <View style={styles.containerCardStyle}>
+            <View style={styles.containerUrlStyle}>
+              <Text style={styles.debugText}>
+                {locale.t("Settings:DebugURL")}
+              </Text>
+              <Input
+                typeField="textInput"
+                placeholder={locale.t("Settings:DebugURLPlaceholder")}
+                value={devUrl}
+                onChangeText={(value) => dispatch(setDevUrl(value))}
+                height={50}
+              />
+              <View style={styles.saveButtonContainer}>
+                <ButtonUI
+                  typeStyle="primary"
+                  onPress={saveDebugURL}
+                  text={locale.t("Settings:Save")}
                 />
-                <View style={styles.saveButtonContainer}>
-                  <ButtonUI
-                    typeStyle="primary"
-                    onPress={saveDebugURL}
-                    text={locale.t("Settings:Save")}
-                  />
-                </View>
               </View>
-              <View style={styles.logoContainerStyles} />
-              <View style={styles.languageContainerStyles} />
             </View>
-          )}
+            <View style={styles.logoContainerStyles} />
+            <View style={styles.languageContainerStyles} />
+          </View>
+        )}
       </View>
 
       {isTablet() ? (
