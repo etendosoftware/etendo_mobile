@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux";
-import { selectDevUrl, selectSelectedUrl, setDevUrl } from "../redux/user";
+import {
+  selectDevUrl,
+  selectSelectedUrl,
+  selectToken,
+  setDevUrl
+} from "../redux/user";
 import {
   selectWindows,
   setAppData,
@@ -21,6 +26,7 @@ export const useWindow = () => {
   const windows = useAppSelector(selectWindows);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const devUrl = useAppSelector(selectDevUrl);
+  const token = useAppSelector(selectToken);
 
   const loadWindows = async (token) => {
     try {
@@ -122,8 +128,14 @@ export const useWindow = () => {
         ? !!isDev
         : await AsyncStorage.getItem("isDeveloperMode");
       if (isDeveloperMode) {
-        await AsyncStorage.setItem("debugURL", References.LocalURLDev);
-        dispatch(setDevUrl(References.LocalURLDev));
+        const hasToken = token || (await AsyncStorage.getItem("token"));
+        if (hasToken) {
+          const devUrlLS = await AsyncStorage.getItem("debugURL");
+          dispatch(setDevUrl(devUrlLS));
+        } else {
+          await AsyncStorage.setItem("debugURL", References.LocalURLDev);
+          dispatch(setDevUrl(References.LocalURLDev));
+        }
       } else {
         await AsyncStorage.setItem("debugURL", URLProd);
         dispatch(setDevUrl(URLProd));

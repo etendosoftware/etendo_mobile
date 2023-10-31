@@ -37,7 +37,7 @@ import { changeLanguage } from "../../helpers/getLanguajes";
 import { getLanguageName } from "../../i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { References } from "../../constants/References";
-import { selectIsDemo, selectIsDeveloperMode } from "../../../redux/window";
+import { selectIsDemo } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
 import { Toast } from "../../utils/Toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -61,7 +61,6 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
-  const isDeveloperMode = useAppSelector(selectIsDeveloperMode);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
