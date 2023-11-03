@@ -47,7 +47,7 @@ export const deviceStyles = {
   settingsTitle: styleSheet.settingsTitle,
   containerUrls: styleSheet.containerUrls,
   containerServerUrl: styleSheet.containerServerUrl,
-  containerContextPathUrl: styleSheet.containerContextPathUrl,
+  urlContextPath: styleSheet.urlContextPath,
   urlTextsContainer: styleSheet.urlTextsContainer,
   urlTitle: styleSheet.urlTitle,
   urlDescription: styleSheet.urlDescription,

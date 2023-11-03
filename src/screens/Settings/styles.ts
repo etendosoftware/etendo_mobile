@@ -105,6 +105,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: NEUTRAL_30
   },
+  urlContextPath: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    fontSize: 18,
+    lineHeight: 18,
+    marginBottom: 3,
+    fontWeight: "600",
+    marginTop: 16
+  },
   urlContainerTablet: {
     width: "33%",
     flexDirection: "column",
@@ -287,7 +296,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_100,
     fontSize: 18,
     lineHeight: 18,
-    paddingBottom: 8,
+    marginBottom: 3,
     fontWeight: "600"
   },
   notUrlEnvList: {

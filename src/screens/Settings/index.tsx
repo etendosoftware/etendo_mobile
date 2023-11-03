@@ -247,7 +247,7 @@ const Settings = (props) => {
 
   const atChooseOption = async (value: string) => {
     // Concatenates the base server URL with the context path to form the full endpoint URL
-    const fullUrl = `${value}${contextPath}`;
+    const fullUrl = value + contextPath;
 
     dispatch(setSelectedUrl(fullUrl));
     await AsyncStorage.setItem("selectedUrl", fullUrl);
@@ -273,52 +273,6 @@ const Settings = (props) => {
         });
     }
   }, [data, token]);
-
-  // This effect runs when there's a change in the URL entered by the user or the context path
-  useEffect(() => {
-    // Early exit if no URL is selected
-    if (!selectedUrl) return;
-
-    // This asynchronous function handles the normalization and setting of the URL
-    const normalizeAndSetUrl = async () => {
-      // Find the index of the third forward slash to isolate the base URL
-      const thirdSlashIndex = selectedUrl.indexOf(
-        "/",
-        selectedUrl.indexOf("//") + 2
-      );
-
-      // Cut the URL at the third slash if it exists, otherwise keep the entire URL
-      const normalizedSelectedUrl =
-        thirdSlashIndex !== -1
-          ? selectedUrl.slice(0, thirdSlashIndex + 1)
-          : selectedUrl;
-
-      // Normalize contextPath to ensure it does not start or end with slashes
-      const normalizedContextPath = contextPath
-        .replace(/^\/+/, "") // Remove leading slashes
-        .replace(/\/+$/, ""); // Remove trailing slashes
-
-      // Concatenate the normalized context path with the base URL
-      const fullUrl = `${normalizedSelectedUrl}${normalizedContextPath}`;
-
-      // Dispatch the action to set the selected URL in the global state
-      dispatch(setSelectedUrl(fullUrl));
-      // Store the full URL in AsyncStorage for persistent storage
-      await AsyncStorage.setItem("selectedUrl", fullUrl);
-
-      try {
-        // Attempt to update the URL in the back-end service and local state
-        const tmpUrl = await setUrlOB(fullUrl);
-        setUrl(tmpUrl); // Update local state with the complete URL
-      } catch (error) {
-        // Log the error if the URL setting fails
-        console.error("There was an error setting the URL:", error);
-      }
-    };
-
-    // Invoke the normalize and set URL function
-    normalizeAndSetUrl();
-  }, [selectedUrl, contextPath]); // Dependencies for useEffect, add others if necessary
 
   const saveDebugURL = async () => {
     await AsyncStorage.setItem("debugURL", devUrl);
@@ -380,19 +334,6 @@ const Settings = (props) => {
                   centerText={true}
                   showOptionsAmount={6}
                   placeholderSearch={locale.t("Settings:Search")}
-                />
-              </View>
-
-              <View style={styles.containerContextPathUrl}>
-                <Text style={styles.contextText}>
-                  {locale.t("Settings:ContextPath")}
-                </Text>
-                <Input
-                  typeField="textInput"
-                  placeholder={locale.t("Settings:ContextPathPlaceholder")}
-                  value={contextPath}
-                  onChangeText={(value) => dispatch(setContextPath(value))}
-                  height={43}
                 />
               </View>
             </View>
@@ -496,7 +437,7 @@ const Settings = (props) => {
                 {locale.t("Settings:AddNewURL")}
               </Dialog.Title>
 
-              <Dialog.Content>
+              <Dialog.Content style={{ flex: 1 }}>
                 <View>
                   <Text style={styles.urlEnvList}>
                     {locale.t("Settings:EnviromentURL")}
@@ -510,20 +451,36 @@ const Settings = (props) => {
                     }}
                     height={50}
                   />
-                  <View style={{ height: 12 }} />
-                  <ButtonUI
-                    width="100%"
+                </View>
+
+                <View>
+                  <Text style={styles.urlContextPath}>
+                    {locale.t("Settings:ContextPath")}
+                  </Text>
+                  <Input
+                    typeField="textInput"
+                    placeholder={locale.t("Settings:ContextPathPlaceholder")}
+                    value={contextPath}
+                    onChangeText={(value) => dispatch(setContextPath(value))}
                     height={50}
-                    typeStyle="secondary"
-                    onPress={() => {
-                      addUrl();
-                    }}
-                    text={
-                      isUpdating
-                        ? locale.t("Settings:UpdateLink")
-                        : locale.t("Settings:NewLink")
-                    }
                   />
+
+                  <View style={{ marginTop: 10 }}>
+                    <ButtonUI
+                      width="100%"
+                      height={50}
+                      typeStyle="secondary"
+                      onPress={() => {
+                        addUrl();
+                      }}
+                      iconRight={<MoreIcon />}
+                      text={
+                        isUpdating
+                          ? locale.t("Settings:UpdateLink")
+                          : locale.t("Settings:NewLink")
+                      }
+                    />
+                  </View>
                 </View>
                 <View style={{ marginTop: 32 }}>
                   <Text style={styles.urlEnvList}>
