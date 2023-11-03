@@ -2,12 +2,12 @@ import React, { useMemo, Suspense } from "react";
 import { fetchComponent } from "../utils";
 import LoadingScreen from "./LoadingScreen";
 
-const DynamicComponent = ({ __id, url, children, ...props }: any) => {
+const DynamicComponent = ({ __id, children, ...props }: any) => {
   const Component = useMemo(() => {
     const component = async () => {
       const componentPromise = fetchComponent(
         __id,
-        url,
+        props.isDev ? `${props.url}:3000` : props.url,
         props.navigationContainer
       );
       componentPromise.catch((e) => {
