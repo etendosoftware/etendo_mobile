@@ -24,10 +24,6 @@ const formatUrl = (_url?) => {
     if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
       url = "http://" + url;
     }
-
-    if (url && !url.endsWith("/")) {
-      url += "/";
-    }
   }
   return url;
 };
