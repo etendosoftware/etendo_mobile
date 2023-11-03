@@ -11,6 +11,7 @@ import {
   WHITE
 } from "../../styles/colors";
 import { defaultTheme } from "../../themes";
+import { isTablet } from "../../helpers/IsTablet";
 
 const styles = StyleSheet.create({
   container: {
@@ -112,6 +113,19 @@ const styles = StyleSheet.create({
     borderColor: NEUTRAL_30,
     justifyContent: "flex-start",
     marginRight: 20
+  },
+  containerUrls: {
+    flex: !isTablet() && 1,
+    flexDirection: isTablet() ? "row" : "column",
+    width: "100%"
+  },
+  containerServerUrl: {
+    flex: isTablet() && 6.5,
+    flexDirection: "column"
+  },
+  containerContextPathUrl: {
+    flex: isTablet() && 3.5,
+    flexDirection: "column"
   },
   containerAddLinkStyle: {
     alignSelf: "flex-start",
@@ -223,6 +237,21 @@ const styles = StyleSheet.create({
     width: "33%",
     paddingLeft: 20,
     marginVertical: 0
+  },
+  contextText: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_60,
+    fontSize: 12,
+    lineHeight: 18,
+    paddingBottom: 8,
+    marginTop: 16
+  },
+  contextTextTablet: {
+    fontFamily: "Inter-SemiBold",
+    color: NEUTRAL_60,
+    fontSize: 12,
+    lineHeight: 18,
+    paddingBottom: 8
   },
   debugText: {
     fontFamily: "Inter-SemiBold",
