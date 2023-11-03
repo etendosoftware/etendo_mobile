@@ -41,7 +41,13 @@ export const deviceStyles = {
     : styleSheet.listUrlItems,
   NotItemList: styleSheet.NotItemList,
   container: styleSheet.container,
+  contextText: isDeviceTablet
+    ? styleSheet.contextTextTablet
+    : styleSheet.contextText,
   settingsTitle: styleSheet.settingsTitle,
+  containerUrls: styleSheet.containerUrls,
+  containerServerUrl: styleSheet.containerServerUrl,
+  containerContextPathUrl: styleSheet.containerContextPathUrl,
   urlTextsContainer: styleSheet.urlTextsContainer,
   urlTitle: styleSheet.urlTitle,
   urlDescription: styleSheet.urlDescription,

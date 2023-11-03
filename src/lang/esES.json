@@ -64,6 +64,8 @@
   "Settings:DebugURL": "Url de Depuración",
   "Settings:DebugURLPlaceholder": "Ingresa la URL de desarrollo",
   "Settings:DebugURLSaved": "URL de depuración guardada",
+  "Settings:ContextPath": "Ruta de contexto",
+  "Settings:ContextPathPlaceholder": "Ingrese la ruta de contexto",
   "Settings:Save": "Guardar",
   "Settings:ImageNotFound": "Imagen no encontrada",
   "Settings:ImageNotFoundServer": "El servidor no pudo encontrar el logo de la empresa.",

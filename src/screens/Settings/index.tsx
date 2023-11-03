@@ -1,5 +1,5 @@
 //Imports
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   ScrollView,
@@ -28,9 +28,11 @@ import {
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
+  selectContextPath,
   selectToken,
   setDevUrl,
-  setSelectedUrl
+  setSelectedUrl,
+  setContextPath
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
@@ -61,6 +63,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
+  const contextPath = useAppSelector(selectContextPath);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
@@ -74,6 +77,7 @@ const Settings = (props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
+  const [logoSource, setLogoSource] = useState(defaultLogo);
 
   const {
     loadEnviromentsUrl,
@@ -97,12 +101,6 @@ const Settings = (props) => {
     fetchUrlAndLogo();
   }, []);
 
-  const loadServerLogo = (url: string) => {
-    return url && storedEnviromentsUrl.length > 0
-      ? { uri: url + logoUri }
-      : defaultLogo;
-  };
-
   const showChangeURLModalFn = () => {
     if (!token) {
       setShowChangeURLModal(true);
@@ -112,10 +110,6 @@ const Settings = (props) => {
   const hideChangeURLModal = () => {
     setShowChangeURLModal(false);
     setModalUrl(url);
-  };
-
-  const onLogoError = () => {
-    setHasErrorLogo(true);
   };
 
   const handleLanguage = async (label: string, value: string) => {
@@ -168,15 +162,82 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
+  // Function to handle the case when the logo fails to load.
+  const onLogoError = () => {
+    // Only update the state if the current logoSource has a URI (i.e., an attempt was made to load a logo)
+    if (logoSource.uri) {
+      setHasErrorLogo(true);
+      setLogoSource(notFoundLogo); // Update the logo to a default "not found" image
+    }
+  };
+
+  // Ref to track the previous error state for the logo
+  const prevHasErrorLogo = useRef(hasErrorLogo);
+
+  // Callback function to load the logo
+  const loadLogo = useCallback(() => {
+    // Check if the URL is present and the storedEnvironmentsUrl array is not empty
+    if (url && storedEnviromentsUrl.length > 0) {
+      const logoUrl = { uri: url + logoUri };
+      // Prefetch the logo. This optimizes for future renders by downloading the image and caching it
+      Image.prefetch(logoUrl.uri).then(
+        () => {
+          // On successful prefetch, reset error state if there was an error before
+          if (prevHasErrorLogo.current) {
+            setHasErrorLogo(false);
+            prevHasErrorLogo.current = false;
+          }
+          setLogoSource(logoUrl); // Update the logo source to the fetched URL
+        },
+        () => {
+          // On prefetch failure, set the error state if it wasn't already set
+          if (!prevHasErrorLogo.current) {
+            setHasErrorLogo(true);
+            prevHasErrorLogo.current = true;
+          }
+          setLogoSource(notFoundLogo); // Update the logo to a "not found" image
+        }
+      );
+    } else {
+      setLogoSource(defaultLogo); // If no URL, default to a standard placeholder logo
+      // Reset error state if necessary
+      if (prevHasErrorLogo.current) {
+        setHasErrorLogo(false);
+        prevHasErrorLogo.current = false;
+      }
+    }
+  }, [url, logoUri, notFoundLogo, defaultLogo]); // Dependencies for useCallback
+
+  // Effect to update the ref when hasErrorLogo changes
+  useEffect(() => {
+    prevHasErrorLogo.current = hasErrorLogo;
+  }, [hasErrorLogo]);
+
+  // Effect to load the logo on mount and when dependencies change
+  useEffect(() => {
+    loadLogo();
+  }, [loadLogo]);
+
+  // This component renders the logo image along with error messages if applicable.
   const LogoImage = () => {
     return (
-      <Image
-        style={styles.logoImageStyles}
-        source={hasErrorLogo ? notFoundLogo : loadServerLogo(url)}
-        onError={onLogoError}
-        height={100}
-        width={200}
-      />
+      <>
+        <Image
+          style={styles.logoImageStyles}
+          source={logoSource}
+          onError={onLogoError}
+          height={100}
+          width={200}
+        />
+        <View>
+          <Text style={styles.logoTitleStyles}>
+            {locale.t("Settings:ImageNotFound")}
+          </Text>
+          <Text style={styles.logoSubTitle}>
+            {locale.t("Settings:ImageNotFoundServer")}
+          </Text>
+        </View>
+      </>
     );
   };
 
@@ -185,9 +246,12 @@ const Settings = (props) => {
   }, [url]);
 
   const atChooseOption = async (value: string) => {
-    dispatch(setSelectedUrl(value));
-    await AsyncStorage.setItem("selectedUrl", value);
-    const tmpUrl = await setUrlOB(value);
+    // Concatenates the base server URL with the context path to form the full endpoint URL
+    const fullUrl = `${value}${contextPath}`;
+
+    dispatch(setSelectedUrl(fullUrl));
+    await AsyncStorage.setItem("selectedUrl", fullUrl);
+    const tmpUrl = await setUrlOB(fullUrl);
     setUrl(tmpUrl);
     setModalUrl(value);
   };
@@ -209,6 +273,52 @@ const Settings = (props) => {
         });
     }
   }, [data, token]);
+
+  // This effect runs when there's a change in the URL entered by the user or the context path
+  useEffect(() => {
+    // Early exit if no URL is selected
+    if (!selectedUrl) return;
+
+    // This asynchronous function handles the normalization and setting of the URL
+    const normalizeAndSetUrl = async () => {
+      // Find the index of the third forward slash to isolate the base URL
+      const thirdSlashIndex = selectedUrl.indexOf(
+        "/",
+        selectedUrl.indexOf("//") + 2
+      );
+
+      // Cut the URL at the third slash if it exists, otherwise keep the entire URL
+      const normalizedSelectedUrl =
+        thirdSlashIndex !== -1
+          ? selectedUrl.slice(0, thirdSlashIndex + 1)
+          : selectedUrl;
+
+      // Normalize contextPath to ensure it does not start or end with slashes
+      const normalizedContextPath = contextPath
+        .replace(/^\/+/, "") // Remove leading slashes
+        .replace(/\/+$/, ""); // Remove trailing slashes
+
+      // Concatenate the normalized context path with the base URL
+      const fullUrl = `${normalizedSelectedUrl}${normalizedContextPath}`;
+
+      // Dispatch the action to set the selected URL in the global state
+      dispatch(setSelectedUrl(fullUrl));
+      // Store the full URL in AsyncStorage for persistent storage
+      await AsyncStorage.setItem("selectedUrl", fullUrl);
+
+      try {
+        // Attempt to update the URL in the back-end service and local state
+        const tmpUrl = await setUrlOB(fullUrl);
+        setUrl(tmpUrl); // Update local state with the complete URL
+      } catch (error) {
+        // Log the error if the URL setting fails
+        console.error("There was an error setting the URL:", error);
+      }
+    };
+
+    // Invoke the normalize and set URL function
+    normalizeAndSetUrl();
+  }, [selectedUrl, contextPath]); // Dependencies for useEffect, add others if necessary
 
   const saveDebugURL = async () => {
     await AsyncStorage.setItem("debugURL", devUrl);
@@ -242,31 +352,51 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
-            <Input
-              typeField="picker"
-              placeholder={locale.t("Settings:InputPlaceholder")}
-              value={
-                isDemoTry
-                  ? References.DemoUrl
-                  : storedEnviromentsUrl.length == 1 && url
-                  ? storedEnviromentsUrl[0]
-                  : storedEnviromentsUrl.length > 1
-                  ? url
-                  : null
-              }
-              onOptionSelected={(option: any) => {
-                handleOptionSelected(option);
-                setHasErrorLogo(false);
-              }}
-              disabled={!!token}
-              displayKey="value"
-              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
-              height={43}
-              centerText={true}
-              showOptionsAmount={6}
-              placeholderSearch={locale.t("Settings:Search")}
-            />
+            <View style={styles.containerUrls}>
+              <View style={styles.containerServerUrl}>
+                <Text style={styles.languageText}>
+                  {locale.t("Settings:URL")}
+                </Text>
+                <Input
+                  typeField="picker"
+                  placeholder={locale.t("Settings:InputPlaceholder")}
+                  value={
+                    isDemoTry
+                      ? References.DemoUrl
+                      : storedEnviromentsUrl.length == 1 && url
+                      ? storedEnviromentsUrl[0]
+                      : storedEnviromentsUrl.length > 1
+                      ? url
+                      : null
+                  }
+                  onOptionSelected={(option: any) => {
+                    handleOptionSelected(option);
+                    setHasErrorLogo(false);
+                  }}
+                  disabled={!!token}
+                  displayKey="value"
+                  dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+                  height={43}
+                  centerText={true}
+                  showOptionsAmount={6}
+                  placeholderSearch={locale.t("Settings:Search")}
+                />
+              </View>
+
+              <View style={styles.containerContextPathUrl}>
+                <Text style={styles.contextText}>
+                  {locale.t("Settings:ContextPath")}
+                </Text>
+                <Input
+                  typeField="textInput"
+                  placeholder={locale.t("Settings:ContextPathPlaceholder")}
+                  value={contextPath}
+                  onChangeText={(value) => dispatch(setContextPath(value))}
+                  height={43}
+                />
+              </View>
+            </View>
+
             {!token ? (
               <View style={styles.containerAddLinkStyle}>
                 <ButtonUI
@@ -292,16 +422,6 @@ const Settings = (props) => {
             </Text>
             <View style={styles.findingImageContainer}>
               <LogoImage />
-              {hasErrorLogo && (
-                <View>
-                  <Text style={styles.logoTitleStyles}>
-                    {locale.t("Settings:ImageNotFound")}
-                  </Text>
-                  <Text style={styles.logoSubTitle}>
-                    {locale.t("Settings:ImageNotFoundServer")}
-                  </Text>
-                </View>
-              )}
             </View>
           </View>
 
