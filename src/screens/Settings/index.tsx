@@ -6,7 +6,9 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  Modal
+  Modal,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog } from "react-native-paper";
@@ -32,7 +34,9 @@ import {
   selectToken,
   setDevUrl,
   setSelectedUrl,
-  setContextPath
+  setContextPath,
+  selectSelectedEnvironmentUrl,
+  setSelectedEnvironmentUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
@@ -78,6 +82,7 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const [logoSource, setLogoSource] = useState(defaultLogo);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const {
     loadEnviromentsUrl,
@@ -114,8 +119,12 @@ const Settings = (props) => {
   };
 
   const hideChangeURLModal = () => {
-    setShowChangeURLModal(false);
-    setModalUrl(url);
+    if (isKeyboardVisible) {
+      Keyboard.dismiss();
+    } else {
+      setShowChangeURLModal(false);
+      setModalUrl(url);
+    }
   };
 
   const handleLanguage = async (label: string, value: string) => {
@@ -125,6 +134,7 @@ const Settings = (props) => {
 
   const addUrl = async () => {
     const formattedUrl = formatUrl(valueEnvUrl);
+    dispatch(setSelectedEnvironmentUrl(formattedUrl));
     const newUrl = formattedUrl + contextPath;
 
     if (!formattedUrl || storedDataUrl.includes(newUrl)) {
@@ -222,6 +232,26 @@ const Settings = (props) => {
   useEffect(() => {
     loadLogo();
   }, [loadLogo]);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   // This component renders the logo image along with error messages if applicable.
   const LogoImage = () => {
@@ -447,111 +477,122 @@ const Settings = (props) => {
           )}
 
           <Modal visible={showChangeURLModal} transparent>
-            <Dialog
-              visible={showChangeURLModal}
-              onDismiss={hideChangeURLModal}
-              style={styles.dialogNewUrl}
-            >
-              <View style={styles.containerClose}>
-                <TouchableOpacity
-                  activeOpacity={0.2}
-                  style={styles.buttonClose}
-                  onPress={() => setShowChangeURLModal(false)}
+            <TouchableWithoutFeedback onPress={hideChangeURLModal}>
+              <View style={{ flex: 1 }}>
+                <Dialog
+                  visible={showChangeURLModal}
+                  onDismiss={hideChangeURLModal}
+                  style={styles.dialogNewUrl}
                 >
-                  <Image source={require("../../../assets/icons/close.png")} />
-                </TouchableOpacity>
-              </View>
-
-              <Dialog.Title
-                style={{
-                  fontSize: 25,
-                  fontWeight: "700",
-                  color: PRIMARY_100
-                }}
-              >
-                {locale.t("Settings:AddNewURL")}
-              </Dialog.Title>
-
-              <Dialog.Content style={{ flex: 1 }}>
-                <View>
-                  <Text style={styles.urlEnvList}>
-                    {locale.t("Settings:EnviromentURL")}
-                  </Text>
-                  <Input
-                    typeField={"textInput"}
-                    placeholder={locale.t("Settings:InputPlaceholder")}
-                    value={valueEnvUrl}
-                    onChangeText={(valueEnvUrl) => {
-                      setValueEnvUrl(valueEnvUrl);
-                    }}
-                    height={50}
-                  />
-                </View>
-
-                <View>
-                  <Text style={styles.urlContextPath}>
-                    {locale.t("Settings:ContextPath")}
-                  </Text>
-                  <Input
-                    typeField="textInput"
-                    placeholder={locale.t("Settings:ContextPathPlaceholder")}
-                    value={contextPath}
-                    onChangeText={(value) => dispatch(setContextPath(value))}
-                    height={50}
-                  />
-
-                  <View style={{ marginTop: 10 }}>
-                    <ButtonUI
-                      width="100%"
-                      height={50}
-                      typeStyle="secondary"
-                      onPress={() => {
-                        addUrl();
-                      }}
-                      iconRight={<MoreIcon />}
-                      text={
-                        isUpdating
-                          ? locale.t("Settings:UpdateLink")
-                          : locale.t("Settings:NewLink")
-                      }
-                    />
+                  <View style={styles.containerClose}>
+                    <TouchableOpacity
+                      activeOpacity={0.2}
+                      style={styles.buttonClose}
+                      onPress={() => setShowChangeURLModal(false)}
+                    >
+                      <Image
+                        source={require("../../../assets/icons/close.png")}
+                      />
+                    </TouchableOpacity>
                   </View>
-                </View>
-                <View style={{ marginTop: 32 }}>
-                  <Text style={styles.urlEnvList}>
-                    {locale.t("ShowLoadUrl:ItemList")}
-                  </Text>
-                  <ScrollView
-                    style={styles.listUrlItems}
-                    persistentScrollbar={true}
-                    showsVerticalScrollIndicator={true}
+
+                  <Dialog.Title
+                    style={{
+                      fontSize: 25,
+                      fontWeight: "700",
+                      color: PRIMARY_100
+                    }}
                   >
-                    {storedDataUrl?.length ? (
-                      storedDataUrl.map((item, index) => {
-                        return (
-                          <UrlItem
-                            key={index}
-                            item={item}
-                            setValueEnvUrl={setValueEnvUrl}
-                            deleteUrl={deleteUrl}
-                            setIsUpdating={setIsUpdating}
-                            modalUrl={modalUrl}
-                            url={url}
-                            setUrl={setUrl}
-                            resetLocalUrl={resetLocalUrl}
-                            handleOptionSelected={handleOptionSelected}
-                          />
-                        );
-                      })
-                    ) : (
-                      <Text style={styles.notUrlEnvList}>
-                        {locale.t("Settings:NotEnviromentURL")}
+                    {locale.t("Settings:AddNewURL")}
+                  </Dialog.Title>
+
+                  <Dialog.Content style={{ flex: 1 }}>
+                    <View>
+                      <Text style={styles.urlEnvList}>
+                        {locale.t("Settings:EnviromentURL")}
                       </Text>
-                    )}
-                  </ScrollView>
-                </View>
-              </Dialog.Content>
-            </Dialog>
+                      <Input
+                        typeField={"textInput"}
+                        placeholder={locale.t("Settings:InputPlaceholder")}
+                        value={valueEnvUrl}
+                        onChangeText={(valueEnvUrl) => {
+                          setValueEnvUrl(valueEnvUrl);
+                        }}
+                        height={50}
+                      />
+                    </View>
+
+                    <View>
+                      <Text style={styles.urlContextPath}>
+                        {locale.t("Settings:ContextPath")}
+                      </Text>
+                      <Input
+                        typeField="textInput"
+                        placeholder={locale.t(
+                          "Settings:ContextPathPlaceholder"
+                        )}
+                        value={contextPath}
+                        onChangeText={(value) =>
+                          dispatch(setContextPath(value))
+                        }
+                        height={50}
+                      />
+
+                      <View style={{ marginTop: 10 }}>
+                        <ButtonUI
+                          width="100%"
+                          height={50}
+                          typeStyle="secondary"
+                          onPress={() => {
+                            Keyboard.dismiss();
+                            addUrl();
+                          }}
+                          iconRight={<MoreIcon />}
+                          text={
+                            isUpdating
+                              ? locale.t("Settings:UpdateLink")
+                              : locale.t("Settings:NewLink")
+                          }
+                        />
+                      </View>
+                    </View>
+                    <View style={{ marginTop: 32 }}>
+                      <Text style={styles.urlEnvList}>
+                        {locale.t("ShowLoadUrl:ItemList")}
+                      </Text>
+                      <ScrollView
+                        style={styles.listUrlItems}
+                        persistentScrollbar={true}
+                        showsVerticalScrollIndicator={true}
+                      >
+                        {storedDataUrl?.length ? (
+                          storedDataUrl.map((item, index) => {
+                            return (
+                              <UrlItem
+                                key={index}
+                                item={item}
+                                setValueEnvUrl={setValueEnvUrl}
+                                deleteUrl={deleteUrl}
+                                setIsUpdating={setIsUpdating}
+                                modalUrl={modalUrl}
+                                url={url}
+                                setUrl={setUrl}
+                                resetLocalUrl={resetLocalUrl}
+                                handleOptionSelected={handleOptionSelected}
+                              />
+                            );
+                          })
+                        ) : (
+                          <Text style={styles.notUrlEnvList}>
+                            {locale.t("Settings:NotEnviromentURL")}
+                          </Text>
+                        )}
+                      </ScrollView>
+                    </View>
+                  </Dialog.Content>
+                </Dialog>
+              </View>
+            </TouchableWithoutFeedback>
           </Modal>
         </View>
 
