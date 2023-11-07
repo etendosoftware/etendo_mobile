@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { deviceStyles as styles } from "../screens/Settings/deviceStyles";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { isTablet } from "../helpers/IsTablet";
+import { selectContextPath, setContextPath } from "../../redux/user";
+import { useAppDispatch, useAppSelector } from "../../redux";
 
 export const UrlItem = ({
   item,
@@ -14,10 +16,51 @@ export const UrlItem = ({
   resetLocalUrl,
   handleOptionSelected
 }) => {
+  const dispatch = useAppDispatch();
+  const prevContext = useAppSelector(selectContextPath);
+
   const [clicked, setClicked] = useState(false);
   const [clickDelete, setClickDelete] = useState(false);
+
+  const formatUrl = (url: string) => {
+    const thirdSlashIndex = url.indexOf("/", url.indexOf("//") + 2);
+
+    if (thirdSlashIndex !== -1) {
+      return url.substring(0, thirdSlashIndex);
+    }
+
+    return url;
+  };
+
+  const getContextPath = (url: string): string => {
+    let index = 0;
+    let slashCount = 0;
+
+    while (slashCount < 3 && index < url.length) {
+      if (url.charAt(index) === "/") {
+        slashCount++;
+      }
+      if (slashCount < 3) {
+        index++;
+      }
+    }
+
+    if (slashCount === 3) {
+      return url.substring(index);
+    }
+
+    return "";
+  };
+
   const handleEdit = () => {
-    setValueEnvUrl(item);
+    const newContext = getContextPath(item);
+
+    setValueEnvUrl(formatUrl(item));
+
+    if (newContext !== prevContext) {
+      dispatch(setContextPath(newContext));
+    }
+
     deleteUrl(item);
     setIsUpdating(true);
   };
