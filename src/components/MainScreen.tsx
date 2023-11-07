@@ -13,7 +13,7 @@ import {
   selectToken
 } from "../../redux/user";
 import { useAppSelector } from "../../redux";
-import { selectIsDemo } from "../../redux/window";
+import { selectAppData, selectIsDemo } from "../../redux/window";
 import { References } from "../constants/References";
 
 const HomePage = ({ route, navigation }: any) => {
@@ -24,10 +24,9 @@ const HomePage = ({ route, navigation }: any) => {
   const urldevRedux = useAppSelector(selectDevUrl);
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = isDemoTry ? References.DemoUrl : urldevRedux;
+    const url = isDemoTry ? References.DemoUrl : route.params.url;
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
-
     return (
       <>
         <View style={{ flex: 1 }}>
@@ -45,6 +44,7 @@ const HomePage = ({ route, navigation }: any) => {
               user={data.username}
               language={language}
               dataUser={data}
+              isDev={Boolean(route.params.isDev)}
             />
           </NavigationContainer>
         </View>
