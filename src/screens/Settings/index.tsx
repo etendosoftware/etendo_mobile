@@ -99,7 +99,13 @@ const Settings = (props) => {
       }
     };
     fetchUrlAndLogo();
-  }, []);
+  }, [hasErrorLogo]);
+
+  const loadServerLogo = (url: string) => {
+    return url && storedEnviromentsUrl.length > 0
+      ? { uri: url + logoUri }
+      : defaultLogo;
+  };
 
   const showChangeURLModalFn = () => {
     if (!token) {
@@ -118,18 +124,22 @@ const Settings = (props) => {
   };
 
   const addUrl = async () => {
-    let currentValue = valueEnvUrl;
-    if (
-      !currentValue ||
-      currentValue == "" ||
-      storedDataUrl.some((url) => url == formatUrl(valueEnvUrl))
-    )
+    const formattedUrl = formatUrl(valueEnvUrl);
+    const newUrl = formattedUrl + contextPath;
+
+    if (!formattedUrl || storedDataUrl.includes(newUrl)) {
       return;
-    currentValue = formatUrl(currentValue);
-    setStoredDataUrl([...storedDataUrl, currentValue]);
-    await saveEnviromentsUrl([...storedDataUrl, currentValue]);
+    }
+
+    const newStoredDataUrl = [...storedDataUrl, newUrl];
+
+    setStoredDataUrl(newStoredDataUrl);
+    await saveEnviromentsUrl([...storedDataUrl, newUrl]);
+
     setValueEnvUrl("");
-    atChooseOption(currentValue);
+    setSelectedUrl(newUrl);
+    atChooseOption(newUrl);
+
     setIsUpdating(false);
   };
 
@@ -178,7 +188,7 @@ const Settings = (props) => {
   const loadLogo = useCallback(() => {
     // Check if the URL is present and the storedEnvironmentsUrl array is not empty
     if (url && storedEnviromentsUrl.length > 0) {
-      const logoUrl = { uri: url + logoUri };
+      const logoUrl = { uri: `${url}/${logoUri}` };
       // Prefetch the logo. This optimizes for future renders by downloading the image and caching it
       Image.prefetch(logoUrl.uri).then(
         () => {
@@ -206,7 +216,7 @@ const Settings = (props) => {
         prevHasErrorLogo.current = false;
       }
     }
-  }, [url, logoUri, notFoundLogo, defaultLogo]); // Dependencies for useCallback
+  }, [url]); // Dependencies for useCallback
 
   // Effect to update the ref when hasErrorLogo changes
   useEffect(() => {
@@ -224,19 +234,21 @@ const Settings = (props) => {
       <>
         <Image
           style={styles.logoImageStyles}
-          source={logoSource}
+          source={hasErrorLogo ? notFoundLogo : logoSource}
           onError={onLogoError}
           height={100}
           width={200}
         />
-        <View>
-          <Text style={styles.logoTitleStyles}>
-            {locale.t("Settings:ImageNotFound")}
-          </Text>
-          <Text style={styles.logoSubTitle}>
-            {locale.t("Settings:ImageNotFoundServer")}
-          </Text>
-        </View>
+        {hasErrorLogo && (
+          <View>
+            <Text style={styles.logoTitleStyles}>
+              {locale.t("Settings:ImageNotFound")}
+            </Text>
+            <Text style={styles.logoSubTitle}>
+              {locale.t("Settings:ImageNotFoundServer")}
+            </Text>
+          </View>
+        )}
       </>
     );
   };
@@ -247,14 +259,35 @@ const Settings = (props) => {
 
   const atChooseOption = async (value: string) => {
     // Concatenates the base server URL with the context path to form the full endpoint URL
-    const fullUrl = value + contextPath;
+    const fullUrl = value;
 
-    dispatch(setSelectedUrl(fullUrl));
     await AsyncStorage.setItem("selectedUrl", fullUrl);
+    dispatch(setSelectedUrl(fullUrl));
     const tmpUrl = await setUrlOB(fullUrl);
     setUrl(tmpUrl);
-    setModalUrl(value);
+    setModalUrl(tmpUrl);
   };
+
+  const buildLogoUri = (selectedUrl: string) => {
+    return selectedUrl ? { uri: selectedUrl + logoUri } : defaultLogo;
+  };
+
+  useEffect(() => {
+    console.log("selectedUrl actualizado: ", selectedUrl);
+
+    const newLogoUri = buildLogoUri(selectedUrl);
+    Image.prefetch(newLogoUri.uri)
+      .then(() => {
+        setLogoSource(newLogoUri);
+        setHasErrorLogo(false);
+      })
+      .catch(() => {
+        setLogoSource(notFoundLogo);
+        setHasErrorLogo(true);
+      });
+
+    loadServerLogo(selectedUrl);
+  }, [selectedUrl]);
 
   const handleOptionSelected = async ({ value }) => {
     await atChooseOption(value);
