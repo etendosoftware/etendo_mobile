@@ -13,6 +13,14 @@ import {
 import { defaultTheme } from "../../themes";
 import { isTablet } from "../../helpers/IsTablet";
 
+const commonStylesContextText = {
+  fontFamily: "Inter-SemiBold",
+  color: NEUTRAL_60,
+  fontSize: 12,
+  lineHeight: 18,
+  paddingBottom: 8
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: WHITE,
@@ -248,19 +256,11 @@ const styles = StyleSheet.create({
     marginVertical: 0
   },
   contextText: {
-    fontFamily: "Inter-SemiBold",
-    color: NEUTRAL_60,
-    fontSize: 12,
-    lineHeight: 18,
-    paddingBottom: 8,
+    ...commonStylesContextText,
     marginTop: 16
   },
   contextTextTablet: {
-    fontFamily: "Inter-SemiBold",
-    color: NEUTRAL_60,
-    fontSize: 12,
-    lineHeight: 18,
-    paddingBottom: 8
+    ...commonStylesContextText
   },
   debugText: {
     fontFamily: "Inter-SemiBold",

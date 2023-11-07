@@ -186,37 +186,32 @@ const Settings = (props) => {
 
   // Callback function to load the logo
   const loadLogo = useCallback(() => {
-    // Check if the URL is present and the storedEnvironmentsUrl array is not empty
     if (url && storedEnviromentsUrl.length > 0) {
       const logoUrl = { uri: `${url}/${logoUri}` };
-      // Prefetch the logo. This optimizes for future renders by downloading the image and caching it
       Image.prefetch(logoUrl.uri).then(
         () => {
-          // On successful prefetch, reset error state if there was an error before
           if (prevHasErrorLogo.current) {
             setHasErrorLogo(false);
             prevHasErrorLogo.current = false;
           }
-          setLogoSource(logoUrl); // Update the logo source to the fetched URL
+          setLogoSource(logoUrl);
         },
         () => {
-          // On prefetch failure, set the error state if it wasn't already set
           if (!prevHasErrorLogo.current) {
             setHasErrorLogo(true);
             prevHasErrorLogo.current = true;
           }
-          setLogoSource(notFoundLogo); // Update the logo to a "not found" image
+          setLogoSource(notFoundLogo);
         }
       );
     } else {
-      setLogoSource(defaultLogo); // If no URL, default to a standard placeholder logo
-      // Reset error state if necessary
+      setLogoSource(defaultLogo);
       if (prevHasErrorLogo.current) {
         setHasErrorLogo(false);
         prevHasErrorLogo.current = false;
       }
     }
-  }, [url]); // Dependencies for useCallback
+  }, [url]);
 
   // Effect to update the ref when hasErrorLogo changes
   useEffect(() => {
@@ -273,8 +268,6 @@ const Settings = (props) => {
   };
 
   useEffect(() => {
-    console.log("selectedUrl actualizado: ", selectedUrl);
-
     const newLogoUri = buildLogoUri(selectedUrl);
     Image.prefetch(newLogoUri.uri)
       .then(() => {
