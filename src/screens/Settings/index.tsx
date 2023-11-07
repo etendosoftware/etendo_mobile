@@ -313,6 +313,23 @@ const Settings = (props) => {
     Toast("Settings:DebugURLSaved", { type: "success" });
   };
 
+  const selectUrl = (
+    isDemoTry: boolean,
+    storedEnvironmentsUrl: Array<string>,
+    url: string
+  ) => {
+    if (isDemoTry) {
+      return References.DemoUrl;
+    }
+    if (storedEnvironmentsUrl.length === 1 && url) {
+      return storedEnvironmentsUrl[0];
+    }
+    if (storedEnvironmentsUrl.length > 1) {
+      return url;
+    }
+    return null;
+  };
+
   return (
     <KeyboardAwareScrollView
       style={styles.fullContainer}
@@ -347,15 +364,7 @@ const Settings = (props) => {
                 <Input
                   typeField="picker"
                   placeholder={locale.t("Settings:InputPlaceholder")}
-                  value={
-                    isDemoTry
-                      ? References.DemoUrl
-                      : storedEnviromentsUrl.length == 1 && url
-                      ? storedEnviromentsUrl[0]
-                      : storedEnviromentsUrl.length > 1
-                      ? url
-                      : null
-                  }
+                  value={selectUrl(isDemoTry, storedEnviromentsUrl, url)}
                   onOptionSelected={(option: any) => {
                     handleOptionSelected(option);
                     setHasErrorLogo(false);
