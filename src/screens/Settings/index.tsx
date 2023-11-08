@@ -82,7 +82,7 @@ const Settings = (props) => {
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
   const [logoSource, setLogoSource] = useState(defaultLogo);
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const {
     loadEnviromentsUrl,
@@ -237,13 +237,13 @@ const Settings = (props) => {
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
       () => {
-        setKeyboardVisible(true);
+        if (!isKeyboardVisible) setIsKeyboardVisible(true);
       }
     );
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
       () => {
-        setKeyboardVisible(false);
+        if (isKeyboardVisible) setIsKeyboardVisible(false);
       }
     );
 
@@ -251,7 +251,7 @@ const Settings = (props) => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
     };
-  }, []);
+  }, [isKeyboardVisible]);
 
   // This component renders the logo image along with error messages if applicable.
   const LogoImage = () => {
@@ -298,18 +298,20 @@ const Settings = (props) => {
   };
 
   useEffect(() => {
-    const newLogoUri = buildLogoUri(selectedUrl);
-    Image.prefetch(newLogoUri.uri)
-      .then(() => {
-        setLogoSource(newLogoUri);
-        setHasErrorLogo(false);
-      })
-      .catch(() => {
-        setLogoSource(notFoundLogo);
-        setHasErrorLogo(true);
-      });
-
-    loadServerLogo(selectedUrl);
+    if (selectedUrl) {
+      const newLogoUri = buildLogoUri(selectedUrl);
+      Image.prefetch(newLogoUri.uri)
+        .then(() => {
+          setLogoSource(newLogoUri);
+          setHasErrorLogo(false);
+        })
+        .catch(() => {
+          setLogoSource(notFoundLogo);
+          setHasErrorLogo(true);
+        });
+    } else {
+      setLogoSource(defaultLogo);
+    }
   }, [selectedUrl]);
 
   const handleOptionSelected = async ({ value }) => {
@@ -481,7 +483,7 @@ const Settings = (props) => {
               <View style={{ flex: 1 }}>
                 <Dialog
                   visible={showChangeURLModal}
-                  onDismiss={hideChangeURLModal}
+                  onDismiss={() => setShowChangeURLModal(false)}
                   style={styles.dialogNewUrl}
                 >
                   <View style={styles.containerClose}>
