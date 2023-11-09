@@ -25,5 +25,7 @@ export enum References {
   SystemAdministrator = "System Administrator",
   DemoUrl = "https://demo.etendo.cloud/etendo/",
   YES = "YES",
-  LocalURLDev = "http://10.0.2.2:3000"
+  LocalURLDev = "http://10.0.2.2:3000",
+  EtendoContextPath = "/etendo",
+  SubappContextPath = "/subapp"
 }

@@ -2,11 +2,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { IData, ILanguage } from "../../src/interfaces";
+import { References } from "../../src/constants/References";
 
 export interface UserState {
   data: IData;
   bindaryImg: any;
-  contextPath: string;
+  contextPathUrl: string;
   token: string;
   user: string;
   selectedLanguage: string;
@@ -20,7 +21,7 @@ export interface UserState {
 const initialState: UserState = {
   data: undefined,
   bindaryImg: undefined,
-  contextPath: "/etendo",
+  contextPathUrl: References.EtendoContextPath,
   token: undefined,
   user: undefined, // username
   selectedLanguage: undefined,
@@ -41,8 +42,8 @@ export const userSlice = createSlice({
     setBindaryImg: (state, action: PayloadAction<any>) => {
       state.bindaryImg = action.payload;
     },
-    setContextPath: (state, action: PayloadAction<any>) => {
-      state.contextPath = action.payload;
+    setContextPathUrl: (state, action: PayloadAction<any>) => {
+      state.contextPathUrl = action.payload;
     },
     setToken: (state, action: PayloadAction<any>) => {
       state.token = action.payload;
@@ -74,7 +75,7 @@ export const userSlice = createSlice({
 export const {
   setData,
   setBindaryImg,
-  setContextPath,
+  setContextPathUrl,
   setToken,
   setUser,
   setLanguage,
@@ -85,7 +86,8 @@ export const {
   setStoredEnviromentsUrl
 } = userSlice.actions;
 
-export const selectContextPath = (state: RootState) => state.user.contextPath;
+export const selectContextPathUrl = (state: RootState) =>
+  state.user.contextPathUrl;
 export const selectData = (state: RootState) => state.user.data;
 export const selectBindaryImg = (state: RootState) => state.user.bindaryImg;
 export const selectUser = (state: RootState) => state.user.user;

@@ -7,21 +7,6 @@ import { storeKey } from "./KeyStorage";
 import NetInfo from "@react-native-community/netinfo";
 import { References } from "../constants/References";
 
-export const determineSubappUrl = (
-  isDemo: boolean,
-  isDevMode: boolean,
-  selectedUrl: string,
-  selectedEnvironmentUrl: string
-): string => {
-  if (isDemo) {
-    return References.DemoUrl;
-  } else if (isDevMode) {
-    return selectedEnvironmentUrl;
-  } else {
-    return selectedUrl;
-  }
-};
-
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
     const _this = Object.create(packages);
@@ -123,4 +108,8 @@ export const deviceOrientation = () => {
 export const internetIsAvailable = async () => {
   const netInfo = await NetInfo.fetch();
   return netInfo.isConnected;
+};
+
+export const getBasePathContext = (isDev: boolean): string => {
+  return isDev ? References.SubappContextPath : References.EtendoContextPath;
 };
