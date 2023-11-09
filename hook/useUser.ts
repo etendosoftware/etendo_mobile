@@ -10,6 +10,7 @@ import {
   setData,
   setDevUrl,
   setLanguage,
+  setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
   setStoredLanguages,
@@ -62,12 +63,16 @@ export const useUser = () => {
     );
     const dataUser = JSON.parse(await AsyncStorage.getItem("dataUser"));
     const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+    const selectedEnvironmentUrlStored = await AsyncStorage.getItem(
+      "selectedEnvironmentUrl"
+    );
     const IsDemoTry = await AsyncStorage.getItem("isDemoTry");
     const IsDeveloperMode = await AsyncStorage.getItem("isDeveloperMode");
     const appData = await AsyncStorage.getItem("appData");
     const menuItems = await AsyncStorage.getItem("menuItems");
     // Set redux
     dispatch(setSelectedUrl(selectedUrlStored));
+    dispatch(setSelectedEnvironmentUrl(selectedEnvironmentUrlStored));
     dispatch(setToken(currentToken));
     dispatch(setData(dataUser ? dataUser : null));
     dispatch(
