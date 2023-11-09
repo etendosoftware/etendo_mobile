@@ -1,4 +1,3 @@
-import React from "react";
 import packages from "../components/packages";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTablet } from "../../hook/isTablet";
@@ -6,6 +5,22 @@ import Orientation from "react-native-orientation-locker";
 import { Toast } from "./Toast";
 import { storeKey } from "./KeyStorage";
 import NetInfo from "@react-native-community/netinfo";
+import { formatEnvironmentUrl } from "../ob-api/ob";
+import { References } from "../constants/References";
+
+export const determineSubappUrl = (
+  isDemo: boolean,
+  isDevMode: boolean,
+  selectedEnvUrl: string
+): string => {
+  if (isDemo) {
+    return References.DemoUrl;
+  } else if (isDevMode) {
+    return formatEnvironmentUrl(selectedEnvUrl);
+  } else {
+    return selectedEnvUrl;
+  }
+};
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux";
 import {
   selectDevUrl,
+  selectSelectedEnvironmentUrl,
   selectSelectedUrl,
   selectToken,
   setDevUrl
@@ -16,7 +17,7 @@ import {
   setMenuItems,
   setWindows
 } from "../redux/window";
-import { getUrl } from "../src/ob-api/ob";
+import { formatEnvironmentUrl, getUrl } from "../src/ob-api/ob";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { References } from "../src/constants/References";
 const method = "GET";
@@ -103,7 +104,9 @@ export const useWindow = () => {
             return {
               name: app.etdappAppName,
               __id: __id,
-              url: app.etdappAppVersionIsDev ? devUrl : selectedUrl,
+              url: app.etdappAppVersionIsDev
+                ? formatEnvironmentUrl(selectedUrl)
+                : selectedUrl,
               isDev: app.etdappAppVersionIsDev
             };
           })
