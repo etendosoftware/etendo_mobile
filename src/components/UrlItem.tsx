@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { deviceStyles as styles } from "../screens/Settings/deviceStyles";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { isTablet } from "../helpers/IsTablet";
-import { selectContextPath, setContextPath } from "../../redux/user";
+import { selectContextPathUrl, setContextPathUrl } from "../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../redux";
 
 export const UrlItem = ({
@@ -17,7 +17,7 @@ export const UrlItem = ({
   handleOptionSelected
 }) => {
   const dispatch = useAppDispatch();
-  const prevContext = useAppSelector(selectContextPath);
+  const prevContext = useAppSelector(selectContextPathUrl);
 
   const [clicked, setClicked] = useState(false);
   const [clickDelete, setClickDelete] = useState(false);
@@ -58,7 +58,7 @@ export const UrlItem = ({
     setValueEnvUrl(formatUrl(item));
 
     if (newContext !== prevContext) {
-      dispatch(setContextPath(newContext));
+      dispatch(setContextPathUrl(newContext));
     }
 
     deleteUrl(item);

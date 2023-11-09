@@ -35,11 +35,11 @@ import {
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
-  selectContextPath,
+  selectContextPathUrl,
   selectToken,
   setDevUrl,
   setSelectedUrl,
-  setContextPath,
+  setContextPathUrl,
   selectSelectedEnvironmentUrl,
   setSelectedEnvironmentUrl
 } from "../../../redux/user";
@@ -73,7 +73,7 @@ const Settings = (props) => {
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
-  const contextPath = useAppSelector(selectContextPath);
+  const contextPathUrl = useAppSelector(selectContextPathUrl);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
@@ -134,7 +134,7 @@ const Settings = (props) => {
 
   const addUrl = async () => {
     const formattedUrl = formatUrl(valueEnvUrl);
-    const newUrl = formattedUrl + contextPath;
+    const newUrl = formattedUrl + contextPathUrl;
 
     if (!formattedUrl || storedDataUrl.includes(newUrl)) {
       return;
@@ -539,9 +539,9 @@ const Settings = (props) => {
                         placeholder={locale.t(
                           "Settings:ContextPathPlaceholder"
                         )}
-                        value={contextPath}
+                        value={contextPathUrl}
                         onChangeText={(value) =>
-                          dispatch(setContextPath(value))
+                          dispatch(setContextPathUrl(value))
                         }
                         height={50}
                       />

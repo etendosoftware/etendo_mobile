@@ -10,29 +10,18 @@ import {
   selectData,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage,
-  selectSelectedUrl,
   selectToken
 } from "../../redux/user";
 import { useAppSelector } from "../../redux";
-import { selectIsDemo } from "../../redux/window";
-import { determineSubappUrl } from "../utils";
 
 const HomePage = ({ route, navigation }: any) => {
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
-  const isDemoTry = useAppSelector(selectIsDemo);
-  const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
 
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = determineSubappUrl(
-      isDemoTry,
-      route.params.isDev,
-      selectedUrl,
-      selectedEnvironmentUrl
-    );
 
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
@@ -46,7 +35,7 @@ const HomePage = ({ route, navigation }: any) => {
           >
             <DynamicComponent
               __id={appId}
-              url={url}
+              url={selectedEnvironmentUrl}
               children={childNavigation}
               navigationContainer={navigation}
               token={token}
