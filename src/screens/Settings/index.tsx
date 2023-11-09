@@ -1,5 +1,5 @@
 //Imports
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   ScrollView,
@@ -29,19 +29,19 @@ import Input from "etendo-ui-library/dist-native/components/input/Input";
 import { UrlItem } from "../../components/UrlItem";
 import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
+  selectContextPathUrl,
   selectData,
   selectDevUrl,
+  selectSelectedEnvironmentUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
   selectStoredEnviromentsUrl,
   selectStoredLanguages,
-  selectContextPathUrl,
   selectToken,
-  setDevUrl,
-  setSelectedUrl,
   setContextPathUrl,
-  selectSelectedEnvironmentUrl,
-  setSelectedEnvironmentUrl
+  setDevUrl,
+  setSelectedEnvironmentUrl,
+  setSelectedUrl
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
@@ -70,10 +70,10 @@ const Settings = (props) => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
+  const contextPathUrl = useAppSelector(selectContextPathUrl);
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
-  const contextPathUrl = useAppSelector(selectContextPathUrl);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
@@ -87,7 +87,7 @@ const Settings = (props) => {
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
   const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
-  const [logoSource, setLogoSource] = useState(defaultLogo);
+  const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const {
@@ -181,99 +181,38 @@ const Settings = (props) => {
     props.navigation.navigate("Login");
   };
 
-  // Function to handle the case when the logo fails to load.
-  const onLogoError = () => {
-    // Only update the state if the current logoSource has a URI (i.e., an attempt was made to load a logo)
-    if (logoSource.uri) {
-      setHasErrorLogo(true);
-      setLogoSource(notFoundLogo); // Update the logo to a default "not found" image
+  // This function is responsible for setting the logo URI based on the current URL
+  const updateLogoURI = useCallback((currentUrl) => {
+    if (!currentUrl) {
+      setLogoURI(defaultLogo);
+      return;
     }
-  };
-
-  // Ref to track the previous error state for the logo
-  const prevHasErrorLogo = useRef(hasErrorLogo);
-
-  // Callback function to load the logo
-  const loadLogo = useCallback(() => {
-    if (url && storedEnviromentsUrl.length > 0) {
-      const logoUrl = { uri: `${url}/${logoUri}` };
-      Image.prefetch(logoUrl.uri).then(
-        () => {
-          if (prevHasErrorLogo.current) {
-            setHasErrorLogo(false);
-            prevHasErrorLogo.current = false;
-          }
-          setLogoSource(logoUrl);
-        },
-        () => {
-          if (!prevHasErrorLogo.current) {
-            setHasErrorLogo(true);
-            prevHasErrorLogo.current = true;
-          }
-          setLogoSource(notFoundLogo);
-        }
-      );
-    } else {
-      setLogoSource(defaultLogo);
-      if (prevHasErrorLogo.current) {
+    const fullLogoURI = `${currentUrl}/${logoUri}`;
+    Image.prefetch(fullLogoURI).then(
+      () => {
         setHasErrorLogo(false);
-        prevHasErrorLogo.current = false;
-      }
-    }
-  }, [url]);
-
-  // Effect to update the ref when hasErrorLogo changes
-  useEffect(() => {
-    prevHasErrorLogo.current = hasErrorLogo;
-  }, [hasErrorLogo]);
-
-  // Effect to load the logo on mount and when dependencies change
-  useEffect(() => {
-    loadLogo();
-  }, [loadLogo]);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
+        setLogoURI({ uri: fullLogoURI });
+      },
       () => {
-        if (!isKeyboardVisible) setIsKeyboardVisible(true);
+        setHasErrorLogo(true);
+        setLogoURI(notFoundLogo);
       }
     );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        if (isKeyboardVisible) setIsKeyboardVisible(false);
-      }
-    );
+  }, []);
 
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, [isKeyboardVisible]);
+  useEffect(() => {
+    updateLogoURI(url);
+  }, [url, updateLogoURI]);
 
-  // This component renders the logo image along with error messages if applicable.
   const LogoImage = () => {
     return (
-      <>
-        <Image
-          style={styles.logoImageStyles}
-          source={hasErrorLogo ? notFoundLogo : logoSource}
-          onError={onLogoError}
-          height={100}
-          width={200}
-        />
-        {hasErrorLogo && (
-          <View>
-            <Text style={styles.logoTitleStyles}>
-              {locale.t("Settings:ImageNotFound")}
-            </Text>
-            <Text style={styles.logoSubTitle}>
-              {locale.t("Settings:ImageNotFoundServer")}
-            </Text>
-          </View>
-        )}
-      </>
+      <Image
+        style={styles.logoImageStyles}
+        source={hasErrorLogo ? notFoundLogo : logoURI}
+        onError={() => setHasErrorLogo(true)}
+        height={100}
+        width={200}
+      />
     );
   };
 
@@ -296,29 +235,10 @@ const Settings = (props) => {
     setModalUrl(tmpUrl);
   };
 
-  const buildLogoUri = (selectedUrl: string) => {
-    return selectedUrl ? { uri: selectedUrl + logoUri } : defaultLogo;
-  };
-
   useEffect(() => {
     const formattedUrl = formatEnvironmentUrl(selectedUrl);
     dispatch(setSelectedEnvironmentUrl(formattedUrl));
   }, [selectedUrl]);
-
-  useEffect(() => {
-    if (selectedEnvironmentUrl) {
-      const newLogoUri = buildLogoUri(selectedEnvironmentUrl);
-      Image.prefetch(newLogoUri.uri)
-        .then(() => {
-          setLogoSource(newLogoUri);
-          setHasErrorLogo(false);
-        })
-        .catch(() => {
-          setLogoSource(notFoundLogo);
-          setHasErrorLogo(true);
-        });
-    }
-  }, [selectedEnvironmentUrl]);
 
   const handleOptionSelected = async ({ value }) => {
     await atChooseOption(value);
@@ -338,27 +258,30 @@ const Settings = (props) => {
     }
   }, [data, token]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        if (!isKeyboardVisible) setIsKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        if (isKeyboardVisible) setIsKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, [isKeyboardVisible]);
+
   const saveDebugURL = async () => {
     await AsyncStorage.setItem("debugURL", devUrl);
     dispatch(setDevUrl(devUrl));
     Toast("Settings:DebugURLSaved", { type: "success" });
-  };
-
-  const selectUrl = (
-    isDemoTry: boolean,
-    storedEnvironmentsUrl: Array<string>,
-    url: string
-  ) => {
-    if (isDemoTry) {
-      return References.DemoUrl;
-    }
-    if (storedEnvironmentsUrl.length === 1 && url) {
-      return storedEnvironmentsUrl[0];
-    }
-    if (storedEnvironmentsUrl.length > 1) {
-      return url;
-    }
-    return null;
   };
 
   return (
@@ -387,30 +310,31 @@ const Settings = (props) => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <View style={styles.containerUrls}>
-              <View style={styles.containerServerUrl}>
-                <Text style={styles.languageText}>
-                  {locale.t("Settings:URL")}
-                </Text>
-                <Input
-                  typeField="picker"
-                  placeholder={locale.t("Settings:InputPlaceholder")}
-                  value={selectUrl(isDemoTry, storedEnviromentsUrl, url)}
-                  onOptionSelected={(option: any) => {
-                    handleOptionSelected(option);
-                    setHasErrorLogo(false);
-                  }}
-                  disabled={!!token}
-                  displayKey="value"
-                  dataPicker={storedDataUrl.map((data) => ({ value: data }))}
-                  height={43}
-                  centerText={true}
-                  showOptionsAmount={6}
-                  placeholderSearch={locale.t("Settings:Search")}
-                />
-              </View>
-            </View>
-
+            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
+            <Input
+              typeField="picker"
+              placeholder={locale.t("Settings:InputPlaceholder")}
+              value={
+                isDemoTry
+                  ? References.DemoUrl
+                  : storedEnviromentsUrl.length == 1 && url
+                  ? storedEnviromentsUrl[0]
+                  : storedEnviromentsUrl.length > 1
+                  ? url
+                  : null
+              }
+              onOptionSelected={(option: any) => {
+                handleOptionSelected(option);
+                setHasErrorLogo(false);
+              }}
+              disabled={!!token}
+              displayKey="value"
+              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+              height={43}
+              centerText={true}
+              showOptionsAmount={6}
+              placeholderSearch={locale.t("Settings:Search")}
+            />
             {!token ? (
               <View style={styles.containerAddLinkStyle}>
                 <ButtonUI
@@ -436,6 +360,16 @@ const Settings = (props) => {
             </Text>
             <View style={styles.findingImageContainer}>
               <LogoImage />
+              {hasErrorLogo && (
+                <View>
+                  <Text style={styles.logoTitleStyles}>
+                    {locale.t("Settings:ImageNotFound")}
+                  </Text>
+                  <Text style={styles.logoSubTitle}>
+                    {locale.t("Settings:ImageNotFoundServer")}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
 
