@@ -26,6 +26,7 @@ export const useWindow = () => {
   const dispatch = useAppDispatch();
   const windows = useAppSelector(selectWindows);
   const selectedUrl = useAppSelector(selectSelectedUrl);
+  const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const devUrl = useAppSelector(selectDevUrl);
   const token = useAppSelector(selectToken);
 
@@ -105,7 +106,7 @@ export const useWindow = () => {
               name: app.etdappAppName,
               __id: __id,
               url: app.etdappAppVersionIsDev
-                ? formatEnvironmentUrl(selectedUrl)
+                ? selectedEnvironmentUrl
                 : selectedUrl,
               isDev: app.etdappAppVersionIsDev
             };

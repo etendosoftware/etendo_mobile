@@ -8,6 +8,7 @@ import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
 import {
   selectData,
+  selectSelectedEnvironmentUrl,
   selectSelectedLanguage,
   selectSelectedUrl,
   selectToken
@@ -22,10 +23,16 @@ const HomePage = ({ route, navigation }: any) => {
   const language = useAppSelector(selectSelectedLanguage);
   const isDemoTry = useAppSelector(selectIsDemo);
   const selectedUrl = useAppSelector(selectSelectedUrl);
+  const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
 
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = determineSubappUrl(isDemoTry, route.params.isDev, selectedUrl);
+    const url = determineSubappUrl(
+      isDemoTry,
+      route.params.isDev,
+      selectedUrl,
+      selectedEnvironmentUrl
+    );
 
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;

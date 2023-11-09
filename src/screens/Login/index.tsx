@@ -186,6 +186,7 @@ const LoginFunctional = (props) => {
       await setUrlOB(References.DemoUrl);
       await AsyncStorage.setItem("baseUrl", References.DemoUrl);
       await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+      await AsyncStorage.setItem("selectedEnvironmentUrl", References.DemoUrl);
       await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
       dispatch(setSelectedUrl(References.DemoUrl));

@@ -286,6 +286,10 @@ const Settings = (props) => {
     const fullUrl = value;
 
     await AsyncStorage.setItem("selectedUrl", fullUrl);
+    await AsyncStorage.setItem(
+      "selectedEnvironmentUrl",
+      formatEnvironmentUrl(fullUrl)
+    );
     dispatch(setSelectedUrl(fullUrl));
     const tmpUrl = await setUrlOB(fullUrl);
     setUrl(tmpUrl);

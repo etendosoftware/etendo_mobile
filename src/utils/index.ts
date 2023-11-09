@@ -5,20 +5,20 @@ import Orientation from "react-native-orientation-locker";
 import { Toast } from "./Toast";
 import { storeKey } from "./KeyStorage";
 import NetInfo from "@react-native-community/netinfo";
-import { formatEnvironmentUrl } from "../ob-api/ob";
 import { References } from "../constants/References";
 
 export const determineSubappUrl = (
   isDemo: boolean,
   isDevMode: boolean,
-  selectedEnvUrl: string
+  selectedUrl: string,
+  selectedEnvironmentUrl: string
 ): string => {
   if (isDemo) {
     return References.DemoUrl;
   } else if (isDevMode) {
-    return formatEnvironmentUrl(selectedEnvUrl);
+    return selectedEnvironmentUrl;
   } else {
-    return selectedEnvUrl;
+    return selectedUrl;
   }
 };
 
