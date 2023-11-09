@@ -13,7 +13,6 @@ export interface UserState {
   devUrl: string;
   selectedUrl: string;
   selectedEnvironmentUrl: string;
-  selectSelectedEnvironmentUrl: string;
   storedLanguages: ILanguage[];
   storedEnviromentsUrl: string[];
 }
@@ -26,7 +25,6 @@ const initialState: UserState = {
   user: undefined, // username
   selectedLanguage: undefined,
   devUrl: undefined,
-  selectSelectedEnvironmentUrl: undefined,
   selectedEnvironmentUrl: undefined,
   selectedUrl: undefined,
   storedLanguages: [],
@@ -93,7 +91,7 @@ export const selectBindaryImg = (state: RootState) => state.user.bindaryImg;
 export const selectUser = (state: RootState) => state.user.user;
 export const selectToken = (state: RootState) => state.user.token;
 export const selectSelectedEnvironmentUrl = (state: RootState) =>
-  state.user.selectSelectedEnvironmentUrl;
+  state.user.selectedEnvironmentUrl;
 export const selectSelectedUrl = (state: RootState) => state.user.selectedUrl;
 export const selectSelectedLanguage = (state: RootState) =>
   state.user.selectedLanguage;

@@ -12,7 +12,12 @@ import {
 } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog } from "react-native-paper";
-import { setUrl as setUrlOB, formatUrl, resetLocalUrl } from "../../ob-api/ob";
+import {
+  setUrl as setUrlOB,
+  formatUrl,
+  resetLocalUrl,
+  formatEnvironmentUrl
+} from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
 import { isTablet } from "../../helpers/IsTablet";
@@ -64,6 +69,7 @@ const Settings = (props) => {
   const selectSelectedLanguage = useAppSelector(selectSelectedLanguageRedux);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
+  const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
@@ -106,12 +112,6 @@ const Settings = (props) => {
     fetchUrlAndLogo();
   }, [hasErrorLogo]);
 
-  const loadServerLogo = (url: string) => {
-    return url && storedEnviromentsUrl.length > 0
-      ? { uri: url + logoUri }
-      : defaultLogo;
-  };
-
   const showChangeURLModalFn = () => {
     if (!token) {
       setShowChangeURLModal(true);
@@ -134,7 +134,6 @@ const Settings = (props) => {
 
   const addUrl = async () => {
     const formattedUrl = formatUrl(valueEnvUrl);
-    dispatch(setSelectedEnvironmentUrl(formattedUrl));
     const newUrl = formattedUrl + contextPath;
 
     if (!formattedUrl || storedDataUrl.includes(newUrl)) {
@@ -298,8 +297,13 @@ const Settings = (props) => {
   };
 
   useEffect(() => {
-    if (selectedUrl) {
-      const newLogoUri = buildLogoUri(selectedUrl);
+    const formattedUrl = formatEnvironmentUrl(selectedUrl);
+    dispatch(setSelectedEnvironmentUrl(formattedUrl));
+  }, [selectedUrl]);
+
+  useEffect(() => {
+    if (selectedEnvironmentUrl) {
+      const newLogoUri = buildLogoUri(selectedEnvironmentUrl);
       Image.prefetch(newLogoUri.uri)
         .then(() => {
           setLogoSource(newLogoUri);
@@ -309,10 +313,8 @@ const Settings = (props) => {
           setLogoSource(notFoundLogo);
           setHasErrorLogo(true);
         });
-    } else {
-      setLogoSource(defaultLogo);
     }
-  }, [selectedUrl]);
+  }, [selectedEnvironmentUrl]);
 
   const handleOptionSelected = async ({ value }) => {
     await atChooseOption(value);

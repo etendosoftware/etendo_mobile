@@ -7,7 +7,7 @@ const DynamicComponent = ({ __id, children, ...props }: any) => {
     const component = async () => {
       const componentPromise = fetchComponent(
         __id,
-        props.isDev ? `${props.url}:3000` : props.url,
+        props.isDev ? `${props.url}/subapp` : props.url,
         props.navigationContainer
       );
       componentPromise.catch((e) => {

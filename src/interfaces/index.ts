@@ -31,3 +31,25 @@ export interface IData {
   organization: string;
   client: string;
 }
+
+export interface IFetchComponent {
+  id: string;
+  url: string;
+  navigation: {
+    navigate: (screen: string) => void;
+  };
+}
+
+export interface IDynamicComponentProps {
+  __id: string;
+  url: string;
+  isDev?: boolean;
+  navigationContainer: {
+    navigate: (screen: string) => void;
+  };
+  children?: React.ReactNode;
+  dataUser: any;
+  token: string;
+  user: string;
+  language: string;
+}

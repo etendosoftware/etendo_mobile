@@ -28,6 +28,20 @@ const formatUrl = (_url?) => {
   return url;
 };
 
+export const formatEnvironmentUrl = (url: string) => {
+  if (typeof url === "string") {
+    const thirdSlashIndex = url.indexOf("/", url.indexOf("//") + 2);
+
+    if (thirdSlashIndex !== -1) {
+      return url.substring(0, thirdSlashIndex);
+    }
+
+    return url;
+  }
+
+  return "";
+};
+
 const getUrl = async () => {
   return AsyncStorage.getItem("baseUrl");
 };
