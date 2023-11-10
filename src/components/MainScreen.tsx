@@ -42,7 +42,7 @@ const HomePage = ({ route, navigation }: any) => {
               user={data.username}
               language={language}
               dataUser={data}
-              isDev={Boolean(route.params.isDev)}
+              isDev={!!route.params.isDev}
             />
           </NavigationContainer>
         </View>
