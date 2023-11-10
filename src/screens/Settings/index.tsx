@@ -86,7 +86,7 @@ const Settings = (props) => {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);
-  const [valueEnvUrl, setValueEnvUrl] = useState<string>(null);
+  const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
@@ -133,7 +133,7 @@ const Settings = (props) => {
   };
 
   const addUrl = async () => {
-    const formattedUrl = formatUrl(valueEnvUrl);
+    const formattedUrl = formatUrl(valueEnvironmentUrl);
     const newUrl = formattedUrl + contextPathUrl;
 
     if (!formattedUrl || storedDataUrl.includes(newUrl)) {
@@ -145,7 +145,7 @@ const Settings = (props) => {
     setStoredDataUrl(newStoredDataUrl);
     await saveEnviromentsUrl([...storedDataUrl, newUrl]);
 
-    setValueEnvUrl("");
+    setValueEnvironmentUrl("");
     setSelectedUrl(newUrl);
     atChooseOption(newUrl);
 
@@ -220,16 +220,19 @@ const Settings = (props) => {
     setHasErrorLogo(false);
   }, [url]);
 
-  const atChooseOption = async (value: string) => {
-    // Concatenates the base server URL with the context path to form the full endpoint URL
-    const fullUrl = value;
-
+  const atChooseOption = async (fullUrl: string) => {
+    // Update AsyncStorage with the full URL and the formatted environment URL
     await AsyncStorage.setItem("selectedUrl", fullUrl);
-    await AsyncStorage.setItem(
-      "selectedEnvironmentUrl",
-      formatEnvironmentUrl(fullUrl)
-    );
+    const valueEnvironmentUrl = formatEnvironmentUrl(fullUrl);
+    await AsyncStorage.setItem("selectedEnvironmentUrl", valueEnvironmentUrl);
+
+    // Update the state with the formatted environment URL
+    setValueEnvironmentUrl(valueEnvironmentUrl);
+
+    // Dispatch the selected URL to the Redux store
     dispatch(setSelectedUrl(fullUrl));
+
+    // Set the URL for the OB API and update the local state
     const tmpUrl = await setUrlOB(fullUrl);
     setUrl(tmpUrl);
     setModalUrl(tmpUrl);
@@ -456,9 +459,9 @@ const Settings = (props) => {
                       <Input
                         typeField={"textInput"}
                         placeholder={locale.t("Settings:InputPlaceholder")}
-                        value={valueEnvUrl}
+                        value={valueEnvironmentUrl}
                         onChangeText={(valueEnvUrl) => {
-                          setValueEnvUrl(valueEnvUrl);
+                          setValueEnvironmentUrl(valueEnvUrl);
                         }}
                         height={50}
                       />
@@ -513,7 +516,7 @@ const Settings = (props) => {
                               <UrlItem
                                 key={index}
                                 item={item}
-                                setValueEnvUrl={setValueEnvUrl}
+                                setValueEnvUrl={setValueEnvironmentUrl}
                                 deleteUrl={deleteUrl}
                                 setIsUpdating={setIsUpdating}
                                 modalUrl={modalUrl}
