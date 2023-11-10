@@ -4,6 +4,7 @@ import { View, Image, Text, TouchableOpacity } from "react-native";
 import { isTablet } from "../helpers/IsTablet";
 import { selectContextPathUrl, setContextPathUrl } from "../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../redux";
+import { formatEnvironmentUrl } from "../ob-api/ob";
 
 export const UrlItem = ({
   item,
@@ -21,16 +22,6 @@ export const UrlItem = ({
 
   const [clicked, setClicked] = useState(false);
   const [clickDelete, setClickDelete] = useState(false);
-
-  const formatUrl = (url: string) => {
-    const thirdSlashIndex = url.indexOf("/", url.indexOf("//") + 2);
-
-    if (thirdSlashIndex !== -1) {
-      return url.substring(0, thirdSlashIndex);
-    }
-
-    return url;
-  };
 
   const getContextPath = (url: string): string => {
     let index = 0;
@@ -55,7 +46,7 @@ export const UrlItem = ({
   const handleEdit = () => {
     const newContext = getContextPath(item);
 
-    setValueEnvUrl(formatUrl(item));
+    setValueEnvUrl(formatEnvironmentUrl(item));
 
     if (newContext !== prevContext) {
       dispatch(setContextPathUrl(newContext));
