@@ -20,6 +20,7 @@ import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectData,
   selectSelectedUrl,
+  setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl
 } from "../../../redux/user";
@@ -186,10 +187,10 @@ const LoginFunctional = (props) => {
       await setUrlOB(References.DemoUrl);
       await AsyncStorage.setItem("baseUrl", References.DemoUrl);
       await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
-      await AsyncStorage.setItem("selectedEnvironmentUrl", References.DemoUrl);
       await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
       dispatch(setSelectedUrl(References.DemoUrl));
+      dispatch(setSelectedEnvironmentUrl(References.DemoUrl));
       dispatch(setIsDemo(true));
       await AsyncStorage.setItem("isDemoTry", References.YES);
       const storedEnviromentsUrl = await AsyncStorage.getItem(

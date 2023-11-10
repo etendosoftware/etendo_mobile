@@ -13,12 +13,14 @@ import {
   selectToken
 } from "../../redux/user";
 import { useAppSelector } from "../../redux";
+import { selectIsDemo } from "../../redux/window";
 
 const HomePage = ({ route, navigation }: any) => {
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
+  const isDemoTry = useAppSelector(selectIsDemo);
 
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
@@ -43,6 +45,7 @@ const HomePage = ({ route, navigation }: any) => {
               language={language}
               dataUser={data}
               isDev={!!route.params.isDev}
+              isDemoTry={isDemoTry}
             />
           </NavigationContainer>
         </View>
