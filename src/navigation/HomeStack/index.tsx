@@ -120,12 +120,14 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   }, [routeName]);
 
   useEffect(() => {
-    const itemsDrawer = menuItems?.map((item: any) => {
-      return { route: item.name, label: item.name };
-    });
+    if (menuItems) {
+      const itemsDrawer = menuItems.map((item: any) => {
+        return { route: item.name, label: item.name };
+      });
 
-    setDataDrawer(itemsDrawer);
-    dispatch(setIsSubapp(false));
+      setDataDrawer(itemsDrawer);
+      dispatch(setIsSubapp(false));
+    }
   }, [menuItems]);
 
   const onOptionPressHandle = async (
@@ -193,7 +195,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name={"Settings"} component={Settings} />
           <Stack.Screen name={"Profile"} component={Profile} />
-          {menuItems?.length ? (
+          {menuItems && menuItems.length ? (
             menuItems?.map((menuItem: any, index: number) => {
               const params = { ...menuItem };
               if (params.component) {

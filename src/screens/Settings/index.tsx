@@ -327,7 +327,7 @@ const Settings = (props) => {
               height={43}
               centerText={true}
               showOptionsAmount={6}
-              placeholderSearch={locale.t("Settings:Search")}
+              placeholderPickerSearch={locale.t("Settings:Search")}
             />
             {!token ? (
               <View style={styles.containerAddLinkStyle}>
