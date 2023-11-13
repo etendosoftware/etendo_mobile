@@ -15,7 +15,7 @@ import {
   setMenuItems,
   setWindows
 } from "../redux/window";
-import { formatEnvironmentUrl, getUrl } from "../src/ob-api/ob";
+import { getUrl } from "../src/ob-api/ob";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { References } from "../src/constants/References";
 const method = "GET";
