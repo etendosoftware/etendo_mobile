@@ -8,7 +8,6 @@ import {
   selectUser,
   setBindaryImg,
   setData,
-  setDevUrl,
   setLanguage,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
@@ -44,7 +43,7 @@ import { References } from "../src/constants/References";
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
-  const { loadWindows, fetchDevURL } = useWindow();
+  const { loadWindows } = useWindow();
   const selectedLanguage = useAppSelector(selectSelectedLanguage);
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const token = useAppSelector(selectToken);
@@ -102,7 +101,6 @@ export const useUser = () => {
     const token = OBRest.getInstance()
       .getAxios()
       .defaults.headers.Authorization.replace("Bearer ", "");
-    await fetchDevURL(selectedUrl);
     await reloadUserData(null, user);
     dispatch(setToken(token));
     dispatch(setUser(user));
@@ -183,7 +181,6 @@ export const useUser = () => {
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
     await AsyncStorage.removeItem("isDeveloperMode");
-    await AsyncStorage.removeItem("debugURL");
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");
@@ -193,7 +190,6 @@ export const useUser = () => {
       dispatch(setIsDemo(false));
     }
 
-    dispatch(setDevUrl(null));
     dispatch(setIsDeveloperMode(false));
     dispatch(setIsSubapp(false));
     dispatch(setToken(null));
