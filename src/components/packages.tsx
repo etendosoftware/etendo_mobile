@@ -44,6 +44,7 @@ import * as AntDesign from "react-native-vector-icons/AntDesign";
 import * as MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ReactNativeDatePicker from "react-native-date-picker";
 import * as EtendoUiLibrary from "etendo-ui-library";
+import * as ReactNativeToastMessage from "react-native-toast-message";
 import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
@@ -94,6 +95,7 @@ const Packages = {
   "react-native-vector-icons/AntDesign": () => AntDesign,
   "react-native-vector-icons/MaterialCommunityIcons": () =>
     MaterialCommunityIcons,
+  "react-native-toast-message": () => ReactNativeToastMessage,
   etrest: () => etrest,
   Etendo: () => Etendo
 };
