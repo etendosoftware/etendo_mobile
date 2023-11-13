@@ -1,4 +1,3 @@
-import React from "react";
 import packages from "../components/packages";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTablet } from "../../hook/isTablet";
@@ -6,6 +5,7 @@ import Orientation from "react-native-orientation-locker";
 import { Toast } from "./Toast";
 import { storeKey } from "./KeyStorage";
 import NetInfo from "@react-native-community/netinfo";
+import { References } from "../constants/References";
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
@@ -108,4 +108,15 @@ export const deviceOrientation = () => {
 export const internetIsAvailable = async () => {
   const netInfo = await NetInfo.fetch();
   return netInfo.isConnected;
+};
+
+export const getBasePathContext = (
+  isDemoTry: boolean,
+  isDev: boolean
+): string => {
+  if (isDemoTry) {
+    return "";
+  }
+
+  return isDev ? References.SubappContextPath : References.EtendoContextPath;
 };

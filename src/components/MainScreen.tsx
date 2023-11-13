@@ -8,26 +8,25 @@ import DynamicComponent from "./DynamicComponent";
 import { Etendo } from "../helpers/Etendo";
 import {
   selectData,
-  selectDevUrl,
+  selectSelectedEnvironmentUrl,
   selectSelectedLanguage,
   selectToken
 } from "../../redux/user";
 import { useAppSelector } from "../../redux";
 import { selectIsDemo } from "../../redux/window";
-import { References } from "../constants/References";
 
 const HomePage = ({ route, navigation }: any) => {
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
+  const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
-  const urldevRedux = useAppSelector(selectDevUrl);
+
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id;
-    const url = isDemoTry ? References.DemoUrl : urldevRedux;
+
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
-
     return (
       <>
         <View style={{ flex: 1 }}>
@@ -38,13 +37,15 @@ const HomePage = ({ route, navigation }: any) => {
           >
             <DynamicComponent
               __id={appId}
-              url={url}
+              url={selectedEnvironmentUrl}
               children={childNavigation}
               navigationContainer={navigation}
               token={token}
               user={data.username}
               language={language}
               dataUser={data}
+              isDev={!!route.params.isDev}
+              isDemoTry={isDemoTry}
             />
           </NavigationContainer>
         </View>

@@ -1,13 +1,16 @@
 import React, { useMemo, Suspense } from "react";
-import { fetchComponent } from "../utils";
+import { fetchComponent, getBasePathContext } from "../utils";
 import LoadingScreen from "./LoadingScreen";
 
-const DynamicComponent = ({ __id, url, children, ...props }: any) => {
+const DynamicComponent = ({ __id, children, ...props }: any) => {
+  const baseUrl = props.url;
+  const basePathContext = getBasePathContext(props.isDemoTry, props.isDev);
+
   const Component = useMemo(() => {
     const component = async () => {
       const componentPromise = fetchComponent(
         __id,
-        url,
+        `${baseUrl}${basePathContext}`,
         props.navigationContainer
       );
       componentPromise.catch((e) => {

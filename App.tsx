@@ -15,7 +15,6 @@ import { languageDefault } from "./src/helpers/getLanguajes";
 import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
 import { Camera } from "react-native-vision-camera";
 import { deviceOrientation } from "./src/utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {}
 type RootStackParamList = {

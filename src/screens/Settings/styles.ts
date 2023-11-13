@@ -11,6 +11,15 @@ import {
   WHITE
 } from "../../styles/colors";
 import { defaultTheme } from "../../themes";
+import { isTablet } from "../../helpers/IsTablet";
+
+const commonStylesContextText = {
+  fontFamily: "Inter-SemiBold",
+  color: NEUTRAL_60,
+  fontSize: 12,
+  lineHeight: 18,
+  paddingBottom: 8
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -104,6 +113,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: NEUTRAL_30
   },
+  urlContextPath: {
+    fontFamily: "Inter-Bold",
+    color: PRIMARY_100,
+    fontSize: 18,
+    lineHeight: 18,
+    marginBottom: 3,
+    fontWeight: "600",
+    marginTop: 16
+  },
   urlContainerTablet: {
     width: "33%",
     flexDirection: "column",
@@ -112,6 +130,19 @@ const styles = StyleSheet.create({
     borderColor: NEUTRAL_30,
     justifyContent: "flex-start",
     marginRight: 20
+  },
+  containerUrls: {
+    flex: !isTablet() && 1,
+    flexDirection: isTablet() ? "row" : "column",
+    width: "100%"
+  },
+  containerServerUrl: {
+    flex: isTablet() && 6.5,
+    flexDirection: "column"
+  },
+  containerContextPathUrl: {
+    flex: isTablet() && 3.5,
+    flexDirection: "column"
   },
   containerAddLinkStyle: {
     alignSelf: "flex-start",
@@ -224,6 +255,13 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     marginVertical: 0
   },
+  contextText: {
+    ...commonStylesContextText,
+    marginTop: 16
+  },
+  contextTextTablet: {
+    ...commonStylesContextText
+  },
   debugText: {
     fontFamily: "Inter-SemiBold",
     color: NEUTRAL_60,
@@ -258,7 +296,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_100,
     fontSize: 18,
     lineHeight: 18,
-    paddingBottom: 8,
+    marginBottom: 3,
     fontWeight: "600"
   },
   notUrlEnvList: {

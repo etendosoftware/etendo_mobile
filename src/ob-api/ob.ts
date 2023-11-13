@@ -24,12 +24,22 @@ const formatUrl = (_url?) => {
     if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
       url = "http://" + url;
     }
-
-    if (url && !url.endsWith("/")) {
-      url += "/";
-    }
   }
   return url;
+};
+
+export const formatEnvironmentUrl = (url: string) => {
+  if (typeof url === "string") {
+    const thirdSlashIndex = url.indexOf("/", url.indexOf("//") + 2);
+
+    if (thirdSlashIndex !== -1) {
+      return url.substring(0, thirdSlashIndex);
+    }
+
+    return url;
+  }
+
+  return "";
 };
 
 const getUrl = async () => {
