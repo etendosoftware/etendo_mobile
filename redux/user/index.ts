@@ -11,7 +11,6 @@ export interface UserState {
   token: string;
   user: string;
   selectedLanguage: string;
-  devUrl: string;
   selectedUrl: string;
   selectedEnvironmentUrl: string;
   storedLanguages: ILanguage[];
@@ -25,7 +24,6 @@ const initialState: UserState = {
   token: undefined,
   user: undefined, // username
   selectedLanguage: undefined,
-  devUrl: undefined,
   selectedEnvironmentUrl: undefined,
   selectedUrl: undefined,
   storedLanguages: [],
@@ -54,9 +52,6 @@ export const userSlice = createSlice({
     setLanguage: (state, action: PayloadAction<any>) => {
       state.selectedLanguage = action.payload;
     },
-    setDevUrl: (state, action: PayloadAction<any>) => {
-      state.devUrl = action.payload;
-    },
     setSelectedEnvironmentUrl: (state, action: PayloadAction<any>) => {
       state.selectedEnvironmentUrl = action.payload;
     },
@@ -79,7 +74,6 @@ export const {
   setToken,
   setUser,
   setLanguage,
-  setDevUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredLanguages,
@@ -97,7 +91,6 @@ export const selectSelectedEnvironmentUrl = (state: RootState) =>
 export const selectSelectedUrl = (state: RootState) => state.user.selectedUrl;
 export const selectSelectedLanguage = (state: RootState) =>
   state.user.selectedLanguage;
-export const selectDevUrl = (state: RootState) => state.user.devUrl;
 export const selectStoredEnviromentsUrl = (state: RootState) =>
   state.user.storedEnviromentsUrl;
 export const selectStoredLanguages = (state: RootState) =>
