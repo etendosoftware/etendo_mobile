@@ -31,7 +31,6 @@ import { useAppSelector, useAppDispatch } from "../../../redux";
 import {
   selectContextPathUrl,
   selectData,
-  selectDevUrl,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
@@ -39,7 +38,6 @@ import {
   selectStoredLanguages,
   selectToken,
   setContextPathUrl,
-  setDevUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl
 } from "../../../redux/user";
@@ -71,7 +69,6 @@ const Settings = (props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const contextPathUrl = useAppSelector(selectContextPathUrl);
-  const devUrl = useAppSelector(selectDevUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
 
@@ -281,12 +278,6 @@ const Settings = (props) => {
     };
   }, [isKeyboardVisible]);
 
-  const saveDebugURL = async () => {
-    await AsyncStorage.setItem("debugURL", devUrl);
-    dispatch(setDevUrl(devUrl));
-    Toast("Settings:DebugURLSaved", { type: "success" });
-  };
-
   return (
     <KeyboardAwareScrollView
       style={styles.fullContainer}
@@ -398,28 +389,6 @@ const Settings = (props) => {
               centerText={true}
             />
           </View>
-
-          {!isTablet() && role === References.SystemAdministrator && (
-            <View style={styles.debugContainerStyles}>
-              <Text style={styles.debugText}>
-                {locale.t("Settings:DebugURL")}
-              </Text>
-              <Input
-                typeField="textInput"
-                placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={devUrl}
-                onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={50}
-              />
-              <View style={styles.saveButtonContainer}>
-                <ButtonUI
-                  typeStyle="primary"
-                  onPress={saveDebugURL}
-                  text={locale.t("Settings:Save")}
-                />
-              </View>
-            </View>
-          )}
 
           <Modal visible={showChangeURLModal} transparent>
             <TouchableWithoutFeedback onPress={hideChangeURLModal}>
@@ -540,32 +509,6 @@ const Settings = (props) => {
             </TouchableWithoutFeedback>
           </Modal>
         </View>
-
-        {isTablet() && role === References.SystemAdministrator && (
-          <View style={styles.containerCardStyle}>
-            <View style={styles.containerUrlStyle}>
-              <Text style={styles.debugText}>
-                {locale.t("Settings:DebugURL")}
-              </Text>
-              <Input
-                typeField="textInput"
-                placeholder={locale.t("Settings:DebugURLPlaceholder")}
-                value={devUrl}
-                onChangeText={(value) => dispatch(setDevUrl(value))}
-                height={50}
-              />
-              <View style={styles.saveButtonContainer}>
-                <ButtonUI
-                  typeStyle="primary"
-                  onPress={saveDebugURL}
-                  text={locale.t("Settings:Save")}
-                />
-              </View>
-            </View>
-            <View style={styles.logoContainerStyles} />
-            <View style={styles.languageContainerStyles} />
-          </View>
-        )}
       </View>
 
       {isTablet() ? (

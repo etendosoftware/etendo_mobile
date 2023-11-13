@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux";
 import {
-  selectDevUrl,
   selectSelectedEnvironmentUrl,
   selectSelectedUrl,
   selectToken,
-  setDevUrl
 } from "../redux/user";
 import {
   selectWindows,
@@ -27,7 +25,6 @@ export const useWindow = () => {
   const windows = useAppSelector(selectWindows);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
-  const devUrl = useAppSelector(selectDevUrl);
   const token = useAppSelector(selectToken);
 
   const loadWindows = async (token) => {
@@ -39,9 +36,6 @@ export const useWindow = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(setDevUrl(devUrl));
-  }, [devUrl]);
 
   const unloadWindows = () => {
     dispatch(setWindows([]));
@@ -116,7 +110,6 @@ export const useWindow = () => {
       dispatch(setIsDeveloperMode(isDev));
       dispatch(setAppData([...appsData]));
       dispatch(setMenuItems([...mi]));
-      await fetchDevURL(selectedUrl, isDev);
       await AsyncStorage.setItem("isDeveloperMode", JSON.stringify(isDev));
       await AsyncStorage.setItem("appData", JSON.stringify([...appsData]));
       await AsyncStorage.setItem("menuItems", JSON.stringify([...mi]));
@@ -126,34 +119,9 @@ export const useWindow = () => {
     }
   };
 
-  const fetchDevURL = async (URLProd: string, isDev?: boolean) => {
-    try {
-      const isDeveloperMode = !!isDev
-        ? !!isDev
-        : await AsyncStorage.getItem("isDeveloperMode");
-      if (isDeveloperMode) {
-        const hasToken = token || (await AsyncStorage.getItem("token"));
-        if (hasToken) {
-          const devUrlLS = await AsyncStorage.getItem("debugURL");
-          dispatch(setDevUrl(devUrlLS));
-        } else {
-          await AsyncStorage.setItem("debugURL", References.LocalURLDev);
-          dispatch(setDevUrl(References.LocalURLDev));
-        }
-      } else {
-        await AsyncStorage.setItem("debugURL", URLProd);
-        dispatch(setDevUrl(URLProd));
-      }
-    } catch (_error) {
-      AsyncStorage.setItem("debugURL", "");
-      dispatch(setDevUrl(""));
-    }
-  };
-
   return {
     loadWindows,
     unloadWindows,
-    fetchDevURL,
     getWindow,
     getMenuItems,
     loadDynamic

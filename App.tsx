@@ -9,7 +9,7 @@ import LoginStack from "./src/navigation/LoginStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import { useAppDispatch, useAppSelector } from "./redux";
-import { selectData, selectToken, selectUser, setDevUrl } from "./redux/user";
+import { selectData, selectToken, selectUser } from "./redux/user";
 import { useUser } from "./hook/useUser";
 import { languageDefault } from "./src/helpers/getLanguajes";
 import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
