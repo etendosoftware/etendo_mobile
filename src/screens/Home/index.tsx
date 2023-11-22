@@ -77,7 +77,7 @@ const HomeFunction = (props: Props) => {
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             <>
-              {menuItems.map((menuItem: any, index: number) => {
+              {menuItems?.map((menuItem: any, index: number) => {
                 return (
                   <View key={"CardDropdown" + index} style={{ marginLeft: 35 }}>
                     <CardDropdown

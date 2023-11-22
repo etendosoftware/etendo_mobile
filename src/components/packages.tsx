@@ -45,6 +45,7 @@ import * as MaterialCommunityIcons from "react-native-vector-icons/MaterialCommu
 import * as ReactNativeDatePicker from "react-native-date-picker";
 import * as EtendoUiLibrary from "etendo-ui-library";
 import * as ReactNativeToastMessage from "react-native-toast-message";
+import * as ReactNativeSVG from "react-native-svg";
 import { Etendo } from "../helpers/Etendo";
 
 const Packages = {
@@ -96,6 +97,7 @@ const Packages = {
   "react-native-vector-icons/MaterialCommunityIcons": () =>
     MaterialCommunityIcons,
   "react-native-toast-message": () => ReactNativeToastMessage,
+  "react-native-svg": () => ReactNativeSVG,
   etrest: () => etrest,
   Etendo: () => Etendo
 };
