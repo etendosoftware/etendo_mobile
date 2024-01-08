@@ -7,7 +7,7 @@ import styles from "./styles";
 import { INavigation } from "../../interfaces";
 import { isTablet } from "../../../hook/isTablet";
 import { deviceStyles } from "./deviceStyles";
-import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
+import CardDropdown from "etendo-ui-library/dist-native/components/cards/components/cardDropdown/CardDropdown";
 import { StarIcon } from "etendo-ui-library/dist-native/assets/images/icons/StarIcon";
 import { isTabletSmall } from "../../helpers/IsTablet";
 import LoadingHome from "../../components/LoadingHome";
