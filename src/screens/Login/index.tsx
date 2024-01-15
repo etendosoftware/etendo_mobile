@@ -22,13 +22,13 @@ import {
   selectSelectedUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
-  setStoredEnviromentsUrl
+  setStoredEnviromentsUrl,
 } from "../../../redux/user";
 import {
   setIsDemo,
   setLoadingScreen,
   setError,
-  selectError
+  selectError,
 } from "../../../redux/window";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "../../utils/Toast";
@@ -48,7 +48,7 @@ const backgroundTabletImg = require("../../img/tablet-background.png");
 const backgroundMobileImg = require("../../img/background.png");
 
 // Main functional component of the Login screen
-const LoginFunctional = (props) => {
+const LoginFunctional = props => {
   // Initializing the state variables
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -194,7 +194,7 @@ const LoginFunctional = (props) => {
       dispatch(setIsDemo(true));
       await AsyncStorage.setItem("isDemoTry", References.YES);
       const storedEnviromentsUrl = await AsyncStorage.getItem(
-        "storedEnviromentsUrl"
+        "storedEnviromentsUrl",
       );
 
       const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
@@ -204,8 +204,8 @@ const LoginFunctional = (props) => {
       dispatch(
         setStoredEnviromentsUrl([
           ...storedEnviromentsUrlParsed,
-          References.DemoUrl
-        ])
+          References.DemoUrl,
+        ]),
       );
     } catch (error) {
       Toast("LoginScreen:NetworkError");
@@ -246,7 +246,7 @@ const LoginFunctional = (props) => {
           width: deviceIsATablet ? "50%" : "90%",
           justifyContent: "center",
           alignItems: "center",
-          alignSelf: "center"
+          alignSelf: "center",
         }}
       >
         <Dialog.Content>
@@ -259,7 +259,7 @@ const LoginFunctional = (props) => {
               backgroundColor: defaultTheme.colors.accent,
               width: "20%",
               alignSelf: "flex-end",
-              marginRight: 20
+              marginRight: 20,
             }}
           >
             <Button style={{ width: "100%", alignItems: "center" }}>Ok</Button>
@@ -281,7 +281,7 @@ const LoginFunctional = (props) => {
       <View
         style={[
           styles.generalContainer,
-          { height: Dimensions.get("window").height }
+          { height: Dimensions.get("window").height },
         ]}
       >
         <View style={styles.container}>
@@ -329,7 +329,7 @@ const LoginFunctional = (props) => {
               <Input
                 typeField={"textInput"}
                 value={username}
-                onChangeText={(username) => {
+                onChangeText={username => {
                   setUsername(username);
                   if (error) dispatch(setError(false));
                 }}
@@ -349,7 +349,7 @@ const LoginFunctional = (props) => {
               <Input
                 typeField={"textInputPassword"}
                 value={password}
-                onChangeText={(password) => {
+                onChangeText={password => {
                   setPassword(password);
                   if (error) dispatch(setError(false));
                 }}
@@ -386,7 +386,7 @@ const LoginFunctional = (props) => {
   );
 };
 
-const Login = (props) => {
+const Login = props => {
   return <LoginFunctional {...props} />;
 };
 export default Login;

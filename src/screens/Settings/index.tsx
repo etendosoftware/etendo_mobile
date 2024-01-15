@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import locale from "../../i18n/locale";
 import { withTheme, Dialog } from "react-native-paper";
@@ -16,7 +16,7 @@ import {
   setUrl as setUrlOB,
   formatUrl,
   resetLocalUrl,
-  formatEnvironmentUrl
+  formatEnvironmentUrl,
 } from "../../ob-api/ob";
 import { version } from "../../../package.json";
 import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
@@ -39,7 +39,7 @@ import {
   selectToken,
   setContextPathUrl,
   setSelectedEnvironmentUrl,
-  setSelectedUrl
+  setSelectedUrl,
 } from "../../../redux/user";
 import { useUser } from "../../../hook/useUser";
 import { changeLanguage } from "../../helpers/getLanguajes";
@@ -48,10 +48,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { References } from "../../constants/References";
 import { selectIsDemo } from "../../../redux/window";
 import { useEtrest } from "../../../hook/useEtrest";
-import { Toast } from "../../utils/Toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const Settings = (props) => {
+const Settings = props => {
   // Declare a variable 'listViewRef' that will hold a reference to the KeyboardAwareScrollView component
   let listViewRef: KeyboardAwareScrollView;
 
@@ -90,7 +89,7 @@ const Settings = (props) => {
   const {
     loadEnviromentsUrl,
     saveEnviromentsUrl,
-    setCurrentLanguage
+    setCurrentLanguage,
   } = useUser();
 
   useEffect(() => {
@@ -151,7 +150,7 @@ const Settings = (props) => {
 
   const deleteUrl = async (item: string) => {
     const storedEnviromentsUrl = await loadEnviromentsUrl();
-    let filteredItems = storedEnviromentsUrl.filter((url) => url !== item);
+    let filteredItems = storedEnviromentsUrl.filter(url => url !== item);
     await saveEnviromentsUrl(filteredItems);
     setStoredDataUrl(filteredItems);
     if (selectedUrl == item) {
@@ -179,7 +178,7 @@ const Settings = (props) => {
   };
 
   // This function is responsible for setting the logo URI based on the current URL
-  const updateLogoURI = useCallback((currentUrl) => {
+  const updateLogoURI = useCallback(currentUrl => {
     if (!currentUrl) {
       setLogoURI(defaultLogo);
       return;
@@ -193,7 +192,7 @@ const Settings = (props) => {
       () => {
         setHasErrorLogo(true);
         setLogoURI(notFoundLogo);
-      }
+      },
     );
   }, []);
 
@@ -248,7 +247,7 @@ const Settings = (props) => {
   useEffect(() => {
     if (data?.roleId && token) {
       Promise.all([getRoleName(data)])
-        .then((values) => {
+        .then(values => {
           const [role] = values;
           setRole(role);
         })
@@ -263,13 +262,13 @@ const Settings = (props) => {
       "keyboardDidShow",
       () => {
         if (!isKeyboardVisible) setIsKeyboardVisible(true);
-      }
+      },
     );
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
       () => {
         if (isKeyboardVisible) setIsKeyboardVisible(false);
-      }
+      },
     );
 
     return () => {
@@ -323,7 +322,7 @@ const Settings = (props) => {
               }}
               disabled={!!token}
               displayKey="value"
-              dataPicker={storedDataUrl.map((data) => ({ value: data }))}
+              dataPicker={storedDataUrl.map(data => ({ value: data }))}
               height={43}
               centerText={true}
               showOptionsAmount={6}
@@ -414,7 +413,7 @@ const Settings = (props) => {
                     style={{
                       fontSize: 25,
                       fontWeight: "700",
-                      color: PRIMARY_100
+                      color: PRIMARY_100,
                     }}
                   >
                     {locale.t("Settings:AddNewURL")}
@@ -429,7 +428,7 @@ const Settings = (props) => {
                         typeField={"textInput"}
                         placeholder={locale.t("Settings:InputPlaceholder")}
                         value={valueEnvironmentUrl}
-                        onChangeText={(valueEnvUrl) => {
+                        onChangeText={valueEnvUrl => {
                           setValueEnvironmentUrl(valueEnvUrl);
                         }}
                         height={50}
@@ -443,10 +442,10 @@ const Settings = (props) => {
                       <Input
                         typeField="textInput"
                         placeholder={locale.t(
-                          "Settings:ContextPathPlaceholder"
+                          "Settings:ContextPathPlaceholder",
                         )}
                         value={contextPathUrl}
-                        onChangeText={(value) =>
+                        onChangeText={value =>
                           dispatch(setContextPathUrl(value))
                         }
                         height={50}
