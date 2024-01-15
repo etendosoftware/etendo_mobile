@@ -1,5 +1,5 @@
 import React from "react";
-import CardDropdown from "etendo-ui-library/dist-native/components/cards/cardDropdown/CardDropdown";
+import CardDropdown from "etendo-ui-library/dist-native/components/cards/components/cardDropdown/CardDropdown";
 import { View } from "react-native";
 import { styles } from "./styles";
 
