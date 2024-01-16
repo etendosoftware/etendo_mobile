@@ -1,20 +1,20 @@
-import React, { useEffect } from "react";
-import { LoadingScreen } from "./src/components";
-import { Provider as PaperProvider } from "react-native-paper";
-import { NavigationContainer } from "@react-navigation/native";
-import { defaultTheme } from "./src/themes";
+import React, { useEffect } from 'react';
+import { LoadingScreen } from './src/components';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { NavigationContainer } from '@react-navigation/native';
+import { defaultTheme } from './src/themes';
 
-import HomeStack from "./src/navigation/HomeStack";
-import LoginStack from "./src/navigation/LoginStack";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Toast from "react-native-toast-message";
-import { useAppDispatch, useAppSelector } from "./redux";
-import { selectData, selectToken, selectUser } from "./redux/user";
-import { useUser } from "./hook/useUser";
-import { languageDefault } from "./src/helpers/getLanguajes";
-import { selectLoadingScreen, setLoadingScreen } from "./redux/window";
-import { Camera } from "react-native-vision-camera";
-import { deviceOrientation } from "./src/utils";
+import HomeStack from './src/navigation/HomeStack';
+import LoginStack from './src/navigation/LoginStack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAppDispatch, useAppSelector } from './redux';
+import { selectData, selectToken, selectUser } from './redux/user';
+import { useUser } from './hook/useUser';
+import { languageDefault } from './src/helpers/getLanguajes';
+import { selectLoadingScreen, setLoadingScreen } from './redux/window';
+import { Camera } from 'react-native-vision-camera';
+import { deviceOrientation } from './src/utils';
+import { Alert } from 'etendo-ui-library';
 
 interface Props {}
 type RootStackParamList = {
@@ -77,7 +77,7 @@ const App: React.FC<Props> = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast />
+      <Alert />
     </PaperProvider>
   );
 };
