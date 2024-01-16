@@ -1,11 +1,15 @@
-import packages from "../components/packages";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isTablet } from "../../hook/isTablet";
-import Orientation from "react-native-orientation-locker";
-import { Toast } from "./Toast";
-import { storeKey } from "./KeyStorage";
-import NetInfo from "@react-native-community/netinfo";
-import { References } from "../constants/References";
+import packages from '../components/packages';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isTablet } from '../../hook/isTablet';
+import Orientation from 'react-native-orientation-locker';
+import { storeKey } from './KeyStorage';
+import NetInfo from '@react-native-community/netinfo';
+import { References } from '../constants/References';
+import {
+  show,
+  setAlertDefaultDuration,
+} from 'etendo-ui-library/dist-native/components/alert/AlertManager';
+import locale from '../i18n/locale';
 
 function getParsedModule(code: any, moduleName: any, packages: any) {
   try {
@@ -15,7 +19,7 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
         if (!(name in _this) && moduleName === name) {
           let module = { exports: {} };
           _this[name] = () => module;
-          let wrapper = Function("require, exports, module", code);
+          let wrapper = Function('require, exports, module', code);
           wrapper(require, module.exports, module);
         } else if (!(name in _this)) {
           console.error(`Module '${name}' not found`);
@@ -35,10 +39,8 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
 }
 
 export async function fetchComponent(id: any, url: any, navigation: any) {
+  setAlertDefaultDuration(7000);
   const fullUrl = `${url}/${id}?timestamp=${+new Date()}`;
-  const toast = () => {
-    return Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
-  };
   async function isConnected() {
     try {
       const response = await fetch(fullUrl);
@@ -51,29 +53,29 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
   if (!connection) {
     return {
       default: () => {
-        navigation.navigate("Home");
-        Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
-      }
+        navigation.navigate('Home');
+        show(locale.t('LoginScreen:NetworkError'), 'error');
+      },
     };
   }
   try {
-    const responseChange = await fetch(fullUrl, { method: "HEAD" });
-    const lastModifiedNew = responseChange.headers.get("last-modified");
+    const responseChange = await fetch(fullUrl, { method: 'HEAD' });
+    const lastModifiedNew = responseChange.headers.get('last-modified');
 
     const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
     const dateLastDownBundle = await AsyncStorage.getItem(
-      dateLastDownBundleKey
+      dateLastDownBundleKey,
     );
 
     let component;
     if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
       const response = await fetch(fullUrl);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       const data = await response.text();
       await AsyncStorage.setItem(id, data);
-      const date = responseChange.headers.get("date");
+      const date = responseChange.headers.get('date');
       await AsyncStorage.setItem(dateLastDownBundleKey, date);
       storeKey(dateLastDownBundleKey);
       component = { default: getParsedModule(data, id, packages) };
@@ -81,17 +83,17 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
       const existingCode = await AsyncStorage.getItem(id);
       if (existingCode) {
         component = {
-          default: getParsedModule(existingCode, id, packages)
+          default: getParsedModule(existingCode, id, packages),
         };
       } else {
-        throw new Error("Component not found in storage");
+        throw new Error('Component not found in storage');
       }
     }
     return component.default;
   } catch (error) {
     return () => {
-      navigation.navigate("Home");
-      Toast("LoginScreen:NetworkError", { visibilityTime: 7000 });
+      navigation.navigate('Home');
+      show(locale.t('LoginScreen:NetworkError'), 'error');
     };
   }
 }
@@ -112,10 +114,10 @@ export const internetIsAvailable = async () => {
 
 export const getBasePathContext = (
   isDemoTry: boolean,
-  isDev: boolean
+  isDev: boolean,
 ): string => {
   if (isDemoTry) {
-    return "";
+    return '';
   }
 
   return isDev ? References.SubappContextPath : References.EtendoContextPath;
