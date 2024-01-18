@@ -1,58 +1,58 @@
 // Importing required modules and libraries
-import React, { useState } from "react";
-import { View, Image, TouchableOpacity, Dimensions } from "react-native";
-import locale from "../../i18n/locale";
-import { Dialog, Text, Button } from "react-native-paper";
-import { Snackbar } from "../../globals";
-import { Version } from "../../ob-api/objects";
-import { getUrl, setUrl as setUrlOB } from "../../ob-api/ob";
-import { defaultTheme } from "../../themes";
-import Input from "etendo-ui-library/dist-native/components/input/Input";
-import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
-import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import { isTablet, isTabletSmall } from "../../helpers/IsTablet";
-import styleSheet from "./styles";
-import { deviceStyles as styles } from "./deviceStyles";
-import { References } from "../../constants/References";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useUser } from "../../../hook/useUser";
-import { useAppSelector, useAppDispatch } from "../../../redux";
+import React, { useState } from 'react';
+import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import locale from '../../i18n/locale';
+import { Dialog, Text, Button } from 'react-native-paper';
+import { Snackbar } from '../../globals';
+import { Version } from '../../ob-api/objects';
+import { getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
+import { defaultTheme } from '../../themes';
+import Input from 'etendo-ui-library/dist-native/components/input/Input';
+import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
+import { ConfigurationIcon } from 'etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon';
+import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
+import { isTablet, isTabletSmall } from '../../helpers/IsTablet';
+import styleSheet from './styles';
+import { deviceStyles as styles } from './deviceStyles';
+import { References } from '../../constants/References';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useUser } from '../../../hook/useUser';
+import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
   selectData,
   selectSelectedUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
-  setStoredEnviromentsUrl
-} from "../../../redux/user";
+  setStoredEnviromentsUrl,
+} from '../../../redux/user';
 import {
   setIsDemo,
   setLoadingScreen,
   setError,
-  selectError
-} from "../../../redux/window";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Toast } from "../../utils/Toast";
-import { internetIsAvailable } from "../../utils";
-import { OBRest } from "etrest";
+  selectError,
+} from '../../../redux/window';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { internetIsAvailable } from '../../utils';
+import { OBRest } from 'etrest';
 
 // Constants
-const MIN_CORE_VERSION = "3.0.202201";
-const windowDimensions = Dimensions.get("window");
+const MIN_CORE_VERSION = '3.0.202201';
+const windowDimensions = Dimensions.get('window');
 const url = getUrl();
 
 const deviceIsATablet = isTablet();
 const deviceIsATabletSmall = isTabletSmall();
 
 const { AdminUsername, AdminPassword } = References;
-const backgroundTabletImg = require("../../img/tablet-background.png");
-const backgroundMobileImg = require("../../img/background.png");
+const backgroundTabletImg = require('../../img/tablet-background.png');
+const backgroundMobileImg = require('../../img/background.png');
 
 // Main functional component of the Login screen
-const LoginFunctional = (props) => {
+const LoginFunctional = props => {
   // Initializing the state variables
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [coreVersion, setCoreVersion] = useState<string>("");
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [coreVersion, setCoreVersion] = useState<string>('');
   const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
 
   const data = useAppSelector(selectData);
@@ -74,13 +74,13 @@ const LoginFunctional = (props) => {
   const submitLogin = async () => {
     try {
       if (!(await internetIsAvailable())) {
-        Toast("NoInternetConnection");
+        show(locale.t('NoInternetConnection'), 'error');
         return;
       }
 
       try {
         if (!selectedUrl) {
-          throw new Error("LoginScreen:URLNotFound");
+          throw new Error('LoginScreen:URLNotFound');
         }
         if (validateCredentials()) {
           demo();
@@ -88,7 +88,7 @@ const LoginFunctional = (props) => {
         dispatch(setError(false));
         const isCredentialsValid = await checkCredentials(username, password);
         if (!isCredentialsValid) {
-          Toast("ErrorUserPassword");
+          show(locale.t('ErrorUserPassword'), 'error');
           return;
         }
 
@@ -101,15 +101,15 @@ const LoginFunctional = (props) => {
       } catch (error) {
         dispatch(setError(true));
         dispatch(setLoadingScreen(false));
-        if (error.message.includes("Invalid user name or password")) {
-          Toast("ErrorUserPassword");
+        if (error.message.includes('Invalid user name or password')) {
+          show(locale.t('ErrorUserPassword'), 'error');
         }
-        if (error.message.includes("OBRest instance not initialized")) {
-          Toast("LoginScreen:URLNotFound");
-        } else if (error.message.includes("Network Error")) {
-          Toast("LoginScreen:NetworkError");
+        if (error.message.includes('OBRest instance not initialized')) {
+          show(locale.t('LoginScreen:URLNotFound'), 'error');
+        } else if (error.message.includes('Network Error')) {
+          show(locale.t('LoginScreen:NetworkError'), 'error');
         } else {
-          Toast(error.message);
+          show(error.message, 'error');
         }
       }
     } catch (error) {
@@ -141,8 +141,8 @@ const LoginFunctional = (props) => {
   const versionCompare = (v1: any, v2: any, options?: any) => {
     let lexicographical = options && options.lexicographical,
       zeroExtend = options && options.zeroExtend,
-      v1parts = v1.split("."),
-      v2parts = v2.split(".");
+      v1parts = v1.split('.'),
+      v2parts = v2.split('.');
     function isValidPart(x: string) {
       return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
     }
@@ -150,8 +150,8 @@ const LoginFunctional = (props) => {
       return NaN;
     }
     if (zeroExtend) {
-      while (v1parts.length < v2parts.length) v1parts.push("0");
-      while (v2parts.length < v1parts.length) v2parts.push("0");
+      while (v1parts.length < v2parts.length) v1parts.push('0');
+      while (v2parts.length < v1parts.length) v2parts.push('0');
     }
     if (!lexicographical) {
       v1parts = v1parts.map(Number);
@@ -178,23 +178,23 @@ const LoginFunctional = (props) => {
   const demo = async () => {
     try {
       if (!(await internetIsAvailable())) {
-        Toast("NoInternetConnection");
+        show(locale.t('NoInternetConnection'), 'error');
         return;
       }
 
       dispatch(setLoadingScreen(true));
 
       await setUrlOB(References.DemoUrl);
-      await AsyncStorage.setItem("baseUrl", References.DemoUrl);
-      await AsyncStorage.setItem("selectedUrl", References.DemoUrl);
+      await AsyncStorage.setItem('baseUrl', References.DemoUrl);
+      await AsyncStorage.setItem('selectedUrl', References.DemoUrl);
       await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
       dispatch(setSelectedUrl(References.DemoUrl));
       dispatch(setSelectedEnvironmentUrl(References.DemoUrl));
       dispatch(setIsDemo(true));
-      await AsyncStorage.setItem("isDemoTry", References.YES);
+      await AsyncStorage.setItem('isDemoTry', References.YES);
       const storedEnviromentsUrl = await AsyncStorage.getItem(
-        "storedEnviromentsUrl"
+        'storedEnviromentsUrl',
       );
 
       const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
@@ -204,11 +204,11 @@ const LoginFunctional = (props) => {
       dispatch(
         setStoredEnviromentsUrl([
           ...storedEnviromentsUrlParsed,
-          References.DemoUrl
-        ])
+          References.DemoUrl,
+        ]),
       );
     } catch (error) {
-      Toast("LoginScreen:NetworkError");
+      show(locale.t('LoginScreen:NetworkError'), 'error');
       throw error;
     } finally {
       dispatch(setLoadingScreen(false));
@@ -217,8 +217,8 @@ const LoginFunctional = (props) => {
 
   const welcomeText = (): string => {
     return deviceIsATablet
-      ? locale.t("Welcome")
-      : locale.t("WelcomeToEtendoLogin");
+      ? locale.t('Welcome')
+      : locale.t('WelcomeToEtendoLogin');
   };
 
   const getWelcomeContainer = () => {
@@ -242,27 +242,27 @@ const LoginFunctional = (props) => {
       <Dialog
         visible={showChangePassword}
         style={{
-          height: "25%",
-          width: deviceIsATablet ? "50%" : "90%",
-          justifyContent: "center",
-          alignItems: "center",
-          alignSelf: "center"
+          height: '25%',
+          width: deviceIsATablet ? '50%' : '90%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          alignSelf: 'center',
         }}
       >
         <Dialog.Content>
-          <Text allowFontScaling={false}>{locale.t("Recover_password")}</Text>
+          <Text allowFontScaling={false}>{locale.t('Recover_password')}</Text>
         </Dialog.Content>
-        <View style={{ width: "100%", alignSelf: "center" }}>
+        <View style={{ width: '100%', alignSelf: 'center' }}>
           <TouchableOpacity
             onPress={() => setShowChangePassword(false)}
             style={{
               backgroundColor: defaultTheme.colors.accent,
-              width: "20%",
-              alignSelf: "flex-end",
-              marginRight: 20
+              width: '20%',
+              alignSelf: 'flex-end',
+              marginRight: 20,
             }}
           >
-            <Button style={{ width: "100%", alignItems: "center" }}>Ok</Button>
+            <Button style={{ width: '100%', alignItems: 'center' }}>Ok</Button>
           </TouchableOpacity>
         </View>
       </Dialog>
@@ -281,7 +281,7 @@ const LoginFunctional = (props) => {
       <View
         style={[
           styles.generalContainer,
-          { height: Dimensions.get("window").height }
+          { height: Dimensions.get('window').height },
         ]}
       >
         <View style={styles.container}>
@@ -290,13 +290,13 @@ const LoginFunctional = (props) => {
               <ButtonUI
                 typeStyle="terciary"
                 onPress={() => demo()}
-                text={locale.t("DemoTry")}
+                text={locale.t('DemoTry')}
               />
             </View>
             <View style={styles.settingsImageContainer}>
               <ButtonUI
-                onPress={() => props.navigation.navigate("Settings")}
-                text={locale.t("Settings")}
+                onPress={() => props.navigation.navigate('Settings')}
+                text={locale.t('Settings')}
                 typeStyle="whiteBorder"
                 iconLeft={
                   <ConfigurationIcon style={styles.configurationImage} />
@@ -307,33 +307,33 @@ const LoginFunctional = (props) => {
           <View style={styles.etendoLogoContainer}>
             {!deviceIsATabletSmall && (
               <Image
-                source={require("../../../assets/etendo-logotype.png")}
+                source={require('../../../assets/etendo-logotype.png')}
                 style={styles.etendoLogotype}
               />
             )}
             <View style={getWelcomeContainer()}>
               <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
               <Image
-                source={require("../../img/stars.png")}
+                source={require('../../img/stars.png')}
                 style={styles.starsImage}
               />
             </View>
             <Text style={styles.credentialsText}>
-              {locale.t("EnterCredentials")}
+              {locale.t('EnterCredentials')}
             </Text>
           </View>
 
           <View style={styles.containerInputs}>
             <View style={styles.textInputStyle}>
-              <Text style={styles.textInputsHolders}>{locale.t("User")}</Text>
+              <Text style={styles.textInputsHolders}>{locale.t('User')}</Text>
               <Input
-                typeField={"textInput"}
+                typeField={'textInput'}
                 value={username}
-                onChangeText={(username) => {
+                onChangeText={username => {
                   setUsername(username);
                   if (error) dispatch(setError(false));
                 }}
-                placeholder={locale.t("User")}
+                placeholder={locale.t('User')}
                 fontSize={16}
                 height={48}
                 isError={error}
@@ -344,16 +344,16 @@ const LoginFunctional = (props) => {
 
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>
-                {locale.t("Password")}
+                {locale.t('Password')}
               </Text>
               <Input
-                typeField={"textInputPassword"}
+                typeField={'textInputPassword'}
                 value={password}
-                onChangeText={(password) => {
+                onChangeText={password => {
                   setPassword(password);
                   if (error) dispatch(setError(false));
                 }}
-                placeholder={locale.t("Password")}
+                placeholder={locale.t('Password')}
                 fontSize={16}
                 height={48}
                 isError={error}
@@ -365,8 +365,8 @@ const LoginFunctional = (props) => {
           <View style={styles.loginButton}>
             <ButtonUI
               onPress={submitLogin}
-              text={locale.t("Log in")}
-              typeStyle={"primary"}
+              text={locale.t('Log in')}
+              typeStyle={'primary'}
               width="100%"
               height={50}
             />
@@ -386,7 +386,7 @@ const LoginFunctional = (props) => {
   );
 };
 
-const Login = (props) => {
+const Login = props => {
   return <LoginFunctional {...props} />;
 };
 export default Login;
