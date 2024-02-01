@@ -1,19 +1,20 @@
-import React from "react";
-import { View } from "react-native";
+import React from 'react';
+import { Text, View } from 'react-native';
 import {
   NavigationContainer,
-  useNavigationContainerRef
-} from "@react-navigation/native";
-import DynamicComponent from "./DynamicComponent";
-import { Etendo } from "../helpers/Etendo";
+  useNavigationContainerRef,
+} from '@react-navigation/native';
+import DynamicComponent from './DynamicComponent';
+import { Etendo } from '../helpers/Etendo';
 import {
   selectData,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage,
-  selectToken
-} from "../../redux/user";
-import { useAppSelector } from "../../redux";
-import { selectIsDemo } from "../../redux/window";
+  selectToken,
+} from '../../redux/user';
+import { useAppSelector } from '../../redux';
+import { selectIsDemo } from '../../redux/window';
+import Camera from './Camera';
 
 const HomePage = ({ route, navigation }: any) => {
   const token = useAppSelector(selectToken);
@@ -46,6 +47,7 @@ const HomePage = ({ route, navigation }: any) => {
               dataUser={data}
               isDev={!!route.params.isDev}
               isDemoTry={isDemoTry}
+              Camera={Camera}
             />
           </NavigationContainer>
         </View>
