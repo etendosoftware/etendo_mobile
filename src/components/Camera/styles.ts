@@ -8,20 +8,19 @@ export const styles = StyleSheet.create({
   icon: {
     height: 15,
   },
-  full: {
-    width: '100%',
+  frameProsessor: {
     height: '100%',
+    width: '100%',
+    backgroundColor: 'transparent',
+    zIndex: -1,
+    position: 'relative',
   },
-  centerColumn: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  centerRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  buttonPosition: {
+    position: 'absolute',
+    bottom: 30,
+    width: isTablet ? '20%' : '60%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignSelf: 'center',
   },
 });

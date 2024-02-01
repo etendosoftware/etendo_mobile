@@ -4,7 +4,6 @@ import CameraBarCode from '../CameraBarCode';
 import { Button as ButtonUI, CancelIcon } from 'etendo-ui-library';
 import { styles } from './styles';
 import locale from '../../i18n/locale';
-import { isTablet } from '../../helpers/IsTablet';
 
 interface CameraProps {
   show: boolean;
@@ -15,30 +14,10 @@ interface CameraProps {
 const Camera: React.FC<CameraProps> = ({ show, setShow, handleReadCode }) => {
   return show ? (
     <Modal animationType="slide" transparent={true} visible={show}>
-      <View
-        style={{
-          height: '100%',
-          width: '100%',
-          backgroundColor: 'transparent',
-          zIndex: -1,
-          position: 'relative',
-        }}
-      >
+      <View style={styles.frameProsessor}>
         <CameraBarCode ableToRead={show} handleReadCode={handleReadCode} />
       </View>
-      <View
-        style={[
-          styles.buttonContainer,
-          {
-            position: 'absolute',
-            bottom: 30,
-            width: isTablet ? '20%' : '60%',
-            height: '100%',
-            justifyContent: 'flex-end',
-            alignSelf: 'center',
-          },
-        ]}
-      >
+      <View style={[styles.buttonContainer, styles.buttonPosition]}>
         <ButtonUI
           width="100%"
           height={50}
