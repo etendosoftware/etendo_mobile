@@ -18,7 +18,6 @@ export const styles = StyleSheet.create({
   buttonPosition: {
     position: 'absolute',
     bottom: 30,
-    width: isTablet ? '20%' : '60%',
     height: '100%',
     justifyContent: 'flex-end',
     alignSelf: 'center',
