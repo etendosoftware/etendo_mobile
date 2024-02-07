@@ -19,7 +19,7 @@ const Camera: React.FC<CameraProps> = ({ show, setShow, handleReadCode }) => {
       </View>
       <View style={[styles.buttonContainer, styles.buttonPosition]}>
         <ButtonUI
-          width="100%"
+          width={130}
           height={50}
           typeStyle="primary"
           onPress={() => {
