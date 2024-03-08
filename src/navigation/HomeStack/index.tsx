@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { DrawerCurrentIndexType } from "etendo-ui-library/dist-native/components/navbar/Navbar.types";
-import { SafeAreaView, StatusBar, View, Image } from "react-native";
-import { PRIMARY_100 } from "../../styles/colors";
-import Navbar from "etendo-ui-library/dist-native/components/navbar/Navbar";
-import locale from "../../i18n/locale";
-import Home from "../../screens/Home";
-import Settings from "../../screens/Settings";
-import Profile from "../../screens/Profile";
-import DrawerLateral from "etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral";
-import { UserNoBorderIcon } from "etendo-ui-library/dist-native/assets/images/icons/UserNoBorderIcon";
-import { ConfigurationIcon } from "etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon";
-import pkg from "../../../package.json";
+import React, { useEffect, useState } from 'react';
+import { DrawerCurrentIndexType } from 'etendo-ui-library/dist-native/components/navbar/Navbar.types';
+import { SafeAreaView, StatusBar, View, Image } from 'react-native';
+import { PRIMARY_100 } from '../../styles/colors';
+import Navbar from 'etendo-ui-library/dist-native/components/navbar/Navbar';
+import locale from '../../i18n/locale';
+import Home from '../../screens/Home';
+import Settings from '../../screens/Settings';
+import Profile from '../../screens/Profile';
+import DrawerLateral from 'etendo-ui-library/dist-native/components/navbar/components/DrawerLateral/DrawerLateral';
+import { UserIcon } from 'etendo-ui-library/dist-native/assets/images/icons';
+import pkg from '../../../package.json';
 import {
   StackNavigationProp,
-  createStackNavigator
-} from "@react-navigation/stack";
-import MainScreen from "../../components/MainScreen";
-import styles from "./style";
-import { useFocusEffect, useNavigationState } from "@react-navigation/native";
-import { isTablet } from "../../helpers/IsTablet";
-import { drawerData } from "./dataDrawer";
-import { selectBindaryImg, selectData } from "../../../redux/user";
-import { useAppDispatch, useAppSelector } from "../../../redux";
-import { useUser } from "../../../hook/useUser";
-import { selectMenuItems, setIsSubapp } from "../../../redux/window";
+  createStackNavigator,
+} from '@react-navigation/stack';
+import MainScreen from '../../components/MainScreen';
+import styles from './style';
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
+import { isTablet } from '../../helpers/IsTablet';
+import { drawerData } from './dataDrawer';
+import { selectBindaryImg, selectData } from '../../../redux/user';
+import { useAppDispatch, useAppSelector } from '../../../redux';
+import { useUser } from '../../../hook/useUser';
+import { selectMenuItems, setIsSubapp } from '../../../redux/window';
 import {
   changeLanguage,
-  languageCurrentInitialize
-} from "../../helpers/getLanguajes";
+  languageCurrentInitialize,
+} from '../../helpers/getLanguajes';
+import { SettingIcon } from 'etendo-ui-library';
 
 type RootStackParamList = {
   Home: any;
@@ -36,7 +36,7 @@ type RootStackParamList = {
 };
 
 type HomeStackProps = {
-  navigation: StackNavigationProp<RootStackParamList, "Home">;
+  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -49,7 +49,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
 
   const { logout } = useUser();
   const getActiveRouteName = (state: any): string => {
-    if (!state.routes) return "";
+    if (!state.routes) return '';
 
     const route = state.routes[state.index];
 
@@ -60,7 +60,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     return route.name;
   };
 
-  const routeName = getActiveRouteName(useNavigationState((state) => state));
+  const routeName = getActiveRouteName(useNavigationState(state => state));
 
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
@@ -68,10 +68,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState<DrawerCurrentIndexType>({
     indexSection: 0,
     indexSubSection: 0,
-    indexSubSectionItem: 0
+    indexSubSectionItem: 0,
   });
-  const validRoutesTablet = ["Settings", "Profile", "Home", "HomeStack"];
-  const validRoutesMobile = ["Home", "HomeStack"];
+  const validRoutesTablet = ['Settings', 'Profile', 'Home', 'HomeStack'];
+  const validRoutesMobile = ['Home', 'HomeStack'];
 
   const homeStackNavBarTabletValidator = (routeName: string) => {
     return validRoutesTablet.includes(routeName);
@@ -88,7 +88,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
       const getLanguageLocal = async () => {
         await changeLanguage(
           languageCurrentInitialize.get(),
-          setCurrentLanguage(languageCurrentInitialize.get())
+          setCurrentLanguage(languageCurrentInitialize.get()),
         );
       };
       locale.initTranslation();
@@ -104,7 +104,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         setCurrentIndex({
           indexSection: 0,
           indexSubSection: 0,
-          indexSubSectionItem: 0
+          indexSubSectionItem: 0,
         });
       } else {
         setShowNavbar(false);
@@ -131,9 +131,9 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   }, [menuItems]);
 
   const onOptionPressHandle = async (
-    route: keyof RootStackParamList | "logout"
+    route: keyof RootStackParamList | 'logout',
   ) => {
-    if (route === "logout") {
+    if (route === 'logout') {
       await logout();
       return;
     }
@@ -147,41 +147,41 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
         <StatusBar barStyle="light-content" backgroundColor={PRIMARY_100} />
         {showNavbar && (
           <Navbar
-            title={locale.t("WelcomeToEtendoHome")}
+            title={locale.t('WelcomeToEtendoHome')}
             isVisibleMenu={showNavbar}
             profileImage={
               bindaryImg && (
                 <Image
                   source={{
-                    uri: `data:image/jpeg;base64,${bindaryImg}`
+                    uri: `data:image/jpeg;base64,${bindaryImg}`,
                   }}
                 />
               )
             }
             profileOptions={[
               {
-                title: locale.t("Profile"),
-                image: <UserNoBorderIcon />,
-                route: "Profile"
+                title: locale.t('Profile'),
+                image: <UserIcon />,
+                route: 'Profile',
               },
               {
-                title: locale.t("Settings"),
-                image: <ConfigurationIcon />,
-                route: "Settings"
-              }
+                title: locale.t('Settings'),
+                image: <SettingIcon />,
+                route: 'Settings',
+              },
             ]}
             endOptions={[
               {
-                title: locale.t("Log out"),
-                route: "logout"
-              }
+                title: locale.t('Log out'),
+                route: 'logout',
+              },
             ]}
             onOptionSelectedProfile={async (route?: string) => {
               await onOptionPressHandle(route as keyof RootStackParamList);
             }}
             name={data?.username}
             onPressLogo={() => {
-              navigation.navigate("Home");
+              navigation.navigate('Home');
             }}
             onPressMenu={() => {
               setShowDrawer(true);
@@ -189,12 +189,12 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           />
         )}
         <Stack.Navigator
-          initialRouteName={"Home"}
+          initialRouteName={'Home'}
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name={"Settings"} component={Settings} />
-          <Stack.Screen name={"Profile"} component={Profile} />
+          <Stack.Screen name={'Settings'} component={Settings} />
+          <Stack.Screen name={'Profile'} component={Profile} />
           {menuItems && menuItems.length ? (
             menuItems?.map((menuItem: any, index: number) => {
               const params = { ...menuItem };
@@ -203,7 +203,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
               }
               return (
                 <Stack.Screen
-                  key={"drawerItems" + index}
+                  key={'drawerItems' + index}
                   name={menuItem.name}
                   component={
                     menuItem.component ? menuItem.component : MainScreen
@@ -223,7 +223,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             currentIndex={currentIndex}
             onOptionSelected={(
               route?: string,
-              currentIndex?: DrawerCurrentIndexType
+              currentIndex?: DrawerCurrentIndexType,
             ) => {
               setCurrentIndex(currentIndex);
               navigation.navigate(route as keyof RootStackParamList);
@@ -233,7 +233,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             onCloseDrawer={() => {
               setShowDrawer(false);
             }}
-            copyright={"Copyright @ 2023 Etendo"}
+            copyright={'Copyright @ 2023 Etendo'}
             version={pkg.version}
           />
         </View>
