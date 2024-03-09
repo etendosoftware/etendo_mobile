@@ -24,7 +24,7 @@ import { isTablet } from '../../helpers/IsTablet';
 import { BackIcon } from 'etendo-ui-library/dist-native/assets/images/icons/BackIcon';
 import { MoreIcon } from 'etendo-ui-library/dist-native/assets/images/icons/MoreIcon';
 import { deviceStyles as styles } from './deviceStyles';
-import { PRIMARY_100 } from '../../styles/colors';
+import { NEUTRAL_100, PRIMARY_100 } from '../../styles/colors';
 import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import { UrlItem } from '../../components/UrlItem';
 import { useAppSelector, useAppDispatch } from '../../../redux';
@@ -49,7 +49,7 @@ import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
 import { useEtrest } from '../../../hook/useEtrest';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CornerUpLeftIcon } from 'etendo-ui-library';
+import { CornerUpLeftIcon, XIcon } from 'etendo-ui-library';
 import { PlusIcon } from 'etendo-ui-library/dist-native/assets/images/icons';
 
 const Settings = props => {
@@ -405,9 +405,7 @@ const Settings = props => {
                       style={styles.buttonClose}
                       onPress={() => setShowChangeURLModal(false)}
                     >
-                      <Image
-                        source={require('../../../assets/icons/close.png')}
-                      />
+                      <XIcon fill={NEUTRAL_100} />
                     </TouchableOpacity>
                   </View>
 
@@ -462,7 +460,7 @@ const Settings = props => {
                             Keyboard.dismiss();
                             addUrl();
                           }}
-                          iconRight={<PlusIcon />}
+                          iconRight={<PlusIcon style={styles.iconImage} />}
                           text={
                             isUpdating
                               ? locale.t('Settings:UpdateLink')

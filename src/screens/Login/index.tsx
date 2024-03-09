@@ -9,7 +9,6 @@ import { getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
 import { defaultTheme } from '../../themes';
 import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
-import { ConfigurationIcon } from 'etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon';
 import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
 import { isTablet, isTabletSmall } from '../../helpers/IsTablet';
 import styleSheet from './styles';
@@ -34,6 +33,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { internetIsAvailable } from '../../utils';
 import { OBRest } from 'etrest';
+import { SettingIcon } from 'etendo-ui-library';
 
 // Constants
 const MIN_CORE_VERSION = '3.0.202201';
@@ -298,9 +298,7 @@ const LoginFunctional = props => {
                 onPress={() => props.navigation.navigate('Settings')}
                 text={locale.t('Settings')}
                 typeStyle="whiteBorder"
-                iconLeft={
-                  <ConfigurationIcon style={styles.configurationImage} />
-                }
+                iconLeft={<SettingIcon style={{ height: 20, width: 20 }} />}
               />
             </View>
           </View>
