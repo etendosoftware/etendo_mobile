@@ -33,7 +33,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { internetIsAvailable } from '../../utils';
 import { OBRest } from 'etrest';
-import { SettingIcon } from 'etendo-ui-library';
+import { SettingIcon, TextInput } from 'etendo-ui-library';
+import PasswordInput from 'etendo-ui-library/dist-native/components/inputBase/password-input/PasswordInput'
 
 // Constants
 const MIN_CORE_VERSION = '3.0.202201';
@@ -324,39 +325,28 @@ const LoginFunctional = props => {
           <View style={styles.containerInputs}>
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>{locale.t('User')}</Text>
-              <Input
-                typeField={'textInput'}
+              <TextInput
                 value={username}
                 onChangeText={username => {
                   setUsername(username);
                   if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t('User')}
-                fontSize={16}
-                height={48}
                 isError={error}
-                onFocus={() => scrollBottom()}
-                onPress={() => scrollBottom()}
               />
             </View>
-
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>
                 {locale.t('Password')}
               </Text>
-              <Input
-                typeField={'textInputPassword'}
+              <PasswordInput
                 value={password}
                 onChangeText={password => {
                   setPassword(password);
                   if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t('Password')}
-                fontSize={16}
-                height={48}
                 isError={error}
-                onFocus={() => scrollBottom()}
-                onPress={() => scrollBottom()}
               />
             </View>
           </View>

@@ -21,8 +21,6 @@ import {
 import { version } from '../../../package.json';
 import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
 import { isTablet } from '../../helpers/IsTablet';
-import { BackIcon } from 'etendo-ui-library/dist-native/assets/images/icons/BackIcon';
-import { MoreIcon } from 'etendo-ui-library/dist-native/assets/images/icons/MoreIcon';
 import { deviceStyles as styles } from './deviceStyles';
 import { NEUTRAL_100, PRIMARY_100 } from '../../styles/colors';
 import Input from 'etendo-ui-library/dist-native/components/input/Input';
@@ -49,7 +47,7 @@ import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
 import { useEtrest } from '../../../hook/useEtrest';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CornerUpLeftIcon, XIcon } from 'etendo-ui-library';
+import { CornerUpLeftIcon, DropdownInput, TextInput, XIcon } from 'etendo-ui-library';
 import { PlusIcon } from 'etendo-ui-library/dist-native/assets/images/icons';
 
 const Settings = props => {
@@ -87,6 +85,8 @@ const Settings = props => {
   const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
 
   const {
     loadEnviromentsUrl,
@@ -106,6 +106,7 @@ const Settings = props => {
       } else {
         await AsyncStorage.removeItem('selectedUrl');
       }
+      setRefresh(prevState => !prevState);
     };
     fetchUrlAndLogo();
   }, [hasErrorLogo]);
@@ -281,6 +282,7 @@ const Settings = props => {
 
   return (
     <KeyboardAwareScrollView
+      key={refresh}
       style={styles.fullContainer}
       ref={(ref: KeyboardAwareScrollView) => {
         listViewRef = ref;
@@ -306,8 +308,7 @@ const Settings = props => {
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
             <Text style={styles.languageText}>{locale.t('Settings:URL')}</Text>
-            <Input
-              typeField="picker"
+            <DropdownInput
               placeholder={locale.t('Settings:InputPlaceholder')}
               value={
                 isDemoTry
@@ -318,17 +319,14 @@ const Settings = props => {
                   ? url
                   : null
               }
-              onOptionSelected={(option: any) => {
+              onSelect={(option: any) => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);
               }}
-              disabled={!!token}
+              isDisabled={!!token}
               displayKey="value"
-              dataPicker={storedDataUrl.map(data => ({ value: data }))}
-              height={43}
-              centerText={true}
-              showOptionsAmount={6}
-              placeholderPickerSearch={locale.t('Settings:Search')}
+              staticData={storedDataUrl.map(data => ({ value: data }))}
+              searchPlaceholder={locale.t('Settings:Search')}
             />
             {!token ? (
               <View style={styles.containerAddLinkStyle}>
@@ -336,7 +334,7 @@ const Settings = props => {
                   typeStyle="primary"
                   onPress={showChangeURLModalFn}
                   text={locale.t('Settings:NewLink')}
-                  iconRight={<MoreIcon />}
+                  iconRight={<PlusIcon />}
                 />
               </View>
             ) : (
@@ -372,22 +370,19 @@ const Settings = props => {
             <Text style={styles.languageText}>
               {locale.t('Settings:Language')}
             </Text>
-            <Input
-              typeField="picker"
+            <DropdownInput
               placeholder={locale.t('Settings:Language')}
               value={
                 displayLanguage
                   ? displayLanguage
                   : getLanguageName(selectSelectedLanguage)
               }
-              onOptionSelected={(option: any) => {
+              onSelect={(option: any) => {
                 const { label, value } = option;
                 handleLanguage(label, value);
               }}
               displayKey="label"
-              dataPicker={languagesList}
-              height={43}
-              centerText={true}
+              staticData={languagesList}
             />
           </View>
 
@@ -424,14 +419,12 @@ const Settings = props => {
                       <Text style={styles.urlEnvList}>
                         {locale.t('Settings:EnviromentURL')}
                       </Text>
-                      <Input
-                        typeField={'textInput'}
+                      <TextInput
                         placeholder={locale.t('Settings:InputPlaceholder')}
                         value={valueEnvironmentUrl}
                         onChangeText={valueEnvUrl => {
                           setValueEnvironmentUrl(valueEnvUrl);
                         }}
-                        height={50}
                       />
                     </View>
 
@@ -439,8 +432,7 @@ const Settings = props => {
                       <Text style={styles.urlContextPath}>
                         {locale.t('Settings:ContextPath')}
                       </Text>
-                      <Input
-                        typeField="textInput"
+                      <TextInput
                         placeholder={locale.t(
                           'Settings:ContextPathPlaceholder',
                         )}
@@ -448,7 +440,6 @@ const Settings = props => {
                         onChangeText={value =>
                           dispatch(setContextPathUrl(value))
                         }
-                        height={50}
                       />
 
                       <View style={{ marginTop: 10 }}>

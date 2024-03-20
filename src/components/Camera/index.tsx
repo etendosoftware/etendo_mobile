@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 import CameraBarCode from '../CameraBarCode';
-import { Button as ButtonUI, CancelIcon } from 'etendo-ui-library';
+import { Button as ButtonUI, XIcon } from 'etendo-ui-library';
 import { styles } from './styles';
 import locale from '../../i18n/locale';
 
@@ -26,7 +26,7 @@ const Camera: React.FC<CameraProps> = ({ show, setShow, handleReadCode }) => {
             setShow(false);
           }}
           text={locale.t('Common.cancel')}
-          iconLeft={<CancelIcon style={styles.icon} />}
+          iconLeft={<XIcon style={styles.icon} />}
         />
       </View>
     </Modal>
