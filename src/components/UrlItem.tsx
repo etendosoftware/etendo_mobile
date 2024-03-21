@@ -1,10 +1,17 @@
-import React, { useState } from "react";
-import { deviceStyles as styles } from "../screens/Settings/deviceStyles";
-import { View, Image, Text, TouchableOpacity } from "react-native";
-import { isTablet } from "../helpers/IsTablet";
-import { selectContextPathUrl, setContextPathUrl } from "../../redux/user";
-import { useAppDispatch, useAppSelector } from "../../redux";
-import { formatEnvironmentUrl } from "../ob-api/ob";
+import React, { useState } from 'react';
+import { deviceStyles as styles } from '../screens/Settings/deviceStyles';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { isTablet } from '../helpers/IsTablet';
+import { selectContextPathUrl, setContextPathUrl } from '../../redux/user';
+import { useAppDispatch, useAppSelector } from '../../redux';
+import { formatEnvironmentUrl } from '../ob-api/ob';
+import {
+  CheckIcon,
+  Edit2Icon,
+  Trash2Icon,
+  TrashIcon,
+  XIcon,
+} from 'etendo-ui-library';
 
 export const UrlItem = ({
   item,
@@ -15,7 +22,7 @@ export const UrlItem = ({
   url,
   setUrl,
   resetLocalUrl,
-  handleOptionSelected
+  handleOptionSelected,
 }) => {
   const dispatch = useAppDispatch();
   const prevContext = useAppSelector(selectContextPathUrl);
@@ -28,7 +35,7 @@ export const UrlItem = ({
     let slashCount = 0;
 
     while (slashCount < 3 && index < url.length) {
-      if (url.charAt(index) === "/") {
+      if (url.charAt(index) === '/') {
         slashCount++;
       }
       if (slashCount < 3) {
@@ -40,7 +47,7 @@ export const UrlItem = ({
       return url.substring(index);
     }
 
-    return "";
+    return '';
   };
 
   const handleEdit = () => {
@@ -85,12 +92,7 @@ export const UrlItem = ({
           handleOptionSelected({ value: item });
         }}
       >
-        {clickDelete && (
-          <Image
-            style={styles.iconImage}
-            source={require("../../assets/icons/trash.png")}
-          />
-        )}
+        {clickDelete && <Trash2Icon style={styles.iconImage} />}
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
@@ -100,12 +102,12 @@ export const UrlItem = ({
             {
               width: !clickDelete
                 ? isTablet()
-                  ? "90%"
-                  : "80%"
+                  ? '90%'
+                  : '80%'
                 : isTablet()
-                ? "85%"
-                : "75%"
-            }
+                ? '85%'
+                : '75%',
+            },
           ]}
         >
           {item}
@@ -118,15 +120,9 @@ export const UrlItem = ({
         style={styles.actionIcon}
       >
         {clickDelete ? (
-          <Image
-            style={styles.iconImage}
-            source={require("../../assets/icons/confirm.png")}
-          />
+          <CheckIcon style={styles.iconImage} />
         ) : (
-          <Image
-            style={styles.iconImage}
-            source={require("../../assets/icons/edit.png")}
-          />
+          <Edit2Icon style={styles.iconImage} />
         )}
       </TouchableOpacity>
       <TouchableOpacity
@@ -136,15 +132,9 @@ export const UrlItem = ({
         style={styles.actionIcon}
       >
         {clickDelete ? (
-          <Image
-            style={styles.iconImage}
-            source={require("../../assets/icons/delete.png")}
-          />
+          <XIcon style={styles.iconImage} />
         ) : (
-          <Image
-            style={styles.iconImage}
-            source={require("../../assets/icons/trash.png")}
-          />
+          <Trash2Icon style={styles.iconImage} />
         )}
       </TouchableOpacity>
     </View>

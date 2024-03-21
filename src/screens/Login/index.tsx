@@ -9,7 +9,6 @@ import { getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
 import { defaultTheme } from '../../themes';
 import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
-import { ConfigurationIcon } from 'etendo-ui-library/dist-native/assets/images/icons/ConfigurationIcon';
 import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
 import { isTablet, isTabletSmall } from '../../helpers/IsTablet';
 import styleSheet from './styles';
@@ -34,6 +33,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { internetIsAvailable } from '../../utils';
 import { OBRest } from 'etrest';
+import { SettingIcon, TextInput } from 'etendo-ui-library';
+import PasswordInput from 'etendo-ui-library/dist-native/components/inputBase/password-input/PasswordInput'
 
 // Constants
 const MIN_CORE_VERSION = '3.0.202201';
@@ -298,9 +299,7 @@ const LoginFunctional = props => {
                 onPress={() => props.navigation.navigate('Settings')}
                 text={locale.t('Settings')}
                 typeStyle="whiteBorder"
-                iconLeft={
-                  <ConfigurationIcon style={styles.configurationImage} />
-                }
+                iconLeft={<SettingIcon style={{ height: 20, width: 20 }} />}
               />
             </View>
           </View>
@@ -326,39 +325,28 @@ const LoginFunctional = props => {
           <View style={styles.containerInputs}>
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>{locale.t('User')}</Text>
-              <Input
-                typeField={'textInput'}
+              <TextInput
                 value={username}
                 onChangeText={username => {
                   setUsername(username);
                   if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t('User')}
-                fontSize={16}
-                height={48}
                 isError={error}
-                onFocus={() => scrollBottom()}
-                onPress={() => scrollBottom()}
               />
             </View>
-
             <View style={styles.textInputStyle}>
               <Text style={styles.textInputsHolders}>
                 {locale.t('Password')}
               </Text>
-              <Input
-                typeField={'textInputPassword'}
+              <PasswordInput
                 value={password}
                 onChangeText={password => {
                   setPassword(password);
                   if (error) dispatch(setError(false));
                 }}
                 placeholder={locale.t('Password')}
-                fontSize={16}
-                height={48}
                 isError={error}
-                onFocus={() => scrollBottom()}
-                onPress={() => scrollBottom()}
               />
             </View>
           </View>

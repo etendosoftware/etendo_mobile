@@ -1,5 +1,5 @@
 //Imports
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -9,25 +9,23 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Keyboard,
-} from "react-native";
-import locale from "../../i18n/locale";
-import { withTheme, Dialog } from "react-native-paper";
+} from 'react-native';
+import locale from '../../i18n/locale';
+import { withTheme, Dialog } from 'react-native-paper';
 import {
   setUrl as setUrlOB,
   formatUrl,
   resetLocalUrl,
   formatEnvironmentUrl,
-} from "../../ob-api/ob";
-import { version } from "../../../package.json";
-import ButtonUI from "etendo-ui-library/dist-native/components/button/Button";
-import { isTablet } from "../../helpers/IsTablet";
-import { BackIcon } from "etendo-ui-library/dist-native/assets/images/icons/BackIcon";
-import { MoreIcon } from "etendo-ui-library/dist-native/assets/images/icons/MoreIcon";
-import { deviceStyles as styles } from "./deviceStyles";
-import { PRIMARY_100 } from "../../styles/colors";
-import Input from "etendo-ui-library/dist-native/components/input/Input";
-import { UrlItem } from "../../components/UrlItem";
-import { useAppSelector, useAppDispatch } from "../../../redux";
+} from '../../ob-api/ob';
+import { version } from '../../../package.json';
+import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
+import { isTablet } from '../../helpers/IsTablet';
+import { deviceStyles as styles } from './deviceStyles';
+import { NEUTRAL_100, PRIMARY_100 } from '../../styles/colors';
+import Input from 'etendo-ui-library/dist-native/components/input/Input';
+import { UrlItem } from '../../components/UrlItem';
+import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
   selectContextPathUrl,
   selectData,
@@ -40,24 +38,31 @@ import {
   setContextPathUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
-} from "../../../redux/user";
-import { useUser } from "../../../hook/useUser";
-import { changeLanguage } from "../../helpers/getLanguajes";
-import { getLanguageName } from "../../i18n/config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { References } from "../../constants/References";
-import { selectIsDemo } from "../../../redux/window";
-import { useEtrest } from "../../../hook/useEtrest";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+} from '../../../redux/user';
+import { useUser } from '../../../hook/useUser';
+import { changeLanguage } from '../../helpers/getLanguajes';
+import { getLanguageName } from '../../i18n/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { References } from '../../constants/References';
+import { selectIsDemo } from '../../../redux/window';
+import { useEtrest } from '../../../hook/useEtrest';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  CornerUpLeftIcon,
+  DropdownInput,
+  TextInput,
+  XIcon,
+} from 'etendo-ui-library';
+import { PlusIcon } from 'etendo-ui-library/dist-native/assets/images/icons';
 
 const Settings = props => {
   // Declare a variable 'listViewRef' that will hold a reference to the KeyboardAwareScrollView component
   let listViewRef: KeyboardAwareScrollView;
 
   //Images
-  const logoUri = "utility/ShowImageLogo?logo=yourcompanylogin";
-  const notFoundLogo = require("../../../assets/unlink.png");
-  const defaultLogo = require("../../../assets/your-company.png");
+  const logoUri = 'utility/ShowImageLogo?logo=yourcompanylogin';
+  const notFoundLogo = require('../../../assets/unlink.png');
+  const defaultLogo = require('../../../assets/your-company.png');
 
   // use redux
   const dispatch = useAppDispatch();
@@ -73,11 +78,11 @@ const Settings = props => {
 
   const { getRoleName } = useEtrest(selectedUrl, token);
   // local states
-  const [url, setUrl] = useState<string>("");
-  const [modalUrl, setModalUrl] = useState<string>("");
+  const [url, setUrl] = useState<string>('');
+  const [modalUrl, setModalUrl] = useState<string>('');
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<string>('');
   const [displayLanguage, setDisplayLanguage] = useState<string>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
@@ -85,6 +90,7 @@ const Settings = props => {
   const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const {
     loadEnviromentsUrl,
@@ -97,13 +103,14 @@ const Settings = props => {
       const tmpAppVersion = await getAppVersion(); // Note: getAppVersion should be a function in scope.
       if (storedEnviromentsUrl.length > 0) {
         setStoredDataUrl(storedEnviromentsUrl);
-        const selectedUrlStored = await AsyncStorage.getItem("selectedUrl");
+        const selectedUrlStored = await AsyncStorage.getItem('selectedUrl');
         setUrl(selectedUrl || selectedUrlStored);
         setAppVersion(tmpAppVersion);
         setModalUrl(url ? url.toString() : selectedUrl);
       } else {
-        await AsyncStorage.removeItem("selectedUrl");
+        await AsyncStorage.removeItem('selectedUrl');
       }
+      setRefresh(prevState => !prevState);
     };
     fetchUrlAndLogo();
   }, [hasErrorLogo]);
@@ -141,7 +148,7 @@ const Settings = props => {
     setStoredDataUrl(newStoredDataUrl);
     await saveEnviromentsUrl([...storedDataUrl, newUrl]);
 
-    setValueEnvironmentUrl("");
+    setValueEnvironmentUrl('');
     setSelectedUrl(newUrl);
     atChooseOption(newUrl);
 
@@ -155,7 +162,7 @@ const Settings = props => {
     setStoredDataUrl(filteredItems);
     if (selectedUrl == item) {
       dispatch(setSelectedUrl(null));
-      await AsyncStorage.removeItem("selectedUrl");
+      await AsyncStorage.removeItem('selectedUrl');
     }
   };
 
@@ -170,11 +177,11 @@ const Settings = props => {
   };
 
   const handleBackButtonPress = () => {
-    props.navigation.navigate("Home");
+    props.navigation.navigate('Home');
   };
 
   const handleBackButtonPressWithLogin = () => {
-    props.navigation.navigate("Login");
+    props.navigation.navigate('Login');
   };
 
   // This function is responsible for setting the logo URI based on the current URL
@@ -218,9 +225,9 @@ const Settings = props => {
 
   const atChooseOption = async (fullUrl: string) => {
     // Update AsyncStorage with the full URL and the formatted environment URL
-    await AsyncStorage.setItem("selectedUrl", fullUrl);
+    await AsyncStorage.setItem('selectedUrl', fullUrl);
     const valueEnvironmentUrl = formatEnvironmentUrl(fullUrl);
-    await AsyncStorage.setItem("selectedEnvironmentUrl", valueEnvironmentUrl);
+    await AsyncStorage.setItem('selectedEnvironmentUrl', valueEnvironmentUrl);
 
     // Update the state with the formatted environment URL
     setValueEnvironmentUrl(valueEnvironmentUrl);
@@ -259,13 +266,13 @@ const Settings = props => {
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
+      'keyboardDidShow',
       () => {
         if (!isKeyboardVisible) setIsKeyboardVisible(true);
       },
     );
     const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
+      'keyboardDidHide',
       () => {
         if (isKeyboardVisible) setIsKeyboardVisible(false);
       },
@@ -279,6 +286,7 @@ const Settings = props => {
 
   return (
     <KeyboardAwareScrollView
+      key={refresh}
       style={styles.fullContainer}
       ref={(ref: KeyboardAwareScrollView) => {
         listViewRef = ref;
@@ -289,13 +297,13 @@ const Settings = props => {
     >
       <View style={styles.container}>
         <View style={styles.backContainer}>
-          <Text style={styles.settingsTitle}>{locale.t("Settings")}</Text>
+          <Text style={styles.settingsTitle}>{locale.t('Settings')}</Text>
           <ButtonUI
-            iconLeft={<BackIcon style={styles.backIcon} />}
+            iconLeft={<CornerUpLeftIcon style={styles.backIcon} />}
             height={40}
             paddingVertical={0}
             typeStyle="terciary"
-            text={locale.t("Back")}
+            text={locale.t('Back')}
             onPress={
               token ? handleBackButtonPress : handleBackButtonPressWithLogin
             }
@@ -303,10 +311,10 @@ const Settings = props => {
         </View>
         <View style={styles.containerCardStyle}>
           <View style={styles.containerUrlStyle}>
-            <Text style={styles.languageText}>{locale.t("Settings:URL")}</Text>
-            <Input
-              typeField="picker"
-              placeholder={locale.t("Settings:InputPlaceholder")}
+            <Text style={styles.languageText}>{locale.t('Settings:URL')}</Text>
+            <DropdownInput
+              maxVisibleOptions={2}
+              placeholder={locale.t('Settings:InputPlaceholder')}
               value={
                 isDemoTry
                   ? References.DemoUrl
@@ -316,25 +324,22 @@ const Settings = props => {
                   ? url
                   : null
               }
-              onOptionSelected={(option: any) => {
+              onSelect={(option: any) => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);
               }}
-              disabled={!!token}
+              isDisabled={!!token}
               displayKey="value"
-              dataPicker={storedDataUrl.map(data => ({ value: data }))}
-              height={43}
-              centerText={true}
-              showOptionsAmount={6}
-              placeholderPickerSearch={locale.t("Settings:Search")}
+              staticData={storedDataUrl.map(data => ({ value: data }))}
+              searchPlaceholder={locale.t('Settings:Search')}
             />
             {!token ? (
               <View style={styles.containerAddLinkStyle}>
                 <ButtonUI
                   typeStyle="primary"
                   onPress={showChangeURLModalFn}
-                  text={locale.t("Settings:NewLink")}
-                  iconRight={<MoreIcon />}
+                  text={locale.t('Settings:NewLink')}
+                  iconRight={<PlusIcon />}
                 />
               </View>
             ) : (
@@ -342,24 +347,24 @@ const Settings = props => {
                 allowFontScaling={false}
                 style={styles.CahngeUrlTextConfirmation}
               >
-                {locale.t("Settings:ChangeURLLogoutConfirmation")}
+                {locale.t('Settings:ChangeURLLogoutConfirmation')}
               </Text>
             )}
           </View>
 
           <View style={styles.logoContainerStyles}>
             <Text style={styles.logoTitleStyles}>
-              {locale.t("Settings:Logo")}
+              {locale.t('Settings:Logo')}
             </Text>
             <View style={styles.findingImageContainer}>
               <LogoImage />
               {hasErrorLogo && (
                 <View>
                   <Text style={styles.logoTitleStyles}>
-                    {locale.t("Settings:ImageNotFound")}
+                    {locale.t('Settings:ImageNotFound')}
                   </Text>
                   <Text style={styles.logoSubTitle}>
-                    {locale.t("Settings:ImageNotFoundServer")}
+                    {locale.t('Settings:ImageNotFoundServer')}
                   </Text>
                 </View>
               )}
@@ -368,24 +373,22 @@ const Settings = props => {
 
           <View style={styles.languageContainerStyles}>
             <Text style={styles.languageText}>
-              {locale.t("Settings:Language")}
+              {locale.t('Settings:Language')}
             </Text>
-            <Input
-              typeField="picker"
-              placeholder={locale.t("Settings:Language")}
+            <DropdownInput
+              placeholder={locale.t('Settings:Language')}
               value={
                 displayLanguage
                   ? displayLanguage
                   : getLanguageName(selectSelectedLanguage)
               }
-              onOptionSelected={(option: any) => {
+              onSelect={(option: any) => {
                 const { label, value } = option;
                 handleLanguage(label, value);
               }}
               displayKey="label"
-              dataPicker={languagesList}
-              height={43}
-              centerText={true}
+              maxVisibleOptions={2}
+              staticData={languagesList}
             />
           </View>
 
@@ -403,52 +406,46 @@ const Settings = props => {
                       style={styles.buttonClose}
                       onPress={() => setShowChangeURLModal(false)}
                     >
-                      <Image
-                        source={require("../../../assets/icons/close.png")}
-                      />
+                      <XIcon fill={NEUTRAL_100} />
                     </TouchableOpacity>
                   </View>
 
                   <Dialog.Title
                     style={{
                       fontSize: 25,
-                      fontWeight: "700",
+                      fontWeight: '700',
                       color: PRIMARY_100,
                     }}
                   >
-                    {locale.t("Settings:AddNewURL")}
+                    {locale.t('Settings:AddNewURL')}
                   </Dialog.Title>
 
                   <Dialog.Content style={{ flex: 1 }}>
                     <View>
                       <Text style={styles.urlEnvList}>
-                        {locale.t("Settings:EnviromentURL")}
+                        {locale.t('Settings:EnviromentURL')}
                       </Text>
-                      <Input
-                        typeField={"textInput"}
-                        placeholder={locale.t("Settings:InputPlaceholder")}
+                      <TextInput
+                        placeholder={locale.t('Settings:InputPlaceholder')}
                         value={valueEnvironmentUrl}
                         onChangeText={valueEnvUrl => {
                           setValueEnvironmentUrl(valueEnvUrl);
                         }}
-                        height={50}
                       />
                     </View>
 
                     <View>
                       <Text style={styles.urlContextPath}>
-                        {locale.t("Settings:ContextPath")}
+                        {locale.t('Settings:ContextPath')}
                       </Text>
-                      <Input
-                        typeField="textInput"
+                      <TextInput
                         placeholder={locale.t(
-                          "Settings:ContextPathPlaceholder",
+                          'Settings:ContextPathPlaceholder',
                         )}
                         value={contextPathUrl}
                         onChangeText={value =>
                           dispatch(setContextPathUrl(value))
                         }
-                        height={50}
                       />
 
                       <View style={{ marginTop: 10 }}>
@@ -460,18 +457,18 @@ const Settings = props => {
                             Keyboard.dismiss();
                             addUrl();
                           }}
-                          iconRight={<MoreIcon />}
+                          iconRight={<PlusIcon style={styles.iconImage} />}
                           text={
                             isUpdating
-                              ? locale.t("Settings:UpdateLink")
-                              : locale.t("Settings:NewLink")
+                              ? locale.t('Settings:UpdateLink')
+                              : locale.t('Settings:NewLink')
                           }
                         />
                       </View>
                     </View>
                     <View style={{ marginTop: 32 }}>
                       <Text style={styles.urlEnvList}>
-                        {locale.t("ShowLoadUrl:ItemList")}
+                        {locale.t('ShowLoadUrl:ItemList')}
                       </Text>
                       <ScrollView
                         style={styles.listUrlItems}
@@ -497,7 +494,7 @@ const Settings = props => {
                           })
                         ) : (
                           <Text style={styles.notUrlEnvList}>
-                            {locale.t("Settings:NotEnviromentURL")}
+                            {locale.t('Settings:NotEnviromentURL')}
                           </Text>
                         )}
                       </ScrollView>
@@ -513,7 +510,7 @@ const Settings = props => {
       {isTablet() ? (
         <View style={styles.copyrightTablet}>
           <Text allowFontScaling={false}>
-            {locale.t("Settings:AppVersion", { version: appVersion })}
+            {locale.t('Settings:AppVersion', { version: appVersion })}
           </Text>
           <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
         </View>
