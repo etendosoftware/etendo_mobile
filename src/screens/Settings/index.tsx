@@ -47,7 +47,12 @@ import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
 import { useEtrest } from '../../../hook/useEtrest';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CornerUpLeftIcon, DropdownInput, TextInput, XIcon } from 'etendo-ui-library';
+import {
+  CornerUpLeftIcon,
+  DropdownInput,
+  TextInput,
+  XIcon,
+} from 'etendo-ui-library';
 import { PlusIcon } from 'etendo-ui-library/dist-native/assets/images/icons';
 
 const Settings = props => {
@@ -86,7 +91,6 @@ const Settings = props => {
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
-
 
   const {
     loadEnviromentsUrl,
@@ -309,6 +313,7 @@ const Settings = props => {
           <View style={styles.containerUrlStyle}>
             <Text style={styles.languageText}>{locale.t('Settings:URL')}</Text>
             <DropdownInput
+              maxVisibleOptions={2}
               placeholder={locale.t('Settings:InputPlaceholder')}
               value={
                 isDemoTry
@@ -382,6 +387,7 @@ const Settings = props => {
                 handleLanguage(label, value);
               }}
               displayKey="label"
+              maxVisibleOptions={2}
               staticData={languagesList}
             />
           </View>
