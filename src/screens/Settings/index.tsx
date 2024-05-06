@@ -213,8 +213,6 @@ const Settings = props => {
         style={styles.logoImageStyles}
         source={hasErrorLogo ? notFoundLogo : logoURI}
         onError={() => setHasErrorLogo(true)}
-        height={100}
-        width={200}
       />
     );
   };
