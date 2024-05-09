@@ -1,6 +1,6 @@
 // Importing required modules and libraries
-import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Image, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import locale from '../../i18n/locale';
 import { Dialog, Text, Button } from 'react-native-paper';
 import { Snackbar } from '../../globals';
@@ -35,6 +35,7 @@ import { internetIsAvailable } from '../../utils';
 import { OBRest } from 'etrest';
 import { SettingIcon, TextInput } from 'etendo-ui-library';
 import PasswordInput from 'etendo-ui-library/dist-native/components/inputBase/password-input/PasswordInput'
+import { Camera, useCameraDevice, useCameraDevices, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
 
 // Constants
 const MIN_CORE_VERSION = '3.0.202201';
@@ -270,107 +271,60 @@ const LoginFunctional = props => {
     );
   };
 
-  return (
-    <KeyboardAwareScrollView
-      style={styles.containerFlex}
-      ref={(ref: KeyboardAwareScrollView) => {
-        listViewRef = ref;
-      }}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Image source={getBackgroundImg()} style={styles.backgroundContainer} />
-      <View
-        style={[
-          styles.generalContainer,
-          { height: Dimensions.get('window').height },
-        ]}
-      >
-        <View style={styles.container}>
-          <View style={styles.buttonsDemoSettings}>
-            <View style={styles.buttonDemo}>
-              <ButtonUI
-                typeStyle="terciary"
-                onPress={() => demo()}
-                text={locale.t('DemoTry')}
-              />
-            </View>
-            <View style={styles.settingsImageContainer}>
-              <ButtonUI
-                onPress={() => props.navigation.navigate('Settings')}
-                text={locale.t('Settings')}
-                typeStyle="whiteBorder"
-                iconLeft={<SettingIcon style={{ height: 20, width: 20 }} />}
-              />
-            </View>
-          </View>
-          <View style={styles.etendoLogoContainer}>
-            {!deviceIsATabletSmall && (
-              <Image
-                source={require('../../../assets/etendo-logotype.png')}
-                style={styles.etendoLogotype}
-              />
-            )}
-            <View style={getWelcomeContainer()}>
-              <Text style={styles.welcomeTitle}>{welcomeText()}</Text>
-              <Image
-                source={require('../../img/stars.png')}
-                style={styles.starsImage}
-              />
-            </View>
-            <Text style={styles.credentialsText}>
-              {locale.t('EnterCredentials')}
-            </Text>
-          </View>
+  const [isVisible, setIsVisible] = useState(false); // State to control camera visibility
 
-          <View style={styles.containerInputs}>
-            <View style={styles.textInputStyle}>
-              <Text style={styles.textInputsHolders}>{locale.t('User')}</Text>
-              <TextInput
-                value={username}
-                onChangeText={username => {
-                  setUsername(username);
-                  if (error) dispatch(setError(false));
-                }}
-                placeholder={locale.t('User')}
-                isError={error}
-              />
-            </View>
-            <View style={styles.textInputStyle}>
-              <Text style={styles.textInputsHolders}>
-                {locale.t('Password')}
-              </Text>
-              <PasswordInput
-                value={password}
-                onChangeText={password => {
-                  setPassword(password);
-                  if (error) dispatch(setError(false));
-                }}
-                placeholder={locale.t('Password')}
-                isError={error}
-              />
-            </View>
-          </View>
-          <View style={styles.loginButton}>
-            <ButtonUI
-              onPress={submitLogin}
-              text={locale.t('Log in')}
-              typeStyle={'primary'}
-              width="100%"
-              height={50}
-            />
-          </View>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.changePasswordStyle}
-            onPress={() => [setShowChangePassword(true)]}
-          ></TouchableOpacity>
-          <Text style={styles.copyRightStyle}>
-            © Copyright Etendo 2020-2023
-          </Text>
+  // Camera setup
+
+  useEffect(() => {
+    (async () => {
+      const cameraPermission: any = await Camera.requestCameraPermission();
+      const microphonePermission: any = await Camera.requestMicrophonePermission();
+      setIsVisible(cameraPermission === 'authorized' && microphonePermission === 'authorized');
+    })();
+  }, []);
+
+  const device = useCameraDevice('back', {
+    physicalDevices: [
+      'ultra-wide-angle-camera',
+      'wide-angle-camera',
+      'telephoto-camera'
+    ]
+  })
+
+  const { hasPermission, requestPermission } = useCameraPermission()
+
+
+
+
+  const [scannedData, setScannedData] = useState<string | null>(null);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: (codes) => {
+      console.log(`Scanned ${codes.length} codes!`)
+      setScannedData(codes[0].value)
+    }
+  })
+
+
+  return (
+    <View style={{ flex: 1 }}>
+      {device != null && (
+        <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive={true}
+          codeScanner={codeScanner}
+        />
+      )}
+
+      {/* Existing UI components */}
+      {scannedData ? (
+        <View style={{ marginTop: 20, width: "100%", backgroundColor: "#202452" }}>
+          <Text style={{ fontSize: 20, color: "white", fontWeight: "500", textAlign: "center", paddingVertical: 12 }}>Scanned Data: {scannedData}</Text>
         </View>
-        {ChangedPassword()}
-      </View>
-    </KeyboardAwareScrollView>
+      ) : null}
+    </View>
   );
 };
 
