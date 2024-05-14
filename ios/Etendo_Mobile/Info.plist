@@ -40,7 +40,7 @@
     <key>NSMicrophoneUsageDescription</key>
     <string>Need microphone access for uploading audio</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+    <string>$(PRODUCT_NAME) needs to access your location to provide personalized experiences and accurate results.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>$(PRODUCT_NAME) needs permission to access photos on your device</string>
     <key>UILaunchStoryboardName</key>
