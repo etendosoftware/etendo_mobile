@@ -47,7 +47,6 @@ import * as Swiper from 'react-native-swiper';
 import * as TsLib from 'tslib';
 import * as Unmock from 'unmock';
 import * as VectorIcons from 'react-native-vector-icons';
-import * as VisionCameraCodeScanner from 'vision-camera-code-scanner';
 import * as ReactNativeDocumentPicker from 'react-native-document-picker';
 import { Etendo } from '../helpers/Etendo';
 
@@ -97,7 +96,6 @@ const Packages = {
   'react-native-document-picker': () => ReactNativeDocumentPicker,
   'react-native': () => ReactNative,
   'rn-placeholder': () => RnPlaceholder,
-  'vision-camera-code-scanner': () => VisionCameraCodeScanner,
   axios: () => Axios,
   color: () => Color,
   Etendo: () => Etendo,

@@ -3,7 +3,7 @@ import { isTablet } from '../../helpers/IsTablet';
 
 export const styles = StyleSheet.create({
   buttonContainer: {
-    width: isTablet ? '30%' : '100%',
+    width: isTablet() ? '30%' : '100%',
   },
   icon: {
     height: 15,
