@@ -1,6 +1,12 @@
 package com.smf.mobile.etendo_app_loader;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.Context;
+import android.os.Build;
 import android.app.Application;
+import androidx.annotation.Nullable;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
