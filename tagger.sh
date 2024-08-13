@@ -17,9 +17,9 @@ update_ios_version() {
     # Update CFBundleShortVersionString
     sed -i.bak "/<key>CFBundleShortVersionString<\/key>/,/<string>/ s/<string>.*<\/string>/<string>$new_version<\/string>/" "$plist_file"
     
-    # Update DTD PLIST version
-    sed -i.bak "s/DTD PLIST .* \/\/EN/DTD PLIST $new_version \/\/EN/" "$plist_file"
-    
+    # Update CFBundleVersion
+    sed -i.bak "/<key>CFBundleVersion<\/key>/,/<string>/ s/<string>.*<\/string>/<string>$new_version<\/string>/" "$plist_file"
+
     rm "${plist_file}.bak"
     echo "iOS version updated to $new_version in $plist_file"
 }
