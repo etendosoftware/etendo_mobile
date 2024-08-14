@@ -7,23 +7,22 @@ pipeline {
     NPM_TOKEN           = credentials('npmjs-access-token')
     EMAIL_ADDRESS       = credentials('email_builds')
 
-    REPO_SSH_URL        = "git@bitbucket.org:koodu_software/etendo_app_loader.git"
-    REPOSITORY_NAME     = "etendo_app_loader"
-    OWNER_REPOSITORY    = "koodu_software"
-    BITBUCKET_URL       = "https://bitbucket.org"
+    REPO_SSH_URL        = "git@github.com:etendosoftware/etendo_mobile.git"
+    REPOSITORY_NAME     = "etendo_mobile"
+    OWNER_REPOSITORY    = "etendosoftware"
+    GITHUB_URL          = "https://github.com"
 
     SUCCESS             = "SUCCESS"
     FAILED              = "FAILED"
     UNSTABLE            = "UNSTABLE"
 
-    COMMIT_INPROGRESS_STATUS = "INPROGRESS"
-    COMMIT_SUCCESS_STATUS    = "SUCCESSFUL"
-    COMMIT_FAILED_STATUS     = "FAILED"
+    COMMIT_INPROGRESS_STATUS = "pending"
+    COMMIT_SUCCESS_STATUS    = "success"
+    COMMIT_FAILED_STATUS     = "failure"
 
     CONTEXT_BUILD = "App Loader Tests"
 
-    USER_ACCESS  = credentials('user-access-commit-bitbucket')
-    ACCESS_TOKEN = credentials('access-token-commit-bitbucket')
+    ACCESS_TOKEN = credentials('access_token_github')
   }
 
   agent { //MARK: Agent
@@ -90,18 +89,18 @@ spec:
       steps {
         container('compiler') {
           script {
-            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${GIT_COMMIT} ${BUILD_NUMBER} ${COMMIT_INPROGRESS_STATUS} \"${CONTEXT_BUILD}\" ${BUILD_URL} \"Starting Build\" ${OWNER_REPOSITORY} ${USER_ACCESS} ${ACCESS_TOKEN}"
+            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Starting Build\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
             try {
               withCredentials([sshUserPrivateKey(credentialsId: 'my-credentials', keyFileVariable: 'keyfile')]) {
                 sh "GIT_SSH_COMMAND=\"ssh -i ${keyfile} -o \"UserKnownHostsFile=/dev/null\" -o \"StrictHostKeyChecking=no\"\" git clone --branch ${GIT_BRANCH} ${REPO_SSH_URL} ${REPOSITORY_NAME}"
               }
-              dir("etendo_app_loader") {
+              dir(REPOSITORY_NAME) {
                 sh "git checkout ${GIT_COMMIT}"
                 echo "-------------------------- Getting Commit Information --------------------------"
                 def rootDir = pwd()
                 def infoCommit = load "${rootDir}/pipelines/utils/infoCommits.groovy"
-                env.URL_ORG_BITBUCKET = "${BITBUCKET_URL}/${OWNER_REPOSITORY}"
-                def commitInfoTemplate = infoCommit.generateCommitInfo(env.URL_ORG_BITBUCKET, null, REPOSITORY_NAME, true, null)
+                env.URL_ORG_GITHUB = "${GITHUB_URL}/${OWNER_REPOSITORY}"
+                def commitInfoTemplate = infoCommit.generateCommitInfo(env.URL_ORG_GITHUB, null, REPOSITORY_NAME, true, null)
                 env.COMMIT_INFO_TEMPLATE = "${commitInfoTemplate}"
                 echo "${env.COMMIT_INFO_TEMPLATE}"
 
@@ -136,8 +135,8 @@ spec:
       steps {
         container('compiler') {
           script {
-            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${GIT_COMMIT} ${BUILD_NUMBER} ${COMMIT_INPROGRESS_STATUS} \"${CONTEXT_BUILD}\" ${BUILD_URL} \"Running Tests\" ${OWNER_REPOSITORY} ${USER_ACCESS} ${ACCESS_TOKEN}"
-            dir("etendo_app_loader") {
+            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Running Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+            dir(REPOSITORY_NAME) {
               try {
                 env.STATUSTEST = "1"
                 echo "-------------------------- Running Tests --------------------------"
@@ -160,7 +159,7 @@ spec:
   post { //MARK: Post Actions
     success {
       script {
-        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${GIT_COMMIT} ${BUILD_NUMBER} ${COMMIT_SUCCESS_STATUS} \"${CONTEXT_BUILD}\" ${BUILD_URL} \"Successful Tests\" ${OWNER_REPOSITORY} ${USER_ACCESS} ${ACCESS_TOKEN}"
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_SUCCESS_STATUS} \"Successful Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
       }
     }
     fixed {
@@ -194,7 +193,7 @@ spec:
 
     unstable {
       script {
-        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${GIT_COMMIT} ${BUILD_NUMBER} ${COMMIT_FAILED_STATUS} \"${CONTEXT_BUILD}\" ${BUILD_URL} \"Failed Tests\" ${OWNER_REPOSITORY} ${USER_ACCESS} ${ACCESS_TOKEN}"
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_FAILED_STATUS} \"Failed Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
       }
       mail to: EMAIL_ADDRESS,
       subject: "🚨 Failed Tests of '${REPOSITORY_NAME}' on '${GIT_BRANCH}' branch",
@@ -226,7 +225,7 @@ spec:
     
     failure {
       script {
-        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${GIT_COMMIT} ${BUILD_NUMBER} ${COMMIT_FAILED_STATUS} \"${CONTEXT_BUILD}\" ${BUILD_URL} \"Build Failed\" ${OWNER_REPOSITORY} ${USER_ACCESS} ${ACCESS_TOKEN}"
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_FAILED_STATUS} \"Build Failed\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
       }
       mail to: EMAIL_ADDRESS,
       subject: "🚫 Build Failed in ${currentBuild.fullDisplayName} on '${GIT_BRANCH}' branch",
