@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
     width: "85%",
     height: 525,
     alignSelf: "center",
-    justifySelf: "center",
     borderRadius: 24,
     paddingBottom: 130,
     paddingHorizontal: 10
@@ -176,7 +175,6 @@ const styles = StyleSheet.create({
     width: 580,
     height: 570,
     alignSelf: "center",
-    justifySelf: "center",
     borderRadius: 24,
     paddingHorizontal: 30,
     paddingTop: 35,
@@ -240,7 +238,9 @@ const styles = StyleSheet.create({
   },
   logoImage: {
     resizeMode: "contain",
-    marginBottom: 16
+    marginBottom: 16,
+    height:100,
+    width:200
   },
   logoImageTablet: {
     width: "100%"
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 11,
     borderWidth: 1,
-    border: PRIMARY_100,
+    borderColor: PRIMARY_100,
     backgroundColor: NEUTRAL_100,
     marginVertical: 4
   },

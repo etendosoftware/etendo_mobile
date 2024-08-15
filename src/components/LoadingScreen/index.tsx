@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Spinner from "react-native-loading-spinner-overlay";
 import { withTheme } from "react-native-paper";
 import locale from "../../i18n/locale";
 import { defaultTheme } from "../../themes";

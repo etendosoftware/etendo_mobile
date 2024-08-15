@@ -2,7 +2,6 @@ import React from "react";
 import { SafeAreaView, StatusBar } from "react-native";
 import {
   StackNavigationProp,
-  StackScreenProps,
   createStackNavigator
 } from "@react-navigation/stack";
 

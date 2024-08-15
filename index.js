@@ -1,8 +1,9 @@
-import { AppRegistry, LogBox } from "react-native";
-import AppContainer from "./AppContainer.tsx";
-import { name as appName } from "./app.json";
-LogBox.ignoreLogs([
-  "Possible Unhandled Promise Rejection",
-  '"transform" style array'
-]);
+/**
+ * @format
+ */
+
+import {AppRegistry} from 'react-native';
+import AppContainer from './AppContainer';
+import {name as appName} from './app.json';
+
 AppRegistry.registerComponent(appName, () => AppContainer);

@@ -1,0 +1,259 @@
+pipeline {
+  options {
+    disableConcurrentBuilds()
+  }
+
+  environment { //MARK: Environment Variables
+    NPM_TOKEN           = credentials('npmjs-access-token')
+    EMAIL_ADDRESS       = credentials('email_builds')
+
+    REPO_SSH_URL        = "git@github.com:etendosoftware/etendo_mobile.git"
+    REPOSITORY_NAME     = "etendo_mobile"
+    OWNER_REPOSITORY    = "etendosoftware"
+    GITHUB_URL          = "https://github.com"
+
+    SUCCESS             = "SUCCESS"
+    FAILED              = "FAILED"
+    UNSTABLE            = "UNSTABLE"
+
+    COMMIT_INPROGRESS_STATUS = "pending"
+    COMMIT_SUCCESS_STATUS    = "success"
+    COMMIT_FAILED_STATUS     = "failure"
+
+    CONTEXT_BUILD = "App Loader Tests"
+
+    ACCESS_TOKEN = credentials('access_token_github')
+  }
+
+  agent { //MARK: Agent
+    kubernetes {
+      inheritFrom 'jenkins-node-app'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jenkins-node-library
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins-node-library
+spec:
+  volumes:
+    - name: rsa-keys
+      configMap:
+        name: rsa-keys
+        defaultMode: 384
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+        type: ''
+  containers:
+    - name: compiler
+      image: etendo/compiler_jenkins:1.0.6
+      ports:
+        - name: ssh
+          containerPort: 22
+          protocol: TCP
+        - name: visualvm
+          containerPort: 8000
+          protocol: TCP
+      resources:
+        limits:
+          cpu: 1048m
+          memory: 2000Mi
+        requests:
+          cpu: 1048m
+          memory: 2000Mi
+      volumeMounts:
+        - name: rsa-keys
+          mountPath: /root/.ssh/
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+      securityContext:
+        readOnlyRootFilesystem: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 30
+  dnsPolicy: ClusterFirst
+  serviceAccountName: default
+  serviceAccount: default
+  securityContext: {}
+    """
+    }
+  }
+
+  stages {
+    stage('Building Environment') { //MARK: Building Environment
+      steps {
+        container('compiler') {
+          script {
+            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Starting Build\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+            try {
+              withCredentials([sshUserPrivateKey(credentialsId: 'my-credentials', keyFileVariable: 'keyfile')]) {
+                sh "GIT_SSH_COMMAND=\"ssh -i ${keyfile} -o \"UserKnownHostsFile=/dev/null\" -o \"StrictHostKeyChecking=no\"\" git clone --branch ${GIT_BRANCH} ${REPO_SSH_URL} ${REPOSITORY_NAME}"
+              }
+              dir(REPOSITORY_NAME) {
+                sh "git checkout ${GIT_COMMIT}"
+                echo "-------------------------- Getting Commit Information --------------------------"
+                def rootDir = pwd()
+                def infoCommit = load "${rootDir}/pipelines/utils/infoCommits.groovy"
+                env.URL_ORG_GITHUB = "${GITHUB_URL}/${OWNER_REPOSITORY}"
+                def commitInfoTemplate = infoCommit.generateCommitInfo(env.URL_ORG_GITHUB, null, REPOSITORY_NAME, true, null)
+                env.COMMIT_INFO_TEMPLATE = "${commitInfoTemplate}"
+                echo "${env.COMMIT_INFO_TEMPLATE}"
+
+                echo "-------------------------- Building Environment --------------------------"
+                sh "curl -sL https://deb.nodesource.com/setup_16.x | bash -"
+                sh "apt-get install -y nodejs"
+                sh "npm install -g yarn"
+                sh "npm config set registry \"https://registry.npmjs.org/\""
+                sh "npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}"
+                sh "yarn install"
+                echo "-------------------------- Build Succesful --------------------------"
+              }
+              currentBuild.result = SUCCESS
+            } catch (Exception e) {
+              echo "Exception occurred: " + e.toString()
+              echo "-------------------------- Build Failed --------------------------"
+              currentBuild.result = FAILED
+              error('Build Failed')
+              env.STATUSBUILD = "0"
+            }
+          }
+        }
+      }
+    }
+
+    stage('Running Tests') { //MARK: Running Tests
+      when {
+        expression {
+          currentBuild.result == SUCCESS
+        }
+      }
+      steps {
+        container('compiler') {
+          script {
+            sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Running Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+            dir(REPOSITORY_NAME) {
+              try {
+                env.STATUSTEST = "1"
+                echo "-------------------------- Running Tests --------------------------"
+                sh "yarn test"
+                echo "-------------------------- Tests Succesful --------------------------"
+              } catch (Exception e) {
+                echo "Exception occurred: " + e.toString()
+                echo "-------------------------- Failed Tests --------------------------"
+                currentBuild.result = UNSTABLE
+                unstable('Failed Tests')
+                env.STATUSTEST = "0"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+    
+  post { //MARK: Post Actions
+    success {
+      script {
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_SUCCESS_STATUS} \"Successful Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+      }
+    }
+    fixed {
+      mail to: EMAIL_ADDRESS,
+      subject: "✅ Errors Fixed on ${currentBuild.fullDisplayName} on ${GIT_BRANCH} branch",
+      mimeType: "text/html",
+      body: """
+        <html>
+          <head>
+              <style>
+                  body { font-family: 'Arial', sans-serif; }
+                  .header { font-size: 16px; font-weight: bold; color: #333; }
+              </style>
+          </head>
+          <body>
+            <p><em>${new Date()}</em></p>
+            <p>__________________________________________________________</p>
+
+            <h2 class="header">✅ ERRORS FIXED ✅ ✅</h2>
+
+            ${env.COMMIT_INFO_TEMPLATE}
+
+            <p>The problems found in the previous run/s have been fixed! 💪<br>Check out the output in the following link: ${env.BUILD_URL}</p>
+
+            <p class="footer"><em>Best regards,<br>#EtendoBot 🤖</em></p>
+            <p>__________________________________________________________</p>
+          </body>
+        </html>
+      """
+    }
+
+    unstable {
+      script {
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_FAILED_STATUS} \"Failed Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+      }
+      mail to: EMAIL_ADDRESS,
+      subject: "🚨 Failed Tests of '${REPOSITORY_NAME}' on '${GIT_BRANCH}' branch",
+      mimeType: "text/html",
+      body: """
+        <html>
+          <head>
+              <style>
+                  body { font-family: 'Arial', sans-serif; }
+                  .header { font-size: 16px; font-weight: bold; color: #333; }
+              </style>
+          </head>
+          <body>
+            <p><em>${new Date()}</em></p>
+            <p>__________________________________________________________</p>
+
+            <h2 class="header">🚨 BUILD UNSTABLE 🚨</h2>
+
+            ${env.COMMIT_INFO_TEMPLATE}
+
+            <p>The 'App Loader' tests have failed.<br>Check out the output in the following link: ${env.BUILD_URL}
+
+            <p class="footer"><em>Best regards,<br>#EtendoBot 🤖</em></p>
+            <p>__________________________________________________________</p>
+          </body>
+        </html>
+      """
+    }
+    
+    failure {
+      script {
+        sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_FAILED_STATUS} \"Build Failed\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+      }
+      mail to: EMAIL_ADDRESS,
+      subject: "🚫 Build Failed in ${currentBuild.fullDisplayName} on '${GIT_BRANCH}' branch",
+      mimeType: "text/html",
+      body:  """
+        <html>
+          <head>
+              <style>
+                  body { font-family: 'Arial', sans-serif; }
+                  .header { font-size: 16px; font-weight: bold; color: #333; }
+              </style>
+          </head>
+          <body>
+            <p><em>${new Date()}</em></p>
+            <p>__________________________________________________________</p>
+
+            <h2 class="header">🚫 BUILD FAILED 🚫</h2>
+
+            ${env.COMMIT_INFO_TEMPLATE}
+
+            <p>The build has failed unexpectedly. This failure isn't likely to be caused by failing tests.<br>To more information on the failing run visit: ${env.BUILD_URL}</p>
+
+            <p class="footer"><em>Best regards,<br>#EtendoBot 🤖</em></p>
+            <p>__________________________________________________________</p>
+          </body>
+        </html>
+      """
+    }
+  }
+    
+}
