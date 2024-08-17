@@ -73,6 +73,8 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+/vendor
+Gemfile.lock
 
 # Bundle artifacts
 *.jsbundle
