@@ -40,7 +40,7 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
 
 export async function fetchComponent(id: any, url: any, navigation: any) {
   setAlertDefaultDuration(7000);
-  const fullUrl = `${url}/${id}?timestamp=${+new Date()}`;
+  const fullUrl = `${url}/${id}`;
   async function isConnected() {
     try {
       const response = await fetch(fullUrl);
