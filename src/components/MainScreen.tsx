@@ -24,7 +24,7 @@ const HomePage = ({ route, navigation }: any) => {
   const isDemoTry = useAppSelector(selectIsDemo);
 
   const RenderDynamicComponents = (props: any) => {
-    const appId = route.params.__id;
+    const appId = route.params.__id + "?v=" + Math.random();
 
     const childNavigation = useNavigationContainerRef();
     Etendo.navigation[route.params.name] = childNavigation;
