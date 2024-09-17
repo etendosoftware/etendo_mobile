@@ -7,6 +7,7 @@ import {
 import DynamicComponent from './DynamicComponent';
 import { Etendo } from '../helpers/Etendo';
 import {
+  selectContextPathUrl,
   selectData,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage,
@@ -22,6 +23,7 @@ const HomePage = ({ route, navigation }: any) => {
   const language = useAppSelector(selectSelectedLanguage);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
+  const contextPathUrl = useAppSelector(selectContextPathUrl)
 
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id + "?v=" + Math.random();
@@ -48,6 +50,7 @@ const HomePage = ({ route, navigation }: any) => {
               isDev={!!route.params.isDev}
               isDemoTry={isDemoTry}
               Camera={Camera}
+              contextPathUrl={contextPathUrl}
             />
           </NavigationContainer>
         </View>
