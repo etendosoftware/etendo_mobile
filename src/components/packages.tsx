@@ -34,6 +34,7 @@ import * as ReactNativePermissions from 'react-native-permissions';
 import * as ReactNativeShare from 'react-native-share';
 import * as ReactNativeSVG from 'react-native-svg';
 import * as ReactNativeVisionCamera from 'react-native-vision-camera';
+import * as RnMarkdownDisplay from 'react-native-markdown-display';
 import * as ReactNavigationCore from '@react-navigation/core';
 import * as ReactNavigationNative from '@react-navigation/native';
 import * as ReactNavigationNativeStack from '@react-navigation/native-stack';
@@ -93,6 +94,7 @@ const Packages = {
   'react-native-vector-icons/MaterialCommunityIcons': () =>
     MaterialCommunityIcons,
   'react-native-vision-camera': () => ReactNativeVisionCamera,
+  'react-native-markdown-display': () => RnMarkdownDisplay,
   'react-native-document-picker': () => ReactNativeDocumentPicker,
   'react-native': () => ReactNative,
   'rn-placeholder': () => RnPlaceholder,
