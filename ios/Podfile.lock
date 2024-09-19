@@ -379,7 +379,8 @@ PODS:
     - React-Core
   - react-native-date-picker (4.4.2):
     - React-Core
-  - react-native-document-picker (9.2.0):
+  - react-native-document-picker (9.3.1):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-netinfo (9.5.0):
     - React-Core
@@ -387,9 +388,9 @@ PODS:
     - React-Core
   - react-native-pdf (6.7.1):
     - React-Core
-  - react-native-safe-area-context (4.10.1):
+  - react-native-safe-area-context (4.11.0):
     - React-Core
-  - react-native-slider (4.5.2):
+  - react-native-slider (4.5.3):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-worklets-core (1.1.1):
@@ -506,7 +507,7 @@ PODS:
     - React-jsi (= 0.72.14)
     - React-logger (= 0.72.14)
     - React-perflogger (= 0.72.14)
-  - RNCAsyncStorage (1.23.1):
+  - RNCAsyncStorage (1.24.0):
     - React-Core
   - RNCMaskedView (0.1.10):
     - React
@@ -514,7 +515,7 @@ PODS:
     - React-Core
   - RNDateTimePicker (5.1.0):
     - React-Core
-  - RNGestureHandler (2.16.1):
+  - RNGestureHandler (2.19.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNPermissions (3.10.1):
@@ -523,16 +524,16 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNScreens (3.31.1):
+  - RNScreens (3.34.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
   - RNSentry (2.6.2):
     - React-Core
     - Sentry (= 7.1.4)
-  - RNShare (10.2.0):
+  - RNShare (10.2.1):
     - React-Core
-  - RNSVG (13.14.0):
+  - RNSVG (13.14.1):
     - React-Core
   - RNVectorIcons (9.2.0):
     - React-Core
@@ -821,12 +822,12 @@ SPEC CHECKSUMS:
   React-logger: 8da4802de77a0eb62512396ad6bb1769904c2f0e
   react-native-blob-util: 30a6c9fd067aadf9177e61a998f2c7efb670598d
   react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
-  react-native-document-picker: 2b3efb60622b7be891b8d0e0e5424632150e0c94
+  react-native-document-picker: 516b1ec6a1fdf178af8fc478eb3abb4c20ae54e6
   react-native-netinfo: 48c5f79a84fbc3ba1d28a8b0d04adeda72885fa8
   react-native-orientation-locker: 5819fd23ca89cbac0d736fb4314745f62716d517
   react-native-pdf: 7c0e91ada997bac8bac3bb5bea5b6b81f5a3caae
-  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
-  react-native-slider: f266dd860064138a659a42714e6da47a52a51107
+  react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
+  react-native-slider: c38ad73e9c65742acba6510fea929f36db8e2b9a
   react-native-worklets-core: ff2156b19b8f4a979fa0db52659e39a755b1454b
   React-NativeModulesApple: 3107f777453f953906d9ba9dc5f8cbd91a6ef913
   React-perflogger: daabc494c6328efc1784a4b49b8b74fca305d11c
@@ -845,17 +846,17 @@ SPEC CHECKSUMS:
   React-runtimescheduler: f284b4fdad43fe811041129099f1339b54783135
   React-utils: 22a77b05da25ce49c744faa82e73856dcae1734e
   ReactCommon: ff94462e007c568d8cdebc32e3c97af86ec93bb5
-  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
+  RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 0991c56da7815c0cf946d6f63cf920b25296e5f6
   RNDateTimePicker: 1dd15d7ed1ab7d999056bc77879a42920d139c12
-  RNGestureHandler: 57b260d9fb69c5dd2bb3a7e4dadcf0d2d4a7027c
+  RNGestureHandler: 22d513d69ddc0b80430375c11f7c7cb4fabd8ffe
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReanimated: fc36806836aca984b797f01432abe31689663421
-  RNScreens: b8d370282cdeae9df85dd5eab20c88eb5181243b
+  RNScreens: 284fcee9d8d4648851fdb85dd0e200daebedcc14
   RNSentry: 68644ef607b780551cc555f084869764f2566652
-  RNShare: 554a91f5cfbe4adac4cfe3654826ee8b299fe365
-  RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNShare: 0fad69ae2d71de9d1f7b9a43acf876886a6cb99c
+  RNSVG: af3907ac5d4fa26a862b75a16d8f15bc74f2ceda
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   Sentry: 1d3eb1a25f8c5333c88dd5603904a6d461cd9fcf
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
