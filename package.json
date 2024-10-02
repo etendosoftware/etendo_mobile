@@ -1,6 +1,6 @@
 {
   "name": "Etendo_Mobile",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -30,7 +30,7 @@
     "axios": "0.20.0",
     "base-64": "^1.0.0",
     "date-fns": "^2.10.0",
-    "etendo-ui-library": "1.4.33",
+    "etendo-ui-library": "1.7.5",
     "etrest": "^1.2.0",
     "i18n-js": "^3.5.1",
     "mobx": "^5.15.4",
@@ -49,6 +49,7 @@
     "react-native-gesture-handler": "^2.12.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-loading-spinner-overlay": "^3.0.1",
+    "react-native-markdown-display": "^7.0.2",
     "react-native-orientation-locker": "^1.5.0",
     "react-native-paper": "^4.12.5",
     "react-native-pdf": "6.7.1",
