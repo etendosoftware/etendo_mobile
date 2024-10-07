@@ -38,7 +38,7 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
   }
 }
 
-export async function fetchComponent(id: any, url: any, navigation: any) {
+export async function fetchComponent(id, url, navigation) {
   setAlertDefaultDuration(7000);
   const fullUrl = `${url}/${id}`;
   const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
@@ -48,7 +48,7 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     try {
       const response = await fetch(fullUrl);
       return response.ok;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -59,23 +59,31 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     await AsyncStorage.removeItem(dateLastDownBundleKey);
   }
 
-  // Fetch and store component
+  // Store component data
+  async function storeComponentData(data, date) {
+    await AsyncStorage.setItem(id, data);
+    await AsyncStorage.setItem(dateLastDownBundleKey, date || '');
+    storeKey(dateLastDownBundleKey);
+  }
+
+  // Download component
+  async function downloadComponent() {
+    const response = await fetch(fullUrl);
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const data = await response.text();
+    if (!data || data.trim() === '') throw new Error('Received empty or invalid code from the server');
+
+    return { data, date: response.headers.get('date') };
+  }
+
+  // Download and store component
   async function downloadAndStoreComponent() {
     try {
       await clearCache();
-
-      const response = await fetch(fullUrl);
-      if (!response.ok) throw new Error('Network response was not ok');
-
-      const data = await response.text();
-      if (!data || data.trim() === '') throw new Error('Received empty or invalid code from the server');
-
-      await AsyncStorage.setItem(id, data);
-      const date = response.headers.get('date');
-      await AsyncStorage.setItem(dateLastDownBundleKey, date || '');
-      storeKey(dateLastDownBundleKey);
-
-      return { default: getParsedModule(data, id, packages) };
+      const { data, date } = await downloadComponent();
+      await storeComponentData(data, date);
+      return getParsedModule(data, id, packages);
     } catch (error) {
       console.error('Failed to download and store component:', error);
       throw error;
@@ -95,35 +103,35 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
     return null;
   }
 
-  // Main logic
-  try {
-    const connection = await isConnected();
-    if (!connection) {
-      return {
-        default: () => {
-          navigation.navigate('Home');
-          show(locale.t('LoginScreen:NetworkError'), 'error');
-        },
-      };
-    }
+  // Handle fetch failure
+  async function handleFetchFailure() {
+    navigation.navigate('Home');
+    show(locale.t('LoginScreen:NetworkError'), 'error');
+  }
 
+  // Check for update
+  async function checkForUpdate() {
     const responseChange = await fetch(fullUrl, { method: 'HEAD' });
     const lastModifiedNew = responseChange.headers.get('last-modified');
-
     const dateLastDownBundle = await AsyncStorage.getItem(dateLastDownBundleKey);
+    return !lastModifiedNew || !dateLastDownBundle || dateLastDownBundle < lastModifiedNew;
+  }
 
-    if (!lastModifiedNew || !dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
-      return (await downloadAndStoreComponent()).default;
+  // Main logic
+  try {
+    if (!(await isConnected())) {
+      return { default: handleFetchFailure };
+    }
+
+    if (await checkForUpdate()) {
+      return { default: await downloadAndStoreComponent() };
     }
 
     const cachedComponent = await loadCachedComponent();
-    return cachedComponent ? cachedComponent.default : (await downloadAndStoreComponent()).default;
+    return cachedComponent ? { default: cachedComponent } : { default: await downloadAndStoreComponent() };
   } catch (error) {
-    console.error('Error fetching component:', error);
-    return () => {
-      navigation.navigate('Home');
-      show(locale.t('LoginScreen:NetworkError'), 'error');
-    };
+    console.error('Failed to fetch component:', error);
+    return { default: handleFetchFailure };
   }
 }
 
