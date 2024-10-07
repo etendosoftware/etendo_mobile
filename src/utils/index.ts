@@ -41,6 +41,9 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
 export async function fetchComponent(id: any, url: any, navigation: any) {
   setAlertDefaultDuration(7000);
   const fullUrl = `${url}/${id}`;
+  const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
+
+  // Verify internet connection
   async function isConnected() {
     try {
       const response = await fetch(fullUrl);
@@ -49,48 +52,74 @@ export async function fetchComponent(id: any, url: any, navigation: any) {
       return false;
     }
   }
-  const connection = await isConnected();
-  if (!connection) {
-    return {
-      default: () => {
-        navigation.navigate('Home');
-        show(locale.t('LoginScreen:NetworkError'), 'error');
-      },
-    };
+
+  // Clear cache
+  async function clearCache() {
+    await AsyncStorage.removeItem(id);
+    await AsyncStorage.removeItem(dateLastDownBundleKey);
   }
+
+  // Fetch and store component
+  async function downloadAndStoreComponent() {
+    try {
+      await clearCache();
+
+      const response = await fetch(fullUrl);
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.text();
+      if (!data || data.trim() === '') throw new Error('Received empty or invalid code from the server');
+
+      await AsyncStorage.setItem(id, data);
+      const date = response.headers.get('date');
+      await AsyncStorage.setItem(dateLastDownBundleKey, date || '');
+      storeKey(dateLastDownBundleKey);
+
+      return { default: getParsedModule(data, id, packages) };
+    } catch (error) {
+      console.error('Failed to download and store component:', error);
+      throw error;
+    }
+  }
+
+  // Load cached component
+  async function loadCachedComponent() {
+    const existingCode = await AsyncStorage.getItem(id);
+    if (existingCode && existingCode.trim() !== '') {
+      try {
+        return { default: getParsedModule(existingCode, id, packages) };
+      } catch (error) {
+        console.warn('Failed to load cached component. Downloading a new version...', error);
+      }
+    }
+    return null;
+  }
+
+  // Main logic
   try {
+    const connection = await isConnected();
+    if (!connection) {
+      return {
+        default: () => {
+          navigation.navigate('Home');
+          show(locale.t('LoginScreen:NetworkError'), 'error');
+        },
+      };
+    }
+
     const responseChange = await fetch(fullUrl, { method: 'HEAD' });
     const lastModifiedNew = responseChange.headers.get('last-modified');
 
-    const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
-    const dateLastDownBundle = await AsyncStorage.getItem(
-      dateLastDownBundleKey,
-    );
+    const dateLastDownBundle = await AsyncStorage.getItem(dateLastDownBundleKey);
 
-    let component;
-    if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
-      const response = await fetch(fullUrl);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.text();
-      await AsyncStorage.setItem(id, data);
-      const date = responseChange.headers.get('date');
-      await AsyncStorage.setItem(dateLastDownBundleKey, date);
-      storeKey(dateLastDownBundleKey);
-      component = { default: getParsedModule(data, id, packages) };
-    } else {
-      const existingCode = await AsyncStorage.getItem(id);
-      if (existingCode) {
-        component = {
-          default: getParsedModule(existingCode, id, packages),
-        };
-      } else {
-        throw new Error('Component not found in storage');
-      }
+    if (!lastModifiedNew || !dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
+      return (await downloadAndStoreComponent()).default;
     }
-    return component.default;
+
+    const cachedComponent = await loadCachedComponent();
+    return cachedComponent ? cachedComponent.default : (await downloadAndStoreComponent()).default;
   } catch (error) {
+    console.error('Error fetching component:', error);
     return () => {
       navigation.navigate('Home');
       show(locale.t('LoginScreen:NetworkError'), 'error');
