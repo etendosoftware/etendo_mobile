@@ -110,17 +110,24 @@ export async function fetchComponent(id, url, navigation) {
 
   // Main logic
   try {
-    if (!(await isConnected())) return { default: handleFetchFailure };
+    if (!(await isConnected())) return handleFetchFailure;
+
+    let component = null;
 
     if (await needsUpdate()) {
-      return { default: await downloadAndStoreComponent() };
+      component = await downloadAndStoreComponent();
+    } else {
+      component = await loadCachedComponent();
     }
 
-    const cachedComponent = await loadCachedComponent();
-    return cachedComponent ? { default: cachedComponent } : { default: await downloadAndStoreComponent() };
+    if (component) {
+      return component;
+    }
+
+    return await downloadAndStoreComponent();
   } catch (error) {
     console.error('Failed to fetch component:', error);
-    return { default: handleFetchFailure };
+    return handleFetchFailure;
   }
 }
 
