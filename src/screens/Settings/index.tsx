@@ -510,7 +510,7 @@ const Settings = props => {
           <Text allowFontScaling={false}>
             {locale.t('Settings:AppVersion', { version: appVersion })}
           </Text>
-          <Text allowFontScaling={false}>© Copyright Etendo 2020-2023</Text>
+          <Text allowFontScaling={false}>© Copyright Etendo 2020-2024</Text>
         </View>
       ) : null}
     </KeyboardAwareScrollView>

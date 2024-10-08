@@ -233,7 +233,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
             onCloseDrawer={() => {
               setShowDrawer(false);
             }}
-            copyright={'Copyright @ 2023 Etendo'}
+            copyright={'Copyright @ 2024 Etendo'}
             version={pkg.version}
           />
         </View>
