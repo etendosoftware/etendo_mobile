@@ -7,22 +7,23 @@ const DynamicComponent = ({ __id, children, ...props }: any) => {
   const basePathContext = getBasePathContext(props.isDemoTry, props.isDev);
 
   const Component = useMemo(() => {
-    const component = async () => {
-      const componentPromise = fetchComponent(
-        __id,
-        `${baseUrl}${basePathContext}`,
-        props.navigationContainer
-      );
-      componentPromise.catch((e) => {
-        console.error(e);
-      });
-      componentPromise.finally(() => {
+    return React.lazy(async () => {
+      try {
+        const componentPromise = await fetchComponent(
+          __id,
+          `${baseUrl}${basePathContext}`,
+          props.navigationContainer
+        );
+        return componentPromise;
+      } catch (error) {
+        console.error("Error to fetch component:", error);
+        throw error;
+      } finally {
         console.info("fetch done !!!");
-      });
-      return componentPromise;
-    };
-    return React.lazy(component);
-  }, [__id]);
+      }
+    });
+  }, [__id, baseUrl, basePathContext]);
+
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Component {...props}>{children}</Component>
