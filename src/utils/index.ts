@@ -1,8 +1,6 @@
 import packages from '../components/packages';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isTablet } from '../../hook/isTablet';
 import Orientation from 'react-native-orientation-locker';
-import { storeKey } from './KeyStorage';
 import NetInfo from '@react-native-community/netinfo';
 import { References } from '../constants/References';
 import {
@@ -38,63 +36,62 @@ function getParsedModule(code: any, moduleName: any, packages: any) {
   }
 }
 
-export async function fetchComponent(id: any, url: any, navigation: any) {
+export async function fetchComponent(id, url, navigation) {
   setAlertDefaultDuration(7000);
   const fullUrl = `${url}/${id}`;
+
+  // Check internet connection
   async function isConnected() {
     try {
       const response = await fetch(fullUrl);
       return response.ok;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
-  const connection = await isConnected();
-  if (!connection) {
-    return {
-      default: () => {
-        navigation.navigate('Home');
-        show(locale.t('LoginScreen:NetworkError'), 'error');
-      },
-    };
+
+  // Download component from server
+  async function downloadComponent() {
+    const response = await fetch(fullUrl, {
+      headers: {
+        'Cache-Control': 'no-store',
+        'Pragma': 'no-cache'
+      }
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const data = await response.text();
+    if (!data.trim()) throw new Error('Received empty or invalid code from the server');
+
+    return { data };
   }
+
+  // Download and store component
+  async function downloadAndStoreComponent() {
+    const { data } = await downloadComponent();
+    return getParsedModule(data, id, packages);
+  }
+
+  // Navigate to home on failure
+  function handleFetchFailure() {
+    navigation.navigate('Home');
+    show(locale.t('LoginScreen:NetworkError'), 'error');
+  }
+
+  // Main logic
   try {
-    const responseChange = await fetch(fullUrl, { method: 'HEAD' });
-    const lastModifiedNew = responseChange.headers.get('last-modified');
+    if (!(await isConnected())) return handleFetchFailure;
 
-    const dateLastDownBundleKey = `dateLastDownBundle-${id}`;
-    const dateLastDownBundle = await AsyncStorage.getItem(
-      dateLastDownBundleKey,
-    );
+    let component = await downloadAndStoreComponent();
 
-    let component;
-    if (!dateLastDownBundle || dateLastDownBundle < lastModifiedNew) {
-      const response = await fetch(fullUrl);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.text();
-      await AsyncStorage.setItem(id, data);
-      const date = responseChange.headers.get('date');
-      await AsyncStorage.setItem(dateLastDownBundleKey, date);
-      storeKey(dateLastDownBundleKey);
-      component = { default: getParsedModule(data, id, packages) };
-    } else {
-      const existingCode = await AsyncStorage.getItem(id);
-      if (existingCode) {
-        component = {
-          default: getParsedModule(existingCode, id, packages),
-        };
-      } else {
-        throw new Error('Component not found in storage');
-      }
+    if (component) {
+      return component;
     }
-    return component.default;
+
+    return handleFetchFailure;
   } catch (error) {
-    return () => {
-      navigation.navigate('Home');
-      show(locale.t('LoginScreen:NetworkError'), 'error');
-    };
+    console.error('Failed to fetch component:', error);
+    return handleFetchFailure;
   }
 }
 
