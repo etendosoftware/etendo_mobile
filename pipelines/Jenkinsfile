@@ -3,7 +3,7 @@ pipeline {
     disableConcurrentBuilds()
   }
 
-  environment { //MARK: Environment Variables
+  environment { // MARK: Environment Variables
     NPM_TOKEN           = credentials('npmjs-access-token')
     EMAIL_ADDRESS       = credentials('email_builds')
 
@@ -20,12 +20,14 @@ pipeline {
     COMMIT_SUCCESS_STATUS    = "success"
     COMMIT_FAILED_STATUS     = "failure"
 
+    NODE_VERSION = "20"
+
     CONTEXT_BUILD = "App Loader Tests"
 
     ACCESS_TOKEN = credentials('access_token_github')
   }
 
-  agent { //MARK: Agent
+  agent { // MARK: Agent
     kubernetes {
       inheritFrom 'jenkins-node-app'
       defaultContainer 'jnlp'
@@ -85,7 +87,7 @@ spec:
   }
 
   stages {
-    stage('Building Environment') { //MARK: Building Environment
+    stage('Building Environment') { // MARK: Building Environment
       steps {
         container('compiler') {
           script {
@@ -105,7 +107,7 @@ spec:
                 echo "${env.COMMIT_INFO_TEMPLATE}"
 
                 echo "-------------------------- Building Environment --------------------------"
-                sh "curl -sL https://deb.nodesource.com/setup_16.x | bash -"
+                sh "curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -"
                 sh "apt-get install -y nodejs"
                 sh "npm install -g yarn"
                 sh "npm config set registry \"https://registry.npmjs.org/\""
@@ -126,7 +128,7 @@ spec:
       }
     }
 
-    stage('Running Tests') { //MARK: Running Tests
+    stage('Running Tests') { // MARK: Running Tests
       when {
         expression {
           currentBuild.result == SUCCESS
@@ -140,7 +142,7 @@ spec:
               try {
                 env.STATUSTEST = "1"
                 echo "-------------------------- Running Tests --------------------------"
-                sh "yarn test"
+                sh "yarn test --coverage"
                 echo "-------------------------- Tests Succesful --------------------------"
               } catch (Exception e) {
                 echo "Exception occurred: " + e.toString()
@@ -154,9 +156,28 @@ spec:
         }
       }
     }
+
+    stage('Run Sonarqube') {
+      when {
+        expression {
+          currentBuild.result == SUCCESS
+        }
+      }
+      environment {
+          scannerHome = tool 'etendo-sonar-scanner';
+      }
+      steps {
+        container('compiler') {
+          sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Running SonarQube Analysis\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+          withSonarQubeEnv(credentialsId: 'sonar-token-access', installationName: 'SonarQubeServer') {
+            sh "${scannerHome}/bin/sonar-scanner"
+          }
+        }
+      }
+    }
   }
     
-  post { //MARK: Post Actions
+  post { // MARK: Post Actions
     success {
       script {
         sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_SUCCESS_STATUS} \"Successful Tests\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
@@ -255,5 +276,5 @@ spec:
       """
     }
   }
-    
+
 }
