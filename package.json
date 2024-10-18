@@ -16,6 +16,7 @@
     "@react-native-community/netinfo": "^9.4.1",
     "@react-native-community/slider": "^4.2.1",
     "@react-native-picker/picker": "^1.9.12",
+    "@react-native/gradle-plugin": "^0.73.5",
     "@react-navigation/bottom-tabs": "^6.4.3",
     "@react-navigation/compat": "^5.3.20",
     "@react-navigation/drawer": "^6.5.0",
