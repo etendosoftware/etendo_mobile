@@ -15,6 +15,7 @@ import { selectLoadingScreen, setLoadingScreen } from './redux/window';
 import { Camera } from 'react-native-vision-camera';
 import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
+import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 
 interface Props {}
 type RootStackParamList = {
@@ -34,23 +35,53 @@ const App: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      deviceOrientation();
-      if (user) {
-        await getImageProfile(data);
+      try {
+        deviceOrientation();
+        if (user) {
+          await getImageProfile(data);
+        }
+        await languageDefault();
+        dispatch(setLoadingScreen(false));
+        // Important: Do not add any other code here, this is for the root component only.
+        // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
+        await atAppInit();
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
       }
-      await languageDefault();
-      dispatch(setLoadingScreen(false));
-      // Important: Do not add any other code here, this is for the root component only.
-      // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
-      await atAppInit();
     };
+
+    const checkPermission = async () => {
+      try {
+        await Camera.requestCameraPermission();
+      } catch (error) {
+        console.error('Error checking camera permissions:', error);
+      }
+    };
+
+    const handleSharedFiles = () => {
+      try {
+        ReceiveSharingIntent.getReceivedFiles(
+          (files: any) => {
+            console.log('Shared files received:', files);
+          },
+          (error: any) => {
+            console.error('Error receiving shared files:', error);
+          },
+          'etendo'
+        );
+      } catch (error) {
+        console.error('Error handling shared files:', error);
+      }
+    };
+
     fetchInitialData();
     checkPermission();
-  }, []);
+    handleSharedFiles();
 
-  const checkPermission = async () => {
-    await Camera.requestCameraPermission();
-  };
+    return () => {
+      ReceiveSharingIntent.clearReceivedFiles();
+    };
+  }, []);
 
   return (
     <PaperProvider theme={defaultTheme}>
