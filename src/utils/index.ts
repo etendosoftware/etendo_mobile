@@ -110,12 +110,12 @@ export const internetIsAvailable = async () => {
 };
 
 export const getBasePathContext = (
-  isDemoTry: boolean,
   isDev: boolean,
 ): string => {
-  if (isDemoTry) {
-    return '';
-  }
-
   return isDev ? References.SubappContextPath : References.EtendoContextPath;
+};
+
+// Generates a unique ID by combining a name with a random string
+export const generateUniqueId = (name: string) => {
+  return `${name}_${Math.random().toString(36).slice(2, 11)}`;
 };

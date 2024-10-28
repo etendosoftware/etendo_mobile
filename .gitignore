@@ -90,3 +90,6 @@ src/obrest/
 .npmrc
 .history
 _git
+
+# Coverage directory
+coverage/
