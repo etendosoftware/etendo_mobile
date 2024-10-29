@@ -239,13 +239,10 @@ const Settings = props => {
     setModalUrl(tmpUrl);
   };
 
-  useEffect(() => {
-    const formattedUrl = formatEnvironmentUrl(selectedUrl);
-    dispatch(setSelectedEnvironmentUrl(formattedUrl));
-  }, [selectedUrl]);
-
   const handleOptionSelected = async ({ value }) => {
     await atChooseOption(value);
+    const formattedUrl = formatEnvironmentUrl(value);
+    dispatch(setSelectedEnvironmentUrl(formattedUrl));
     setShowChangeURLModal(false);
   };
 
@@ -317,10 +314,10 @@ const Settings = props => {
                 isDemoTry
                   ? References.DemoUrl
                   : storedEnviromentsUrl.length == 1 && url
-                  ? storedEnviromentsUrl[0]
-                  : storedEnviromentsUrl.length > 1
-                  ? url
-                  : null
+                    ? storedEnviromentsUrl[0]
+                    : storedEnviromentsUrl.length > 1
+                      ? url
+                      : null
               }
               onSelect={(option: any) => {
                 handleOptionSelected(option);

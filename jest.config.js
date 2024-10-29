@@ -2,7 +2,7 @@ module.exports = {
   preset: 'react-native',
   setupFilesAfterEnv: [
     './node_modules/@react-native-async-storage/async-storage/jest/async-storage-mock.js',
-    '<rootDir>/jestSetup.js',
+    '<rootDir>/jest.setup.js',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(react-native' +

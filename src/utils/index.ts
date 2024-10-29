@@ -109,9 +109,15 @@ export const internetIsAvailable = async () => {
   return netInfo.isConnected;
 };
 
+// Get the base path context
 export const getBasePathContext = (
+  isDemoTry: boolean,
   isDev: boolean,
 ): string => {
+  if (isDemoTry) {
+    return '';
+  }
+
   return isDev ? References.SubappContextPath : References.EtendoContextPath;
 };
 

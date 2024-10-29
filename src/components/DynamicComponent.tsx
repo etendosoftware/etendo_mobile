@@ -4,8 +4,8 @@ import LoadingScreen from "./LoadingScreen";
 
 const DynamicComponent = ({ __id, children, ...props }: any) => {
   const baseUrl = props.url;
-  const basePathContext = getBasePathContext(props.isDev);
-
+  const basePathContext = getBasePathContext(props.isDemoTry, props.isDev);
+  
   const Component = useMemo(() => {
     return React.lazy(async () => {
       try {

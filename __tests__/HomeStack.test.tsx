@@ -1,12 +1,10 @@
 import { generateUniqueId } from '../src/utils';
 
-// Mock data
 const menuItemsMock = [
   { name: 'Etendo Classic', component: 'ComponentA' },
   { name: 'Etendo Classic', component: 'ComponentB' }
 ];
 
-// Test
 describe('Duplicate Sub-Application Names Test', () => {
   it('should assign unique IDs to sub-applications with identical names', () => {
     const uniqueIds = menuItemsMock.map(item => generateUniqueId(item.name));
