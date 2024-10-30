@@ -115,7 +115,7 @@ export const getBasePathContext = (
   isDev: boolean,
 ): string => {
   if (isDemoTry) {
-    return '';
+    return References.EtendoContextPath;
   }
 
   return isDev ? References.SubappContextPath : References.EtendoContextPath;
