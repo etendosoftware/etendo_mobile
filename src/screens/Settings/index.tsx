@@ -90,7 +90,6 @@ const Settings = props => {
   const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [refresh, setRefresh] = useState(false);
 
   const {
     loadEnviromentsUrl,
@@ -110,7 +109,6 @@ const Settings = props => {
       } else {
         await AsyncStorage.removeItem('selectedUrl');
       }
-      setRefresh(prevState => !prevState);
     };
     fetchUrlAndLogo();
   }, [hasErrorLogo]);
@@ -121,23 +119,23 @@ const Settings = props => {
     }
   };
 
-  const hideChangeURLModal = () => {
+  const hideChangeURLModal = useCallback(() => {
     if (isKeyboardVisible) {
       Keyboard.dismiss();
     } else {
       setShowChangeURLModal(false);
       setModalUrl(url);
     }
-  };
+  }, [isKeyboardVisible, url]);
 
   const handleLanguage = async (label: string, value: string) => {
     await changeLanguage(value, setCurrentLanguage(value));
     setDisplayLanguage(label);
   };
 
-  const addUrl = async () => {
+  const addUrl = useCallback(async () => {
     const formattedUrl = formatUrl(valueEnvironmentUrl);
-    const newUrl = formattedUrl + contextPathUrl;
+    const newUrl = `${formattedUrl}${contextPathUrl}`;
 
     if (!formattedUrl || storedDataUrl.includes(newUrl)) {
       return;
@@ -150,10 +148,10 @@ const Settings = props => {
 
     setValueEnvironmentUrl('');
     setSelectedUrl(newUrl);
-    atChooseOption(newUrl);
+    await atChooseOption(newUrl);
 
     setIsUpdating(false);
-  };
+  }, [valueEnvironmentUrl, contextPathUrl, storedDataUrl]);
 
   const deleteUrl = async (item: string) => {
     const storedEnviromentsUrl = await loadEnviromentsUrl();
@@ -281,7 +279,7 @@ const Settings = props => {
 
   return (
     <KeyboardAwareScrollView
-      key={refresh}
+      key={showChangeURLModal ? 'modal-visible' : 'modal-hidden'}
       style={styles.fullContainer}
       ref={(ref: KeyboardAwareScrollView) => {
         listViewRef = ref;

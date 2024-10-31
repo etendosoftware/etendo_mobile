@@ -125,8 +125,10 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     if (menuItems) {
       const itemsDrawer = menuItems.map((item, index) => ({
         ...item,
-        uniqueId: generateUniqueId(item.name),
+        label: item.name,
+        route: item.screenName,
         screenName: `${item.name}_${index}`,
+        uniqueId: generateUniqueId(item.name),
       }));
 
       setSubApps(itemsDrawer);
