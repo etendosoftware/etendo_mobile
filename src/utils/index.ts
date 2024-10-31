@@ -109,13 +109,19 @@ export const internetIsAvailable = async () => {
   return netInfo.isConnected;
 };
 
+// Get the base path context
 export const getBasePathContext = (
   isDemoTry: boolean,
   isDev: boolean,
 ): string => {
   if (isDemoTry) {
-    return '';
+    return References.EtendoContextPath;
   }
 
   return isDev ? References.SubappContextPath : References.EtendoContextPath;
+};
+
+// Generates a unique ID by combining a name with a random string
+export const generateUniqueId = (name: string) => {
+  return `${name}_${Math.random().toString(36).slice(2, 11)}`;
 };

@@ -22,6 +22,7 @@ import {
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
+  setContextPathUrl,
 } from '../../../redux/user';
 import {
   setIsDemo,
@@ -188,16 +189,19 @@ const LoginFunctional = props => {
 
       try {
         await AsyncStorage.setItem('baseUrl', References.DemoUrl);
-        await AsyncStorage.setItem('selectedUrl', References.DemoUrl);
+        await AsyncStorage.setItem('selectedUrl', References.EtendoDemo);
+        await AsyncStorage.setItem('contextPathUrl', References.EtendoContextPath);
+        await AsyncStorage.setItem('selectedEnvironmentUrl', References.EtendoDemo);
+        dispatch(setIsDemo(true));
+        dispatch(setSelectedUrl(References.DemoUrl));
+        dispatch(setContextPathUrl(References.EtendoContextPath));
+        dispatch(setSelectedEnvironmentUrl(References.EtendoDemo));
       } catch (error) {
         console.warn("Failed to store URL in AsyncStorage, will continue without storage.", error);
       }
 
       await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
-      dispatch(setSelectedUrl(References.DemoUrl));
-      dispatch(setSelectedEnvironmentUrl(References.DemoUrl));
-      dispatch(setIsDemo(true));
 
       try {
         await AsyncStorage.setItem('isDemoTry', References.YES);

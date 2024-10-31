@@ -24,6 +24,7 @@ import {
   setIsSubapp
 } from "../../../redux/window";
 import { OBRest } from "etrest";
+import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
@@ -71,26 +72,30 @@ const HomeFunction = (props: Props) => {
     return data?.username ? data?.username + "!" : null;
   };
 
+  const processedMenuItems = menuItems?.map((item, index) => ({
+    ...item,
+    uniqueId: generateUniqueId(item.name),
+    screenName: `${item.name}_${index}`,
+  }));
+
   return (
     <View style={styles.container}>
       <ImageBackground source={getBackground()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             <>
-              {menuItems?.map((menuItem: any, index: number) => {
-                return (
-                  <View key={"CardDropdown" + index} style={{ marginLeft: 35 }}>
-                    <CardDropdown
-                      title={menuItem.name}
-                      image={<StarIcon />}
-                      onPress={() => {
-                        dispatch(setIsSubapp(true));
-                        props.navigation.navigate(menuItem.name);
-                      }}
-                    />
-                  </View>
-                );
-              })}
+              {processedMenuItems?.map((menuItem: any, index: number) => (
+                <View key={"CardDropdown" + index} style={{ marginLeft: 35 }}>
+                  <CardDropdown
+                    title={menuItem.name}
+                    image={<StarIcon />}
+                    onPress={() => {
+                      dispatch(setIsSubapp(true));
+                      props.navigation.navigate(menuItem.screenName);
+                    }}
+                  />
+                </View>
+              ))}
             </>
             {loading && <LoadingHome />}
           </ScrollView>
