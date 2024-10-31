@@ -25,7 +25,6 @@ export const useWindow = () => {
   const windows = useAppSelector(selectWindows);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
-  const token = useAppSelector(selectToken);
 
   const loadWindows = async (token) => {
     try {
@@ -92,19 +91,19 @@ export const useWindow = () => {
     try {
       const mi = appsData
         ? appsData.map((app: any) => {
-            const path = app.path.split("/");
-            const __id = app.etdappAppVersionIsDev
-              ? path[path.length - 1]
-              : app.path;
-            return {
-              name: app.etdappAppName,
-              __id: __id,
-              url: app.etdappAppVersionIsDev
-                ? selectedEnvironmentUrl
-                : selectedUrl,
-              isDev: app.etdappAppVersionIsDev
-            };
-          })
+          const path = app.path.split("/");
+          const __id = app.etdappAppVersionIsDev
+            ? path[path.length - 1]
+            : app.path;
+          return {
+            name: app.etdappAppName,
+            __id: __id,
+            url: app.etdappAppVersionIsDev
+              ? selectedEnvironmentUrl
+              : selectedUrl,
+            isDev: app.etdappAppVersionIsDev
+          };
+        })
         : [];
       let [{ isDev = false }] = mi;
       dispatch(setIsDeveloperMode(isDev));
