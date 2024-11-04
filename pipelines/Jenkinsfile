@@ -117,11 +117,11 @@ spec:
               }
               currentBuild.result = SUCCESS
             } catch (Exception e) {
+              env.ERROR_MESSAGE = "Failed Building Environment"
               echo "Exception occurred: " + e.toString()
-              echo "-------------------------- Build Failed --------------------------"
+              echo "-------------------------- ${env.ERROR_MESSAGE} --------------------------"
               currentBuild.result = FAILED
-              error('Build Failed')
-              env.STATUSBUILD = "0"
+              error(env.ERROR_MESSAGE)
             }
           }
         }
@@ -144,12 +144,13 @@ spec:
                 echo "-------------------------- Running Tests --------------------------"
                 sh "yarn test --coverage"
                 echo "-------------------------- Tests Succesful --------------------------"
+                currentBuild.result = SUCCESS
               } catch (Exception e) {
+                env.ERROR_MESSAGE = "Failed Tests"
                 echo "Exception occurred: " + e.toString()
-                echo "-------------------------- Failed Tests --------------------------"
+                echo "-------------------------- ${env.ERROR_MESSAGE} --------------------------"
                 currentBuild.result = UNSTABLE
-                unstable('Failed Tests')
-                env.STATUSTEST = "0"
+                unstable(env.ERROR_MESSAGE)
               }
             }
           }
@@ -157,7 +158,7 @@ spec:
       }
     }
 
-    stage('Run Sonarqube') {
+    stage('Run Sonarqube Analysis') { // MARK: Run Sonarqube Analysis
       when {
         expression {
           currentBuild.result == SUCCESS
@@ -168,9 +169,23 @@ spec:
       }
       steps {
         container('compiler') {
-          sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Running SonarQube Analysis\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
-          withSonarQubeEnv(credentialsId: 'sonar-token-access', installationName: 'SonarQubeServer') {
-            sh "${scannerHome}/bin/sonar-scanner"
+          script {
+            try {
+              sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_INPROGRESS_STATUS} \"Running SonarQube Analysis\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
+              echo "-------------------------- Running SonarQube Analysis --------------------------"
+              dir(REPOSITORY_NAME) {
+                withSonarQubeEnv(credentialsId: 'sonar-token-access', installationName: 'SonarQubeServer') {
+                  sh "${scannerHome}/bin/sonar-scanner"
+                }
+              }
+              echo "-------------------------- SonarQube Analysis Succesful --------------------------"
+            } catch (Exception e) {
+              env.ERROR_MESSAGE = "Failed SonarQube Analysis"
+              echo "Exception occurred: " + e.toString()
+              echo "-------------------------- ${env.ERROR_MESSAGE} --------------------------"
+              currentBuild.result = FAILED
+              unstable(env.ERROR_MESSAGE)
+            }
           }
         }
       }
@@ -235,7 +250,7 @@ spec:
 
             ${env.COMMIT_INFO_TEMPLATE}
 
-            <p>The 'App Loader' tests have failed.<br>Check out the output in the following link: ${env.BUILD_URL}
+            <p>The tests of '${REPOSITORY_NAME}' have failed.<br>Check out the output in the following link: ${env.BUILD_URL}
 
             <p class="footer"><em>Best regards,<br>#EtendoBot 🤖</em></p>
             <p>__________________________________________________________</p>
@@ -249,7 +264,7 @@ spec:
         sh "./pipelines/utils/build-update.sh ${REPOSITORY_NAME} ${COMMIT_FAILED_STATUS} \"Build Failed\" ${ACCESS_TOKEN} ${GIT_COMMIT} ${BUILD_URL} \"${CONTEXT_BUILD}\""
       }
       mail to: EMAIL_ADDRESS,
-      subject: "🚫 Build Failed in ${currentBuild.fullDisplayName} on '${GIT_BRANCH}' branch",
+      subject: "🚫 ${env.ERROR_MESSAGE} in ${currentBuild.fullDisplayName} on '${GIT_BRANCH}' branch",
       mimeType: "text/html",
       body:  """
         <html>
@@ -267,7 +282,7 @@ spec:
 
             ${env.COMMIT_INFO_TEMPLATE}
 
-            <p>The build has failed unexpectedly. This failure isn't likely to be caused by failing tests.<br>To more information on the failing run visit: ${env.BUILD_URL}</p>
+            <p>${env.ERROR_MESSAGE}. This failure isn't likely to be caused by failing tests.<br>To more information on the failing run visit: ${env.BUILD_URL}</p>
 
             <p class="footer"><em>Best regards,<br>#EtendoBot 🤖</em></p>
             <p>__________________________________________________________</p>

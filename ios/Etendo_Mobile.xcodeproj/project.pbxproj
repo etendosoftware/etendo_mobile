@@ -15,6 +15,9 @@
 		6132EF182BDFF13200BBE14D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */; };
 		7699B88040F8A987B510C191 /* libPods-Etendo_Mobile-Etendo_MobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Etendo_Mobile-Etendo_MobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C27A23E32CD8ED170093E3EF /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27A23E22CD8ED170093E3EF /* ShareViewController.swift */; };
+		C27A23E62CD8ED170093E3EF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C27A23E42CD8ED170093E3EF /* MainInterface.storyboard */; };
+		C27A23EA2CD8ED170093E3EF /* EtendoRecieveShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C27A23E02CD8ED170093E3EF /* EtendoRecieveShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C2BD23A62C4E9543006FB80E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C2BD23A52C4E9543006FB80E /* Fonts */; };
 /* End PBXBuildFile section */
 
@@ -26,7 +29,28 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = Etendo_Mobile;
 		};
+		C27A23E82CD8ED170093E3EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C27A23DF2CD8ED170093E3EF;
+			remoteInfo = EtendoRecieveShare;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C27A23D82CD8ECBB0093E3EF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C27A23EA2CD8ED170093E3EF /* EtendoRecieveShare.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* Etendo_MobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Etendo_MobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,6 +70,12 @@
 		6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Etendo_Mobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Etendo_Mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; sourceTree = "<group>"; };
+		C27A23E02CD8ED170093E3EF /* EtendoRecieveShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EtendoRecieveShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C27A23E22CD8ED170093E3EF /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		C27A23E52CD8ED170093E3EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		C27A23E72CD8ED170093E3EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C27A23EE2CD8EE210093E3EF /* Etendo_Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Etendo_Mobile.entitlements; path = Etendo_Mobile/Etendo_Mobile.entitlements; sourceTree = "<group>"; };
+		C27A23EF2CD8EEA10093E3EF /* EtendoRecieveShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EtendoRecieveShare.entitlements; sourceTree = "<group>"; };
 		C2BD23A52C4E9543006FB80E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -64,6 +94,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-Etendo_Mobile.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C27A23DD2CD8ED170093E3EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* Etendo_Mobile */ = {
 			isa = PBXGroup;
 			children = (
+				C27A23EE2CD8EE210093E3EF /* Etendo_Mobile.entitlements */,
 				C2BD23A52C4E9543006FB80E /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -125,6 +163,7 @@
 				13B07FAE1A68108700A75B9A /* Etendo_Mobile */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* Etendo_MobileTests */,
+				C27A23E12CD8ED170093E3EF /* EtendoRecieveShare */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -139,6 +178,7 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* Etendo_Mobile.app */,
 				00E356EE1AD99517003FC87E /* Etendo_MobileTests.xctest */,
+				C27A23E02CD8ED170093E3EF /* EtendoRecieveShare.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -152,6 +192,17 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		C27A23E12CD8ED170093E3EF /* EtendoRecieveShare */ = {
+			isa = PBXGroup;
+			children = (
+				C27A23EF2CD8EEA10093E3EF /* EtendoRecieveShare.entitlements */,
+				C27A23E22CD8ED170093E3EF /* ShareViewController.swift */,
+				C27A23E42CD8ED170093E3EF /* MainInterface.storyboard */,
+				C27A23E72CD8ED170093E3EF /* Info.plist */,
+			);
+			path = EtendoRecieveShare;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -190,15 +241,34 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				C27A23D82CD8ECBB0093E3EF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C27A23E92CD8ED170093E3EF /* PBXTargetDependency */,
 			);
 			name = Etendo_Mobile;
 			productName = Etendo_Mobile;
 			productReference = 13B07F961A680F5B00A75B9A /* Etendo_Mobile.app */;
 			productType = "com.apple.product-type.application";
+		};
+		C27A23DF2CD8ED170093E3EF /* EtendoRecieveShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C27A23EB2CD8ED170093E3EF /* Build configuration list for PBXNativeTarget "EtendoRecieveShare" */;
+			buildPhases = (
+				C27A23DC2CD8ED170093E3EF /* Sources */,
+				C27A23DD2CD8ED170093E3EF /* Frameworks */,
+				C27A23DE2CD8ED170093E3EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EtendoRecieveShare;
+			productName = EtendoRecieveShare;
+			productReference = C27A23E02CD8ED170093E3EF /* EtendoRecieveShare.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -206,6 +276,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -214,6 +285,9 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
+					};
+					C27A23DF2CD8ED170093E3EF = {
+						CreatedOnToolsVersion = 15.0.1;
 					};
 				};
 			};
@@ -232,6 +306,7 @@
 			targets = (
 				13B07F861A680F5B00A75B9A /* Etendo_Mobile */,
 				00E356ED1AD99517003FC87E /* Etendo_MobileTests */,
+				C27A23DF2CD8ED170093E3EF /* EtendoRecieveShare */,
 			);
 		};
 /* End PBXProject section */
@@ -252,6 +327,14 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				C2BD23A62C4E9543006FB80E /* Fonts in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C27A23DE2CD8ED170093E3EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C27A23E62CD8ED170093E3EF /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +508,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C27A23DC2CD8ED170093E3EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C27A23E32CD8ED170093E3EF /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -433,7 +524,23 @@
 			target = 13B07F861A680F5B00A75B9A /* Etendo_Mobile */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
+		C27A23E92CD8ED170093E3EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C27A23DF2CD8ED170093E3EF /* EtendoRecieveShare */;
+			targetProxy = C27A23E82CD8ED170093E3EF /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C27A23E42CD8ED170093E3EF /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C27A23E52CD8ED170093E3EF /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
@@ -446,7 +553,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Etendo_MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -470,7 +577,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = Etendo_MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -491,8 +598,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-Etendo_Mobile.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Etendo_Mobile/Etendo_Mobile.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -500,6 +609,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B4T44MT553;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Etendo_Mobile/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -527,14 +637,17 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-Etendo_Mobile.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Etendo_Mobile/Etendo_Mobile.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B4T44MT553;
 				INFOPLIST_FILE = Etendo_Mobile/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -711,6 +824,93 @@
 			};
 			name = Release;
 		};
+		C27A23EC2CD8ED170093E3EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = EtendoRecieveShare/EtendoRecieveShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = B4T44MT553;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EtendoRecieveShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EtendoRecieveShare;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios.EtendoRecieveShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C27A23ED2CD8ED170093E3EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = EtendoRecieveShare/EtendoRecieveShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = B4T44MT553;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EtendoRecieveShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EtendoRecieveShare;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.etendoapploader.ios.EtendoRecieveShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -737,6 +937,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C27A23EB2CD8ED170093E3EF /* Build configuration list for PBXNativeTarget "EtendoRecieveShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C27A23EC2CD8ED170093E3EF /* Debug */,
+				C27A23ED2CD8ED170093E3EF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

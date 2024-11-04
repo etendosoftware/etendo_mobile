@@ -1,5 +1,5 @@
 // Importing required modules and libraries
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import locale from '../../i18n/locale';
 import { Dialog, Text, Button } from 'react-native-paper';
@@ -7,7 +7,6 @@ import { Snackbar } from '../../globals';
 import { Version } from '../../ob-api/objects';
 import { getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
 import { defaultTheme } from '../../themes';
-import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
 import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
 import { isTablet, isTabletSmall } from '../../helpers/IsTablet';
@@ -23,6 +22,7 @@ import {
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
+  setContextPathUrl,
 } from '../../../redux/user';
 import {
   setIsDemo,
@@ -186,31 +186,41 @@ const LoginFunctional = props => {
       dispatch(setLoadingScreen(true));
 
       await setUrlOB(References.DemoUrl);
-      await AsyncStorage.setItem('baseUrl', References.DemoUrl);
-      await AsyncStorage.setItem('selectedUrl', References.DemoUrl);
+
+      try {
+        await AsyncStorage.setItem('baseUrl', References.DemoUrl);
+        await AsyncStorage.setItem('selectedUrl', References.EtendoDemo);
+        await AsyncStorage.setItem('contextPathUrl', References.EtendoContextPath);
+        await AsyncStorage.setItem('selectedEnvironmentUrl', References.EtendoDemo);
+        dispatch(setIsDemo(true));
+        dispatch(setSelectedUrl(References.DemoUrl));
+        dispatch(setContextPathUrl(References.EtendoContextPath));
+        dispatch(setSelectedEnvironmentUrl(References.EtendoDemo));
+      } catch (error) {
+        console.warn("Failed to store URL in AsyncStorage, will continue without storage.", error);
+      }
+
       await login(AdminUsername, AdminPassword);
       await getImageProfile(data);
-      dispatch(setSelectedUrl(References.DemoUrl));
-      dispatch(setSelectedEnvironmentUrl(References.DemoUrl));
-      dispatch(setIsDemo(true));
-      await AsyncStorage.setItem('isDemoTry', References.YES);
-      const storedEnviromentsUrl = await AsyncStorage.getItem(
-        'storedEnviromentsUrl',
-      );
 
-      const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
-        ? JSON.parse(storedEnviromentsUrl)
-        : [];
-
-      dispatch(
-        setStoredEnviromentsUrl([
-          ...storedEnviromentsUrlParsed,
-          References.DemoUrl,
-        ]),
-      );
+      try {
+        await AsyncStorage.setItem('isDemoTry', References.YES);
+        const storedEnviromentsUrl = await AsyncStorage.getItem('storedEnviromentsUrl');
+        const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
+          ? JSON.parse(storedEnviromentsUrl)
+          : [];
+        dispatch(
+          setStoredEnviromentsUrl([
+            ...storedEnviromentsUrlParsed,
+            References.DemoUrl,
+          ])
+        );
+      } catch (error) {
+        console.warn("Failed to store environments in AsyncStorage.", error);
+      }
     } catch (error) {
       show(locale.t('LoginScreen:NetworkError'), 'error');
-      throw error;
+      console.log("Error in the demo process:", error);
     } finally {
       dispatch(setLoadingScreen(false));
     }
@@ -232,11 +242,24 @@ const LoginFunctional = props => {
     return deviceIsATablet ? backgroundTabletImg : backgroundMobileImg;
   };
 
-  const scrollBottom = () => {
-    setTimeout(() => {
-      listViewRef?.scrollToEnd();
-    }, 500);
-  };
+  useEffect(() => {
+    const checkStoredData = async () => {
+      try {
+        const storedUrl = await AsyncStorage.getItem('selectedUrl');
+        if (!storedUrl) {
+          console.warn("The selected URL was not found, using the demo URL.");
+          dispatch(setSelectedUrl(References.DemoUrl));
+        } else {
+          dispatch(setSelectedUrl(storedUrl));
+        }
+      } catch (error) {
+        console.log("Error to access AsyncStorage:", error);
+        dispatch(setSelectedUrl(References.DemoUrl));
+      }
+    };
+
+    checkStoredData();
+  }, []);
 
   const ChangedPassword = () => {
     return (

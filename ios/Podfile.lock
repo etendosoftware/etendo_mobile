@@ -75,6 +75,10 @@ PODS:
   - hermes-engine/Pre-built (0.72.14)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
+  - Permission-LocationAlways (3.10.1):
+    - RNPermissions
+  - Permission-LocationWhenInUse (3.10.1):
+    - RNPermissions
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -388,6 +392,8 @@ PODS:
     - React-Core
   - react-native-pdf (6.7.1):
     - React-Core
+  - react-native-receive-sharing-intent (2.0.0):
+    - React-Core
   - react-native-safe-area-context (4.11.0):
     - React-Core
   - react-native-slider (4.5.3):
@@ -586,6 +592,8 @@ DEPENDENCIES:
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
   - OpenSSL-Universal (= 1.1.1100)
+  - Permission-LocationAlways (from `../node_modules/react-native-permissions/ios/LocationAlways/Permission-LocationAlways.podspec`)
+  - Permission-LocationWhenInUse (from `../node_modules/react-native-permissions/ios/LocationWhenInUse/Permission-LocationWhenInUse.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -609,6 +617,7 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
+  - react-native-receive-sharing-intent (from `../node_modules/react-native-receive-sharing-intent`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
@@ -675,6 +684,10 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
+  Permission-LocationAlways:
+    :path: "../node_modules/react-native-permissions/ios/LocationAlways/Permission-LocationAlways.podspec"
+  Permission-LocationWhenInUse:
+    :path: "../node_modules/react-native-permissions/ios/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -717,6 +730,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-orientation-locker"
   react-native-pdf:
     :path: "../node_modules/react-native-pdf"
+  react-native-receive-sharing-intent:
+    :path: "../node_modules/react-native-receive-sharing-intent"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
@@ -805,6 +820,8 @@ SPEC CHECKSUMS:
   hermes-engine: b213bace5f31766ad1434d2d9b2cbf04cf92a2b6
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  Permission-LocationAlways: 0a0de4637662cfdf3603d6933779da2bdd657306
+  Permission-LocationWhenInUse: 31f52ebddef50c306a585b5a82ca16c8ff582dec
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 264adaca1d8b1a9c078761891898d4142df05313
   RCTTypeSafety: 279a89da7058a69899778a127be73fab38b84499
@@ -826,6 +843,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 48c5f79a84fbc3ba1d28a8b0d04adeda72885fa8
   react-native-orientation-locker: 5819fd23ca89cbac0d736fb4314745f62716d517
   react-native-pdf: 7c0e91ada997bac8bac3bb5bea5b6b81f5a3caae
+  react-native-receive-sharing-intent: 62ab28c50e6ae56d32b9e841d7452091312a0bc7
   react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
   react-native-slider: c38ad73e9c65742acba6510fea929f36db8e2b9a
   react-native-worklets-core: ff2156b19b8f4a979fa0db52659e39a755b1454b
@@ -864,6 +882,6 @@ SPEC CHECKSUMS:
   Yoga: c32e0be1a17f8f1f0e633a3122f7666441f52c82
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: d0443ee603d920f37f0346e228fff931346d46c9
+PODFILE CHECKSUM: a5e3b33288b79df805c33c42246e4bbc22981d91
 
 COCOAPODS: 1.15.2

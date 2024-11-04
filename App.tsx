@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -16,6 +17,7 @@ import { Camera } from 'react-native-vision-camera';
 import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+import { References } from './src/constants/References';
 
 interface Props {}
 type RootStackParamList = {
@@ -42,8 +44,6 @@ const App: React.FC<Props> = () => {
         }
         await languageDefault();
         dispatch(setLoadingScreen(false));
-        // Important: Do not add any other code here, this is for the root component only.
-        // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
         await atAppInit();
       } catch (error) {
         console.error('Error fetching initial data:', error);
@@ -61,13 +61,13 @@ const App: React.FC<Props> = () => {
     const handleSharedFiles = () => {
       try {
         ReceiveSharingIntent.getReceivedFiles(
-          (files: any) => {
-            console.log('Shared files received:', files);
+          (sharedFiles: any) => {
+            console.log('Shared files received:', sharedFiles);
           },
           (error: any) => {
             console.error('Error receiving shared files:', error);
           },
-          'etendo'
+          References.EtendoReceiveShare,
         );
       } catch (error) {
         console.error('Error handling shared files:', error);
