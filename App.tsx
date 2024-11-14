@@ -46,8 +46,7 @@ const App: React.FC<Props> = () => {
         dispatch(setLoadingScreen(false));
         await atAppInit();
       } catch (error) {
-        show(locale.t('ErrorFetchingInitialData'), 'error');
-        console.error(locale.t('ErrorFetchingInitialData'), error);      }
+        console.error(locale.t('ErrorFetchingInitialData'), error);}
     };
 
     const checkPermission = async () => {
@@ -66,13 +65,11 @@ const App: React.FC<Props> = () => {
             console.log('Shared files received:', sharedFiles);
           },
           (error: any) => {
-            show(locale.t('ErrorReceivingSharedFiles'), 'error');
             console.error(locale.t('ErrorReceivingSharedFiles'), error);
           },
           References.EtendoReceiveShare,
         );
       } catch (error) {
-        show(locale.t('ErrorHandlingSharedFiles'), 'error');
         console.error(locale.t('ErrorHandlingSharedFiles'), error);
       }
     };

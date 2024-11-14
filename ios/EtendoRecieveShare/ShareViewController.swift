@@ -1,338 +1,318 @@
-
 import UIKit
 import Social
 import MobileCoreServices
 import Photos
 
-class ShareViewController: SLComposeServiceViewController {
- // TODO: IMPORTANT: This should be your host app bundle identifier
- let hostAppBundleIdentifier = "com.etendoapploader.ios"
- let shareProtocol = "ShareMedia" //share url protocol (must be unique to your app, suggest using your apple bundle id, ie: `hostAppBundleIdentifier`)
- let sharedKey = "ShareKey"
- var sharedMedia: [SharedMediaFile] = []
- var sharedText: [String] = []
- let imageContentType = kUTTypeImage as String
- let videoContentType = kUTTypeMovie as String
- let textContentType = kUTTypeText as String
- let urlContentType = kUTTypeURL as String
- let fileURLType = kUTTypeFileURL as String;
- 
- override func isContentValid() -> Bool {
-   return true
- }
- 
- override func viewDidLoad() {
-       super.viewDidLoad();
-   }
+class ShareViewController: UIViewController {
+    var token: String?
+    var urlToFetchSubApps: String?
+    
+    var subApplicationsData = [[String: Any]]()
+    var rawResponse: String?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let appGroupID = "group.com.etendoapploader.ios"
+        let sharedDefaults = UserDefaults(suiteName: appGroupID)
+        
+        token = sharedDefaults?.string(forKey: "token")
+        urlToFetchSubApps = sharedDefaults?.string(forKey: "urlToFetchSubApps")
+        
+        if let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] {
+            for item in extensionItems {
+                if let attachments = item.attachments {
+                    for attachment in attachments {
+                        if attachment.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
+                           attachment.hasItemConformingToTypeIdentifier(kUTTypeMovie as String) ||
+                           attachment.hasItemConformingToTypeIdentifier(kUTTypeAudio as String) ||
+                           attachment.hasItemConformingToTypeIdentifier(kUTTypeData as String) {
+                            
+                            if let uti = attachment.registeredTypeIdentifiers.first {
+                                attachment.loadItem(forTypeIdentifier: uti, options: nil) { [weak self] (data, error) in
+                                    guard let self = self else { return }
+                                    if let url = data as? URL {
+                                        self.saveFileToAppGroup(fileURL: url)
+                                    } else if let image = data as? UIImage {
+                                        self.saveImageToAppGroup(image: image)
+                                    } else {
+                                        print("Unsupported data type")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if let token = self.token, let urlToFetchSubApps = self.urlToFetchSubApps {
+            fetchSubApplications { [weak self] success in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    if success {
+                        self.showShareModal()
+                    } else {
+                        self.showErrorAlert(message: "Could not retrieve the sub-applications.", token: self.token, urlToFetchSubApps: self.urlToFetchSubApps)
+                    }
+                }
+            }
+        } else {
+            self.showErrorAlert(message: "Please log in to the main application before using this feature.", token: self.token, urlToFetchSubApps: self.urlToFetchSubApps)
+        }
+    }
 
- override func viewDidAppear(_ animated: Bool) {
-         super.viewDidAppear(animated)
+    private func saveFileToAppGroup(fileURL: URL) {
+        let appGroupID = "group.com.etendoapploader.ios"
+        let fileManager = FileManager.default
 
-   if let content = extensionContext!.inputItems[0] as? NSExtensionItem {
-     if let contents = content.attachments {
-       for (index, attachment) in (contents).enumerated() {
-         if attachment.hasItemConformingToTypeIdentifier(imageContentType) {
-           handleImages(content: content, attachment: attachment, index: index)
-         } else if attachment.hasItemConformingToTypeIdentifier(textContentType) {
-           handleText(content: content, attachment: attachment, index: index)
-         } else if attachment.hasItemConformingToTypeIdentifier(fileURLType) {
-           handleFiles(content: content, attachment: attachment, index: index)
-         } else if attachment.hasItemConformingToTypeIdentifier(urlContentType) {
-           handleUrl(content: content, attachment: attachment, index: index)
-         } else if attachment.hasItemConformingToTypeIdentifier(videoContentType) {
-           handleVideos(content: content, attachment: attachment, index: index)
-         }
-       }
-     }
-   }
- }
- 
- override func didSelectPost() {
-       print("didSelectPost");
-   }
+        if let containerURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
+            let destinationURL = containerURL.appendingPathComponent(fileURL.lastPathComponent)
 
- override func configurationItems() -> [Any]! {
-   // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
-   return []
- }
- 
- private func handleText (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-   attachment.loadItem(forTypeIdentifier: textContentType, options: nil) { [weak self] data, error in
-     
-     if error == nil, let item = data as? String, let this = self {
-       
-       this.sharedText.append(item)
-       
-       // If this is the last item, save imagesData in userDefaults and redirect to host app
-       if index == (content.attachments?.count)! - 1 {
-         let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-         userDefaults?.set(this.sharedText, forKey: this.sharedKey)
-         userDefaults?.synchronize()
-         this.redirectToHostApp(type: .text)
-       }
-       
-     } else {
-       self?.dismissWithError()
-     }
-   }
- }
- 
- private func handleUrl (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-   attachment.loadItem(forTypeIdentifier: urlContentType, options: nil) { [weak self] data, error in
-     
-     if error == nil, let item = data as? URL, let this = self {
-       
-       this.sharedText.append(item.absoluteString)
-       
-       // If this is the last item, save imagesData in userDefaults and redirect to host app
-       if index == (content.attachments?.count)! - 1 {
-         let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-         userDefaults?.set(this.sharedText, forKey: this.sharedKey)
-         userDefaults?.synchronize()
-         this.redirectToHostApp(type: .text)
-       }
-       
-     } else {
-       self?.dismissWithError()
-     }
-   }
- }
- 
- private func handleImages (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-   attachment.loadItem(forTypeIdentifier: imageContentType, options: nil) { [weak self] data, error in
-     
-     if error == nil, let url = data as? URL, let this = self {
-       //  this.redirectToHostApp(type: .media)
-       // Always copy
-       let fileExtension = this.getExtension(from: url, type: .video)
-       let newName = UUID().uuidString
-       let newPath = FileManager.default
-         .containerURL(forSecurityApplicationGroupIdentifier: "group.\(this.hostAppBundleIdentifier)")!
-         .appendingPathComponent("\(newName).\(fileExtension)")
-       let copied = this.copyFile(at: url, to: newPath)
-       if(copied) {
-         this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .image))
-       }
-       
-       // If this is the last item, save imagesData in userDefaults and redirect to host app
-       if index == (content.attachments?.count)! - 1 {
-         let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-         userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
-         userDefaults?.synchronize()
-         this.redirectToHostApp(type: .media)
-       }
-       
-     } else {
-       self?.dismissWithError()
-     }
-   }
- }
- 
- private func handleVideos (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-   attachment.loadItem(forTypeIdentifier: videoContentType, options:nil) { [weak self] data, error in
-     
-     if error == nil, let url = data as? URL, let this = self {
-       
-       // Always copy
-       let fileExtension = this.getExtension(from: url, type: .video)
-       let newName = UUID().uuidString
-       let newPath = FileManager.default
-         .containerURL(forSecurityApplicationGroupIdentifier: "group.\(this.hostAppBundleIdentifier)")!
-         .appendingPathComponent("\(newName).\(fileExtension)")
-       let copied = this.copyFile(at: url, to: newPath)
-       if(copied) {
-         guard let sharedFile = this.getSharedMediaFile(forVideo: newPath) else {
-           return
-         }
-         this.sharedMedia.append(sharedFile)
-       }
+            do {
+                if fileManager.fileExists(atPath: destinationURL.path) {
+                    try fileManager.removeItem(at: destinationURL)
+                }
+                try fileManager.copyItem(at: fileURL, to: destinationURL)
 
-       // If this is the last item, save imagesData in userDefaults and redirect to host app
-       if index == (content.attachments?.count)! - 1 {
-         let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-         userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
-         userDefaults?.synchronize()
-         this.redirectToHostApp(type: .media)
-       }
-       
-     } else {
-       self?.dismissWithError()
-     }
-   }
- }
- 
- private func handleFiles (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-   attachment.loadItem(forTypeIdentifier: fileURLType, options: nil) { [weak self] data, error in
-     
-     if error == nil, let url = data as? URL, let this = self {
-       
-       // Always copy
-       let newName = this.getFileName(from :url)
-       let newPath = FileManager.default
-         .containerURL(forSecurityApplicationGroupIdentifier: "group.\(this.hostAppBundleIdentifier)")!
-         .appendingPathComponent("\(newName)")
-       let copied = this.copyFile(at: url, to: newPath)
-       if (copied) {
-         this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .file))
-       }
-       
-       if index == (content.attachments?.count)! - 1 {
-         let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-         userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
-         userDefaults?.synchronize()
-         this.redirectToHostApp(type: .file)
-       }
-       
-     } else {
-       self?.dismissWithError()
-     }
-   }
- }
- 
- private func dismissWithError() {
-   print("[ERROR] Error loading data!")
-   let alert = UIAlertController(title: "Error", message: "Error loading data", preferredStyle: .alert)
-   
-   let action = UIAlertAction(title: "Error", style: .cancel) { _ in
-     self.dismiss(animated: true, completion: nil)
-   }
-   
-   alert.addAction(action)
-   present(alert, animated: true, completion: nil)
-   extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
- }
- 
- private func redirectToHostApp(type: RedirectType) {
-   let url = URL(string: "\(shareProtocol)://dataUrl=\(sharedKey)#\(type)")
-   var responder = self as UIResponder?
-   let selectorOpenURL = sel_registerName("openURL:")
-   
-   while (responder != nil) {
-     if (responder?.responds(to: selectorOpenURL))! {
-       let _ = responder?.perform(selectorOpenURL, with: url)
-     }
-     responder = responder!.next
-   }
-   extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
- }
- 
- enum RedirectType {
-   case media
-   case text
-   case file
- }
- 
- func getExtension(from url: URL, type: SharedMediaType) -> String {
-   let parts = url.lastPathComponent.components(separatedBy: ".")
-   var ex: String? = nil
-   if (parts.count > 1) {
-     ex = parts.last
-   }
-   
-   if (ex == nil) {
-     switch type {
-     case .image:
-       ex = "PNG"
-     case .video:
-       ex = "MP4"
-     case .file:
-       ex = "TXT"
-     }
-   }
-   return ex ?? "Unknown"
- }
- 
- func getFileName(from url: URL) -> String {
-   var name = url.lastPathComponent
-   
-   if (name == "") {
-     name = UUID().uuidString + "." + getExtension(from: url, type: .file)
-   }
-   
-   return name
- }
- 
- func copyFile(at srcURL: URL, to dstURL: URL) -> Bool {
-   do {
-     if FileManager.default.fileExists(atPath: dstURL.path) {
-       try FileManager.default.removeItem(at: dstURL)
-     }
-     try FileManager.default.copyItem(at: srcURL, to: dstURL)
-   } catch (let error) {
-     print("Cannot copy item at \(srcURL) to \(dstURL): \(error)")
-     return false
-   }
-   return true
- }
- 
- private func getSharedMediaFile(forVideo: URL) -> SharedMediaFile? {
-   let asset = AVAsset(url: forVideo)
-   let duration = (CMTimeGetSeconds(asset.duration) * 1000).rounded()
-   let thumbnailPath = getThumbnailPath(for: forVideo)
-   
-   if FileManager.default.fileExists(atPath: thumbnailPath.path) {
-     return SharedMediaFile(path: forVideo.absoluteString, thumbnail: thumbnailPath.absoluteString, duration: duration, type: .video)
-   }
-   
-   var saved = false
-   let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-   assetImgGenerate.appliesPreferredTrackTransform = true
-   //        let scale = UIScreen.main.scale
-   assetImgGenerate.maximumSize =  CGSize(width: 360, height: 360)
-   do {
-     let img = try assetImgGenerate.copyCGImage(at: CMTimeMakeWithSeconds(600, preferredTimescale: Int32(1.0)), actualTime: nil)
-     try UIImage.pngData(UIImage(cgImage: img))()?.write(to: thumbnailPath)
-     saved = true
-   } catch {
-     saved = false
-   }
-   
-   return saved ? SharedMediaFile(path: forVideo.absoluteString, thumbnail: thumbnailPath.absoluteString, duration: duration, type: .video) : nil
-   
- }
- 
- private func getThumbnailPath(for url: URL) -> URL {
-   let fileName = Data(url.lastPathComponent.utf8).base64EncodedString().replacingOccurrences(of: "==", with: "")
-   let path = FileManager.default
-     .containerURL(forSecurityApplicationGroupIdentifier: "group.\(hostAppBundleIdentifier)")!
-     .appendingPathComponent("\(fileName).jpg")
-   return path
- }
- 
- class SharedMediaFile: Codable {
-   var path: String; // can be image, video or url path. It can also be text content
-   var thumbnail: String?; // video thumbnail
-   var duration: Double?; // video duration in milliseconds
-   var type: SharedMediaType;
-   
-   
-   init(path: String, thumbnail: String?, duration: Double?, type: SharedMediaType) {
-     self.path = path
-     self.thumbnail = thumbnail
-     self.duration = duration
-     self.type = type
-   }
-   
-   // Debug method to print out SharedMediaFile details in the console
-   func toString() {
-     print("[SharedMediaFile] \n\tpath: \(self.path)\n\tthumbnail: \(self.thumbnail)\n\tduration: \(self.duration)\n\ttype: \(self.type)")
-   }
- }
- 
- enum SharedMediaType: Int, Codable {
-   case image
-   case video
-   case file
- }
- 
- func toData(data: [SharedMediaFile]) -> Data {
-   let encodedData = try? JSONEncoder().encode(data)
-   return encodedData!
- }
-}
+                let fileData = try Data(contentsOf: destinationURL)
+                var fileBase64String: String?
+                
+                if fileData.count < 1_000_000 {
+                    fileBase64String = fileData.base64EncodedString(options: .lineLength64Characters)
+                } else {
+                    print("The file is too large to encode in base64.")
+                }
+                
+                let sharedDefaults = UserDefaults(suiteName: appGroupID)
+                sharedDefaults?.set(destinationURL.path, forKey: "sharedFilePath")
+                if let base64String = fileBase64String {
+                    sharedDefaults?.set(base64String, forKey: "sharedFileBase64")
+                }
+                sharedDefaults?.set(fileURL.lastPathComponent, forKey: "sharedFileName")
+                sharedDefaults?.set(getMimeType(for: fileURL), forKey: "sharedFileMimeType")
+                sharedDefaults?.synchronize()
+            } catch {
+                print("Error processing the file:: \(error)")
+            }
+        }
+    }
 
-extension Array {
- subscript (safe index: UInt) -> Element? {
-   return Int(index) < count ? self[Int(index)] : nil
- }
+    private func saveImageToAppGroup(image: UIImage) {
+        let appGroupID = "group.com.etendoapploader.ios"
+        let fileManager = FileManager.default
+
+        if let containerURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
+            let imageName = "shared_image.jpg"
+            let destinationURL = containerURL.appendingPathComponent(imageName)
+
+            do {
+                if fileManager.fileExists(atPath: destinationURL.path) {
+                    try fileManager.removeItem(at: destinationURL)
+                }
+                if let imageData = image.jpegData(compressionQuality: 1.0) {
+                    try imageData.write(to: destinationURL)
+                    var imageBase64String: String?
+                    if imageData.count < 1_000_000 {
+                        imageBase64String = imageData.base64EncodedString(options: .lineLength64Characters)
+                    }
+
+                    let sharedDefaults = UserDefaults(suiteName: appGroupID)
+                    sharedDefaults?.set(destinationURL.path, forKey: "sharedFilePath")
+                    if let base64String = imageBase64String {
+                        sharedDefaults?.set(base64String, forKey: "sharedFileBase64")
+                    }
+                    sharedDefaults?.set(imageName, forKey: "sharedFileName")
+                    sharedDefaults?.set("image/jpeg", forKey: "sharedFileMimeType")
+                    sharedDefaults?.synchronize()
+                }
+            } catch {
+                print("Error processing the file: \(error)")
+            }
+        }
+    }
+
+    private func getMimeType(for url: URL) -> String {
+        let pathExtension = url.pathExtension as CFString
+        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension, nil)?.takeRetainedValue(),
+           let mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+            return mimeType as String
+        }
+        return "application/octet-stream"
+    }
+
+    private func fetchSubApplications(completion: @escaping (Bool) -> Void) {
+        guard let urlString = self.urlToFetchSubApps,
+              let token = self.token else {
+            print("URL o token inválidos")
+            completion(false)
+            return
+        }
+        
+        let urlStringWithPath = "\(urlString)/sws/com.etendoerp.dynamic.app.userApp"
+        
+        guard let url = URL(string: urlStringWithPath) else {
+            completion(false)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let sessionConfig = URLSessionConfiguration.default
+        sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
+        let session = URLSession(configuration: sessionConfig)
+        
+        let task = session.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error {
+                completion(false)
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 401 {
+                    self?.showErrorAlert(message: "Invalid or expired token. Please log in again.", token: self?.token, urlToFetchSubApps: self?.urlToFetchSubApps)
+                    completion(false)
+                    return
+                } else if httpResponse.statusCode != 200 {
+                    self?.rawResponse = String(data: data ?? Data(), encoding: .utf8)
+                    completion(false)
+                    return
+                }
+            }
+            
+            guard let data = data else {
+                completion(false)
+                return
+            }
+            
+            do {
+                let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                
+                if let jsonArray = jsonObject as? [[String: Any]] {
+                    self?.subApplicationsData = jsonArray
+                    completion(true)
+                } else if let jsonDict = jsonObject as? [String: Any] {
+                    if let dataArray = jsonDict["data"] as? [[String: Any]] {
+                        self?.subApplicationsData = dataArray
+                        completion(true)
+                    } else {
+                        self?.rawResponse = String(data: data, encoding: .utf8)
+                        completion(false)
+                    }
+                } else {
+                    self?.rawResponse = String(data: data, encoding: .utf8)
+                    completion(false)
+                }
+            } catch {
+                self?.rawResponse = String(data: data, encoding: .utf8)
+                completion(false)
+            }
+        }
+        
+        task.resume()
+    }
+
+    private func showShareModal() {
+        let alertController = UIAlertController(title: "Select Sub-application", message: "Choose where to share", preferredStyle: .actionSheet)
+
+        let sharedDefaults = UserDefaults(suiteName: "group.com.etendoapploader.ios")
+        let fileName = sharedDefaults?.string(forKey: "sharedFileName") ?? "No disponible"
+        let filePath = sharedDefaults?.string(forKey: "sharedFilePath") ?? "No disponible"
+        let fileBase64 = sharedDefaults?.string(forKey: "sharedFileBase64") ?? "No hay contenido"
+        let fileMimeType = sharedDefaults?.string(forKey: "sharedFileMimeType") ?? "application/octet-stream"
+        
+        if !subApplicationsData.isEmpty {
+            for subApp in subApplicationsData {
+                let appName = subApp["etdappAppName"] as? String ?? "Unknown App"
+                let pathName = subApp["path"] as? String ?? "Unknown Path"
+                
+                let action = UIAlertAction(title: appName, style: .default) { _ in
+                    self.handleShare(with: appName, path: pathName)
+                }
+                alertController.addAction(action)
+            }
+        } else if let rawResponse = rawResponse {
+            let rawAction = UIAlertAction(title: "Show Raw JSON Response", style: .default) { _ in
+                self.showRawJSONAlert()
+            }
+            alertController.addAction(rawAction)
+        } else {
+            let noDataAction = UIAlertAction(title: "No Sub-applications Found", style: .default) { _ in
+                self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            }
+            alertController.addAction(noDataAction)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+        }
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    private func handleShare(with subApplication: String, path: String) {
+        let appGroupID = "group.com.etendoapploader.ios"
+        let sharedDefaults = UserDefaults(suiteName: appGroupID)
+
+        guard let filePath = sharedDefaults?.string(forKey: "sharedFilePath"),
+              let fileName = sharedDefaults?.string(forKey: "sharedFileName"),
+              let fileMimeType = sharedDefaults?.string(forKey: "sharedFileMimeType"),
+              !filePath.isEmpty, !fileName.isEmpty, !fileMimeType.isEmpty else {
+            let alertController = UIAlertController(title: "Incomplete Data", message: "The attachment data is not fully configured.", preferredStyle: .alert)
+            let dismissAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(dismissAction)
+            self.present(alertController, animated: true, completion: nil)
+            return
+        }
+        
+        sharedDefaults?.set(subApplication, forKey: "selectedSubApplication")
+        sharedDefaults?.set(path, forKey: "selectedPath")
+        sharedDefaults?.synchronize()
+
+        let subApplicationEncoded = subApplication.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subApplication
+        let pathEncoded = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? path
+
+        let urlString = "ShareMedia://open?subApplication=\(subApplicationEncoded)&path=\(pathEncoded)"
+        if let url = URL(string: urlString) {
+            var responder = self as UIResponder?
+            let selectorOpenURL = sel_registerName("openURL:")
+
+            while let r = responder {
+                if r.responds(to: selectorOpenURL) {
+                    _ = r.perform(selectorOpenURL, with: url)
+                    break
+                }
+                responder = r.next
+            }
+        }
+
+        self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    private func showRawJSONAlert() {
+        let alertController = UIAlertController(title: "Raw JSON Response", message: rawResponse, preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "OK", style: .default) { _ in
+            self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+        }
+        alertController.addAction(dismissAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func showErrorAlert(message: String, token: String?, urlToFetchSubApps: String?) {
+        DispatchQueue.main.async {
+            let fullMessage = "\(message)"
+            
+            let alertController = UIAlertController(title: "Error", message: fullMessage, preferredStyle: .alert)
+            let dismissAction = UIAlertAction(title: "OK", style: .default) { _ in
+                self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            }
+            alertController.addAction(dismissAction)
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
 }
