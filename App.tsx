@@ -15,7 +15,7 @@ import { languageDefault } from './src/helpers/getLanguajes';
 import { selectLoadingScreen, setLoadingScreen } from './redux/window';
 import { Camera } from 'react-native-vision-camera';
 import { deviceOrientation } from './src/utils';
-import { Alert, show } from 'etendo-ui-library';
+import { Alert } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 
@@ -55,7 +55,6 @@ const App: React.FC<Props> = () => {
       try {
         await Camera.requestCameraPermission();
       } catch (error) {
-        show(locale.t('ErrorCheckingCameraPermissions'), 'error');
         console.error(locale.t('ErrorCheckingCameraPermissions'), error);
       }
     };
