@@ -53,7 +53,9 @@ module.exports = {
     '|redux-persist' +
     '|rn-placeholder' +
     '|uuid' +
+    'node_modules/(?!react-native|react-native-default-preference|@react-native|react-navigation)' +
     'node_modules/(?!react-native-device-info)' +
+    'node_modules/(?!(react-native|react-native-fs)/)' +
     ')/)',
   ],
   moduleNameMapper: {

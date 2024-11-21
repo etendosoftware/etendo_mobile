@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DrawerCurrentIndexType } from 'etendo-ui-library/dist-native/components/navbar/Navbar.types';
-import { SafeAreaView, StatusBar, View, Image } from 'react-native';
+import { SafeAreaView, StatusBar, View, Image, Linking } from 'react-native';
 import { PRIMARY_100 } from '../../styles/colors';
 import Navbar from 'etendo-ui-library/dist-native/components/navbar/Navbar';
 import locale from '../../i18n/locale';
@@ -34,6 +34,7 @@ type RootStackParamList = {
   Home: any;
   Settings: any;
   Profile: any;
+  MainScreen: any;
 };
 
 type HomeStackProps = {
@@ -48,7 +49,8 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const bindaryImg = useAppSelector(selectBindaryImg);
   const dispatch = useAppDispatch();
 
-  const { logout } = useUser();
+  const { logout, setCurrentLanguage } = useUser();
+
   const getActiveRouteName = (state: any): string => {
     if (!state.routes) return '';
 
@@ -64,6 +66,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const routeName = getActiveRouteName(useNavigationState(state => state));
 
   const [subApps, setSubApps] = useState([]);
+  const [selectedSubApp, setSelectedSubApp] = useState<any>(null);
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [dataDrawer, setDataDrawer] = useState<any>([]);
@@ -82,8 +85,6 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   const homeStackNavBarMobileValidator = (routeName: string) => {
     return validRoutesMobile.includes(routeName);
   };
-
-  const { setCurrentLanguage } = useUser();
 
   useFocusEffect(() => {
     if (languageCurrentInitialize.get()) {
@@ -123,13 +124,16 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (menuItems) {
-      const itemsDrawer = menuItems.map((item, index) => ({
-        ...item,
-        label: item.name,
-        route: item.screenName,
-        screenName: `${item.name}_${index}`,
-        uniqueId: generateUniqueId(item.name),
-      }));
+      const itemsDrawer = menuItems.map((item, index) => {
+        const uniqueId = generateUniqueId(item.name);
+        return {
+          ...item,
+          label: item.name,
+          route: uniqueId,
+          screenName: uniqueId,
+          uniqueId: uniqueId,
+        };
+      });
 
       setSubApps(itemsDrawer);
 
@@ -161,6 +165,52 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
       navigation.navigate(route);
     }
   };
+
+  // Secondary effect to handle deep linking
+  useEffect(() => {
+    const handleUrl = (event) => {
+      const url = event.url;
+      const queryString = url.split('?')[1];
+
+      const params = {};
+      if (queryString) {
+        const queryParts = queryString.split('&');
+        queryParts.forEach(part => {
+          const [key, value] = part.split('=');
+          params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        });
+      }
+
+      const subApplication = params['subApplication'];
+      const subAppPath = params['path'];
+
+      if (subApplication && subAppPath) {
+        setSelectedSubApp({ name: subApplication, path: subAppPath });
+      }
+    };
+
+    Linking.addEventListener('url', handleUrl);
+
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleUrl({ url });
+      }
+    });
+  }, []);
+
+  // Navigate to the selected subApp
+  useEffect(() => {
+    if (selectedSubApp && subApps.length > 0) {
+      const targetSubApp = subApps.find(
+        subApp => subApp.name === selectedSubApp.name
+      );
+      if (targetSubApp) {
+        navigation.navigate(targetSubApp.screenName, {
+          path: selectedSubApp.path,
+        });
+      }
+    }
+  }, [selectedSubApp, subApps]);
 
   return (
     <>
@@ -217,17 +267,17 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name={'Settings'} component={Settings} />
           <Stack.Screen name={'Profile'} component={Profile} />
+          <Stack.Screen name={'MainScreen'} component={MainScreen} />
           {subApps && subApps.length ? (
             subApps?.map((subApp: any, index: number) => {
               const params = { ...subApp };
               if (params.component) {
                 delete params.component;
               }
-              const uniqueScreenName = `${subApp.name}_${index}`;
               return (
                 <Stack.Screen
                   key={'drawerItems' + subApp.uniqueId}
-                  name={uniqueScreenName as any}
+                  name={subApp.screenName as any}
                   component={subApp.component ? subApp.component : MainScreen}
                   initialParams={params}
                 />
