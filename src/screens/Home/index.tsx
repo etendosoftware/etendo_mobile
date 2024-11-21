@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from "react";
-import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Image, View, Text, ImageBackground, ScrollView, Platform } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
@@ -15,17 +15,21 @@ import {
   selectData,
   selectSelectedLanguage,
   selectSelectedUrl,
-  selectToken
+  selectToken,
 } from "../../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import {
   selectLoading,
   selectMenuItems,
-  setIsSubapp
+  setIsSubapp,
 } from "../../../redux/window";
 import { OBRest } from "etrest";
 import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
+import DefaultPreference from "react-native-default-preference";
+import RNFS from "react-native-fs";
+import { Linking } from "react-native";
+import { setSharedFiles } from "../../../redux/shared-files-reducer";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -45,6 +49,14 @@ const HomeFunction = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
+  const [fileData, setFileData] = useState({
+    filePath: null,
+    fileName: null,
+    fileMimeType: null,
+  });
+  const [audioPlayer, setAudioPlayer] = useState<any>(null);
+  const [textContent, setTextContent] = useState("");
+
   useMemo(() => {
     selectedUrl
       ? OBRest.init(new URL(selectedUrl), token)
@@ -52,6 +64,100 @@ const HomeFunction = (props: Props) => {
 
     OBRest.loginWithToken(token);
   }, []);
+
+  const saveTokenAndURL = async (token: string, urlToFetchSubApps: string) => {
+    try {
+      await DefaultPreference.setName(References.AppGroupIdentifier);
+      await DefaultPreference.set("token", token);
+      await DefaultPreference.set("urlToFetchSubApps", urlToFetchSubApps);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const checkToken = async () => {
+    await DefaultPreference.setName(References.AppGroupIdentifier);
+    const savedToken = await DefaultPreference.get("token");
+    const savedUrl = await DefaultPreference.get("urlToFetchSubApps");
+  };
+
+  useEffect(() => {
+    checkToken();
+  }, []);
+
+  useEffect(() => {
+    if (token && selectedUrl) {
+      saveTokenAndURL(token, selectedUrl);
+    }
+  }, [token, selectedUrl]);
+
+  const loadSharedFileData = async () => {
+    try {
+      await DefaultPreference.setName(References.AppGroupIdentifier);
+
+      const filePath = await DefaultPreference.get("sharedFilePath");
+      const fileName = await DefaultPreference.get("sharedFileName");
+      const fileMimeType = await DefaultPreference.get("sharedFileMimeType");
+
+      if (filePath && fileName && fileMimeType) {
+        const adjustedPath =
+          Platform.OS === "ios" && !filePath.startsWith("file://")
+            ? "file://" + filePath
+            : filePath;
+
+        const fileData: any = {
+          filePath: adjustedPath,
+          fileName,
+          fileMimeType,
+        };
+
+        setFileData(fileData);
+
+        if (fileMimeType.startsWith("text/")) {
+          const content = await RNFS.readFile(adjustedPath, "utf8");
+          setTextContent(content);
+        } else {
+          setTextContent("");
+        }
+
+        dispatch(setSharedFiles([fileData]));
+      } else {
+        setFileData({
+          filePath: null,
+          fileName: null,
+          fileMimeType: null,
+        });
+        setTextContent("");
+
+        dispatch(setSharedFiles([]));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  useEffect(() => {
+    loadSharedFileData();
+
+    const handleOpenURL = (event: any) => {
+      loadSharedFileData();
+    };
+
+    Linking.addEventListener("url", handleOpenURL);
+
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        loadSharedFileData();
+      }
+    });
+
+    return () => {
+      if (audioPlayer) {
+        audioPlayer.release();
+      }
+    };
+  }, [audioPlayer]);
 
   const getBackground = () => {
     return isTablet() ? background : backgroundMobile;

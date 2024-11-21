@@ -30,4 +30,5 @@ export enum References {
   EtendoContextPath = "/etendo",
   SubappContextPath = "/subapp",
   EtendoReceiveShare = "ShareMedia",
+  AppGroupIdentifier = "group.com.etendoapploader.ios",
 }

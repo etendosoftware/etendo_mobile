@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,7 +19,7 @@ import { Alert, show } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 
-interface Props {}
+interface Props { }
 type RootStackParamList = {
   HomeStack: any;
   LoginStack: any;
@@ -28,6 +28,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
+  const [sharedFiles, setSharedFiles] = useState(null)
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -46,7 +47,8 @@ const App: React.FC<Props> = () => {
         dispatch(setLoadingScreen(false));
         await atAppInit();
       } catch (error) {
-        console.error(locale.t('ErrorFetchingInitialData'), error);}
+        console.error(locale.t('ErrorFetchingInitialData'), error);
+      }
     };
 
     const checkPermission = async () => {
@@ -62,7 +64,7 @@ const App: React.FC<Props> = () => {
       try {
         ReceiveSharingIntent.getReceivedFiles(
           (sharedFiles: any) => {
-            console.log('Shared files received:', sharedFiles);
+            setSharedFiles(sharedFiles);
           },
           (error: any) => {
             console.error(locale.t('ErrorReceivingSharedFiles'), error);
@@ -97,6 +99,7 @@ const App: React.FC<Props> = () => {
             <Stack.Screen
               name="HomeStack"
               component={HomeStack}
+              initialParams={{ token, sharedFiles }}
               options={{ headerShown: false }}
             />
           ) : (
