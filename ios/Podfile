@@ -51,7 +51,7 @@ target 'Etendo_Mobile' do
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
-  
+
   target 'Etendo_MobileTests' do
     inherit! :complete
     # Pods for testing

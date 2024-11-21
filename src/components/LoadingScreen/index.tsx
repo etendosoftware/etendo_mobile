@@ -29,8 +29,8 @@ const LoadingScreen = () => {
     return isSubappRedux
       ? locale.t("LoadingScreen:downloadingText")
       : isLocaled
-        ? locale.t("LoadingScreen:loadingText")
-        : "Loading...";
+      ? locale.t("LoadingScreen:loadingText")
+      : "Loading...";
   };
 
   return (

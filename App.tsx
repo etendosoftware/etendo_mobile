@@ -19,7 +19,7 @@ import { Alert } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 
-interface Props { }
+interface Props {}
 type RootStackParamList = {
   HomeStack: any;
   LoginStack: any;
@@ -45,9 +45,11 @@ const App: React.FC<Props> = () => {
         }
         await languageDefault();
         dispatch(setLoadingScreen(false));
+        // Important: Do not add any other code here, this is for the root component only.
+        // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
         await atAppInit();
       } catch (error) {
-        console.error(locale.t('ErrorFetchingInitialData'), error);
+        console.error('Error fetching initial data:', error);
       }
     };
 
@@ -55,7 +57,7 @@ const App: React.FC<Props> = () => {
       try {
         await Camera.requestCameraPermission();
       } catch (error) {
-        console.error(locale.t('ErrorCheckingCameraPermissions'), error);
+        console.error('Error checking camera permissions:', error);
       }
     };
 
@@ -66,12 +68,12 @@ const App: React.FC<Props> = () => {
             setSharedFiles(sharedFiles);
           },
           (error: any) => {
-            console.error(locale.t('ErrorReceivingSharedFiles'), error);
+            console.error('Error receiving shared files:', error);
           },
           References.EtendoReceiveShare,
         );
       } catch (error) {
-        console.error(locale.t('ErrorHandlingSharedFiles'), error);
+        console.error('Error handling shared files:', error);
       }
     };
 
