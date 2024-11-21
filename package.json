@@ -122,6 +122,5 @@
   ],
   "engines": {
     "node": ">=16"
-  },
-  "postinstall": "patch-package"
+  }
 }
