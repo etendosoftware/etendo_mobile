@@ -49,6 +49,8 @@ import * as TsLib from 'tslib';
 import * as Unmock from 'unmock';
 import * as VectorIcons from 'react-native-vector-icons';
 import * as ReactNativeDocumentPicker from 'react-native-document-picker';
+import * as ReactNativeFS from 'react-native-fs';
+import ReactNativeSound from 'react-native-sound';
 import { Etendo } from '../helpers/Etendo';
 
 const Packages = {
@@ -83,6 +85,8 @@ const Packages = {
   'react-native-permissions': () => ReactNativePermissions,
   'react-native-safe-area-context': () => SafeAreaContext,
   'react-native-screens': () => Screens,
+  'react-native-sound': () => ReactNativeSound,
+  'react-native-fs': () => ReactNativeFS,
   'react-native-share': () => ReactNativeShare,
   'react-native-svg': () => ReactNativeSVG,
   'react-native-swipeable-item': () => SwipeableItem,

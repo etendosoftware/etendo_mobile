@@ -83,7 +83,7 @@ const Settings = props => {
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
   const [role, setRole] = useState<string>('');
-  const [displayLanguage, setDisplayLanguage] = useState<string>(null);
+  const [displayLanguage, setDisplayLanguage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
   const [appVersion, setAppVersion] = useState<string>(version);

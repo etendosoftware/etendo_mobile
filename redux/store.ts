@@ -10,11 +10,12 @@ import {
 
 import userReducer from "./user";
 import windowReducer from "./window";
+import sharedFilesReducer from "./shared-files-reducer";
 
 const rootReducer = combineReducers({
   user: userReducer,
-  window: windowReducer
-  // here we will add more reducers !
+  window: windowReducer,
+  sharedFiles: sharedFilesReducer,
 });
 
 const store = configureStore({

@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
 
+import locale from './src/i18n/locale';
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -14,9 +15,11 @@ import { languageDefault } from './src/helpers/getLanguajes';
 import { selectLoadingScreen, setLoadingScreen } from './redux/window';
 import { Camera } from 'react-native-vision-camera';
 import { deviceOrientation } from './src/utils';
-import { Alert } from 'etendo-ui-library';
+import { Alert, show } from 'etendo-ui-library';
+import { References } from './src/constants/References';
+import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 
-interface Props {}
+interface Props { }
 type RootStackParamList = {
   HomeStack: any;
   LoginStack: any;
@@ -25,6 +28,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
+  const [sharedFiles, setSharedFiles] = useState(null)
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -34,23 +38,52 @@ const App: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      deviceOrientation();
-      if (user) {
-        await getImageProfile(data);
+      try {
+        deviceOrientation();
+        if (user) {
+          await getImageProfile(data);
+        }
+        await languageDefault();
+        dispatch(setLoadingScreen(false));
+        await atAppInit();
+      } catch (error) {
+        console.error(locale.t('ErrorFetchingInitialData'), error);
       }
-      await languageDefault();
-      dispatch(setLoadingScreen(false));
-      // Important: Do not add any other code here, this is for the root component only.
-      // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
-      await atAppInit();
     };
+
+    const checkPermission = async () => {
+      try {
+        await Camera.requestCameraPermission();
+      } catch (error) {
+        show(locale.t('ErrorCheckingCameraPermissions'), 'error');
+        console.error(locale.t('ErrorCheckingCameraPermissions'), error);
+      }
+    };
+
+    const handleSharedFiles = () => {
+      try {
+        ReceiveSharingIntent.getReceivedFiles(
+          (sharedFiles: any) => {
+            setSharedFiles(sharedFiles);
+          },
+          (error: any) => {
+            console.error(locale.t('ErrorReceivingSharedFiles'), error);
+          },
+          References.EtendoReceiveShare,
+        );
+      } catch (error) {
+        console.error(locale.t('ErrorHandlingSharedFiles'), error);
+      }
+    };
+
     fetchInitialData();
     checkPermission();
-  }, []);
+    handleSharedFiles();
 
-  const checkPermission = async () => {
-    await Camera.requestCameraPermission();
-  };
+    return () => {
+      ReceiveSharingIntent.clearReceivedFiles();
+    };
+  }, []);
 
   return (
     <PaperProvider theme={defaultTheme}>
@@ -66,6 +99,7 @@ const App: React.FC<Props> = () => {
             <Stack.Screen
               name="HomeStack"
               component={HomeStack}
+              initialParams={{ token, sharedFiles }}
               options={{ headerShown: false }}
             />
           ) : (

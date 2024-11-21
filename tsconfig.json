@@ -5,12 +5,9 @@
     "jsx": "preserve",
     "strictFunctionTypes": true,
     "sourceMap": true,
-    "esModuleInterop": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true
   },
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*"
-  ]
+  "exclude": ["node_modules", "**/node_modules/*"]
 }
