@@ -114,7 +114,8 @@ public class ShareReceiverActivity extends AppCompatActivity {
 
   private String getFileName(Uri uri) {
     String result = null;
-    if (uri.getScheme().equals("content")) {
+
+    if (StringUtils.equals(uri.getScheme(), "content")) {
       Cursor cursor = getContentResolver().query(uri, null, null, null, null);
       try {
         if (cursor != null && cursor.moveToFirst()) {
@@ -122,12 +123,16 @@ public class ShareReceiverActivity extends AppCompatActivity {
           result = cursor.getString(nameIndex);
         }
       } finally {
-        cursor.close();
+        if (cursor != null) {
+          cursor.close();
+        }
       }
     }
+
     if (result == null) {
       result = uri.getLastPathSegment();
     }
+
     return result;
   }
 
@@ -219,7 +224,7 @@ public class ShareReceiverActivity extends AppCompatActivity {
       startMainActivity();
 
     } catch (Exception e) {
-      showErrorAndFinish("Error al manejar la selección.");
+      showErrorAndFinish("Error handling selection.");
     }
   }
 
