@@ -1,5 +1,9 @@
 import { generateUniqueId } from '../src/utils';
 
+jest.mock('react-native-fs', () => {
+  return {};
+});
+
 const menuItemsMock = [
   { name: 'Etendo Classic', component: 'ComponentA' },
   { name: 'Etendo Classic', component: 'ComponentB' }

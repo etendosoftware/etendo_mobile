@@ -220,7 +220,7 @@ const LoginFunctional = props => {
       }
     } catch (error) {
       show(locale.t('LoginScreen:NetworkError'), 'error');
-      console.log("Error in the demo process:", error);
+      console.error("Error in the demo process:", error);
     } finally {
       dispatch(setLoadingScreen(false));
     }
@@ -253,7 +253,7 @@ const LoginFunctional = props => {
           dispatch(setSelectedUrl(storedUrl));
         }
       } catch (error) {
-        console.log("Error to access AsyncStorage:", error);
+        console.error("Error to access AsyncStorage:", error);
         dispatch(setSelectedUrl(References.DemoUrl));
       }
     };

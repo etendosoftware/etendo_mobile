@@ -94,7 +94,11 @@
   "NoResult": "No results found",
   "WelcomeToEtendoLogin": "Welcome to Etendo!",
   "WelcomeToEtendoHome": "Welcome to Etendo,",
+  "ErrorCheckingCameraPermissions": "Error checking camera permissions.",
   "EnterCredentials": "Enter your credentials to access your account.",
+  "ErrorFetchingInitialData": "Error fetching initial data.",
+  "ErrorHandlingSharedFiles": "Error handling shared files.",
+  "ErrorReceivingSharedFiles": "Error receiving shared files.",
   "ErrorUserPassword": "Credentials are incorrect or unauthorized.",
   "UrlFetchFailed": "Failed to Render url '%{url}'",
   "NoInternetConnection": "No Internet Connection"

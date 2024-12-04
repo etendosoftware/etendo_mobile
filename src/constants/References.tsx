@@ -28,5 +28,7 @@ export enum References {
   LocalURLDev = "http://10.0.2.2:3000",
   EtendoDemo = "https://demo.etendo.cloud",
   EtendoContextPath = "/etendo",
-  SubappContextPath = "/subapp"
+  SubappContextPath = "/subapp",
+  EtendoReceiveShare = "ShareMedia",
+  AppGroupIdentifier = "group.com.etendoapploader.ios",
 }
