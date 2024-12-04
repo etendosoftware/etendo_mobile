@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.InputStream;
@@ -115,7 +116,7 @@ public class ShareReceiverActivity extends AppCompatActivity {
   private String getFileName(Uri uri) {
     String result = null;
 
-    if (StringUtils.equals(uri.getScheme(), "content")) {
+    if (TextUtils.equals(uri.getScheme(), "content")) {
       Cursor cursor = getContentResolver().query(uri, null, null, null, null);
       try {
         if (cursor != null && cursor.moveToFirst()) {
