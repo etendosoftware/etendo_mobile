@@ -5,6 +5,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.etendoapploader.ios</string>
+		<string>group.com.etendoapploader.ios.EtendoRecieveShare</string>
 	</array>
 </dict>
 </plist>

@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Image, View, Text, ImageBackground, ScrollView, Platform } from "react-native";
+import {
+  Image,
+  View,
+  Text,
+  ImageBackground,
+  ScrollView,
+  Platform,
+  AppState,
+  Linking,
+} from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
@@ -28,8 +37,8 @@ import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
 import RNFS from "react-native-fs";
-import { Linking } from "react-native";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
+import SharedGroupPreferences from "react-native-shared-group-preferences";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
@@ -49,13 +58,19 @@ const HomeFunction = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
-  const [fileData, setFileData] = useState({
-    filePath: null,
-    fileName: null,
-    fileMimeType: null,
-  });
+  const [fileData, setFileData] = useState(null);
   const [audioPlayer, setAudioPlayer] = useState<any>(null);
-  const [textContent, setTextContent] = useState("");
+
+  const saveTokenAndURLToSharedGroup = async (token: string, urlToFetchSubApps: string) => {
+    try {
+      const sharedData = { token, urlToFetchSubApps };
+      await SharedGroupPreferences.setItem("token", token, References.AppGroupIdentifier);
+      await SharedGroupPreferences.setItem("urlToFetchSubApps", urlToFetchSubApps, References.AppGroupIdentifier);
+      console.log("Shared Data Saved:", sharedData);
+    } catch (error) {
+      console.error("Error saving data to Shared Group Preferences:", error);
+    }
+  };
 
   useMemo(() => {
     selectedUrl
@@ -63,31 +78,11 @@ const HomeFunction = (props: Props) => {
       : OBRest.init(new URL(References.DemoUrl), token);
 
     OBRest.loginWithToken(token);
-  }, []);
-
-  const saveTokenAndURL = async (token: string, urlToFetchSubApps: string) => {
-    try {
-      await DefaultPreference.setName(References.AppGroupIdentifier);
-      await DefaultPreference.set("token", token);
-      await DefaultPreference.set("urlToFetchSubApps", urlToFetchSubApps);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const checkToken = async () => {
-    await DefaultPreference.setName(References.AppGroupIdentifier);
-    const savedToken = await DefaultPreference.get("token");
-    const savedUrl = await DefaultPreference.get("urlToFetchSubApps");
-  };
-
-  useEffect(() => {
-    checkToken();
-  }, []);
+  }, [selectedUrl, token]);
 
   useEffect(() => {
     if (token && selectedUrl) {
-      saveTokenAndURL(token, selectedUrl);
+      saveTokenAndURLToSharedGroup(token, selectedUrl);
     }
   }, [token, selectedUrl]);
 
@@ -95,40 +90,27 @@ const HomeFunction = (props: Props) => {
     try {
       await DefaultPreference.setName(References.AppGroupIdentifier);
 
-      const filePath = await DefaultPreference.get("sharedFilePath");
-      const fileName = await DefaultPreference.get("sharedFileName");
-      const fileMimeType = await DefaultPreference.get("sharedFileMimeType");
+      const filePaths = await SharedGroupPreferences.getItem("sharedFilePaths", References.AppGroupIdentifier);
+      const fileNames = await SharedGroupPreferences.getItem("sharedFileNames", References.AppGroupIdentifier);
+      const fileMimeTypes = await SharedGroupPreferences.getItem("sharedFileMimeTypes", References.AppGroupIdentifier);
 
-      if (filePath && fileName && fileMimeType) {
-        const adjustedPath =
-          Platform.OS === "ios" && !filePath.startsWith("file://")
-            ? "file://" + filePath
-            : filePath;
+      console.log("Datos de archivos compartidos:", filePaths, fileNames, fileMimeTypes);
 
-        const fileData: any = {
-          filePath: adjustedPath,
-          fileName,
-          fileMimeType,
-        };
+      if (
+        Array.isArray(filePaths) && filePaths.length > 0 &&
+        Array.isArray(fileNames) && fileNames.length > 0 &&
+        Array.isArray(fileMimeTypes) && fileMimeTypes.length > 0
+      ) {
+        const filesData = filePaths.map((path, index) => ({
+          filePath: Platform.OS === "ios" && !path.startsWith("file://") ? "file://" + path : path,
+          fileName: fileNames[index],
+          fileMimeType: fileMimeTypes[index],
+        }));
 
-        setFileData(fileData);
-
-        if (fileMimeType.startsWith("text/")) {
-          const content = await RNFS.readFile(adjustedPath, "utf8");
-          setTextContent(content);
-        } else {
-          setTextContent("");
-        }
-
-        dispatch(setSharedFiles([fileData]));
+        setFileData(filesData);
+        dispatch(setSharedFiles(filesData));
       } else {
-        setFileData({
-          filePath: null,
-          fileName: null,
-          fileMimeType: null,
-        });
-        setTextContent("");
-
+        setFileData(null);
         dispatch(setSharedFiles([]));
       }
     } catch (error) {
@@ -136,14 +118,32 @@ const HomeFunction = (props: Props) => {
     }
   };
 
+  const clearSharedDefaults = async () => {
+    try {
+      await SharedGroupPreferences.setItem("sharedFilePaths", [], References.AppGroupIdentifier);
+      await SharedGroupPreferences.setItem("sharedFileNames", [], References.AppGroupIdentifier);
+      await SharedGroupPreferences.setItem("sharedFileMimeTypes", [], References.AppGroupIdentifier);
+      console.log("Shared defaults cleared (set to empty arrays).");
+    } catch (error) {
+      console.error("Error clearing shared defaults:", error);
+    }
+  };
 
   useEffect(() => {
-    loadSharedFileData();
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === "background" || nextAppState === "inactive") {
+        dispatch(setSharedFiles([]));
+        await clearSharedDefaults();
+      } else if (nextAppState === "active") {
+        loadSharedFileData();
+      }
+    };
 
-    const handleOpenURL = (event: any) => {
+    const handleOpenURL = (event) => {
       loadSharedFileData();
     };
 
+    AppState.addEventListener("change", handleAppStateChange);
     Linking.addEventListener("url", handleOpenURL);
 
     Linking.getInitialURL().then((url) => {
@@ -152,16 +152,16 @@ const HomeFunction = (props: Props) => {
       }
     });
 
+    loadSharedFileData();
+
     return () => {
       if (audioPlayer) {
         audioPlayer.release();
       }
     };
-  }, [audioPlayer]);
+  }, [audioPlayer, dispatch]);
 
-  const getBackground = () => {
-    return isTablet() ? background : backgroundMobile;
-  };
+  const getBackground = () => (isTablet() ? background : backgroundMobile);
 
   const getImageBackground = () => {
     if (isTablet()) {
@@ -174,9 +174,7 @@ const HomeFunction = (props: Props) => {
     }
   };
 
-  const getNameInBody = () => {
-    return data?.username ? data?.username + "!" : null;
-  };
+  const getNameInBody = () => (data?.username ? data?.username + "!" : null);
 
   const processedMenuItems = menuItems?.map((item, index) => ({
     ...item,
@@ -207,16 +205,11 @@ const HomeFunction = (props: Props) => {
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>
-              {locale.t("WelcomeToEtendoHome")}
-            </Text>
+            <Text style={styles.welcomeText}>{locale.t("WelcomeToEtendoHome")}</Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
-        <Image
-          style={deviceStyles.imageBackground}
-          source={getImageBackground()}
-        />
+        <Image style={deviceStyles.imageBackground} source={getImageBackground()} />
       </ImageBackground>
     </View>
   );

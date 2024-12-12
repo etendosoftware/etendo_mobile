@@ -64,11 +64,16 @@ const App: React.FC<Props> = () => {
     const handleSharedFiles = () => {
       try {
         ReceiveSharingIntent.getReceivedFiles(
-          (sharedFiles: any) => {
-            setSharedFiles(sharedFiles);
+          (receivedFiles: any[]) => {
+            if (receivedFiles && receivedFiles.length > 0) {
+              setSharedFiles(receivedFiles);
+            } else {
+              setSharedFiles(null);
+            }
           },
           (error: any) => {
             console.error('Error receiving shared files:', error);
+            setSharedFiles(null);
           },
           References.EtendoReceiveShare,
         );

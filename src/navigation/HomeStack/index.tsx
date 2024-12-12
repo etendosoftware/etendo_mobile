@@ -29,6 +29,7 @@ import {
 } from '../../helpers/getLanguajes';
 import { generateUniqueId } from '../../utils';
 import { SettingIcon } from 'etendo-ui-library';
+import { setSharedFiles } from '../../../redux/shared-files-reducer';
 
 type RootStackParamList = {
   Home: any;
@@ -300,6 +301,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
               navigation.navigate(route as keyof RootStackParamList);
               setShowDrawer(false);
               dispatch(setIsSubapp(true));
+              dispatch(setSharedFiles([]))
             }}
             onCloseDrawer={() => {
               setShowDrawer(false);
