@@ -66,7 +66,6 @@ const HomeFunction = (props: Props) => {
       const sharedData = { token, urlToFetchSubApps };
       await SharedGroupPreferences.setItem("token", token, References.AppGroupIdentifier);
       await SharedGroupPreferences.setItem("urlToFetchSubApps", urlToFetchSubApps, References.AppGroupIdentifier);
-      console.log("Shared Data Saved:", sharedData);
     } catch (error) {
       console.error("Error saving data to Shared Group Preferences:", error);
     }
@@ -93,8 +92,6 @@ const HomeFunction = (props: Props) => {
       const filePaths = await SharedGroupPreferences.getItem("sharedFilePaths", References.AppGroupIdentifier);
       const fileNames = await SharedGroupPreferences.getItem("sharedFileNames", References.AppGroupIdentifier);
       const fileMimeTypes = await SharedGroupPreferences.getItem("sharedFileMimeTypes", References.AppGroupIdentifier);
-
-      console.log("Datos de archivos compartidos:", filePaths, fileNames, fileMimeTypes);
 
       if (
         Array.isArray(filePaths) && filePaths.length > 0 &&
@@ -123,7 +120,6 @@ const HomeFunction = (props: Props) => {
       await SharedGroupPreferences.setItem("sharedFilePaths", [], References.AppGroupIdentifier);
       await SharedGroupPreferences.setItem("sharedFileNames", [], References.AppGroupIdentifier);
       await SharedGroupPreferences.setItem("sharedFileMimeTypes", [], References.AppGroupIdentifier);
-      console.log("Shared defaults cleared (set to empty arrays).");
     } catch (error) {
       console.error("Error clearing shared defaults:", error);
     }
