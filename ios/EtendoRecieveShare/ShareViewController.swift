@@ -16,6 +16,11 @@ class ShareViewController: UIViewController {
         let appGroupID = "group.com.etendoapploader.ios"
         let sharedDefaults = UserDefaults(suiteName: appGroupID)
         
+        sharedDefaults?.removeObject(forKey: "sharedFilePaths")
+        sharedDefaults?.removeObject(forKey: "sharedFileNames")
+        sharedDefaults?.removeObject(forKey: "sharedFileMimeTypes")
+        sharedDefaults?.synchronize()
+        
         token = sharedDefaults?.string(forKey: "token")
         urlToFetchSubApps = sharedDefaults?.string(forKey: "urlToFetchSubApps")
         
@@ -76,22 +81,19 @@ class ShareViewController: UIViewController {
                 }
                 try fileManager.copyItem(at: fileURL, to: destinationURL)
 
-                let fileData = try Data(contentsOf: destinationURL)
-                var fileBase64String: String?
-                
-                if fileData.count < 1_000_000 {
-                    fileBase64String = fileData.base64EncodedString(options: .lineLength64Characters)
-                } else {
-                    print("The file is too large to encode in base64.")
-                }
-                
                 let sharedDefaults = UserDefaults(suiteName: appGroupID)
-                sharedDefaults?.set(destinationURL.path, forKey: "sharedFilePath")
-                if let base64String = fileBase64String {
-                    sharedDefaults?.set(base64String, forKey: "sharedFileBase64")
-                }
-                sharedDefaults?.set(fileURL.lastPathComponent, forKey: "sharedFileName")
-                sharedDefaults?.set(getMimeType(for: fileURL), forKey: "sharedFileMimeType")
+
+                var paths = sharedDefaults?.array(forKey: "sharedFilePaths") as? [String] ?? []
+                var names = sharedDefaults?.array(forKey: "sharedFileNames") as? [String] ?? []
+                var mimeTypes = sharedDefaults?.array(forKey: "sharedFileMimeTypes") as? [String] ?? []
+
+                paths.append(destinationURL.path)
+                names.append(fileURL.lastPathComponent)
+                mimeTypes.append(getMimeType(for: fileURL))
+
+                sharedDefaults?.set(paths, forKey: "sharedFilePaths")
+                sharedDefaults?.set(names, forKey: "sharedFileNames")
+                sharedDefaults?.set(mimeTypes, forKey: "sharedFileMimeTypes")
                 sharedDefaults?.synchronize()
             } catch {
                 print("Error processing the file:: \(error)")
@@ -104,27 +106,27 @@ class ShareViewController: UIViewController {
         let fileManager = FileManager.default
 
         if let containerURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
-            let imageName = "shared_image.jpg"
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let imageName = "shared_image_\(timestamp).jpg"
             let destinationURL = containerURL.appendingPathComponent(imageName)
 
             do {
-                if fileManager.fileExists(atPath: destinationURL.path) {
-                    try fileManager.removeItem(at: destinationURL)
-                }
                 if let imageData = image.jpegData(compressionQuality: 1.0) {
                     try imageData.write(to: destinationURL)
-                    var imageBase64String: String?
-                    if imageData.count < 1_000_000 {
-                        imageBase64String = imageData.base64EncodedString(options: .lineLength64Characters)
-                    }
-
+                    
                     let sharedDefaults = UserDefaults(suiteName: appGroupID)
-                    sharedDefaults?.set(destinationURL.path, forKey: "sharedFilePath")
-                    if let base64String = imageBase64String {
-                        sharedDefaults?.set(base64String, forKey: "sharedFileBase64")
-                    }
-                    sharedDefaults?.set(imageName, forKey: "sharedFileName")
-                    sharedDefaults?.set("image/jpeg", forKey: "sharedFileMimeType")
+
+                    var paths = sharedDefaults?.array(forKey: "sharedFilePaths") as? [String] ?? []
+                    var names = sharedDefaults?.array(forKey: "sharedFileNames") as? [String] ?? []
+                    var mimeTypes = sharedDefaults?.array(forKey: "sharedFileMimeTypes") as? [String] ?? []
+
+                    paths.append(destinationURL.path)
+                    names.append(imageName)
+                    mimeTypes.append("image/jpeg")
+
+                    sharedDefaults?.set(paths, forKey: "sharedFilePaths")
+                    sharedDefaults?.set(names, forKey: "sharedFileNames")
+                    sharedDefaults?.set(mimeTypes, forKey: "sharedFileMimeTypes")
                     sharedDefaults?.synchronize()
                 }
             } catch {
@@ -253,22 +255,11 @@ class ShareViewController: UIViewController {
 
         present(alertController, animated: true, completion: nil)
     }
-
+    
     private func handleShare(with subApplication: String, path: String) {
         let appGroupID = "group.com.etendoapploader.ios"
         let sharedDefaults = UserDefaults(suiteName: appGroupID)
 
-        guard let filePath = sharedDefaults?.string(forKey: "sharedFilePath"),
-              let fileName = sharedDefaults?.string(forKey: "sharedFileName"),
-              let fileMimeType = sharedDefaults?.string(forKey: "sharedFileMimeType"),
-              !filePath.isEmpty, !fileName.isEmpty, !fileMimeType.isEmpty else {
-            let alertController = UIAlertController(title: "Incomplete Data", message: "The attachment data is not fully configured.", preferredStyle: .alert)
-            let dismissAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertController.addAction(dismissAction)
-            self.present(alertController, animated: true, completion: nil)
-            return
-        }
-        
         sharedDefaults?.set(subApplication, forKey: "selectedSubApplication")
         sharedDefaults?.set(path, forKey: "selectedPath")
         sharedDefaults?.synchronize()
