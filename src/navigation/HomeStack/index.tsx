@@ -131,8 +131,8 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           ...item,
           label: item.name,
           route: uniqueId,
-          screenName: uniqueId,
-          uniqueId: uniqueId,
+          uniqueId: generateUniqueId(item.name),
+          screenName: `${item.name}_${index}`,
         };
       });
 
