@@ -2,6 +2,7 @@ package com.smf.mobile.etendo_app_loader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
