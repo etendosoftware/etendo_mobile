@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Image, View, Text, ImageBackground, ScrollView, Platform } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { Image, View, Text, ImageBackground, ScrollView, Platform, Linking, AppState } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
@@ -28,20 +28,26 @@ import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
 import RNFS from "react-native-fs";
-import { Linking } from "react-native";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
 
+// Local Assets
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
 const etendoBoyMobile = require("../../../assets/etendo-bk-mobile.png");
 const background = require("../../../assets/background.png");
 const backgroundMobile = require("../../../assets/background-mobile.png");
+
+// App Group Identifiers
+const AppGroupIdentifierIos = "group.com.etendoapploader.ios";
+const AppGroupIdentifierAndroid = "group.com.etendoapploader.android";
+
 interface Props {
   navigation: INavigation;
   appMinCoreVersion: string;
   coreVersion: string;
 }
-const HomeFunction = (props: Props) => {
+
+const HomeComponent = (props: Props) => {
   const data = useAppSelector(selectData);
   const loading = useAppSelector(selectLoading);
   const menuItems = useAppSelector(selectMenuItems);
@@ -49,41 +55,40 @@ const HomeFunction = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
-  const [fileData, setFileData] = useState({
-    filePath: null,
-    fileName: null,
-    fileMimeType: null,
-  });
-  const [audioPlayer, setAudioPlayer] = useState<any>(null);
-  const [textContent, setTextContent] = useState("");
+  // Ref to track the last loaded file
+  const lastFilePathRef = useRef<string | null>(null);
 
-  useMemo(() => {
-    selectedUrl
-      ? OBRest.init(new URL(selectedUrl), token)
-      : OBRest.init(new URL(References.DemoUrl), token);
-
-    OBRest.loginWithToken(token);
+  // On mount, set the AppGroup identifier based on the platform
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      DefaultPreference.setName(AppGroupIdentifierIos);
+    } else {
+      DefaultPreference.setName(AppGroupIdentifierAndroid);
+    }
   }, []);
 
-  const saveTokenAndURL = async (token: string, urlToFetchSubApps: string) => {
+  // Initialize OBRest with token and URL (if available)
+  useEffect(() => {
+    const initializeOBRest = () => {
+      const url = selectedUrl ? new URL(selectedUrl) : new URL(References.DemoUrl);
+      OBRest.init(url, token);
+      OBRest.loginWithToken(token);
+    };
+
+    if (token) {
+      initializeOBRest();
+    }
+  }, [selectedUrl, token]);
+
+  // Save token and URL to DefaultPreference whenever they change
+  const saveTokenAndURL = async (tokenValue: string, urlValue: string) => {
     try {
-      await DefaultPreference.setName(References.AppGroupIdentifier);
-      await DefaultPreference.set("token", token);
-      await DefaultPreference.set("urlToFetchSubApps", urlToFetchSubApps);
+      await DefaultPreference.set("token", tokenValue);
+      await DefaultPreference.set("urlToFetchSubApps", urlValue);
     } catch (error) {
-      console.error(error);
+      console.error("Error saving token/URL:", error);
     }
   };
-
-  const checkToken = async () => {
-    await DefaultPreference.setName(References.AppGroupIdentifier);
-    const savedToken = await DefaultPreference.get("token");
-    const savedUrl = await DefaultPreference.get("urlToFetchSubApps");
-  };
-
-  useEffect(() => {
-    checkToken();
-  }, []);
 
   useEffect(() => {
     if (token && selectedUrl) {
@@ -91,77 +96,88 @@ const HomeFunction = (props: Props) => {
     }
   }, [token, selectedUrl]);
 
+  // Utility to add 'file://' prefix if missing
+  const addFilePrefixIfNeeded = (path: string) => {
+    return path.startsWith("file://") ? path : `file://${path}`;
+  };
+
+  const clearSharedFileData = async () => {
+    try {
+      await DefaultPreference.set("sharedFilePath", "");
+      await DefaultPreference.set("sharedFileName", "");
+      await DefaultPreference.set("sharedFileMimeType", "");
+      await DefaultPreference.set("selectedSubApplication", "");
+    } catch (error) {
+      console.error("Error limpiando datos de archivos compartidos:", error);
+    }
+  };
+
   const loadSharedFileData = async () => {
     try {
-      await DefaultPreference.setName(References.AppGroupIdentifier);
-
       const filePath = await DefaultPreference.get("sharedFilePath");
       const fileName = await DefaultPreference.get("sharedFileName");
       const fileMimeType = await DefaultPreference.get("sharedFileMimeType");
+      const selectedSubApplication = await DefaultPreference.get("selectedSubApplication");
 
+      // Check if a new file exists
       if (filePath && fileName && fileMimeType) {
-        const adjustedPath =
-          Platform.OS === "ios" && !filePath.startsWith("file://")
-            ? "file://" + filePath
-            : filePath;
+        const adjustedPath = addFilePrefixIfNeeded(filePath);
 
-        const fileData: any = {
+        const newFileData = {
           filePath: adjustedPath,
           fileName,
           fileMimeType,
         };
 
-        setFileData(fileData);
+        dispatch(setSharedFiles([newFileData]));
 
-        if (fileMimeType.startsWith("text/")) {
-          const content = await RNFS.readFile(adjustedPath, "utf8");
-          setTextContent(content);
-        } else {
-          setTextContent("");
+        if (selectedSubApplication) {
+          props.navigation.navigate(selectedSubApplication);
         }
 
-        dispatch(setSharedFiles([fileData]));
-      } else {
-        setFileData({
-          filePath: null,
-          fileName: null,
-          fileMimeType: null,
-        });
-        setTextContent("");
-
-        dispatch(setSharedFiles([]));
+        await clearSharedFileData();
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-
+  // On mount, load shared file and listen for deep links
   useEffect(() => {
+    // Initial load
     loadSharedFileData();
 
-    const handleOpenURL = (event: any) => {
+    // Handle deep links
+    const handleOpenURL = () => {
       loadSharedFileData();
     };
-
     Linking.addEventListener("url", handleOpenURL);
 
+    // Check if app was launched with a link
     Linking.getInitialURL().then((url) => {
       if (url) {
         loadSharedFileData();
       }
     });
+  }, []);
+
+  // Listen to AppState changes
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", async (nextState) => {
+      if (nextState === "active") {
+        loadSharedFileData();
+      } else {
+        await clearSharedFileData();
+      }
+    });
 
     return () => {
-      if (audioPlayer) {
-        audioPlayer.release();
-      }
+      subscription.remove();
     };
-  }, [audioPlayer]);
+  }, []);
 
-  const getBackground = () => {
-    return isTablet() ? background : backgroundMobile;
-  };
+  // UI Helpers
+  const getBackgroundImage = () => (isTablet() ? background : backgroundMobile);
 
   const getImageBackground = () => {
     if (isTablet()) {
@@ -186,7 +202,7 @@ const HomeFunction = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={getBackground()} style={styles.imgBackground}>
+      <ImageBackground source={getBackgroundImage()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             <>
@@ -229,6 +245,6 @@ const Home = (props: any) => {
   // Force to re-render when language changes at login
   useEffect(() => { }, [locale, selectedLanguage]);
 
-  return <HomeFunction {...props} />;
+  return <HomeComponent {...props} />;
 };
 export default Home;

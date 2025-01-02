@@ -28,7 +28,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const [sharedFiles, setSharedFiles] = useState(null)
+  const [sharedFiles, setSharedFiles] = useState(null);
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -67,9 +67,7 @@ const App: React.FC<Props> = () => {
           (sharedFiles: any) => {
             setSharedFiles(sharedFiles);
           },
-          (error: any) => {
-            console.error('Error receiving shared files:', error);
-          },
+          (error) => { },
           References.EtendoReceiveShare,
         );
       } catch (error) {

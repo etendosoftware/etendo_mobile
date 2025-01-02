@@ -22,7 +22,7 @@ import { drawerData } from './dataDrawer';
 import { selectBindaryImg, selectData } from '../../../redux/user';
 import { useAppDispatch, useAppSelector } from '../../../redux';
 import { useUser } from '../../../hook/useUser';
-import { selectMenuItems, setIsSubapp } from '../../../redux/window';
+import { selectMenuItems, setIsSubapp, setMenuItems } from '../../../redux/window';
 import {
   changeLanguage,
   languageCurrentInitialize,
@@ -130,7 +130,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           ...item,
           label: item.name,
           route: uniqueId,
-          screenName: uniqueId,
+          screenName: item.name,
           uniqueId: uniqueId,
         };
       });
@@ -264,7 +264,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
           initialRouteName={'Home'}
           screenOptions={{ headerShown: false }}
         >
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name={'Home'} component={Home} initialParams={{ subApps: subApps }} />
           <Stack.Screen name={'Settings'} component={Settings} />
           <Stack.Screen name={'Profile'} component={Profile} />
           <Stack.Screen name={'MainScreen'} component={MainScreen} />

@@ -14,7 +14,7 @@ function getCurrentLanguage() {
   const deviceLanguageAbbreviation =
     Platform.OS === "ios"
       ? NativeModules.SettingsManager.settings.AppleLocale ||
-        NativeModules.SettingsManager.settings.AppleLanguages[0]
+      NativeModules.SettingsManager.settings.AppleLanguages[0]
       : NativeModules.I18nManager.localeIdentifier;
   const languageFormattedSupported = formatLanguageUnderscore(
     deviceLanguageAbbreviation.slice(0, 2),
@@ -92,7 +92,6 @@ export const changeLanguage = async (input: string, setLenguageRedux: any) => {
   locale.setCurrentLanguage(input);
   languageCurrentInitialize.set(input);
   await saveLanguage(input);
-  await setLenguageRedux();
 };
 
 export const formatObjectLanguage = (language: string): ILanguage => {
