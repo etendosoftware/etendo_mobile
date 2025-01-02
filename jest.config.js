@@ -41,8 +41,11 @@ module.exports = {
     '|react-native-safe-area-context' +
     '|react-native-screens' +
     '|react-native-share' +
+    '|react-native-shared-group-preferences' +
     '|react-native-svg' +
     '|react-native-svg-web' +
+    '|react-native-default-preference' +
+    '|react-native-fs' +
     '|react-native-swipeable-item' +
     '|react-native-swiper' +
     '|react-native-vector-icons' +
