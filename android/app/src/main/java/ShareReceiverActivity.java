@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -165,7 +166,7 @@ public class ShareReceiverActivity extends AppCompatActivity {
    * Processes a list of shared files and then fetches sub-applications.
    */
   private void processFiles(List<Uri> uris, String mimeType) {
-    new Thread(() -> {
+    new ExecutorService(() -> {
       try {
         // Clear any previous sub-application selection
         clearSelectionData();

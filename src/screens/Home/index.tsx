@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Image, View, Text, ImageBackground, ScrollView, Platform, Linking, AppState } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
@@ -101,7 +101,7 @@ const HomeComponent = (props: Props) => {
       await DefaultPreference.set("sharedFileMimeType", "");
       await DefaultPreference.set("selectedSubApplication", "");
     } catch (error) {
-      console.error("Error limpiando datos de archivos compartidos:", error);
+      console.error("Error clearing shared file data: ", error);
     }
   };
 
