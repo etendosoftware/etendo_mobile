@@ -530,8 +530,6 @@ PODS:
     - React-Core
   - RNPermissions (3.10.1):
     - React-Core
-  - RNReactNativeSharedGroupPreferences (1.1.24):
-    - React
   - RNReanimated (3.8.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -657,7 +655,6 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
-  - RNReactNativeSharedGroupPreferences (from `../node_modules/react-native-shared-group-preferences`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
@@ -803,8 +800,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
-  RNReactNativeSharedGroupPreferences:
-    :path: "../node_modules/react-native-shared-group-preferences"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -895,7 +890,6 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 22d513d69ddc0b80430375c11f7c7cb4fabd8ffe
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
-  RNReactNativeSharedGroupPreferences: 29092869fc2e40d5baca5e15d82fa5c24a668977
   RNReanimated: fc36806836aca984b797f01432abe31689663421
   RNScreens: 284fcee9d8d4648851fdb85dd0e200daebedcc14
   RNSentry: 68644ef607b780551cc555f084869764f2566652

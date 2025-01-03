@@ -4,7 +4,6 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
 
-import locale from './src/i18n/locale';
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -28,7 +27,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const [sharedFiles, setSharedFiles] = useState(null)
+  const [sharedFiles, setSharedFiles] = useState(null);
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);

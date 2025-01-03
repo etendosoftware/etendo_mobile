@@ -1,14 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Image,
-  View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  Platform,
-  AppState,
-  Linking,
-} from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Image, View, Text, ImageBackground, ScrollView, Platform, Linking, AppState } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
 import { Etendo } from "../../helpers/Etendo";
@@ -36,21 +27,26 @@ import { OBRest } from "etrest";
 import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
-import RNFS from "react-native-fs";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
-import SharedGroupPreferences from "react-native-shared-group-preferences";
 
+// Local Assets
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
 const etendoBoyImgSmall = require("../../../assets/etendo-bk-tablet-small.png");
 const etendoBoyMobile = require("../../../assets/etendo-bk-mobile.png");
 const background = require("../../../assets/background.png");
 const backgroundMobile = require("../../../assets/background-mobile.png");
+
+// App Group Identifiers
+const AppGroupIdentifierIos = "group.com.etendoapploader.ios";
+const AppGroupIdentifierAndroid = "group.com.etendoapploader.android";
+
 interface Props {
   navigation: INavigation;
   appMinCoreVersion: string;
   coreVersion: string;
 }
-const HomeFunction = (props: Props) => {
+
+const HomeComponent = (props: Props) => {
   const data = useAppSelector(selectData);
   const loading = useAppSelector(selectLoading);
   const menuItems = useAppSelector(selectMenuItems);
@@ -58,106 +54,125 @@ const HomeFunction = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
-  const [fileData, setFileData] = useState(null);
-  const [audioPlayer, setAudioPlayer] = useState<any>(null);
+  // Ref to track the last loaded file
+  const lastFilePathRef = useRef<string | null>(null);
 
-  const saveTokenAndURLToSharedGroup = async (token: string, urlToFetchSubApps: string) => {
+  // On mount, set the AppGroup identifier based on the platform
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      DefaultPreference.setName(AppGroupIdentifierIos);
+    } else {
+      DefaultPreference.setName(AppGroupIdentifierAndroid);
+    }
+  }, []);
+
+  // Initialize OBRest with token and URL (if available)
+  useEffect(() => {
+    const initializeOBRest = () => {
+      const url = selectedUrl ? new URL(selectedUrl) : new URL(References.DemoUrl);
+      OBRest.init(url, token);
+      OBRest.loginWithToken(token);
+    };
+
+    if (token) {
+      initializeOBRest();
+    }
+  }, [selectedUrl, token]);
+
+  // Save token and URL to DefaultPreference whenever they change
+  const saveTokenAndURL = async (tokenValue: string, urlValue: string) => {
     try {
-      const sharedData = { token, urlToFetchSubApps };
-      await SharedGroupPreferences.setItem("token", token, References.AppGroupIdentifier);
-      await SharedGroupPreferences.setItem("urlToFetchSubApps", urlToFetchSubApps, References.AppGroupIdentifier);
+      await DefaultPreference.set("token", tokenValue);
+      await DefaultPreference.set("urlToFetchSubApps", urlValue);
     } catch (error) {
-      console.error("Error saving data to Shared Group Preferences:", error);
+      console.error("Error saving token/URL:", error);
     }
   };
 
-  useMemo(() => {
-    selectedUrl
-      ? OBRest.init(new URL(selectedUrl), token)
-      : OBRest.init(new URL(References.DemoUrl), token);
+  // Utility to add 'file://' prefix if missing
+  const addFilePrefixIfNeeded = (path: string) => {
+    return path.startsWith("file://") ? path : `file://${path}`;
+  };
 
-    OBRest.loginWithToken(token);
-  }, [selectedUrl, token]);
-
-  useEffect(() => {
-    if (token && selectedUrl) {
-      saveTokenAndURLToSharedGroup(token, selectedUrl);
+  const clearSharedFileData = async () => {
+    try {
+      await DefaultPreference.set("sharedFilePath", "");
+      await DefaultPreference.set("sharedFileName", "");
+      await DefaultPreference.set("sharedFileMimeType", "");
+      await DefaultPreference.set("selectedSubApplication", "");
+    } catch (error) {
+      console.error("Error clearing shared file data: ", error);
     }
-  }, [token, selectedUrl]);
+  };
 
   const loadSharedFileData = async () => {
     try {
-      await DefaultPreference.setName(References.AppGroupIdentifier);
+      const filePath = await DefaultPreference.get("sharedFilePath");
+      const fileName = await DefaultPreference.get("sharedFileName");
+      const fileMimeType = await DefaultPreference.get("sharedFileMimeType");
+      const selectedSubApplication = await DefaultPreference.get("selectedSubApplication");
 
-      const filePaths = await SharedGroupPreferences.getItem("sharedFilePaths", References.AppGroupIdentifier);
-      const fileNames = await SharedGroupPreferences.getItem("sharedFileNames", References.AppGroupIdentifier);
-      const fileMimeTypes = await SharedGroupPreferences.getItem("sharedFileMimeTypes", References.AppGroupIdentifier);
+      // Check if a new file exists
+      if (filePath && fileName && fileMimeType) {
+        const adjustedPath = addFilePrefixIfNeeded(filePath);
 
-      if (
-        Array.isArray(filePaths) && filePaths.length > 0 &&
-        Array.isArray(fileNames) && fileNames.length > 0 &&
-        Array.isArray(fileMimeTypes) && fileMimeTypes.length > 0
-      ) {
-        const filesData = filePaths.map((path, index) => ({
-          filePath: Platform.OS === "ios" && !path.startsWith("file://") ? "file://" + path : path,
-          fileName: fileNames[index],
-          fileMimeType: fileMimeTypes[index],
-        }));
+        const newFileData = {
+          filePath: adjustedPath,
+          fileName,
+          fileMimeType,
+        };
 
-        setFileData(filesData);
-        dispatch(setSharedFiles(filesData));
-      } else {
-        setFileData(null);
-        dispatch(setSharedFiles([]));
+        dispatch(setSharedFiles([newFileData]));
+
+        if (selectedSubApplication) {
+          props.navigation.navigate(selectedSubApplication);
+        }
+
+        await clearSharedFileData();
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const clearSharedDefaults = async () => {
-    try {
-      await SharedGroupPreferences.setItem("sharedFilePaths", [], References.AppGroupIdentifier);
-      await SharedGroupPreferences.setItem("sharedFileNames", [], References.AppGroupIdentifier);
-      await SharedGroupPreferences.setItem("sharedFileMimeTypes", [], References.AppGroupIdentifier);
-    } catch (error) {
-      console.error("Error clearing shared defaults:", error);
-    }
-  };
-
+  // On mount, load shared file and listen for deep links
   useEffect(() => {
-    const handleAppStateChange = async (nextAppState: string) => {
-      if (nextAppState === "background" || nextAppState === "inactive") {
-        dispatch(setSharedFiles([]));
-        await clearSharedDefaults();
-      } else if (nextAppState === "active") {
-        loadSharedFileData();
-      }
-    };
+    // Initial load
+    loadSharedFileData();
 
-    const handleOpenURL = (event) => {
+    // Handle deep links
+    const handleOpenURL = () => {
       loadSharedFileData();
     };
-
-    AppState.addEventListener("change", handleAppStateChange);
     Linking.addEventListener("url", handleOpenURL);
 
+    // Check if app was launched with a link
     Linking.getInitialURL().then((url) => {
       if (url) {
         loadSharedFileData();
+      }
+    });
+  }, []);
+
+  // Listen to AppState changes
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", async (nextState) => {
+      if (nextState === "active") {
+        loadSharedFileData();
+      } else {
+        await clearSharedFileData();
       }
     });
 
     loadSharedFileData();
 
     return () => {
-      if (audioPlayer) {
-        audioPlayer.release();
-      }
+      subscription.remove();
     };
-  }, [audioPlayer, dispatch]);
+  }, []);
 
-  const getBackground = () => (isTablet() ? background : backgroundMobile);
+  // UI Helpers
+  const getBackgroundImage = () => (isTablet() ? background : backgroundMobile);
 
   const getImageBackground = () => {
     if (isTablet()) {
@@ -180,7 +195,7 @@ const HomeFunction = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={getBackground()} style={styles.imgBackground}>
+      <ImageBackground source={getBackgroundImage()} style={styles.imgBackground}>
         {isTablet() ? (
           <ScrollView horizontal style={styles.conteinerMed}>
             <>
@@ -218,6 +233,6 @@ const Home = (props: any) => {
   // Force to re-render when language changes at login
   useEffect(() => { }, [locale, selectedLanguage]);
 
-  return <HomeFunction {...props} />;
+  return <HomeComponent {...props} />;
 };
 export default Home;
