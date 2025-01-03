@@ -197,7 +197,7 @@ const HomeComponent = (props: Props) => {
   const processedMenuItems = menuItems?.map((item, index) => ({
     ...item,
     uniqueId: generateUniqueId(item.name),
-    screenName: `${item.name}_${index}`,
+    screenName: item.name,
   }));
 
   return (
