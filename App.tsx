@@ -4,7 +4,6 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
 
-import locale from './src/i18n/locale';
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -64,10 +63,17 @@ const App: React.FC<Props> = () => {
     const handleSharedFiles = () => {
       try {
         ReceiveSharingIntent.getReceivedFiles(
-          (sharedFiles: any) => {
-            setSharedFiles(sharedFiles);
+          (receivedFiles: any[]) => {
+            if (receivedFiles && receivedFiles.length > 0) {
+              setSharedFiles(receivedFiles);
+            } else {
+              setSharedFiles(null);
+            }
           },
-          (error) => { },
+          (error: any) => {
+            console.error('Error receiving shared files:', error);
+            setSharedFiles(null);
+          },
           References.EtendoReceiveShare,
         );
       } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Image, View, Text, ImageBackground, ScrollView, Platform, Linking, AppState } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +27,6 @@ import { OBRest } from "etrest";
 import { generateUniqueId } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
-import RNFS from "react-native-fs";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
 
 // Local Assets
@@ -90,12 +89,6 @@ const HomeComponent = (props: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (token && selectedUrl) {
-      saveTokenAndURL(token, selectedUrl);
-    }
-  }, [token, selectedUrl]);
-
   // Utility to add 'file://' prefix if missing
   const addFilePrefixIfNeeded = (path: string) => {
     return path.startsWith("file://") ? path : `file://${path}`;
@@ -108,7 +101,7 @@ const HomeComponent = (props: Props) => {
       await DefaultPreference.set("sharedFileMimeType", "");
       await DefaultPreference.set("selectedSubApplication", "");
     } catch (error) {
-      console.error("Error limpiando datos de archivos compartidos:", error);
+      console.error("Error clearing shared file data: ", error);
     }
   };
 
@@ -171,6 +164,8 @@ const HomeComponent = (props: Props) => {
       }
     });
 
+    loadSharedFileData();
+
     return () => {
       subscription.remove();
     };
@@ -190,9 +185,7 @@ const HomeComponent = (props: Props) => {
     }
   };
 
-  const getNameInBody = () => {
-    return data?.username ? data?.username + "!" : null;
-  };
+  const getNameInBody = () => (data?.username ? data?.username + "!" : null);
 
   const processedMenuItems = menuItems?.map((item, index) => ({
     ...item,
@@ -223,16 +216,11 @@ const HomeComponent = (props: Props) => {
           </ScrollView>
         ) : (
           <View style={styles.welcomeMobile}>
-            <Text style={styles.welcomeText}>
-              {locale.t("WelcomeToEtendoHome")}
-            </Text>
+            <Text style={styles.welcomeText}>{locale.t("WelcomeToEtendoHome")}</Text>
             <Text style={styles.welcomeName}>{getNameInBody()}</Text>
           </View>
         )}
-        <Image
-          style={deviceStyles.imageBackground}
-          source={getImageBackground()}
-        />
+        <Image style={deviceStyles.imageBackground} source={getImageBackground()} />
       </ImageBackground>
     </View>
   );

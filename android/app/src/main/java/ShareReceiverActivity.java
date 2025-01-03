@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -165,7 +168,8 @@ public class ShareReceiverActivity extends AppCompatActivity {
    * Processes a list of shared files and then fetches sub-applications.
    */
   private void processFiles(List<Uri> uris, String mimeType) {
-    new Thread(() -> {
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    executorService.execute(() -> {
       try {
         // Clear any previous sub-application selection
         clearSelectionData();
@@ -180,8 +184,17 @@ public class ShareReceiverActivity extends AppCompatActivity {
       } catch (IOException e) {
         Log.e(TAG, "Error processing shared files", e);
         runOnUiThread(() -> showErrorAndFinish("Error processing the shared files."));
+      } finally {
+        executorService.shutdown();
+        try {
+          if (!executorService.awaitTermination(60, java.util.concurrent.TimeUnit.SECONDS)) {
+            Log.e(TAG, "Executor did not terminate in the specified time.");
+          }
+        } catch (InterruptedException e) {
+          Log.e(TAG, "ExecutorService termination interrupted", e);
+        }
       }
-    }).start();
+    });
   }
 
   /**
