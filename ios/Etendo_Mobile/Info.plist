@@ -24,6 +24,18 @@
     <string>AppIcon</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>ShareMedia</string>
+            </array>
+        </dict>
+        <dict/>
+    </array>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSExceptionDomains</key>
@@ -36,33 +48,35 @@
         </dict>
     </dict>
     <key>UIAppFonts</key>
-	<array>
-		<string>AntDesign.ttf</string>
-		<string>Entypo.ttf</string>
-		<string>EvilIcons.ttf</string>
-		<string>Feather.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>FontAwesome5_Brands.ttf</string>
-		<string>FontAwesome5_Regular.ttf</string>
-		<string>FontAwesome5_Solid.ttf</string>
-		<string>FontAwesome6_Brands.ttf</string>
-		<string>FontAwesome6_Regular.ttf</string>
-		<string>FontAwesome6_Solid.ttf</string>
-		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
-		<string>MaterialIcons.ttf</string>
-		<string>MaterialCommunityIcons.ttf</string>
-		<string>SimpleLineIcons.ttf</string>
-		<string>Octicons.ttf</string>
-		<string>Zocial.ttf</string>
-		<string>Fontisto.ttf</string>
-	</array>
+		<array>
+			<string>AntDesign.ttf</string>
+			<string>Entypo.ttf</string>
+			<string>EvilIcons.ttf</string>
+			<string>Feather.ttf</string>
+			<string>FontAwesome.ttf</string>
+			<string>FontAwesome5_Brands.ttf</string>
+			<string>FontAwesome5_Regular.ttf</string>
+			<string>FontAwesome5_Solid.ttf</string>
+			<string>FontAwesome6_Brands.ttf</string>
+			<string>FontAwesome6_Regular.ttf</string>
+			<string>FontAwesome6_Solid.ttf</string>
+			<string>Foundation.ttf</string>
+			<string>Ionicons.ttf</string>
+			<string>MaterialIcons.ttf</string>
+			<string>MaterialCommunityIcons.ttf</string>
+			<string>SimpleLineIcons.ttf</string>
+			<string>Octicons.ttf</string>
+			<string>Zocial.ttf</string>
+			<string>Fontisto.ttf</string>
+		</array>
     <key>NSCameraUsageDescription</key>
     <string>$(PRODUCT_NAME) needs to use the camera to take photos and videos.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Need microphone access for uploading audio</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>$(PRODUCT_NAME) needs to access your location to provide personalized experiences and accurate results.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>$(PRODUCT_NAME) requires access to your location even when you're not using the app to provide continuous location-based services.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>$(PRODUCT_NAME) needs permission to access photos on your device</string>
     <key>UILaunchStoryboardName</key>
