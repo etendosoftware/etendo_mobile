@@ -22,7 +22,6 @@ import {
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
-  setContextPathUrl,
 } from '../../../redux/user';
 import {
   setIsDemo,
@@ -194,7 +193,6 @@ const LoginFunctional = props => {
         await AsyncStorage.setItem('selectedEnvironmentUrl', References.EtendoDemo);
         dispatch(setIsDemo(true));
         dispatch(setSelectedUrl(References.DemoUrl));
-        dispatch(setContextPathUrl(References.EtendoContextPath));
         dispatch(setSelectedEnvironmentUrl(References.EtendoDemo));
       } catch (error) {
         console.warn("Failed to store URL in AsyncStorage, will continue without storage.", error);

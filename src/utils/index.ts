@@ -113,15 +113,36 @@ export const internetIsAvailable = async () => {
 export const getBasePathContext = (
   isDemoTry: boolean,
   isDev: boolean,
+  contextPathUrl: string = References.EtendoContextPath
 ): string => {
   if (isDemoTry) {
     return References.EtendoContextPath;
   }
 
-  return isDev ? References.SubappContextPath : References.EtendoContextPath;
+  return isDev ? References.SubappContextPath : contextPathUrl;
 };
 
 // Generates a unique ID by combining a name with a random string
 export const generateUniqueId = (name: string) => {
   return `${name}_${Math.random().toString(36).slice(2, 11)}`;
+};
+
+// Given a full URL, return only the context path
+export const getContextPathFromUrl = (fullUrl: string): string => {
+  try {
+    const match = fullUrl.match(/^https?:\/\/[^\/]+(:\d+)?(\/[^?#]*)?/);
+    return match && match[2] ? match[2].replace(/\/$/, '') : '';
+  } catch (error) {
+    return "";
+  }
+}
+
+// Given a full URL, return only the host and port
+export const getHostAndPortFromUrl = (fullUrl: string): string => {
+  try {
+    const match = fullUrl.match(/^(https?:\/\/[^\/]+(:\d+)?)/);
+    return match ? match[1] : '';
+  } catch (error) {
+    return '';
+  }
 };

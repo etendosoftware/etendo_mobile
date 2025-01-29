@@ -5,7 +5,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { References } from '../../src/constants/References';
 import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
 
-jest.mock('../../hook/isTablet'); 
+jest.mock('../../hook/isTablet');
 jest.mock('react-native-orientation-locker', () => ({
   lockToLandscape: jest.fn(),
   lockToPortrait: jest.fn()
@@ -22,7 +22,7 @@ describe('fetchComponent', () => {
   const mockNavigation = {
     navigate: jest.fn()
   };
-  
+
   beforeEach(() => {
     global.fetch = jest.fn();
     jest.clearAllMocks();
@@ -32,7 +32,7 @@ describe('fetchComponent', () => {
     const mockCode = 'module.exports = { test: true }';
     (global.fetch as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({ 
+      .mockImplementationOnce(() => Promise.resolve({
         ok: true,
         text: () => Promise.resolve(mockCode)
       }));
@@ -48,7 +48,7 @@ describe('fetchComponent', () => {
 
     const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
     result();
-    
+
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     expect(show).toHaveBeenCalledWith('LoginScreen:NetworkError', 'error');
   });
@@ -56,14 +56,14 @@ describe('fetchComponent', () => {
   it('should handle empty response', async () => {
     (global.fetch as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({ 
+      .mockImplementationOnce(() => Promise.resolve({
         ok: true,
         text: () => Promise.resolve('   ')
       }));
 
     const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
     result();
-    
+
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
   });
 });
@@ -89,26 +89,26 @@ describe('deviceOrientation', () => {
 });
 
 describe('internetIsAvailable', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-  
-    it('should return true when internet is connected', async () => {
-      NetInfo.fetch.mockResolvedValue({ isConnected: true });
-      const result = await internetIsAvailable();
-      expect(result).toBe(true);
-    });
-  
-    it('should return false when internet is not connected', async () => {
-      NetInfo.fetch.mockResolvedValue({ isConnected: false });
-      const result = await internetIsAvailable();
-      expect(result).toBe(false);
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
+  it('should return true when internet is connected', async () => {
+    NetInfo.fetch.mockResolvedValue({ isConnected: true });
+    const result = await internetIsAvailable();
+    expect(result).toBe(true);
+  });
+
+  it('should return false when internet is not connected', async () => {
+    NetInfo.fetch.mockResolvedValue({ isConnected: false });
+    const result = await internetIsAvailable();
+    expect(result).toBe(false);
+  });
+});
+
 describe('getBasePathContext', () => {
-  it('should return EtendoContextPath for demo try', () => {
-    const result = getBasePathContext(true, false);
+  it('should return EtendoContextPath for production', () => {
+    const result = getBasePathContext(false, false, References.EtendoContextPath);
     expect(result).toBe(References.EtendoContextPath);
   });
 

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { Image, View, Text, ImageBackground, ScrollView } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
@@ -15,7 +16,9 @@ import {
   selectData,
   selectSelectedLanguage,
   selectSelectedUrl,
-  selectToken
+  selectToken,
+  setContextPathUrl,
+  setSelectedEnvironmentUrl
 } from "../../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import {
@@ -24,7 +27,7 @@ import {
   setIsSubapp
 } from "../../../redux/window";
 import { OBRest } from "etrest";
-import { generateUniqueId } from "../../utils";
+import { generateUniqueId, getContextPathFromUrl, getHostAndPortFromUrl } from "../../utils";
 import { References } from "../../constants/References";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
@@ -77,6 +80,27 @@ const HomeFunction = (props: Props) => {
     uniqueId: generateUniqueId(item.name),
     screenName: `${item.name}_${index}`,
   }));
+
+  useEffect(() => {
+    const rehydrateContextPath = async () => {
+      try {
+        const storedContextPath = await AsyncStorage.getItem('contextPathUrl');
+        if (storedContextPath) {
+          dispatch(setContextPathUrl(storedContextPath));
+        } else if (selectedUrl) {
+          const hostAndPortUrl = getHostAndPortFromUrl(selectedUrl);
+          const extractedPath = getContextPathFromUrl(selectedUrl);
+          dispatch(setSelectedEnvironmentUrl(hostAndPortUrl));
+          dispatch(setContextPathUrl(extractedPath));
+          await AsyncStorage.setItem('contextPathUrl', extractedPath);
+        }
+      } catch (error) {
+        console.error('Error loading contextPathUrl from AsyncStorage', error);
+      }
+    };
+
+    rehydrateContextPath();
+  }, [dispatch, selectedUrl]);
 
   return (
     <View style={styles.container}>
