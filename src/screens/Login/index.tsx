@@ -22,7 +22,6 @@ import {
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
-  setContextPathUrl,
 } from '../../../redux/user';
 import {
   setIsDemo,
@@ -194,7 +193,6 @@ const LoginFunctional = props => {
         await AsyncStorage.setItem('selectedEnvironmentUrl', References.EtendoDemo);
         dispatch(setIsDemo(true));
         dispatch(setSelectedUrl(References.DemoUrl));
-        dispatch(setContextPathUrl(References.EtendoContextPath));
         dispatch(setSelectedEnvironmentUrl(References.EtendoDemo));
       } catch (error) {
         console.warn("Failed to store URL in AsyncStorage, will continue without storage.", error);
@@ -220,7 +218,7 @@ const LoginFunctional = props => {
       }
     } catch (error) {
       show(locale.t('LoginScreen:NetworkError'), 'error');
-      console.log("Error in the demo process:", error);
+      console.error("Error in the demo process:", error);
     } finally {
       dispatch(setLoadingScreen(false));
     }
@@ -253,7 +251,7 @@ const LoginFunctional = props => {
           dispatch(setSelectedUrl(storedUrl));
         }
       } catch (error) {
-        console.log("Error to access AsyncStorage:", error);
+        console.error("Error to access AsyncStorage:", error);
         dispatch(setSelectedUrl(References.DemoUrl));
       }
     };
@@ -388,7 +386,7 @@ const LoginFunctional = props => {
             onPress={() => [setShowChangePassword(true)]}
           ></TouchableOpacity>
           <Text style={styles.copyRightStyle}>
-            © Copyright Etendo 2020-2024
+            © Copyright Etendo 2020-2025
           </Text>
         </View>
         {ChangedPassword()}

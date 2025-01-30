@@ -23,7 +23,7 @@ const HomePage = ({ route, navigation }: any) => {
   const language = useAppSelector(selectSelectedLanguage);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
-  const contextPathUrl = useAppSelector(selectContextPathUrl)
+  const contextPathUrl = useAppSelector(selectContextPathUrl);
 
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id + "?v=" + Math.random();
@@ -32,10 +32,10 @@ const HomePage = ({ route, navigation }: any) => {
     Etendo.navigation[route.params.name] = childNavigation;
     return (
       <>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} testID='dynamic-component-container'>
           <NavigationContainer
             independent={true}
-            onReady={() => {}}
+            onReady={() => { }}
             ref={childNavigation}
           >
             <DynamicComponent

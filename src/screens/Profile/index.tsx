@@ -49,8 +49,8 @@ const Profile = props => {
           setWarehouse(warehouse);
           setClient(client);
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function (err) {
+          console.error(err);
         });
     }
   }, [data]);
