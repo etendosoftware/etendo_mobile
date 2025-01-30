@@ -14,7 +14,7 @@ jest.mock("../../../src/i18n/locale", () => ({
 
 describe("OBDal", () => {
   let originalConsoleLog;
-  
+
   beforeAll(() => {
     originalConsoleLog = console.log;
     console.log = jest.fn();
@@ -139,7 +139,7 @@ describe("OBDal", () => {
       const entity = {} as IOBDalEntity;
       const currentTab = { fields: {} } as ADTab;
       (locale.t as jest.Mock).mockReturnValue("missing_translation");
-      
+
       const filters = [{
         ...baseFilters[0],
         propertyType: "CustomType"

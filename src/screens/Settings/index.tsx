@@ -46,7 +46,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
 import { useEtrest } from '../../../hook/useEtrest';
-import { getContextPathFromUrl } from '../../utils';
+import { getContextPath } from '../../utils';
 import {
   CornerUpLeftIcon,
   DropdownInput,
@@ -153,7 +153,7 @@ const Settings = props => {
     try {
       await AsyncStorage.setItem('contextPathUrl', value);
     } catch (error) {
-      console.log('Error saving contextPathUrl to AsyncStorage', error);
+      console.error('Error saving contextPathUrl to AsyncStorage', error);
     }
   };
 
@@ -268,7 +268,7 @@ const Settings = props => {
   };
 
   const handleOptionSelected = async ({ value }) => {
-    const contextPath = getContextPathFromUrl(value);
+    const contextPath = getContextPath(value);
 
     try {
       await AsyncStorage.setItem('contextPathUrl', contextPath);
@@ -321,7 +321,7 @@ const Settings = props => {
 
     const unsubscribe = props.navigation.addListener("blur", async () => {
       try {
-        const extractedContextPath = getContextPathFromUrl(selectedUrl);
+        const extractedContextPath = getContextPath(selectedUrl);
         await AsyncStorage.setItem("contextPathUrl", extractedContextPath);
         dispatch(setContextPathUrl(extractedContextPath));
       } catch (error) {

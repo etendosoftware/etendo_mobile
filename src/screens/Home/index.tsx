@@ -27,7 +27,8 @@ import {
   setIsSubapp
 } from "../../../redux/window";
 import { OBRest } from "etrest";
-import { generateUniqueId, getContextPathFromUrl, getHostAndPortFromUrl } from "../../utils";
+import { formatEnvironmentUrl } from "../../ob-api/ob";
+import { generateUniqueId, getContextPath } from "../../utils";
 import { References } from "../../constants/References";
 
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
@@ -88,9 +89,9 @@ const HomeFunction = (props: Props) => {
         if (storedContextPath) {
           dispatch(setContextPathUrl(storedContextPath));
         } else if (selectedUrl) {
-          const hostAndPortUrl = getHostAndPortFromUrl(selectedUrl);
-          const extractedPath = getContextPathFromUrl(selectedUrl);
-          dispatch(setSelectedEnvironmentUrl(hostAndPortUrl));
+          const hostUrl = formatEnvironmentUrl(selectedUrl);
+          const extractedPath = getContextPath(selectedUrl);
+          dispatch(setSelectedEnvironmentUrl(hostUrl));
           dispatch(setContextPathUrl(extractedPath));
           await AsyncStorage.setItem('contextPathUrl', extractedPath);
         }

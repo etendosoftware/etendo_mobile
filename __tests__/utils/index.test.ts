@@ -4,8 +4,7 @@ import {
   internetIsAvailable,
   getBasePathContext,
   generateUniqueId,
-  getContextPathFromUrl,
-  getHostAndPortFromUrl
+  getContextPath,
 } from '../../src/utils/index';
 
 import { isTablet } from '../../hook/isTablet';
@@ -167,39 +166,39 @@ describe('generateUniqueId', () => {
   });
 });
 
-describe('getContextPathFromUrl', () => {
-  it('should extract context path correctly', () => {
-    const url = 'https://example.com:8080/context/path?query=123';
-    expect(getContextPathFromUrl(url)).toBe('/context/path');
+describe("getContextPath", () => {
+  test("should return the context path from a full URL", () => {
+    expect(getContextPath("https://etendo.com/context/path"))
+      .toBe("/context/path");
   });
 
-  it('should return empty string when no context path exists', () => {
-    const url = 'https://example.com';
-    expect(getContextPathFromUrl(url)).toBe('');
+  test("should return the context path when there is a port number", () => {
+    expect(getContextPath("http://localhost:3000/api/v1/resource"))
+      .toBe("/api/v1/resource");
   });
 
-  it('should return empty string for invalid URLs', () => {
-    expect(getContextPathFromUrl('invalid-url')).toBe('');
-  });
-});
-
-describe('getHostAndPortFromUrl', () => {
-  it('should extract host and port correctly', () => {
-    const url = 'https://example.com:8080/context/path?query=123';
-    expect(getHostAndPortFromUrl(url)).toBe('https://example.com:8080');
+  test("should return an empty string for an invalid URL (less than 3 slashes)", () => {
+    expect(getContextPath("http:/etendo.com"))
+      .toBe("");
   });
 
-  it('should return only host if no port is specified', () => {
-    const url = 'https://example.com/context/path';
-    expect(getHostAndPortFromUrl(url)).toBe('https://example.com');
+  test("should return an empty string for a domain-only URL", () => {
+    expect(getContextPath("https://etendo.com"))
+      .toBe("");
   });
 
-  it('should handle invalid URLs gracefully', () => {
-    expect(getHostAndPortFromUrl('invalid-url')).toBe('');
+  test("should return an empty string for an empty input", () => {
+    expect(getContextPath(""))
+      .toBe("");
   });
 
-  it('should handle URLs with query parameters correctly', () => {
-    const url = 'https://example.com:3000/path?test=123';
-    expect(getHostAndPortFromUrl(url)).toBe('https://example.com:3000');
+  test("should handle URLs with query parameters", () => {
+    expect(getContextPath("https://etendo.com/app?query=1"))
+      .toBe("/app?query=1");
+  });
+
+  test("should handle URLs with hash fragments", () => {
+    expect(getContextPath("https://etendo.com/path#section"))
+      .toBe("/path#section");
   });
 });

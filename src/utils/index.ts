@@ -128,21 +128,22 @@ export const generateUniqueId = (name: string) => {
 };
 
 // Given a full URL, return only the context path
-export const getContextPathFromUrl = (fullUrl: string): string => {
-  try {
-    const match = fullUrl.match(/^https?:\/\/[^\/]+(:\d+)?(\/[^?#]*)?/);
-    return match && match[2] ? match[2].replace(/\/$/, '') : '';
-  } catch (error) {
-    return "";
-  }
-}
+export const getContextPath = (url: string): string => {
+  let index = 0;
+  let slashCount = 0;
 
-// Given a full URL, return only the host and port
-export const getHostAndPortFromUrl = (fullUrl: string): string => {
-  try {
-    const match = fullUrl.match(/^(https?:\/\/[^\/]+(:\d+)?)/);
-    return match ? match[1] : '';
-  } catch (error) {
-    return '';
+  while (slashCount < 3 && index < url.length) {
+    if (url.charAt(index) === '/') {
+      slashCount++;
+    }
+    if (slashCount < 3) {
+      index++;
+    }
   }
+
+  if (slashCount === 3) {
+    return url.substring(index);
+  }
+
+  return '';
 };

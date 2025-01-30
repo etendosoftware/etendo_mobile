@@ -6,14 +6,12 @@ import configureStore from 'redux-mock-store';
 import { setContextPathUrl } from '../../redux/user';
 import { TouchableOpacity } from 'react-native';
 
-// Mockeamos AsyncStorage correctamente
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
   removeItem: jest.fn(),
 }));
 
-// Mockeamos Redux (useAppDispatch)
 const mockDispatch = jest.fn();
 jest.mock('../../redux', () => ({
   useAppDispatch: () => mockDispatch,
@@ -70,7 +68,7 @@ describe('UrlItem', () => {
     });
 
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledTimes(1); // Verificar que dispatch fue llamado una vez
+      expect(mockDispatch).toHaveBeenCalledTimes(1);
       expect(mockDispatch).toHaveBeenCalledWith(setContextPathUrl('/context/path'));
     });
   });
@@ -96,8 +94,8 @@ describe('UrlItem', () => {
     );
 
     const touchables = UNSAFE_getAllByType(TouchableOpacity);
-    fireEvent.press(touchables[2]); // Delete button
-    fireEvent.press(touchables[1]); // Confirm button
+    fireEvent.press(touchables[2]);
+    fireEvent.press(touchables[1]);
 
     expect(defaultProps.setUrl).toHaveBeenCalledWith(null);
     expect(defaultProps.resetLocalUrl).toHaveBeenCalled();
@@ -111,8 +109,8 @@ describe('UrlItem', () => {
     );
 
     const touchables = UNSAFE_getAllByType(TouchableOpacity);
-    fireEvent.press(touchables[2]); // Delete button
-    fireEvent.press(touchables[0]); // Cancel button
+    fireEvent.press(touchables[2]);
+    fireEvent.press(touchables[0]);
 
     expect(defaultProps.deleteUrl).not.toHaveBeenCalled();
     expect(defaultProps.setUrl).not.toHaveBeenCalled();
@@ -134,7 +132,6 @@ describe('UrlItem', () => {
       expect(defaultProps.setIsUpdating).toHaveBeenCalledWith(true);
     });
 
-    // Simulate not confirming the edit
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(mockDispatch).toHaveBeenCalledWith(setContextPathUrl('/context/path'));
   });

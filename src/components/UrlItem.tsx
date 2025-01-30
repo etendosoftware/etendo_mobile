@@ -3,9 +3,10 @@ import { deviceStyles as styles } from '../screens/Settings/deviceStyles';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isTablet } from '../helpers/IsTablet';
-import { selectContextPathUrl, setContextPathUrl } from '../../redux/user';
-import { useAppDispatch, useAppSelector } from '../../redux';
+import { getContextPath } from '../utils';
 import { formatEnvironmentUrl } from '../ob-api/ob';
+import { useAppDispatch, useAppSelector } from '../../redux';
+import { selectContextPathUrl, setContextPathUrl } from '../../redux/user';
 import {
   CheckIcon,
   Edit2Icon,
@@ -30,26 +31,6 @@ export const UrlItem = ({
 
   const [clicked, setClicked] = useState(false);
   const [clickDelete, setClickDelete] = useState(false);
-
-  const getContextPath = (url: string): string => {
-    let index = 0;
-    let slashCount = 0;
-
-    while (slashCount < 3 && index < url.length) {
-      if (url.charAt(index) === '/') {
-        slashCount++;
-      }
-      if (slashCount < 3) {
-        index++;
-      }
-    }
-
-    if (slashCount === 3) {
-      return url.substring(index);
-    }
-
-    return '';
-  };
 
   const handleEdit = async () => {
     const newContext = getContextPath(item);

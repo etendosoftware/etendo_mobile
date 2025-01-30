@@ -12,7 +12,7 @@ describe('ErrorHelper', () => {
       const mockError = {
         response: {
           config: {
-            url: 'https://example.com/api',
+            url: 'https://etendo.com/api',
             params: { q: 'test' }
           }
         }

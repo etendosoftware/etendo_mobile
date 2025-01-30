@@ -71,7 +71,7 @@ describe('OBDatasource', () => {
 
     it('should handle empty criteria array', async () => {
       mockCallWebService.mockResolvedValue({ response: { data: [] } });
-      
+
       await OBDatasource.fetch({
         datasourceName: 'TestDS',
         criteria: []
@@ -85,7 +85,7 @@ describe('OBDatasource', () => {
   describe('fetch method - Tree Reference handling', () => {
     it('should set correct parentId for Tree Reference type', async () => {
       mockCallWebService.mockResolvedValue({ response: { data: [] } });
-      
+
       await OBDatasource.fetch({
         datasourceName: 'TestDS',
         treeReferenceId: '123'
@@ -98,7 +98,7 @@ describe('OBDatasource', () => {
 
     it('should remove tabId for Tree Reference type', async () => {
       mockCallWebService.mockResolvedValue({ response: { data: [] } });
-      
+
       await OBDatasource.fetch({
         datasourceName: 'TestDS',
         treeReferenceId: '123',
@@ -133,7 +133,7 @@ describe('OBDatasource', () => {
   describe('fetch method - boolean value handling', () => {
     it('should convert boolean input parameters to Y/N', async () => {
       mockCallWebService.mockResolvedValue({ response: { data: [] } });
-      
+
       await OBDatasource.fetch({
         datasourceName: 'TestDS',
         inpActive: true,
