@@ -1,10 +1,13 @@
-import React, { useMemo, Suspense } from "react";
-import { fetchComponent, getBasePathContext } from "../utils";
-import LoadingScreen from "./LoadingScreen";
+import React, { useMemo, Suspense } from 'react';
+import { fetchComponent, getBasePathContext } from '../utils';
+import LoadingScreen from './LoadingScreen';
+import { useSelector } from 'react-redux';
+import { selectContextPathUrl } from '../../redux/user';
 
-const DynamicComponent = ({ __id, children, ...props }: any) => {
+const DynamicComponent = ({ __id, children, ...props }) => {
   const baseUrl = props.url;
-  const basePathContext = getBasePathContext(props.isDemoTry, props.isDev);
+  const localContextPath = useSelector(selectContextPathUrl)
+  const basePathContext = getBasePathContext(props.isDemoTry, props.isDev, localContextPath);
 
   const Component = useMemo(() => {
     return React.lazy(async () => {
@@ -23,6 +26,10 @@ const DynamicComponent = ({ __id, children, ...props }: any) => {
       }
     });
   }, [__id, baseUrl, basePathContext]);
+
+  if (!props.url || !localContextPath) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Suspense fallback={<LoadingScreen />}>

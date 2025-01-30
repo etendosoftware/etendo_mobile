@@ -27,7 +27,6 @@ import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import { UrlItem } from '../../components/UrlItem';
 import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
-  selectContextPathUrl,
   selectData,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
@@ -43,10 +42,11 @@ import { useUser } from '../../../hook/useUser';
 import { changeLanguage } from '../../helpers/getLanguajes';
 import { getLanguageName } from '../../i18n/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
 import { useEtrest } from '../../../hook/useEtrest';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { getContextPath } from '../../utils';
 import {
   CornerUpLeftIcon,
   DropdownInput,
@@ -72,11 +72,11 @@ const Settings = props => {
   const storedEnviromentsUrl = useAppSelector(selectStoredEnviromentsUrl);
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
-  const contextPathUrl = useAppSelector(selectContextPathUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
   const data = useAppSelector(selectData);
 
   const { getRoleName } = useEtrest(selectedUrl, token);
+
   // local states
   const [url, setUrl] = useState<string>('');
   const [modalUrl, setModalUrl] = useState<string>('');
@@ -90,12 +90,27 @@ const Settings = props => {
   const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [localContextPath, setLocalContextPath] = useState<string>(References.EtendoContextPath);
 
   const {
     loadEnviromentsUrl,
     saveEnviromentsUrl,
     setCurrentLanguage,
   } = useUser();
+
+  useEffect(() => {
+    const loadContextPath = async () => {
+      try {
+        const storedContextPath = await AsyncStorage.getItem('contextPathUrl');
+        if (storedContextPath) {
+          setLocalContextPath(storedContextPath);
+        }
+      } catch (error) {
+        console.error('Error loading contextPathUrl from AsyncStorage', error);
+      }
+    };
+    loadContextPath();
+  }, []);
 
   useEffect(() => {
     const fetchUrlAndLogo = async () => {
@@ -133,32 +148,51 @@ const Settings = props => {
     setDisplayLanguage(label);
   };
 
+  const handleContextPathChange = async (value: string) => {
+    setLocalContextPath(value);
+    try {
+      await AsyncStorage.setItem('contextPathUrl', value);
+    } catch (error) {
+      console.error('Error saving contextPathUrl to AsyncStorage', error);
+    }
+  };
+
   const addUrl = useCallback(async () => {
     const formattedUrl = formatUrl(valueEnvironmentUrl);
-    const newUrl = `${formattedUrl}${contextPathUrl}`;
+    const newUrl = `${formattedUrl}${localContextPath}`;
+    dispatch(setSelectedEnvironmentUrl(formattedUrl));
 
-    if (!formattedUrl || storedDataUrl.includes(newUrl)) {
+    if (!formattedUrl) {
       return;
     }
 
-    const newStoredDataUrl = [...storedDataUrl, newUrl];
+    let updatedStoredDataUrl;
+    if (isUpdating) {
+      updatedStoredDataUrl = storedDataUrl.map(url =>
+        url === modalUrl ? newUrl : url
+      );
+    } else {
+      if (storedDataUrl.includes(newUrl)) return;
+      updatedStoredDataUrl = [...storedDataUrl, newUrl];
+    }
 
-    setStoredDataUrl(newStoredDataUrl);
-    await saveEnviromentsUrl([...storedDataUrl, newUrl]);
+    setStoredDataUrl(updatedStoredDataUrl);
+    await saveEnviromentsUrl(updatedStoredDataUrl);
 
     setValueEnvironmentUrl('');
     setSelectedUrl(newUrl);
     await atChooseOption(newUrl);
 
+    setLocalContextPath(References.EtendoContextPath);
     setIsUpdating(false);
-  }, [valueEnvironmentUrl, contextPathUrl, storedDataUrl]);
+  }, [valueEnvironmentUrl, localContextPath, storedDataUrl, isUpdating, modalUrl]);
 
   const deleteUrl = async (item: string) => {
     const storedEnviromentsUrl = await loadEnviromentsUrl();
     let filteredItems = storedEnviromentsUrl.filter(url => url !== item);
     await saveEnviromentsUrl(filteredItems);
     setStoredDataUrl(filteredItems);
-    if (selectedUrl == item) {
+    if (selectedUrl === item) {
       dispatch(setSelectedUrl(null));
       await AsyncStorage.removeItem('selectedUrl');
     }
@@ -225,10 +259,6 @@ const Settings = props => {
     const valueEnvironmentUrl = formatEnvironmentUrl(fullUrl);
     await AsyncStorage.setItem('selectedEnvironmentUrl', valueEnvironmentUrl);
 
-    // Update the state with the formatted environment URL
-    setValueEnvironmentUrl(valueEnvironmentUrl);
-
-    // Dispatch the selected URL to the Redux store
     dispatch(setSelectedUrl(fullUrl));
 
     // Set the URL for the OB API and update the local state
@@ -238,6 +268,15 @@ const Settings = props => {
   };
 
   const handleOptionSelected = async ({ value }) => {
+    const contextPath = getContextPath(value);
+
+    try {
+      await AsyncStorage.setItem('contextPathUrl', contextPath);
+      dispatch(setContextPathUrl(contextPath));
+    } catch (err) {
+      console.error('Error saving context path in AsyncStorage:', err);
+    }
+
     await atChooseOption(value);
     const formattedUrl = formatEnvironmentUrl(value);
     dispatch(setSelectedEnvironmentUrl(formattedUrl));
@@ -251,7 +290,7 @@ const Settings = props => {
           const [role] = values;
           setRole(role);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.error(error);
         });
     }
@@ -276,6 +315,22 @@ const Settings = props => {
       keyboardDidHideListener.remove();
     };
   }, [isKeyboardVisible]);
+
+  useEffect(() => {
+    if (!props?.navigation?.addListener) return;
+
+    const unsubscribe = props.navigation.addListener("blur", async () => {
+      try {
+        const extractedContextPath = getContextPath(selectedUrl);
+        await AsyncStorage.setItem("contextPathUrl", extractedContextPath);
+        dispatch(setContextPathUrl(extractedContextPath));
+      } catch (error) {
+        console.error("Error saving contextPathUrl to AsyncStorage:", error);
+      }
+    });
+
+    return unsubscribe;
+  }, [props.navigation, localContextPath]);
 
   return (
     <KeyboardAwareScrollView
@@ -317,7 +372,7 @@ const Settings = props => {
                       ? url
                       : null
               }
-              onSelect={(option: any) => {
+              onSelect={option => {
                 handleOptionSelected(option);
                 setHasErrorLogo(false);
               }}
@@ -432,15 +487,10 @@ const Settings = props => {
                         {locale.t('Settings:ContextPath')}
                       </Text>
                       <TextInput
-                        placeholder={locale.t(
-                          'Settings:ContextPathPlaceholder',
-                        )}
-                        value={contextPathUrl}
-                        onChangeText={value =>
-                          dispatch(setContextPathUrl(value))
-                        }
+                        placeholder={locale.t('Settings:ContextPathPlaceholder')}
+                        value={localContextPath}
+                        onChangeText={handleContextPathChange}
                       />
-
                       <View style={{ marginTop: 10 }}>
                         <ButtonUI
                           width="100%"
@@ -459,6 +509,7 @@ const Settings = props => {
                         />
                       </View>
                     </View>
+
                     <View style={{ marginTop: 32 }}>
                       <Text style={styles.urlEnvList}>
                         {locale.t('ShowLoadUrl:ItemList')}
@@ -482,6 +533,7 @@ const Settings = props => {
                                 setUrl={setUrl}
                                 resetLocalUrl={resetLocalUrl}
                                 handleOptionSelected={handleOptionSelected}
+                                setLocalContextPath={setLocalContextPath}
                               />
                             );
                           })
@@ -505,7 +557,7 @@ const Settings = props => {
           <Text allowFontScaling={false}>
             {locale.t('Settings:AppVersion', { version: appVersion })}
           </Text>
-          <Text allowFontScaling={false}>© Copyright Etendo 2020-2024</Text>
+          <Text allowFontScaling={false}>© Copyright Etendo 2020-2025</Text>
         </View>
       ) : null}
     </KeyboardAwareScrollView>

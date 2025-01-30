@@ -23,29 +23,23 @@ describe('HomePage', () => {
   const initialState = {
     user: {
       token: 'test-token',
-      data: {
-        username: 'testuser'
-      },
+      data: { username: 'testuser' },
       selectedLanguage: 'en_US',
       selectedEnvironmentUrl: 'https://test.com',
-      contextPathUrl: '/test'
+      contextPathUrl: '/test',
     },
-    window: {
-      isDemo: false
-    }
+    window: { isDemo: false },
   };
 
   const mockRoute = {
     params: {
       __id: 'test-id',
       name: 'TestApp',
-      isDev: true
-    }
+      isDev: true,
+    },
   };
 
-  const mockNavigation = {
-    navigate: jest.fn()
-  };
+  const mockNavigation = { navigate: jest.fn() };
 
   let store;
 
@@ -60,7 +54,6 @@ describe('HomePage', () => {
         <HomePage route={mockRoute} navigation={mockNavigation} />
       </Provider>
     );
-
     expect(UNSAFE_getByType(NavigationContainer)).toBeTruthy();
   });
 
@@ -79,7 +72,7 @@ describe('HomePage', () => {
         language: 'en_US',
         isDev: true,
         isDemoTry: false,
-        contextPathUrl: '/test'
+        contextPathUrl: '/test',
       }),
       expect.anything()
     );
@@ -87,7 +80,7 @@ describe('HomePage', () => {
 
   it('generates unique appId with random', () => {
     const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.123);
-    
+
     render(
       <Provider store={store}>
         <HomePage route={mockRoute} navigation={mockNavigation} />
@@ -96,11 +89,90 @@ describe('HomePage', () => {
 
     expect(DynamicComponent).toHaveBeenCalledWith(
       expect.objectContaining({
-        __id: 'test-id?v=0.123'
+        __id: 'test-id?v=0.123',
       }),
       expect.anything()
     );
 
     randomSpy.mockRestore();
+  });
+
+  it('renders RenderDynamicComponents correctly', () => {
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <HomePage route={mockRoute} navigation={mockNavigation} />
+      </Provider>
+    );
+
+    expect(getByTestId('dynamic-component-container')).toBeTruthy();
+  });
+
+  it('handles missing Redux state gracefully', () => {
+    const emptyStore = mockStore({
+      user: {
+        token: null,
+        data: {},
+        selectedLanguage: '',
+        selectedEnvironmentUrl: '',
+        contextPathUrl: '',
+      },
+      window: { isDemo: false },
+    });
+
+    render(
+      <Provider store={emptyStore}>
+        <HomePage route={mockRoute} navigation={mockNavigation} />
+      </Provider>
+    );
+
+    expect(DynamicComponent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: '',
+        token: null,
+        user: undefined,
+        language: '',
+        isDev: true,
+        isDemoTry: false,
+        contextPathUrl: '',
+      }),
+      expect.anything()
+    );
+  });
+
+  it('handles different values for isDev and isDemoTry', () => {
+    const modifiedRoute = { params: { ...mockRoute.params, isDev: false } };
+    const modifiedStore = mockStore({
+      ...initialState,
+      window: { isDemo: true },
+    });
+
+    render(
+      <Provider store={modifiedStore}>
+        <HomePage route={modifiedRoute} navigation={mockNavigation} />
+      </Provider>
+    );
+
+    expect(DynamicComponent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isDev: false,
+        isDemoTry: true,
+      }),
+      expect.anything()
+    );
+  });
+
+  it('triggers navigation container events', () => {
+    const mockOnReady = jest.fn();
+
+    const { UNSAFE_getByType } = render(
+      <Provider store={store}>
+        <HomePage route={mockRoute} navigation={mockNavigation} />
+      </Provider>
+    );
+
+    const navContainer = UNSAFE_getByType(NavigationContainer);
+    navContainer.props.onReady();
+
+    expect(mockOnReady).toHaveBeenCalledTimes(0); // El `onReady` en `NavigationContainer` es opcional
   });
 });

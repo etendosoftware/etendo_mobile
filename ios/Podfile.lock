@@ -538,9 +538,12 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
-  - RNSentry (2.6.2):
+  - RNSentry (5.36.0):
+    - hermes-engine
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - Sentry (= 7.1.4)
+    - React-hermes
+    - Sentry/HybridSDK (= 8.41.0)
   - RNShare (10.2.1):
     - React-Core
   - RNSound (0.11.2):
@@ -552,9 +555,7 @@ PODS:
     - React-Core
   - RNVectorIcons (9.2.0):
     - React-Core
-  - Sentry (7.1.4):
-    - Sentry/Core (= 7.1.4)
-  - Sentry/Core (7.1.4)
+  - Sentry/HybridSDK (8.41.0)
   - SocketRocket (0.6.1)
   - VisionCamera (4.0.1):
     - VisionCamera/Core (= 4.0.1)
@@ -892,12 +893,12 @@ SPEC CHECKSUMS:
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReanimated: fc36806836aca984b797f01432abe31689663421
   RNScreens: 284fcee9d8d4648851fdb85dd0e200daebedcc14
-  RNSentry: 68644ef607b780551cc555f084869764f2566652
+  RNSentry: 70aef1a4405eae756c7e3dda380f187cbd7ad43d
   RNShare: 0fad69ae2d71de9d1f7b9a43acf876886a6cb99c
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: af3907ac5d4fa26a862b75a16d8f15bc74f2ceda
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
-  Sentry: 1d3eb1a25f8c5333c88dd5603904a6d461cd9fcf
+  Sentry: 54d0fe6c0df448497c8ed4cce66ccf7027e1823e
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   VisionCamera: 8e00df84a76cf26ca70ecd3b6ed05dc0d3b60beb
   Yoga: c32e0be1a17f8f1f0e633a3122f7666441f52c82

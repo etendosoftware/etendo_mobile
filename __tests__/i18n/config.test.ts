@@ -20,7 +20,7 @@ describe('Config Module', () => {
     it('should load correct translations', () => {
       const enTranslations = supportedLocales['en-US'].loadTranslations();
       const esTranslations = supportedLocales['es-ES'].loadTranslations();
-      
+
       expect(enTranslations.key).toBe('English Value');
       expect(esTranslations.key).toBe('Spanish Value');
     });
