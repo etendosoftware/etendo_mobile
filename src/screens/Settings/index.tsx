@@ -90,8 +90,7 @@ const Settings = props => {
   const [valueEnvironmentUrl, setValueEnvironmentUrl] = useState<string>(null);
   const [logoURI, setLogoURI] = useState(defaultLogo);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-
-  const [localContextPath, setLocalContextPath] = useState<string>('');
+  const [localContextPath, setLocalContextPath] = useState<string>(References.EtendoContextPath);
 
   const {
     loadEnviromentsUrl,
@@ -161,22 +160,32 @@ const Settings = props => {
   const addUrl = useCallback(async () => {
     const formattedUrl = formatUrl(valueEnvironmentUrl);
     const newUrl = `${formattedUrl}${localContextPath}`;
+    dispatch(setSelectedEnvironmentUrl(formattedUrl));
 
-    if (!formattedUrl || storedDataUrl.includes(newUrl)) {
+    if (!formattedUrl) {
       return;
     }
 
-    const newStoredDataUrl = [...storedDataUrl, newUrl];
+    let updatedStoredDataUrl;
+    if (isUpdating) {
+      updatedStoredDataUrl = storedDataUrl.map(url =>
+        url === modalUrl ? newUrl : url
+      );
+    } else {
+      if (storedDataUrl.includes(newUrl)) return;
+      updatedStoredDataUrl = [...storedDataUrl, newUrl];
+    }
 
-    setStoredDataUrl(newStoredDataUrl);
-    await saveEnviromentsUrl([...storedDataUrl, newUrl]);
+    setStoredDataUrl(updatedStoredDataUrl);
+    await saveEnviromentsUrl(updatedStoredDataUrl);
 
     setValueEnvironmentUrl('');
     setSelectedUrl(newUrl);
     await atChooseOption(newUrl);
 
+    setLocalContextPath(References.EtendoContextPath);
     setIsUpdating(false);
-  }, [valueEnvironmentUrl, localContextPath, storedDataUrl]);
+  }, [valueEnvironmentUrl, localContextPath, storedDataUrl, isUpdating, modalUrl]);
 
   const deleteUrl = async (item: string) => {
     const storedEnviromentsUrl = await loadEnviromentsUrl();
@@ -501,7 +510,6 @@ const Settings = props => {
                       </View>
                     </View>
 
-                    {/* LISTA DE URLs GUARDADAS */}
                     <View style={{ marginTop: 32 }}>
                       <Text style={styles.urlEnvList}>
                         {locale.t('ShowLoadUrl:ItemList')}
@@ -525,6 +533,7 @@ const Settings = props => {
                                 setUrl={setUrl}
                                 resetLocalUrl={resetLocalUrl}
                                 handleOptionSelected={handleOptionSelected}
+                                setLocalContextPath={setLocalContextPath}
                               />
                             );
                           })
@@ -548,7 +557,7 @@ const Settings = props => {
           <Text allowFontScaling={false}>
             {locale.t('Settings:AppVersion', { version: appVersion })}
           </Text>
-          <Text allowFontScaling={false}>© Copyright Etendo 2020-2024</Text>
+          <Text allowFontScaling={false}>© Copyright Etendo 2020-2025</Text>
         </View>
       ) : null}
     </KeyboardAwareScrollView>

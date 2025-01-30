@@ -32,10 +32,10 @@ const HomePage = ({ route, navigation }: any) => {
     Etendo.navigation[route.params.name] = childNavigation;
     return (
       <>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} testID='dynamic-component-container'>
           <NavigationContainer
             independent={true}
-            onReady={() => {}}
+            onReady={() => { }}
             ref={childNavigation}
           >
             <DynamicComponent

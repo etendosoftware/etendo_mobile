@@ -386,7 +386,7 @@ const LoginFunctional = props => {
             onPress={() => [setShowChangePassword(true)]}
           ></TouchableOpacity>
           <Text style={styles.copyRightStyle}>
-            © Copyright Etendo 2020-2024
+            © Copyright Etendo 2020-2025
           </Text>
         </View>
         {ChangedPassword()}

@@ -1,4 +1,13 @@
-import { fetchComponent, deviceOrientation, internetIsAvailable, getBasePathContext, generateUniqueId } from '../.../../../src/utils/index';
+import {
+  fetchComponent,
+  deviceOrientation,
+  internetIsAvailable,
+  getBasePathContext,
+  generateUniqueId,
+  getContextPathFromUrl,
+  getHostAndPortFromUrl
+} from '../../src/utils/index';
+
 import { isTablet } from '../../hook/isTablet';
 import Orientation from 'react-native-orientation-locker';
 import NetInfo from '@react-native-community/netinfo';
@@ -39,12 +48,11 @@ describe('fetchComponent', () => {
 
     const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
     expect(result).not.toBe(mockNavigation.navigate);
+    expect(typeof result).toBe('object');
   });
 
-  it('should handle network error', async () => {
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.reject(new Error('Network error')))
-      .mockImplementationOnce(() => Promise.reject(new Error('Network error')));
+  it('should handle network error and navigate to home', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('Network error')));
 
     const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
     result();
@@ -53,12 +61,26 @@ describe('fetchComponent', () => {
     expect(show).toHaveBeenCalledWith('LoginScreen:NetworkError', 'error');
   });
 
-  it('should handle empty response', async () => {
+  it('should handle empty response and navigate to home', async () => {
     (global.fetch as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve({ ok: true }))
       .mockImplementationOnce(() => Promise.resolve({
         ok: true,
-        text: () => Promise.resolve('   ')
+        text: () => Promise.resolve('')
+      }));
+
+    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
+    result();
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+  });
+
+  it('should handle invalid JavaScript code gracefully', async () => {
+    (global.fetch as jest.Mock)
+      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
+      .mockImplementationOnce(() => Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve('invalid JS code')
       }));
 
     const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
@@ -107,8 +129,8 @@ describe('internetIsAvailable', () => {
 });
 
 describe('getBasePathContext', () => {
-  it('should return EtendoContextPath for production', () => {
-    const result = getBasePathContext(false, false, References.EtendoContextPath);
+  it('should return EtendoContextPath for demo mode', () => {
+    const result = getBasePathContext(true, false);
     expect(result).toBe(References.EtendoContextPath);
   });
 
@@ -117,14 +139,14 @@ describe('getBasePathContext', () => {
     expect(result).toBe(References.SubappContextPath);
   });
 
-  it('should return EtendoContextPath for production', () => {
-    const result = getBasePathContext(false, false);
-    expect(result).toBe(References.EtendoContextPath);
+  it('should return custom context path for production', () => {
+    const result = getBasePathContext(false, false, '/custom-path');
+    expect(result).toBe('/custom-path');
   });
 });
 
 describe('generateUniqueId', () => {
-  it('should generate unique IDs for same name', () => {
+  it('should generate unique IDs consistently', () => {
     const name = 'test';
     const id1 = generateUniqueId(name);
     const id2 = generateUniqueId(name);
@@ -133,9 +155,51 @@ describe('generateUniqueId', () => {
     expect(id1).not.toBe(id2);
   });
 
-  it('should include original name in generated ID', () => {
-    const name = 'testName';
+  it('should handle empty names gracefully', () => {
+    const id = generateUniqueId('');
+    expect(id).toMatch(/^_[a-z0-9]{9}$/);
+  });
+
+  it('should work with long names', () => {
+    const name = 'thisIsAVeryLongComponentName';
     const id = generateUniqueId(name);
-    expect(id.startsWith('testName_')).toBe(true);
+    expect(id.startsWith('thisIsAVeryLongComponentName_')).toBe(true);
+  });
+});
+
+describe('getContextPathFromUrl', () => {
+  it('should extract context path correctly', () => {
+    const url = 'https://example.com:8080/context/path?query=123';
+    expect(getContextPathFromUrl(url)).toBe('/context/path');
+  });
+
+  it('should return empty string when no context path exists', () => {
+    const url = 'https://example.com';
+    expect(getContextPathFromUrl(url)).toBe('');
+  });
+
+  it('should return empty string for invalid URLs', () => {
+    expect(getContextPathFromUrl('invalid-url')).toBe('');
+  });
+});
+
+describe('getHostAndPortFromUrl', () => {
+  it('should extract host and port correctly', () => {
+    const url = 'https://example.com:8080/context/path?query=123';
+    expect(getHostAndPortFromUrl(url)).toBe('https://example.com:8080');
+  });
+
+  it('should return only host if no port is specified', () => {
+    const url = 'https://example.com/context/path';
+    expect(getHostAndPortFromUrl(url)).toBe('https://example.com');
+  });
+
+  it('should handle invalid URLs gracefully', () => {
+    expect(getHostAndPortFromUrl('invalid-url')).toBe('');
+  });
+
+  it('should handle URLs with query parameters correctly', () => {
+    const url = 'https://example.com:3000/path?test=123';
+    expect(getHostAndPortFromUrl(url)).toBe('https://example.com:3000');
   });
 });
