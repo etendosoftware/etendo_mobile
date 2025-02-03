@@ -188,6 +188,20 @@ export const useUser = () => {
       await AsyncStorage.removeItem("isDemoTry");
       dispatch(setSelectedUrl(null));
       dispatch(setIsDemo(false));
+  
+      const storedEnviromentsUrl = await AsyncStorage.getItem("storedEnviromentsUrl");
+      if (storedEnviromentsUrl) {
+        const storedEnviromentsUrlParsed: string[] = JSON.parse(storedEnviromentsUrl);
+        const updatedEnviromentsUrl = storedEnviromentsUrlParsed.filter(
+          url => url !== References.DemoUrl
+        );
+  
+        await AsyncStorage.setItem(
+          "storedEnviromentsUrl",
+          JSON.stringify(updatedEnviromentsUrl)
+        );
+        dispatch(setStoredEnviromentsUrl(updatedEnviromentsUrl));
+      }
     }
 
     dispatch(setIsDeveloperMode(false));
