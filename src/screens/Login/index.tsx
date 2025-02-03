@@ -5,7 +5,7 @@ import locale from '../../i18n/locale';
 import { Dialog, Text, Button } from 'react-native-paper';
 import { Snackbar } from '../../globals';
 import { Version } from '../../ob-api/objects';
-import { getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
+import { formatEnvironmentUrl, getUrl, setUrl as setUrlOB } from '../../ob-api/ob';
 import { defaultTheme } from '../../themes';
 import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
 import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
@@ -19,6 +19,7 @@ import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
   selectData,
   selectSelectedUrl,
+  setContextPathUrl,
   setSelectedEnvironmentUrl,
   setSelectedUrl,
   setStoredEnviromentsUrl,
@@ -30,7 +31,7 @@ import {
   selectError,
 } from '../../../redux/window';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { internetIsAvailable } from '../../utils';
+import { getContextPath, internetIsAvailable } from '../../utils';
 import { OBRest } from 'etrest';
 import { SettingIcon, TextInput } from 'etendo-ui-library';
 import PasswordInput from 'etendo-ui-library/dist-native/components/inputBase/password-input/PasswordInput'
@@ -184,18 +185,26 @@ const LoginFunctional = props => {
 
       dispatch(setLoadingScreen(true));
 
-      await setUrlOB(References.DemoUrl);
+      const demoFullUrl = References.DemoUrl;
+      const formattedEnvUrl = formatEnvironmentUrl(demoFullUrl);
+      const contextPath = getContextPath(demoFullUrl);
+
+      await setUrlOB(demoFullUrl);
 
       try {
-        await AsyncStorage.setItem('baseUrl', References.DemoUrl);
-        await AsyncStorage.setItem('selectedUrl', References.EtendoDemo);
-        await AsyncStorage.setItem('contextPathUrl', References.EtendoContextPath);
-        await AsyncStorage.setItem('selectedEnvironmentUrl', References.EtendoDemo);
+        await AsyncStorage.multiSet([
+          ['baseUrl', demoFullUrl],
+          ['selectedUrl', demoFullUrl],
+          ['contextPathUrl', contextPath],
+          ['selectedEnvironmentUrl', formattedEnvUrl]
+        ]);
+
         dispatch(setIsDemo(true));
-        dispatch(setSelectedUrl(References.DemoUrl));
-        dispatch(setSelectedEnvironmentUrl(References.EtendoDemo));
+        dispatch(setSelectedUrl(demoFullUrl));
+        dispatch(setSelectedEnvironmentUrl(formattedEnvUrl));
+        dispatch(setContextPathUrl(contextPath));
       } catch (error) {
-        console.warn("Failed to store URL in AsyncStorage, will continue without storage.", error);
+        console.error("Error storing demo configuration:", error);
       }
 
       await login(AdminUsername, AdminPassword);
@@ -207,18 +216,25 @@ const LoginFunctional = props => {
         const storedEnviromentsUrlParsed: string[] = storedEnviromentsUrl?.length
           ? JSON.parse(storedEnviromentsUrl)
           : [];
+
         dispatch(
           setStoredEnviromentsUrl([
             ...storedEnviromentsUrlParsed,
-            References.DemoUrl,
+            demoFullUrl
           ])
         );
+
+        await AsyncStorage.setItem(
+          'storedEnviromentsUrl',
+          JSON.stringify([...storedEnviromentsUrlParsed, demoFullUrl])
+        );
+
       } catch (error) {
-        console.warn("Failed to store environments in AsyncStorage.", error);
+        console.error("Error storing environments:", error);
       }
     } catch (error) {
       show(locale.t('LoginScreen:NetworkError'), 'error');
-      console.error("Error in the demo process:", error);
+      console.error("Demo process error:", error);
     } finally {
       dispatch(setLoadingScreen(false));
     }

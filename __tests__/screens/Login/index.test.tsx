@@ -35,25 +35,48 @@ jest.mock('../../../src/i18n/locale', () => ({
 }));
 
 jest.mock('etrest');
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn()
+  __esModule: true,
+  default: {
+    setItem: jest.fn(),
+    getItem: jest.fn().mockResolvedValue(null),
+    multiSet: jest.fn(),
+  },
 }));
+
 jest.mock('../../../src/utils', () => ({
-  internetIsAvailable: jest.fn()
+  internetIsAvailable: jest.fn().mockResolvedValue(true),
+  getContextPath: jest.fn().mockReturnValue('/etendo/')
 }));
+
+jest.mock('../../../src/ob-api/ob', () => ({
+  formatEnvironmentUrl: jest.fn().mockReturnValue('https://demo.etendo.cloud'),
+  getUrl: jest.fn().mockReturnValue('https://demo.etendo.cloud/etendo/'),
+  setUrl: jest.fn(() => Promise.resolve())
+}));
+
 jest.mock('etendo-ui-library/dist-native/components/alert/AlertManager', () => ({
   show: jest.fn()
 }));
 
 jest.mock('../../../hook/useUser', () => ({
   useUser: () => ({
-    login: jest.fn(),
+    login: jest.fn().mockResolvedValue(true),
     logout: jest.fn(),
-    getImageProfile: jest.fn()
+    getImageProfile: jest.fn().mockResolvedValue(true),
   })
 }));
+
+jest.mock('etendo-ui-library/dist-native/components/button/Button', () => {
+  const React = require('react');
+  const { TouchableOpacity, Text } = require('react-native');
+  return ({ onPress, text }) => (
+    <TouchableOpacity onPress={onPress} testID="buttonUI">
+      <Text>{text}</Text>
+    </TouchableOpacity>
+  );
+});
 
 const mockStore = configureStore({
   reducer: {
@@ -135,7 +158,7 @@ describe('Login Component', () => {
     );
 
     (internetIsAvailable as jest.Mock).mockResolvedValueOnce(false);
-    
+
     const loginButton = await waitFor(() => getByText('Log in'));
     fireEvent.press(loginButton);
 
