@@ -50,7 +50,7 @@ const Profile = props => {
           setClient(client);
         })
         .catch(function (err) {
-          console.log(err);
+          console.error(err);
         });
     }
   }, [data]);

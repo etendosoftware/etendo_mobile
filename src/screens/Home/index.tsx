@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Image, View, Text, ImageBackground, ScrollView, Platform, Linking, AppState } from "react-native";
 import locale from "../../i18n/locale";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Etendo } from "../../helpers/Etendo";
 import styles from "./styles";
 import { INavigation } from "../../interfaces";
@@ -16,6 +17,8 @@ import {
   selectSelectedLanguage,
   selectSelectedUrl,
   selectToken,
+  setContextPathUrl,
+  setSelectedEnvironmentUrl
 } from "../../../redux/user";
 import { useAppDispatch, useAppSelector } from "../../../redux";
 import {
@@ -24,7 +27,8 @@ import {
   setIsSubapp,
 } from "../../../redux/window";
 import { OBRest } from "etrest";
-import { generateUniqueId } from "../../utils";
+import { formatEnvironmentUrl } from "../../ob-api/ob";
+import { generateUniqueId, getContextPath } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
@@ -192,6 +196,27 @@ const HomeComponent = (props: Props) => {
     uniqueId: generateUniqueId(item.name),
     screenName: item.name,
   }));
+
+  useEffect(() => {
+    const rehydrateContextPath = async () => {
+      try {
+        const storedContextPath = await AsyncStorage.getItem('contextPathUrl');
+        if (storedContextPath) {
+          dispatch(setContextPathUrl(storedContextPath));
+        } else if (selectedUrl) {
+          const hostUrl = formatEnvironmentUrl(selectedUrl);
+          const extractedPath = getContextPath(selectedUrl);
+          dispatch(setSelectedEnvironmentUrl(hostUrl));
+          dispatch(setContextPathUrl(extractedPath));
+          await AsyncStorage.setItem('contextPathUrl', extractedPath);
+        }
+      } catch (error) {
+        console.error('Error loading contextPathUrl from AsyncStorage', error);
+      }
+    };
+
+    rehydrateContextPath();
+  }, [dispatch, selectedUrl]);
 
   return (
     <View style={styles.container}>

@@ -61,8 +61,8 @@ spec:
           protocol: TCP
       resources:
         limits:
-          cpu: 1048m
-          memory: 2000Mi
+          cpu: 3072m
+          memory: 4000Mi
         requests:
           cpu: 1048m
           memory: 2000Mi
@@ -142,7 +142,7 @@ spec:
               try {
                 env.STATUSTEST = "1"
                 echo "-------------------------- Running Tests --------------------------"
-                sh "yarn test --coverage"
+                sh "yarn test"
                 echo "-------------------------- Tests Succesful --------------------------"
                 currentBuild.result = SUCCESS
               } catch (Exception e) {
@@ -175,7 +175,10 @@ spec:
               echo "-------------------------- Running SonarQube Analysis --------------------------"
               dir(REPOSITORY_NAME) {
                 withSonarQubeEnv(credentialsId: 'sonar-token-access', installationName: 'SonarQubeServer') {
-                  sh "${scannerHome}/bin/sonar-scanner"
+                  sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.branch.name=${GIT_BRANCH}
+                  """
                 }
               }
               echo "-------------------------- SonarQube Analysis Succesful --------------------------"

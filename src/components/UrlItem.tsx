@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { deviceStyles as styles } from '../screens/Settings/deviceStyles';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isTablet } from '../helpers/IsTablet';
-import { selectContextPathUrl, setContextPathUrl } from '../../redux/user';
-import { useAppDispatch, useAppSelector } from '../../redux';
+import { getContextPath } from '../utils';
 import { formatEnvironmentUrl } from '../ob-api/ob';
+import { useAppDispatch, useAppSelector } from '../../redux';
+import { selectContextPathUrl, setContextPathUrl } from '../../redux/user';
 import {
   CheckIcon,
   Edit2Icon,
   Trash2Icon,
-  TrashIcon,
   XIcon,
 } from 'etendo-ui-library';
 
@@ -23,6 +24,7 @@ export const UrlItem = ({
   setUrl,
   resetLocalUrl,
   handleOptionSelected,
+  setLocalContextPath,
 }) => {
   const dispatch = useAppDispatch();
   const prevContext = useAppSelector(selectContextPathUrl);
@@ -30,36 +32,16 @@ export const UrlItem = ({
   const [clicked, setClicked] = useState(false);
   const [clickDelete, setClickDelete] = useState(false);
 
-  const getContextPath = (url: string): string => {
-    let index = 0;
-    let slashCount = 0;
-
-    while (slashCount < 3 && index < url.length) {
-      if (url.charAt(index) === '/') {
-        slashCount++;
-      }
-      if (slashCount < 3) {
-        index++;
-      }
-    }
-
-    if (slashCount === 3) {
-      return url.substring(index);
-    }
-
-    return '';
-  };
-
-  const handleEdit = () => {
+  const handleEdit = async () => {
     const newContext = getContextPath(item);
-
+    setLocalContextPath(newContext);
     setValueEnvUrl(formatEnvironmentUrl(item));
 
     if (newContext !== prevContext) {
       dispatch(setContextPathUrl(newContext));
+      await AsyncStorage.setItem('contextPathUrl', newContext);
     }
 
-    deleteUrl(item);
     setIsUpdating(true);
   };
 
@@ -95,7 +77,7 @@ export const UrlItem = ({
         {clickDelete && <Trash2Icon style={styles.iconImage} />}
         <Text
           numberOfLines={1}
-          ellipsizeMode="tail"
+          ellipsizeMode='tail'
           style={[
             styles.urlListed,
             styles.urlItemContainerElem,
@@ -105,8 +87,8 @@ export const UrlItem = ({
                   ? '90%'
                   : '80%'
                 : isTablet()
-                ? '85%'
-                : '75%',
+                  ? '85%'
+                  : '75%',
             },
           ]}
         >
@@ -118,6 +100,7 @@ export const UrlItem = ({
           clickDelete ? handleConfirm() : handleEdit();
         }}
         style={styles.actionIcon}
+        testID='edit-button'
       >
         {clickDelete ? (
           <CheckIcon style={styles.iconImage} />
