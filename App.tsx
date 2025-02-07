@@ -71,7 +71,6 @@ const App: React.FC<Props> = () => {
             }
           },
           (error: any) => {
-            console.error('Error receiving shared files:', error);
             setSharedFiles(null);
           },
           References.EtendoReceiveShare,
