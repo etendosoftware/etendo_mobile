@@ -46,8 +46,10 @@ public class ShareReceiverActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    // Load token and URL from SharedPreferences.
+    // If they are missing, show a modal with the variable values.
     if (!loadSharedPreferences()) {
-      showErrorAndFinish("Please log in to the main application before using this feature.");
+      showVariablesModal();
       return;
     }
 
@@ -59,13 +61,11 @@ public class ShareReceiverActivity extends AppCompatActivity {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     setIntent(intent);
-
     handleShareIntent(intent);
   }
 
   /**
-   * Handles the incoming share Intent, ensuring null safety and processing
-   * accordingly.
+   * Handles the incoming share Intent.
    */
   private void handleShareIntent(Intent intent) {
     if (intent == null) {
@@ -99,6 +99,22 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
+   * Shows a modal (AlertDialog) displaying the values of the token and
+   * urlToFetchSubApps.
+   * This is useful for debugging when the variables are not set.
+   */
+  private void showVariablesModal() {
+    String message = "Token: " + token + "\nURL: " + urlToFetchSubApps;
+    new AlertDialog.Builder(this)
+        .setTitle("Debug Variables")
+        .setMessage(message)
+        .setCancelable(false)
+        .setPositiveButton("OK", (dialog, which) -> {
+        })
+        .show();
+  }
+
+  /**
    * Handles the received Intent by validating the action type (SEND vs
    * SEND_MULTIPLE).
    */
@@ -114,10 +130,10 @@ public class ShareReceiverActivity extends AppCompatActivity {
 
     switch (action) {
       case Intent.ACTION_SEND:
-        handleSingleFile(intent, type);
+        handleSingleFile(intent);
         break;
       case Intent.ACTION_SEND_MULTIPLE:
-        handleMultipleFiles(intent, type);
+        handleMultipleFiles(intent);
         break;
       default:
         showErrorAndFinish("Unsupported share action: " + action);
@@ -128,18 +144,13 @@ public class ShareReceiverActivity extends AppCompatActivity {
   /**
    * Handles a single shared file.
    */
-  private void handleSingleFile(Intent intent, String mimeType) throws Exception {
-    if (intent == null) {
-      showErrorAndFinish("Share intent is null for single file.");
-      return;
-    }
-
+  private void handleSingleFile(Intent intent) throws Exception {
     Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
 
     if (fileUri != null) {
       List<Uri> uriList = new ArrayList<>();
       uriList.add(fileUri);
-      processFiles(uriList, mimeType);
+      processFiles(uriList);
     } else {
       showErrorAndFinish("No file found in the shared content (single).");
     }
@@ -148,57 +159,54 @@ public class ShareReceiverActivity extends AppCompatActivity {
   /**
    * Handles multiple shared files.
    */
-  private void handleMultipleFiles(Intent intent, String mimeType) throws Exception {
-    if (intent == null) {
-      showErrorAndFinish("Share intent is null for multiple files.");
-      return;
-    }
-
+  private void handleMultipleFiles(Intent intent) throws Exception {
     ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
     Log.d(TAG, "handleMultipleFiles: File URIs = " + fileUris);
 
     if (fileUris != null && !fileUris.isEmpty()) {
-      processFiles(fileUris, mimeType);
+      processFiles(fileUris);
     } else {
       showErrorAndFinish("No files found in the shared content (multiple).");
     }
   }
 
   /**
-   * Processes a list of shared files and then fetches sub-applications.
+   * Processes a list of shared files:
+   * - Clears previous selection.
+   * - For each URI, processes the file and accumulates its info in a JSONArray.
+   * - Saves the JSONArray in SharedPreferences under "sharedFiles".
+   * - Then calls fetchSubApplications().
    */
-  private void processFiles(List<Uri> uris, String mimeType) {
+  private void processFiles(List<Uri> uris) {
     ExecutorService executorService = Executors.newSingleThreadExecutor();
     executorService.execute(() -> {
       try {
-        // Clear any previous sub-application selection
         clearSelectionData();
-
-        // Process each file
+        JSONArray filesArray = new JSONArray();
         for (Uri uri : uris) {
-          processFile(uri, mimeType);
+          try {
+            JSONObject fileInfo = processFile(uri);
+            filesArray.put(fileInfo);
+          } catch (IOException e) {
+            Log.e(TAG, "Error processing file " + uri, e);
+          }
         }
-
-        // After processing all files, fetch sub-applications
-        fetchSubApplications();
-      } catch (IOException e) {
-        Log.e(TAG, "Error processing shared files", e);
-        runOnUiThread(() -> showErrorAndFinish("Error processing the shared files."));
+        if (filesArray.length() > 0) {
+          saveFilesInfo(filesArray.toString());
+          fetchSubApplications();
+        } else {
+          runOnUiThread(() -> showErrorAndFinish("No files processed"));
+        }
+      } catch (Exception e) {
+        Log.e(TAG, "Exception in processFiles", e);
       } finally {
         executorService.shutdown();
-        try {
-          if (!executorService.awaitTermination(60, java.util.concurrent.TimeUnit.SECONDS)) {
-            Log.e(TAG, "Executor did not terminate in the specified time.");
-          }
-        } catch (InterruptedException e) {
-          Log.e(TAG, "ExecutorService termination interrupted", e);
-        }
       }
     });
   }
 
   /**
-   * Clears any previous sub-application selection from SharedPreferences.
+   * Clears previous sub-application selection.
    */
   private void clearSelectionData() {
     SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
@@ -210,17 +218,16 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
-   * Copies the shared file to the app's internal storage.
+   * Processes a single file: copies it to internal storage and returns a
+   * JSONObject
+   * with keys "path", "name" and "mimeType".
    */
-  private void processFile(Uri uri, String mimeType) throws IOException {
+  private JSONObject processFile(Uri uri) throws IOException {
     String fileName = getFileName(uri);
-
-    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-    String previousFilePath = sharedPreferences.getString("sharedFilePath", null);
-    if (previousFilePath != null) {
-      File previousFile = new File(previousFilePath);
+    String mimeType = getContentResolver().getType(uri);
+    if (mimeType == null) {
+      mimeType = "application/octet-stream";
     }
-
     File sharedFile = new File(getFilesDir(), fileName);
     try (InputStream inputStream = getContentResolver().openInputStream(uri);
         FileOutputStream outputStream = new FileOutputStream(sharedFile)) {
@@ -234,13 +241,20 @@ public class ShareReceiverActivity extends AppCompatActivity {
       while ((read = inputStream.read(buffer)) != -1) {
         outputStream.write(buffer, 0, read);
       }
-
-      saveFileInfo(sharedFile.getAbsolutePath(), fileName, mimeType);
     }
+    JSONObject fileInfo = new JSONObject();
+    try {
+      fileInfo.put("path", sharedFile.getAbsolutePath());
+      fileInfo.put("name", fileName);
+      fileInfo.put("mimeType", mimeType);
+    } catch (JSONException e) {
+      throw new IOException("Error creating JSON object for file info", e);
+    }
+    return fileInfo;
   }
 
   /**
-   * Retrieves the file name from the Uri.
+   * Retrieves the file name from the given URI.
    */
   private String getFileName(Uri uri) {
     if (uri == null) {
@@ -267,19 +281,19 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
-   * Saves the shared file information in SharedPreferences.
+   * Saves the JSONArray (string) of shared file information in SharedPreferences
+   * under "sharedFiles".
    */
-  private void saveFileInfo(String filePath, String fileName, String mimeType) {
+  private void saveFilesInfo(String filesJson) {
     SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putString("sharedFilePath", filePath);
-    editor.putString("sharedFileName", fileName);
-    editor.putString("sharedFileMimeType", mimeType);
+    editor.putString("sharedFiles", filesJson);
     editor.apply();
   }
 
   /**
-   * Calls the sub-applications endpoint usando el token y urlToFetchSubApps.
+   * Calls the sub-applications endpoint using token and urlToFetchSubApps.
+   * Upon a successful response, shows a modal to select a sub-application.
    */
   private void fetchSubApplications() {
     String url = urlToFetchSubApps + "/sws/com.etendoerp.dynamic.app.userApp";
@@ -332,7 +346,7 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
-   * Displays an AlertDialog con información detallada del error.
+   * Displays an AlertDialog with detailed error information.
    */
   private void showDetailedError(String message) {
     new AlertDialog.Builder(this)
@@ -344,7 +358,7 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
-   * Displays a dialog para seleccionar una sub-aplicación de la lista.
+   * Displays a dialog for selecting a sub-application from the list.
    */
   private void showShareModal(JSONArray subAppsArray) {
     List<String> appNames = new ArrayList<>();
@@ -361,15 +375,38 @@ public class ShareReceiverActivity extends AppCompatActivity {
     }
 
     if (appNames.isEmpty()) {
-      showErrorAndFinish("No sub-applications available.");
+      showDetailedError("No sub-applications available.");
       return;
     }
-
     new AlertDialog.Builder(this)
         .setTitle("Select a sub-application")
-        .setItems(appNames.toArray(new String[0]), (dialog, which) -> handleShare(subApps.get(which)))
+        .setItems(appNames.toArray(new String[0]), (dialog, which) -> {
+          JSONObject selectedSubApp = subApps.get(which);
+          showConfirmationModal(selectedSubApp);
+        })
         .setNegativeButton("Cancel", (dialog, which) -> finish())
         .setCancelable(false)
+        .show();
+  }
+
+  /**
+   * Displays a confirmation modal showing the token and selected sub-application
+   * details.
+   */
+  private void showConfirmationModal(JSONObject selectedSubApp) {
+    String subAppName = selectedSubApp.optString("etdappAppName", "Unknown App");
+    String subAppPath = selectedSubApp.optString("path", "Unknown Path");
+    String message = "Token: " + token + "\n\n" +
+        "Sub-Application Details:\n" +
+        "Name: " + subAppName + "\n" +
+        "Path: " + subAppPath;
+
+    new AlertDialog.Builder(this)
+        .setTitle("Confirm Sub-Application")
+        .setMessage(message)
+        .setCancelable(false)
+        .setPositiveButton("Continue", (dialog, which) -> handleShare(selectedSubApp))
+        .setNegativeButton("Cancel", (dialog, which) -> finish())
         .show();
   }
 
@@ -386,12 +423,12 @@ public class ShareReceiverActivity extends AppCompatActivity {
       startMainActivity();
     } catch (Exception e) {
       Log.e(TAG, "Error handling selected sub-application", e);
-      showErrorAndFinish("Error handling selected sub-application.");
+      showDetailedError("Error handling selected sub-application.");
     }
   }
 
   /**
-   * Launches the MainActivity & finishes the current Activity.
+   * Launches MainActivity and finishes this activity.
    */
   private void startMainActivity() {
     Intent intent = new Intent(this, MainActivity.class);
@@ -401,10 +438,14 @@ public class ShareReceiverActivity extends AppCompatActivity {
   }
 
   /**
-   * Displays a Toast message & finishes the Activity.
+   * Displays a Toast message and finishes the Activity.
    */
-  private void showErrorAndFinish(String message) {
-    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    finish();
+  private void showErrorAndFinish(String errorMessage) {
+    new AlertDialog.Builder(this)
+        .setTitle("Error")
+        .setMessage(errorMessage)
+        .setCancelable(false)
+        .setPositiveButton("OK", (dialog, which) -> finish())
+        .show();
   }
 }
