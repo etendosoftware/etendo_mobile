@@ -49,6 +49,8 @@ import * as TsLib from 'tslib';
 import * as Unmock from 'unmock';
 import * as VectorIcons from 'react-native-vector-icons';
 import * as ReactNativeDocumentPicker from 'react-native-document-picker';
+import * as ReactNativeFirebase from '@react-native-firebase/messaging';
+import * as ReactNativeFirebaseApp from '@react-native-firebase/app';
 import { Etendo } from '../helpers/Etendo';
 
 const Packages = {
@@ -96,6 +98,8 @@ const Packages = {
   'react-native-vision-camera': () => ReactNativeVisionCamera,
   'react-native-markdown-display': () => RnMarkdownDisplay,
   'react-native-document-picker': () => ReactNativeDocumentPicker,
+  '@react-native-firebase/messaging': () => ReactNativeFirebase,
+  '@react-native-firebase/app': () => ReactNativeFirebaseApp,
   'react-native': () => ReactNative,
   'rn-placeholder': () => RnPlaceholder,
   axios: () => Axios,
