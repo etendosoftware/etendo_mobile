@@ -68,6 +68,7 @@ const HomeComponent = (props: Props) => {
     } else {
       DefaultPreference.setName(AppGroupIdentifierAndroid);
     }
+    saveTokenAndURL(token, selectedUrl);
   }, []);
 
   // Initialize OBRest with token and URL (if available)

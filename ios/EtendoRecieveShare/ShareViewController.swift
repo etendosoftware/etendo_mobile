@@ -1,8 +1,8 @@
 import UIKit
-import Social
-import MobileCoreServices
 import Photos
+import UniformTypeIdentifiers // Replace MobileCoreServices
 
+@available(iOSApplicationExtension, unavailable) // <- Add this line
 class ShareViewController: UIViewController {
     var token: String?
     var urlToFetchSubApps: String?
@@ -12,7 +12,7 @@ class ShareViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("🎈 viewDidLoad")
         let appGroupID = "group.com.etendoapploader.ios"
         let sharedDefaults = UserDefaults(suiteName: appGroupID)
         
@@ -28,23 +28,89 @@ class ShareViewController: UIViewController {
             for item in extensionItems {
                 if let attachments = item.attachments {
                     for attachment in attachments {
-                        if attachment.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
-                           attachment.hasItemConformingToTypeIdentifier(kUTTypeMovie as String) ||
-                           attachment.hasItemConformingToTypeIdentifier(kUTTypeAudio as String) ||
-                           attachment.hasItemConformingToTypeIdentifier(kUTTypeData as String) {
-                            
-                            if let uti = attachment.registeredTypeIdentifiers.first {
-                                attachment.loadItem(forTypeIdentifier: uti, options: nil) { [weak self] (data, error) in
-                                    guard let self = self else { return }
-                                    if let url = data as? URL {
-                                        self.saveFileToAppGroup(fileURL: url)
-                                    } else if let image = data as? UIImage {
-                                        self.saveImageToAppGroup(image: image)
-                                    } else {
-                                        print("Unsupported data type")
-                                    }
+                        // Log para depuración
+                        print("Attachment type identifiers:", attachment.registeredTypeIdentifiers)
+                        
+                        // Imágenes
+                        if attachment.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                            attachment.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { [weak self] (url, error) in
+                                guard let self = self else { return }
+                                if let url = url {
+                                    self.saveFileToAppGroup(fileURL: url)
+                                } else if let error = error {
+                                    print("Error cargando imagen: \(error)")
                                 }
                             }
+                        }
+                        // Videos
+                        else if attachment.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                            attachment.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [weak self] (url, error) in
+                                guard let self = self else { return }
+                                if let url = url {
+                                    self.saveFileToAppGroup(fileURL: url)
+                                } else if let error = error {
+                                    print("Error cargando video: \(error)")
+                                }
+                            }
+                        }
+                        // Audio
+                        else if attachment.hasItemConformingToTypeIdentifier(UTType.audio.identifier) {
+                            attachment.loadFileRepresentation(forTypeIdentifier: UTType.audio.identifier) { [weak self] (url, error) in
+                                guard let self = self else { return }
+                                if let url = url {
+                                    self.saveFileToAppGroup(fileURL: url)
+                                } else if let error = error {
+                                    print("Error cargando audio: \(error)")
+                                }
+                            }
+                        }
+                        // Datos genéricos (public.data)
+                        else if attachment.hasItemConformingToTypeIdentifier(UTType.data.identifier) {
+                            attachment.loadDataRepresentation(forTypeIdentifier: UTType.data.identifier) { [weak self] (data, error) in
+                                guard let self = self else { return }
+                                if let data = data {
+                                    let fileManager = FileManager.default
+                                    let tempDir = fileManager.temporaryDirectory
+                                    let fileName = "shared_data_\(Date().timeIntervalSince1970).dat"
+                                    let fileURL = tempDir.appendingPathComponent(fileName)
+                                    do {
+                                        try data.write(to: fileURL)
+                                        self.saveFileToAppGroup(fileURL: fileURL)
+                                    } catch {
+                                        print("Error escribiendo datos a archivo: \(error)")
+                                    }
+                                } else if let error = error {
+                                    print("Error cargando datos: \(error)")
+                                }
+                            }
+                        }
+                        // URLs (public.url)
+                        else if attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                          attachment.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { [weak self] (item, error) in
+
+                                guard let self = self else { return }
+                                if let url = item as? URL {
+                                    let urlString = url.absoluteString
+                                    if let data = urlString.data(using: .utf8) {
+                                        let fileManager = FileManager.default
+                                        let tempDir = fileManager.temporaryDirectory
+                                        let fileName = "shared_url_\(Date().timeIntervalSince1970).txt"
+                                        let fileURL = tempDir.appendingPathComponent(fileName)
+                                        do {
+                                            try data.write(to: fileURL)
+                                            self.saveFileToAppGroup(fileURL: fileURL)
+                                        } catch {
+                                            print("Error escribiendo URL a archivo: \(error)")
+                                        }
+                                    }
+                                } else if let error = error {
+                                    print("Error cargando URL: \(error)")
+                                }
+                            }
+                        }
+                        // Tipos desconocidos
+                        else {
+                            print("Tipo de identificador desconocido: \(attachment.registeredTypeIdentifiers)")
                         }
                     }
                 }
@@ -96,7 +162,7 @@ class ShareViewController: UIViewController {
                 sharedDefaults?.set(mimeTypes, forKey: "sharedFileMimeTypes")
                 sharedDefaults?.synchronize()
             } catch {
-                print("Error processing the file:: \(error)")
+                print("Error procesando el archivo: \(error)")
             }
         }
     }
@@ -130,16 +196,14 @@ class ShareViewController: UIViewController {
                     sharedDefaults?.synchronize()
                 }
             } catch {
-                print("Error processing the file: \(error)")
+                print("Error procesando el archivo: \(error)")
             }
         }
     }
 
     private func getMimeType(for url: URL) -> String {
-        let pathExtension = url.pathExtension as CFString
-        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension, nil)?.takeRetainedValue(),
-           let mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
-            return mimeType as String
+        if let uti = UTType(filenameExtension: url.pathExtension) {
+            return uti.preferredMIMEType ?? "application/octet-stream"
         }
         return "application/octet-stream"
     }
@@ -162,7 +226,7 @@ class ShareViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+
         let sessionConfig = URLSessionConfiguration.default
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
         let session = URLSession(configuration: sessionConfig)
@@ -267,23 +331,25 @@ class ShareViewController: UIViewController {
         let subApplicationEncoded = subApplication.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subApplication
         let pathEncoded = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? path
 
-        let urlString = "ShareMedia://open?subApplication=\(subApplicationEncoded)&path=\(pathEncoded)"
+        let urlString = "ShareMedia://dataUrl?subApplication=\(subApplicationEncoded)&path=\(pathEncoded)"
+        /*
         if let url = URL(string: urlString) {
-            var responder = self as UIResponder?
-            let selectorOpenURL = sel_registerName("openURL:")
-
-            while let r = responder {
-                if r.responds(to: selectorOpenURL) {
-                    _ = r.perform(selectorOpenURL, with: url)
-                    break
-                }
-                responder = r.next
-            }
+            extensionContext?.open(url, completionHandler: { success in
+                print("Se abrió la URL: \(success)")
+            })
         }
 
         self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-    }
+        */
+      guard let url = URL(string: urlString) else {
+        return //be safe
+      }
+        UIApplication.shared.open(url, options: [:], completionHandler: completeRequest)
 
+    }
+func completeRequest(success: Bool) {
+    extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+  }
     private func showRawJSONAlert() {
         let alertController = UIAlertController(title: "Raw JSON Response", message: rawResponse, preferredStyle: .alert)
         let dismissAction = UIAlertAction(title: "OK", style: .default) { _ in
