@@ -58,9 +58,6 @@ const HomeComponent = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
-  // Ref to track the last loaded file
-  const lastFilePathRef = useRef<string | null>(null);
-
   // On mount, set the AppGroup identifier based on the platform
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -94,75 +91,25 @@ const HomeComponent = (props: Props) => {
     }
   };
 
-  // Utility to add 'file://' prefix if missing
-  const addFilePrefixIfNeeded = (path: string) => {
-    return path.startsWith("file://") ? path : `file://${path}`;
-  };
-
   const loadSharedFileData = async () => {
     try {
-      const filesJson = await DefaultPreference.get("sharedFiles");
       const selectedSubApplication = await DefaultPreference.get("selectedSubApplication");
-
-      if (filesJson) {
-        const filesArray = JSON.parse(filesJson);
-        const adjustedFiles = filesArray.map(file => ({
-          filePath: addFilePrefixIfNeeded(file.path),
-          fileName: file.name,
-          fileMimeType: file.mimeType
-        }));
-
-        dispatch(setSharedFiles(adjustedFiles));
-
-        if (selectedSubApplication) {
-          props.navigation.navigate(selectedSubApplication);
-        }
-
-        await clearSharedFileData();
+      if (selectedSubApplication) {
+        props.navigation.navigate(selectedSubApplication);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const clearSharedFileData = async () => {
-    await DefaultPreference.set("sharedFiles", "");
-  };
-
   // On mount, load shared file and listen for deep links
   useEffect(() => {
-    // Initial load
-    loadSharedFileData();
-
     // Handle deep links
     const handleOpenURL = () => {
       loadSharedFileData();
     };
     Linking.addEventListener("url", handleOpenURL);
 
-    // Check if app was launched with a link
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        loadSharedFileData();
-      }
-    });
-  }, []);
-
-  // Listen to AppState changes
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", async (nextState) => {
-      if (nextState === "active") {
-        loadSharedFileData();
-      } else {
-        await clearSharedFileData();
-      }
-    });
-
-    loadSharedFileData();
-
-    return () => {
-      subscription.remove();
-    };
   }, []);
 
   // UI Helpers

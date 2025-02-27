@@ -17,6 +17,7 @@ import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+import {setSharedFiles} from "./redux/shared-files-reducer";
 
 interface Props { }
 type RootStackParamList = {
@@ -27,7 +28,6 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const [sharedFiles, setSharedFiles] = useState(null);
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -59,19 +59,25 @@ const App: React.FC<Props> = () => {
         console.error('Error checking camera permissions:', error);
       }
     };
+    const addFilePrefixIfNeeded = (path: string) => {
+      return path.startsWith("file://") ? path : `file://${path}`;
+    };
 
     const handleSharedFiles = () => {
+      console.info("handleSharedFiles()");
+
       try {
         ReceiveSharingIntent.getReceivedFiles(
           (receivedFiles: any[]) => {
-            if (receivedFiles && receivedFiles.length > 0) {
-              setSharedFiles(receivedFiles);
-            } else {
-              setSharedFiles(null);
-            }
+              const adjustedFiles = receivedFiles.map(file => ({
+                filePath: addFilePrefixIfNeeded(file.filePath),
+                fileName: file.filePath.split('/').pop() || '',
+                fileMimeType: getMimeType(file.mimeType)
+              }));
+              dispatch(setSharedFiles([...adjustedFiles]));
           },
           (error: any) => {
-            setSharedFiles(null);
+            console.error("ReceiveSharingIntent.getReceivedFiles error", error);
           },
           References.EtendoReceiveShare,
         );
@@ -89,6 +95,19 @@ const App: React.FC<Props> = () => {
     };
   }, []);
 
+  const getMimeType = (mimeType: string) => {
+    switch (mimeType) {
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.pdf':
+        return 'application/pdf';
+      default:
+        return 'application/octet-stream';
+    }
+  }
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
@@ -103,7 +122,7 @@ const App: React.FC<Props> = () => {
             <Stack.Screen
               name="HomeStack"
               component={HomeStack}
-              initialParams={{ token, sharedFiles }}
+              initialParams={{ token }}
               options={{ headerShown: false }}
             />
           ) : (
