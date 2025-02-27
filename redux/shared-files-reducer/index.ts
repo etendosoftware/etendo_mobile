@@ -1,7 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface SharedFile {
+  filePath: string;
+  fileName: string;
+  fileMimeType: string;
+}
+
 interface SharedFilesState {
-  files: any[];
+  files: SharedFile[];
 }
 
 const initialState: SharedFilesState = {
@@ -12,7 +18,8 @@ const sharedFilesSlice = createSlice({
   name: "sharedFiles",
   initialState,
   reducers: {
-    setSharedFiles: (state, action: PayloadAction<any[]>) => {
+    setSharedFiles: (state, action: PayloadAction<SharedFile[]>) => {
+      console.log("🐱setSharedFiles called with:", action.payload);
       state.files = action.payload;
     },
   },

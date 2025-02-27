@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Text, View } from 'react-native';
 import {
   NavigationContainer,
@@ -16,9 +16,14 @@ import {
 import { RootState,useAppSelector } from '../../redux';
 import { selectIsDemo } from '../../redux/window';
 import Camera from './Camera';
+import {useSelector} from "react-redux";
 
 const HomePage = ({ route, navigation }: any) => {
-  const sharedFiles = useAppSelector((state: RootState) => state.sharedFiles.files);
+  const sharedFiles = useAppSelector((state: RootState) => {
+     console.log("🚗 change on SharedFiles -> ", state.sharedFiles.files);
+    return state.sharedFiles.files
+  });
+  console.log("Shared files:", sharedFiles);
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
@@ -26,6 +31,12 @@ const HomePage = ({ route, navigation }: any) => {
   const isDemoTry = useAppSelector(selectIsDemo);
   const contextPathUrl = useAppSelector(selectContextPathUrl);
 
+  console.log("🚗 HomePage -> route.params", route.params);
+  console.log("🚗 SharedFiles -> ", sharedFiles);
+
+  useEffect(() => {
+    console.log("🚗 SharedFiles (uf)-> ", sharedFiles);
+  }, [sharedFiles]);
   const RenderDynamicComponents = (props: any) => {
     const appId = route.params.__id + "?v=" + Math.random();
 

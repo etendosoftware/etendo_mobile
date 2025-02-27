@@ -102,23 +102,26 @@ const HomeComponent = (props: Props) => {
   const loadSharedFileData = async () => {
     try {
       const filesJson = await DefaultPreference.get("sharedFiles");
+      console.log("🐶 loadSharedFileData", filesJson);
       const selectedSubApplication = await DefaultPreference.get("selectedSubApplication");
 
       if (filesJson) {
+        /*
         const filesArray = JSON.parse(filesJson);
         const adjustedFiles = filesArray.map(file => ({
           filePath: addFilePrefixIfNeeded(file.path),
           fileName: file.name,
           fileMimeType: file.mimeType
         }));
+         */
 
-        dispatch(setSharedFiles(adjustedFiles));
+        //dispatch(setSharedFiles(adjustedFiles));
 
         if (selectedSubApplication) {
           props.navigation.navigate(selectedSubApplication);
         }
 
-        await clearSharedFileData();
+        //await clearSharedFileData();
       }
     } catch (error) {
       console.error(error);
@@ -132,23 +135,28 @@ const HomeComponent = (props: Props) => {
   // On mount, load shared file and listen for deep links
   useEffect(() => {
     // Initial load
-    loadSharedFileData();
+    //loadSharedFileData();
 
     // Handle deep links
     const handleOpenURL = () => {
+      console.log("handleOpenURL");
       loadSharedFileData();
     };
     Linking.addEventListener("url", handleOpenURL);
 
+    /*
     // Check if app was launched with a link
     Linking.getInitialURL().then((url) => {
       if (url) {
+        console.log("Linking.getInitialURL", url);
         loadSharedFileData();
       }
     });
+     */
   }, []);
 
   // Listen to AppState changes
+  /*
   useEffect(() => {
     const subscription = AppState.addEventListener("change", async (nextState) => {
       if (nextState === "active") {
@@ -164,6 +172,7 @@ const HomeComponent = (props: Props) => {
       subscription.remove();
     };
   }, []);
+   */
 
   // UI Helpers
   const getBackgroundImage = () => (isTablet() ? background : backgroundMobile);
