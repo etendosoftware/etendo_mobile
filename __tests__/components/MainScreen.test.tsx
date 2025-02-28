@@ -29,6 +29,7 @@ describe('HomePage', () => {
       contextPathUrl: '/test',
     },
     window: { isDemo: false },
+    sharedFiles: { files: [] },
   };
 
   const mockRoute = {
@@ -117,6 +118,7 @@ describe('HomePage', () => {
         contextPathUrl: '',
       },
       window: { isDemo: false },
+      sharedFiles: { files: [] },
     });
 
     render(

@@ -90,7 +90,7 @@ export const useUser = () => {
     }
     // Other actions
     await setUrl(selectedUrlStored);
-    await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
+    await changeLanguage(currentLanguage);
   };
 
   const login = async (user, pass) => {
@@ -115,9 +115,7 @@ export const useUser = () => {
       ? currentLanguage
       : languageByDefault();
     const languageFormatted = formatLanguageUnderscore(languageToSet, true);
-    await changeLanguage(languageFormatted, () =>
-      dispatch(setLanguage(languageFormatted))
-    );
+    await changeLanguage(languageFormatted);
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
