@@ -9,13 +9,11 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,36 +32,42 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * Activity to handle shared content (files) from other apps and process them for sub-application selection.
+ * Activity that handles receiving and processing shared content from other apps,
+ * allowing users to select a sub-application to handle the shared files.
  */
 public class ShareReceiverActivity extends AppCompatActivity {
-
     private static final String SHARED_PREFS_NAME = "group.com.etendoapploader.android";
     private static final String TAG = "ShareReceiverActivity";
-    private static final int TIMEOUT_SECONDS = 30;
+    private static final String SUB_APPS_ENDPOINT = "/sws/com.etendoerp.dynamic.app.userApp";
 
     private SharedPreferences sharedPreferences;
     private String token;
-    private String urlToFetchSubApps;
-    private final OkHttpClient httpClient = new OkHttpClient.Builder()
-            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .build();
+    private String baseUrl;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final OkHttpClient httpClient = new OkHttpClient();
 
+    /**
+     * Called when the activity is first created.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     *                           then this Bundle contains the data it most recently supplied
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeSharedPreferences();
-
-        // Validate configuration before proceeding
-        if (!isConfigurationValid()) {
-            showDebugModal();
+        sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+        
+        if (!initializeConfig()) {
+            showErrorAndFinish("Configuration missing. Please set up the app first.");
             return;
         }
-
+        
         handleIntent(getIntent());
     }
 
+    /**
+     * Called when a new intent is received while the activity is running.
+     * @param intent The new Intent that was received
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -73,202 +76,178 @@ public class ShareReceiverActivity extends AppCompatActivity {
     }
 
     /**
-     * Initializes SharedPreferences instance for the activity.
+     * Called when the activity is being destroyed.
+     * Ensures proper cleanup of resources.
      */
-    private void initializeSharedPreferences() {
-        sharedPreferences = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-    }
-
-    /**
-     * Validates if required configuration (token and URL) is present in SharedPreferences.
-     * @return true if both token and URL are present, false otherwise
-     */
-    private boolean isConfigurationValid() {
-        token = sharedPreferences.getString("token", null);
-        urlToFetchSubApps = sharedPreferences.getString("urlToFetchSubApps", null);
-        
-        boolean isValid = !TextUtils.isEmpty(token) && !TextUtils.isEmpty(urlToFetchSubApps);
-        if (!isValid) {
-            Log.e(TAG, "Missing required configuration - Token: " + token + ", URL: " + urlToFetchSubApps);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!executorService.isShutdown()) {
+            executorService.shutdown();
         }
-        return isValid;
     }
 
     /**
-     * Shows a debug modal with configuration details when validation fails.
+     * Initializes configuration by loading token and base URL from SharedPreferences.
+     * @return true if configuration is valid, false otherwise
      */
-    private void showDebugModal() {
-        String message = "Configuration Check:\nToken: " + (token == null ? "Not set" : token) + 
-                        "\nURL: " + (urlToFetchSubApps == null ? "Not set" : urlToFetchSubApps);
-        createAlertDialog("Configuration Error", message, true).show();
+    private boolean initializeConfig() {
+        token = sharedPreferences.getString("token", null);
+        baseUrl = sharedPreferences.getString("urlToFetchSubApps", null);
+        return !TextUtils.isEmpty(token) && !TextUtils.isEmpty(baseUrl);
     }
 
     /**
-     * Processes the incoming Intent for shared content.
-     * @param intent The incoming Intent to process
+     * Processes the incoming intent to determine the type of share action.
+     * @param intent The intent received from another app
      */
     private void handleIntent(Intent intent) {
         if (intent == null || intent.getAction() == null) {
-            Log.e(TAG, "Invalid intent received");
             showErrorAndFinish("Invalid share request");
             return;
         }
 
-        try {
-            String action = intent.getAction();
-            switch (action) {
-                case Intent.ACTION_SEND:
-                    processSingleFileShare(intent);
-                    break;
-                case Intent.ACTION_SEND_MULTIPLE:
-                    processMultipleFilesShare(intent);
-                    break;
-                default:
-                    showErrorAndFinish("Unsupported action: " + action);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error processing share intent", e);
-            showErrorAndFinish("Error processing shared content: " + e.getMessage());
+        switch (intent.getAction()) {
+            case Intent.ACTION_SEND:
+                handleSingleShare(intent);
+                break;
+            case Intent.ACTION_SEND_MULTIPLE:
+                handleMultipleShare(intent);
+                break;
+            default:
+                showErrorAndFinish("Unsupported share action");
         }
     }
 
     /**
-     * Processes a single file share Intent.
-     * @param intent The Intent containing a single file URI
+     * Handles a single file share intent.
+     * @param intent The intent containing a single file URI
      */
-    private void processSingleFileShare(Intent intent) {
+    private void handleSingleShare(Intent intent) {
         Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (fileUri == null) {
-            showErrorAndFinish("No file received");
-            return;
+        if (fileUri != null) {
+            processFiles(List.of(fileUri));
+        } else {
+            showErrorAndFinish("No file found to share");
         }
-
-        List<Uri> uriList = new ArrayList<>();
-        uriList.add(fileUri);
-        processFileUris(uriList);
     }
 
     /**
-     * Processes a multiple files share Intent.
-     * @param intent The Intent containing multiple file URIs
+     * Handles a multiple files share intent.
+     * @param intent The intent containing multiple file URIs
      */
-    private void processMultipleFilesShare(Intent intent) {
+    private void handleMultipleShare(Intent intent) {
         ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        if (fileUris == null || fileUris.isEmpty()) {
-            showErrorAndFinish("No files received");
-            return;
+        if (fileUris != null && !fileUris.isEmpty()) {
+            processFiles(fileUris);
+        } else {
+            showErrorAndFinish("No files found to share");
         }
-        processFileUris(fileUris);
     }
 
     /**
      * Processes a list of file URIs in a background thread.
      * @param uris List of file URIs to process
      */
-    private void processFileUris(List<Uri> uris) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
+    private void processFiles(List<Uri> uris) {
+        executorService.execute(() -> {
             try {
-                JSONArray filesArray = buildFilesArray(uris);
+                clearPreviousSelection();
+                JSONArray filesArray = processFileUris(uris);
+                
                 if (filesArray.length() > 0) {
-                    saveFilesInfo(filesArray.toString());
+                    saveFilesInfo(filesArray);
                     fetchSubApplications();
                 } else {
                     runOnUiThread(() -> showErrorAndFinish("No valid files processed"));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error processing files", e);
-                runOnUiThread(() -> showErrorAndFinish("Processing error: " + e.getMessage()));
-            } finally {
-                executor.shutdown();
+                runOnUiThread(() -> showErrorAndFinish("Error processing files"));
             }
         });
     }
 
     /**
-     * Builds a JSONArray containing information about processed files.
-     * @param uris List of file URIs
-     * @return JSONArray with file information
+     * Processes a list of URIs into a JSONArray of file information.
+     * @param uris List of file URIs to process
+     * @return JSONArray containing file information
      * @throws IOException if file processing fails
      */
-    private JSONArray buildFilesArray(List<Uri> uris) throws IOException {
-        clearPreviousSelection();
+    private JSONArray processFileUris(List<Uri> uris) throws IOException {
         JSONArray filesArray = new JSONArray();
-        
         for (Uri uri : uris) {
             try {
                 JSONObject fileInfo = processSingleFile(uri);
                 filesArray.put(fileInfo);
             } catch (Exception e) {
-                Log.e(TAG, "Error processing file: " + uri, e);
+                Log.w(TAG, "Failed to process file: " + uri, e);
             }
         }
         return filesArray;
     }
 
     /**
-     * Clears previous sub-application selection data from SharedPreferences.
-     */
-    private void clearPreviousSelection() {
-        sharedPreferences.edit()
-                .remove("selectedSubApplication")
-                .remove("selectedPath")
-                .apply();
-        Log.d(TAG, "Cleared previous selection data");
-    }
-
-    /**
-     * Processes a single file and returns its information as a JSONObject.
+     * Processes a single file URI into a JSONObject with file information.
      * @param uri The URI of the file to process
      * @return JSONObject containing file path, name, and MIME type
-     * @throws IOException if file operations fail
+     * @throws IOException if file processing fails
      */
     private JSONObject processSingleFile(Uri uri) throws IOException {
         String fileName = getFileNameFromUri(uri);
-        String mimeType = getContentResolver().getType(uri) != null ? 
-                         getContentResolver().getType(uri) : "application/octet-stream";
+        String mimeType = getContentResolver().getType(uri) != null 
+            ? getContentResolver().getType(uri) 
+            : "application/octet-stream";
+        
         File outputFile = new File(getFilesDir(), fileName);
-
-        try (InputStream in = getContentResolver().openInputStream(uri);
-             FileOutputStream out = new FileOutputStream(outputFile)) {
-            if (in == null) throw new IOException("Unable to open file stream");
-            
-            byte[] buffer = new byte[8192]; // Larger buffer for better performance
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-        }
+        copyFileToStorage(uri, outputFile);
 
         JSONObject fileInfo = new JSONObject();
         try {
             fileInfo.put("path", outputFile.getAbsolutePath());
             fileInfo.put("name", fileName);
             fileInfo.put("mimeType", mimeType);
-        } catch (JSONException e) {
-            throw new IOException("Failed to create file info JSON", e);
+            return fileInfo;
+        } catch (Exception e) {
+            throw new IOException("Failed to create file info", e);
         }
-        return fileInfo;
     }
 
     /**
-     * Extracts file name from a URI, falling back to a default if unavailable.
-     * @param uri The URI to extract the name from
-     * @return The file name or "unknown_file" if not determinable
+     * Copies a file from a URI to internal storage.
+     * @param sourceUri The source file URI
+     * @param targetFile The target file location
+     * @throws IOException if file copying fails
+     */
+    private void copyFileToStorage(Uri sourceUri, File targetFile) throws IOException {
+        try (InputStream in = getContentResolver().openInputStream(sourceUri);
+             FileOutputStream out = new FileOutputStream(targetFile)) {
+            if (in == null) throw new IOException("Unable to open file stream");
+            
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    /**
+     * Retrieves the file name from a URI.
+     * @param uri The URI to get the file name from
+     * @return The file name or "unknown_file" if it cannot be determined
      */
     private String getFileNameFromUri(Uri uri) {
         if (uri == null) return "unknown_file";
-
+        
         if ("content".equals(uri.getScheme())) {
             try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    if (nameIndex != -1) {
-                        return cursor.getString(nameIndex);
-                    }
+                    if (nameIndex != -1) return cursor.getString(nameIndex);
                 }
             } catch (Exception e) {
-                Log.w(TAG, "Failed to get file name from content URI", e);
+                Log.w(TAG, "Failed to get filename", e);
             }
         }
         
@@ -277,70 +256,58 @@ public class ShareReceiverActivity extends AppCompatActivity {
     }
 
     /**
-     * Saves processed files information to SharedPreferences.
-     * @param filesJson JSON string containing files information
-     */
-    private void saveFilesInfo(String filesJson) {
-        sharedPreferences.edit()
-                .putString("sharedFiles", filesJson)
-                .apply();
-    }
-
-    /**
-     * Fetches sub-applications from the server using configured URL and token.
+     * Fetches available sub-applications from the server.
      */
     private void fetchSubApplications() {
-        String url = urlToFetchSubApps + "/sws/com.etendoerp.dynamic.app.userApp";
+        String url = baseUrl + SUB_APPS_ENDPOINT;
         Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + token)
-                .build();
+            .url(url)
+            .addHeader("Authorization", "Bearer " + token)
+            .build();
 
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> showErrorAndFinish(
-                        "Network error: " + e.getMessage() + "\nURL: " + url));
+                Log.e(TAG, "Failed to fetch sub-applications", e);
+                runOnUiThread(() -> showErrorAndFinish("Network error occurred"));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    runOnUiThread(() -> showErrorAndFinish(
-                            "Server error " + response.code() + "\nURL: " + url));
+                    Log.e(TAG, "Server error: " + response.code());
+                    runOnUiThread(() -> showErrorAndFinish("Server error: " + response.code()));
                     return;
                 }
 
-                String responseBody = response.body() != null ? response.body().string() : "";
                 try {
-                    JSONObject json = new JSONObject(responseBody);
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
                     JSONArray subApps = json.getJSONArray("data");
-                    runOnUiThread(() -> showSubApplicationsDialog(subApps));
-                } catch (JSONException e) {
-                    runOnUiThread(() -> showErrorAndFinish(
-                            "Invalid response format: " + e.getMessage() + 
-                            "\nResponse: " + responseBody));
+                    runOnUiThread(() -> showSubAppSelectionDialog(subApps));
+                } catch (Exception e) {
+                    Log.e(TAG, "Response parsing error", e);
+                    runOnUiThread(() -> showErrorAndFinish("Error processing server response"));
                 }
             }
         });
     }
 
     /**
-     * Displays a dialog for selecting a sub-application from the fetched list.
-     * @param subApps JSONArray containing sub-application data
+     * Displays a dialog for selecting a sub-application.
+     * @param subApps JSONArray of available sub-applications
      */
-    private void showSubApplicationsDialog(JSONArray subApps) {
+    private void showSubAppSelectionDialog(JSONArray subApps) {
         List<String> appNames = new ArrayList<>();
-        List<JSONObject> subAppObjects = new ArrayList<>();
+        List<JSONObject> subAppList = new ArrayList<>();
 
         for (int i = 0; i < subApps.length(); i++) {
             try {
                 JSONObject subApp = subApps.getJSONObject(i);
-                String appName = subApp.optString("etdappAppName", "Unnamed App");
-                appNames.add(appName);
-                subAppObjects.add(subApp);
-            } catch (JSONException e) {
-                Log.w(TAG, "Error parsing sub-application", e);
+                appNames.add(subApp.optString("etdappAppName", "Unknown App"));
+                subAppList.add(subApp);
+            } catch (Exception e) {
+                Log.w(TAG, "Error parsing sub-app", e);
             }
         }
 
@@ -349,78 +316,54 @@ public class ShareReceiverActivity extends AppCompatActivity {
             return;
         }
 
-        createAlertDialog("Select Sub-Application", null, false)
-                .setItems(appNames.toArray(new String[0]), 
-                        (dialog, which) -> showConfirmationDialog(subAppObjects.get(which)))
-                .setNegativeButton("Cancel", (d, w) -> finish())
-                .show();
+        new AlertDialog.Builder(this)
+            .setTitle("Select Sub-Application")
+            .setItems(appNames.toArray(new String[0]), 
+                (dialog, which) -> handleSubAppSelection(subAppList.get(which)))
+            .setNegativeButton("Cancel", (dialog, which) -> finish())
+            .setCancelable(false)
+            .show();
     }
 
     /**
-     * Shows a confirmation dialog for the selected sub-application.
+     * Handles the selection of a sub-application and launches MainActivity.
      * @param subApp The selected sub-application JSONObject
      */
-    private void showConfirmationDialog(JSONObject subApp) {
-        String name = subApp.optString("etdappAppName", "Unnamed App");
-        String path = subApp.optString("path", "Unknown Path");
-        String message = "Confirm selection:\n" +
-                "Name: " + name + "\n" +
-                "Path: " + path;
-
-        createAlertDialog("Confirm Selection", message, false)
-                .setPositiveButton("Confirm", (d, w) -> saveAndProceed(subApp))
-                .setNegativeButton("Cancel", (d, w) -> finish())
-                .show();
-    }
-
-    /**
-     * Saves the selected sub-application data and proceeds to MainActivity.
-     * @param subApp The selected sub-application JSONObject
-     */
-    private void saveAndProceed(JSONObject subApp) {
+    private void handleSubAppSelection(JSONObject subApp) {
         try {
-            sharedPreferences.edit()
-                    .putString("selectedSubApplication", subApp.optString("etdappAppName", "Unnamed App"))
-                    .putString("selectedPath", subApp.optString("path", "Unknown Path"))
-                    .apply();
-            launchMainActivity();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("selectedSubApplication", subApp.optString("etdappAppName", "Unknown App"));
+            editor.putString("selectedPath", subApp.optString("path", "Unknown Path"));
+            editor.apply();
+            
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         } catch (Exception e) {
-            Log.e(TAG, "Error saving sub-application data", e);
-            showErrorAndFinish("Error saving selection: " + e.getMessage());
+            Log.e(TAG, "Error handling sub-app selection", e);
+            showErrorAndFinish("Error launching sub-application");
         }
     }
 
     /**
-     * Launches the MainActivity with appropriate flags and finishes this activity.
+     * Clears previous sub-application selection from SharedPreferences.
      */
-    private void launchMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
+    private void clearPreviousSelection() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("selectedSubApplication")
+              .remove("selectedPath")
+              .apply();
     }
 
     /**
-     * Creates a standardized AlertDialog builder with common settings.
-     * @param title The dialog title
-     * @param message The dialog message (can be null)
-     * @param finishOnDismiss Whether to finish the activity when dismissed
-     * @return Configured AlertDialog.Builder instance
+     * Saves processed files information to SharedPreferences.
+     * @param filesArray JSONArray containing file information
      */
-    private AlertDialog.Builder createAlertDialog(String title, String message, boolean finishOnDismiss) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setCancelable(false);
-        
-        if (message != null) {
-            builder.setMessage(message);
-        }
-        
-        if (finishOnDismiss) {
-            builder.setPositiveButton("OK", (dialog, which) -> finish());
-        }
-        
-        return builder;
+    private void saveFilesInfo(JSONArray filesArray) {
+        sharedPreferences.edit()
+            .putString("sharedFiles", filesArray.toString())
+            .apply();
     }
 
     /**
@@ -428,6 +371,11 @@ public class ShareReceiverActivity extends AppCompatActivity {
      * @param message The error message to display
      */
     private void showErrorAndFinish(String message) {
-        runOnUiThread(() -> createAlertDialog("Error", message, true).show());
+        new AlertDialog.Builder(this)
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("OK", (dialog, which) -> finish())
+            .setCancelable(false)
+            .show();
     }
 }
