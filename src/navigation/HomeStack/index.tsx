@@ -90,10 +90,7 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
   useFocusEffect(() => {
     if (languageCurrentInitialize.get()) {
       const getLanguageLocal = async () => {
-        await changeLanguage(
-          languageCurrentInitialize.get(),
-          setCurrentLanguage(languageCurrentInitialize.get()),
-        );
+        await changeLanguage(languageCurrentInitialize.get());
       };
       locale.initTranslation();
 

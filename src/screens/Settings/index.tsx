@@ -144,7 +144,7 @@ const Settings = props => {
   }, [isKeyboardVisible, url]);
 
   const handleLanguage = async (label: string, value: string) => {
-    await changeLanguage(value, setCurrentLanguage(value));
+    await changeLanguage(value);
     setDisplayLanguage(label);
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -18,7 +18,11 @@ import { selectIsDemo } from '../../redux/window';
 import Camera from './Camera';
 
 const HomePage = ({ route, navigation }: any) => {
-  const sharedFiles = useAppSelector((state: RootState) => state.sharedFiles.files);
+  const sharedFiles = useAppSelector((state: RootState) => {
+     console.info("Change on SharedFiles -> ", state.sharedFiles.files);
+    return state.sharedFiles.files
+  });
+  console.info("Shared files:", sharedFiles);
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);

@@ -88,7 +88,7 @@ export const languageDefault = async () => {
   }
 };
 
-export const changeLanguage = async (input: string, setLenguageRedux: any) => {
+export const changeLanguage = async (input: string) => {
   locale.setCurrentLanguage(input);
   languageCurrentInitialize.set(input);
   await saveLanguage(input);

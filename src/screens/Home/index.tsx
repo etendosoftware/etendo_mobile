@@ -58,9 +58,6 @@ const HomeComponent = (props: Props) => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const dispatch = useAppDispatch();
 
-  // Ref to track the last loaded file
-  const lastFilePathRef = useRef<string | null>(null);
-
   // On mount, set the AppGroup identifier based on the platform
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -68,6 +65,7 @@ const HomeComponent = (props: Props) => {
     } else {
       DefaultPreference.setName(AppGroupIdentifierAndroid);
     }
+    saveTokenAndURL(token, selectedUrl);
   }, []);
 
   // Initialize OBRest with token and URL (if available)
@@ -98,35 +96,20 @@ const HomeComponent = (props: Props) => {
     return path.startsWith("file://") ? path : `file://${path}`;
   };
 
-  const clearSharedFileData = async () => {
-    try {
-      await DefaultPreference.set("sharedFilePath", "");
-      await DefaultPreference.set("sharedFileName", "");
-      await DefaultPreference.set("sharedFileMimeType", "");
-      await DefaultPreference.set("selectedSubApplication", "");
-    } catch (error) {
-      console.error("Error clearing shared file data: ", error);
-    }
-  };
-
   const loadSharedFileData = async () => {
     try {
-      const filePath = await DefaultPreference.get("sharedFilePath");
-      const fileName = await DefaultPreference.get("sharedFileName");
-      const fileMimeType = await DefaultPreference.get("sharedFileMimeType");
+      const filesJson = await DefaultPreference.get("sharedFiles");
       const selectedSubApplication = await DefaultPreference.get("selectedSubApplication");
 
-      // Check if a new file exists
-      if (filePath && fileName && fileMimeType) {
-        const adjustedPath = addFilePrefixIfNeeded(filePath);
+      if (filesJson) {
+        const filesArray = JSON.parse(filesJson);
+        const adjustedFiles = filesArray.map(file => ({
+          filePath: addFilePrefixIfNeeded(file.path),
+          fileName: file.name,
+          fileMimeType: file.mimeType
+        }));
 
-        const newFileData = {
-          filePath: adjustedPath,
-          fileName,
-          fileMimeType,
-        };
-
-        dispatch(setSharedFiles([newFileData]));
+        dispatch(setSharedFiles(adjustedFiles));
 
         if (selectedSubApplication) {
           props.navigation.navigate(selectedSubApplication);
@@ -137,6 +120,10 @@ const HomeComponent = (props: Props) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const clearSharedFileData = async () => {
+    await DefaultPreference.set("sharedFiles", "");
   };
 
   // On mount, load shared file and listen for deep links
@@ -194,7 +181,7 @@ const HomeComponent = (props: Props) => {
   const processedMenuItems = menuItems?.map((item, index) => ({
     ...item,
     uniqueId: generateUniqueId(item.name),
-    screenName: `${item.name}_${index}`,
+    screenName: item.name,
   }));
 
   useEffect(() => {

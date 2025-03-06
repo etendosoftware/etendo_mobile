@@ -3,7 +3,6 @@ import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
-
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,6 +16,7 @@ import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+import { setSharedFiles } from './redux/shared-files-reducer';
 
 interface Props { }
 type RootStackParamList = {
@@ -27,7 +27,6 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC<Props> = () => {
-  const [sharedFiles, setSharedFiles] = useState(null);
   const { atAppInit, getImageProfile } = useUser();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
@@ -60,19 +59,24 @@ const App: React.FC<Props> = () => {
       }
     };
 
+    const addFilePrefixIfNeeded = (path: string) => {
+      return path.startsWith("file://") ? path : `file://${path}`;
+    };
+
     const handleSharedFiles = () => {
+      console.info("handleSharedFiles()");
       try {
         ReceiveSharingIntent.getReceivedFiles(
           (receivedFiles: any[]) => {
-            if (receivedFiles && receivedFiles.length > 0) {
-              setSharedFiles(receivedFiles);
-            } else {
-              setSharedFiles(null);
-            }
+            const adjustedFiles = receivedFiles.map(file => ({
+              filePath: addFilePrefixIfNeeded(file.filePath),
+              fileName: file.filePath.split('/').pop() || '',
+              fileMimeType: getMimeType(file.mimeType)
+            }));
+            dispatch(setSharedFiles([...adjustedFiles]));
           },
           (error: any) => {
-            console.error('Error receiving shared files:', error);
-            setSharedFiles(null);
+            console.error("ReceiveSharingIntent.getReceivedFiles error", error);
           },
           References.EtendoReceiveShare,
         );
@@ -90,30 +94,56 @@ const App: React.FC<Props> = () => {
     };
   }, []);
 
+  const getMimeType = (mimeType: string) => {
+    switch (mimeType) {
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.pdf':
+        return 'application/pdf';
+      default:
+        return 'application/octet-stream';
+    }
+  };
+
+  const renderNavigationContent = () => {
+    if (loadingScreen) {
+      return (
+        <Stack.Screen
+          name="LoadingScreen"
+          component={LoadingScreen}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    if (token) {
+      return (
+        <Stack.Screen
+          name="HomeStack"
+          component={HomeStack}
+          initialParams={{ token }}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    return (
+      <Stack.Screen
+        name="LoginStack"
+        component={LoginStack}
+        options={{ headerShown: false }}
+      />
+    );
+  };
+
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
         <Stack.Navigator>
-          {loadingScreen ? (
-            <Stack.Screen
-              name="LoadingScreen"
-              component={LoadingScreen}
-              options={{ headerShown: false }}
-            />
-          ) : token ? (
-            <Stack.Screen
-              name="HomeStack"
-              component={HomeStack}
-              initialParams={{ token, sharedFiles }}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name="LoginStack"
-              component={LoginStack}
-              options={{ headerShown: false }}
-            />
-          )}
+          {renderNavigationContent()}
         </Stack.Navigator>
       </NavigationContainer>
       <Alert />
