@@ -61,12 +61,8 @@ class ShareViewController: UIViewController {
             
             if attachment.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
               handleImages(attachment: attachment)
-            } else if attachment.hasItemConformingToTypeIdentifier(UTType.pdf.identifier) {
-              handlePdf(attachment: attachment)
-            } else if attachment.hasItemConformingToTypeIdentifier(UTType.audio.identifier) {
-              handleAudio(attachment: attachment)
             } else {
-              print("Unknown type identifier: \(attachment.registeredTypeIdentifiers)")
+              handleGenericFile(attachment: attachment)
             }
           }
         }
@@ -108,49 +104,18 @@ class ShareViewController: UIViewController {
   }
   
   /**
-   * Handles PDF attachments from the share extension
-   * @param attachment The NSItemProvider containing the PDF data
-   */
-  private func handlePdf(attachment: NSItemProvider) {
-    attachment.loadItem(forTypeIdentifier: UTType.pdf.identifier, options: nil) { [weak self] data, error in
-      guard let self = self else { return }
-      if let url = data as? URL {
-        print("PDF URL received: \(url)")
-        self.processMediaFile(url: url, type: SharedMediaType.file)
-      } else if let error = error {
-        print("Error loading PDF: \(error)")
-      } else {
-        print("Neither URL nor error received for PDF")
-      }
-    }
-  }
-  
-  /**
-   * Handles audio attachments from the share extension
-   * @param attachment The NSItemProvider containing the audio data
-   */
-  private func handleAudio(attachment: NSItemProvider) {
-    attachment.loadItem(forTypeIdentifier: UTType.audio.identifier, options: nil) { [weak self] data, error in
-      guard let self = self else { return }
-      if let url = data as? URL {
-        self.processMediaFile(url: url, type: SharedMediaType.file)
-      } else if let error = error {
-        print("Error loading audio: \(error)")
-      }
-    }
-  }
-  
-  /**
-   * Handles generic file attachments from the share extension
+   * Handles any generic file attachment from the share extension
    * @param attachment The NSItemProvider containing the file data
    */
-  private func handleFiles(attachment: NSItemProvider) {
+  private func handleGenericFile(attachment: NSItemProvider) {
     attachment.loadItem(forTypeIdentifier: UTType.data.identifier, options: nil) { [weak self] data, error in
       guard let self = self else { return }
       if let url = data as? URL {
-        self.processMediaFile(url: url, type: .file)
+        self.processMediaFile(url: url, type: SharedMediaType.file)
       } else if let error = error {
-        print("Error loading file: \(error)")
+        print("Error loading generic file: \(error)")
+      } else {
+        print("Neither URL nor error received for generic file")
       }
     }
   }
@@ -158,25 +123,22 @@ class ShareViewController: UIViewController {
   // MARK: - File Processing
   
   /**
-   * Determines the MIME type based on file extension
-   * @param fileExtension The file extension to evaluate
+   * Determines the MIME type dynamically based on the file's UTI or extension
+   * @param url The file URL to evaluate
    * @return String representing the corresponding MIME type
    */
-  private func getMimeType(from fileExtension: String) -> String {
-    switch fileExtension.lowercased() {
-    case "jpg", "jpeg":
-      return "image/jpeg"
-    case "png":
-      return "image/png"
-    case "gif":
-      return "image/gif"
-    case "mp3":
-      return "audio/mpeg"
-    case "pdf":
-      return "application/pdf"
-    default:
-      return "application/octet-stream" // Fallback for unknown types
+  private func getMimeType(from url: URL) -> String {
+    if let uti = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
+       let mimeType = UTType(uti)?.preferredMIMEType {
+      return mimeType
     }
+    let fileExtension = url.pathExtension.lowercased()
+    if !fileExtension.isEmpty,
+       let uti = UTType(filenameExtension: fileExtension),
+       let mimeType = uti.preferredMIMEType {
+      return mimeType
+    }
+    return "application/octet-stream"
   }
   
   /**
@@ -187,7 +149,7 @@ class ShareViewController: UIViewController {
    */
   private func processMediaFile(url: URL, type: SharedMediaType) {
     let fileExtension = getExtension(from: url, type: type)
-    let mimeType = getMimeType(from: fileExtension)
+    let mimeType = getMimeType(from: url)
     print("Processing file: \(url), type: \(type), extension: \(fileExtension), mime: \(mimeType)")
     let newName = UUID().uuidString
     let newPath = FileManager.default
@@ -198,7 +160,6 @@ class ShareViewController: UIViewController {
     if copied {
       print("Successfully copied file to \(newPath)")
       sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: type))
-      
     } else {
       print("Failed to copy file from \(url) to \(newPath)")
     }
@@ -216,17 +177,23 @@ class ShareViewController: UIViewController {
     if parts.count > 1 {
       ex = parts.last?.lowercased()
     }
-    if ex == nil {
+    if ex == nil || ex!.isEmpty {
       switch type {
-      case .image: ex = "jpg"
+      case .image:
+        ex = "jpg"
       case .file:
-        // Default to "pdf" for file types if no extension is found
-        ex = "pdf"
-      default: ex = "unknown"
+        if let uti = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
+           let preferredExtension = UTType(uti)?.preferredFilenameExtension {
+          ex = preferredExtension
+        } else {
+          ex = "bin"
+        }
+      default:
+        ex = "bin"
       }
     }
     print("Extension detected: \(ex ?? "unknown")")
-    return ex ?? "unknown"
+    return ex ?? "bin"
   }
   
   /**
@@ -391,7 +358,6 @@ class ShareViewController: UIViewController {
         print("Extension completed")
         self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
       }
-      
     } else {
       print("Invalid URL: \(urlString)")
       self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
