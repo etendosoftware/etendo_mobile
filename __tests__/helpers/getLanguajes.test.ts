@@ -88,11 +88,9 @@ describe('Language Management Tests', () => {
 
   describe('changeLanguage', () => {
     it('should update language settings', async () => {
-      const mockSetLanguageRedux = jest.fn();
-      await changeLanguage('fr_FR', mockSetLanguageRedux);
+      await changeLanguage('fr_FR');
       expect(locale.setCurrentLanguage).toHaveBeenCalledWith('fr_FR');
       expect(AsyncStorage.setItem).toHaveBeenCalledWith('selectedLanguage', 'fr_FR');
-      expect(mockSetLanguageRedux).toHaveBeenCalled();
     });
   });
 

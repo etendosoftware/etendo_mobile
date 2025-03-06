@@ -13,6 +13,12 @@ jest.mock('react-native-document-picker', () => ({
   pick: jest.fn(),
 }));
 
+jest.mock('react-native-default-preference', () => ({
+  set: jest.fn(),
+  get: jest.fn(),
+  clear: jest.fn(),
+}));
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -13,11 +13,16 @@ import {
   selectSelectedLanguage,
   selectToken,
 } from '../../redux/user';
-import { useAppSelector } from '../../redux';
+import { RootState,useAppSelector } from '../../redux';
 import { selectIsDemo } from '../../redux/window';
 import Camera from './Camera';
 
 const HomePage = ({ route, navigation }: any) => {
+  const sharedFiles = useAppSelector((state: RootState) => {
+     console.info("Change on SharedFiles -> ", state.sharedFiles.files);
+    return state.sharedFiles.files
+  });
+  console.info("Shared files:", sharedFiles);
   const token = useAppSelector(selectToken);
   const data = useAppSelector(selectData);
   const language = useAppSelector(selectSelectedLanguage);
@@ -41,6 +46,7 @@ const HomePage = ({ route, navigation }: any) => {
             <DynamicComponent
               __id={appId}
               url={selectedEnvironmentUrl}
+              sharedFiles={sharedFiles}
               children={childNavigation}
               navigationContainer={navigation}
               token={token}

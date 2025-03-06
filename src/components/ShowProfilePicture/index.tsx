@@ -9,6 +9,8 @@ interface Props {
 
 const ShowProfilePicture = ({ username, bindaryData }: Props) => {
   const getInitials = (string?: string) => {
+    if (!string) return;
+
     let names = string.split(" "),
       initials = names[0].substring(0, 1).toUpperCase();
     if (names.length > 1) {
