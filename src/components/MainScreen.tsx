@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import { Text, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -16,7 +16,6 @@ import {
 import { RootState,useAppSelector } from '../../redux';
 import { selectIsDemo } from '../../redux/window';
 import Camera from './Camera';
-import {useSelector} from "react-redux";
 
 const HomePage = ({ route, navigation }: any) => {
   const sharedFiles = useAppSelector((state: RootState) => {

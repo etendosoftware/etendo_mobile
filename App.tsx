@@ -3,7 +3,6 @@ import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
-
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,7 +16,7 @@ import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
 import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
-import {setSharedFiles} from "./redux/shared-files-reducer";
+import { setSharedFiles } from './redux/shared-files-reducer';
 
 interface Props { }
 type RootStackParamList = {
@@ -59,22 +58,22 @@ const App: React.FC<Props> = () => {
         console.error('Error checking camera permissions:', error);
       }
     };
+
     const addFilePrefixIfNeeded = (path: string) => {
       return path.startsWith("file://") ? path : `file://${path}`;
     };
 
     const handleSharedFiles = () => {
       console.info("handleSharedFiles()");
-
       try {
         ReceiveSharingIntent.getReceivedFiles(
           (receivedFiles: any[]) => {
-              const adjustedFiles = receivedFiles.map(file => ({
-                filePath: addFilePrefixIfNeeded(file.filePath),
-                fileName: file.filePath.split('/').pop() || '',
-                fileMimeType: getMimeType(file.mimeType)
-              }));
-              dispatch(setSharedFiles([...adjustedFiles]));
+            const adjustedFiles = receivedFiles.map(file => ({
+              filePath: addFilePrefixIfNeeded(file.filePath),
+              fileName: file.filePath.split('/').pop() || '',
+              fileMimeType: getMimeType(file.mimeType)
+            }));
+            dispatch(setSharedFiles([...adjustedFiles]));
           },
           (error: any) => {
             console.error("ReceiveSharingIntent.getReceivedFiles error", error);
@@ -107,31 +106,44 @@ const App: React.FC<Props> = () => {
       default:
         return 'application/octet-stream';
     }
-  }
+  };
+
+  const renderNavigationContent = () => {
+    if (loadingScreen) {
+      return (
+        <Stack.Screen
+          name="LoadingScreen"
+          component={LoadingScreen}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    if (token) {
+      return (
+        <Stack.Screen
+          name="HomeStack"
+          component={HomeStack}
+          initialParams={{ token }}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    return (
+      <Stack.Screen
+        name="LoginStack"
+        component={LoginStack}
+        options={{ headerShown: false }}
+      />
+    );
+  };
+
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
         <Stack.Navigator>
-          {loadingScreen ? (
-            <Stack.Screen
-              name="LoadingScreen"
-              component={LoadingScreen}
-              options={{ headerShown: false }}
-            />
-          ) : token ? (
-            <Stack.Screen
-              name="HomeStack"
-              component={HomeStack}
-              initialParams={{ token }}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name="LoginStack"
-              component={LoginStack}
-              options={{ headerShown: false }}
-            />
-          )}
+          {renderNavigationContent()}
         </Stack.Navigator>
       </NavigationContainer>
       <Alert />

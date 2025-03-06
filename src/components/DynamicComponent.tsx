@@ -1,4 +1,4 @@
-import React, {useMemo, Suspense, useEffect} from 'react';
+import React, { useMemo, Suspense } from 'react';
 import { fetchComponent, getBasePathContext } from '../utils';
 import LoadingScreen from './LoadingScreen';
 import { useSelector } from 'react-redux';
