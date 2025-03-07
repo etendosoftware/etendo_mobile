@@ -288,39 +288,48 @@ class ShareViewController: UIViewController {
    * Displays a modal allowing the user to select a sub-application to share content with
    */
   private func showShareModal() {
-    let alertController = UIAlertController(title: "Select Sub-application", message: "Choose where to share", preferredStyle: .actionSheet)
-    
-    if !subApplicationsData.isEmpty {
-      for subApp in subApplicationsData {
-        let appName = subApp["etdappAppName"] as? String ?? "Unknown App"
-        let pathName = subApp["path"] as? String ?? "Unknown Path"
-        
-        let action = UIAlertAction(title: appName, style: .default) { _ in
-          self.handleShare(with: appName, path: pathName)
-        }
-        alertController.addAction(action)
+      let alertController = UIAlertController(title: "Select Sub-application", message: "Choose where to share", preferredStyle: .actionSheet)
+      
+      if !subApplicationsData.isEmpty {
+          let filteredApps = subApplicationsData.filter { $0["etdappShareEnabled"] as? Bool == true }
+          
+          if !filteredApps.isEmpty {
+              for subApp in filteredApps {
+                  let appName = subApp["etdappAppName"] as? String ?? "Unknown App"
+                  let pathName = subApp["path"] as? String ?? "Unknown Path"
+                  
+                  let action = UIAlertAction(title: appName, style: .default) { _ in
+                      self.handleShare(with: appName, path: pathName)
+                  }
+                  alertController.addAction(action)
+              }
+          } else {
+              let noDataAction = UIAlertAction(title: "No Share-Enabled Sub-applications Found", style: .default) { _ in
+                  self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+              }
+              alertController.addAction(noDataAction)
+          }
+      } else {
+          let noDataAction = UIAlertAction(title: "No Sub-applications Found", style: .default) { _ in
+              self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+          }
+          alertController.addAction(noDataAction)
       }
-    } else {
-      let noDataAction = UIAlertAction(title: "No Sub-applications Found", style: .default) { _ in
-        self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+      
+      let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+          self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
       }
-      alertController.addAction(noDataAction)
-    }
-    
-    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
-      self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-    }
-    alertController.addAction(cancelAction)
-    
-    if let popoverController = alertController.popoverPresentationController {
-      popoverController.sourceView = self.view
-      popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-      popoverController.permittedArrowDirections = []
-    }
-    
-    present(alertController, animated: true, completion: nil)
+      alertController.addAction(cancelAction)
+      
+      if let popoverController = alertController.popoverPresentationController {
+          popoverController.sourceView = self.view
+          popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+          popoverController.permittedArrowDirections = []
+      }
+      
+      present(alertController, animated: true, completion: nil)
   }
-  
+
   /**
    * Handles the sharing process with the selected sub-application
    * @param subApplication The name of the selected sub-application
