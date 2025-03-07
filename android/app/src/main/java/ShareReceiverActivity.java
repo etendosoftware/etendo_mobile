@@ -304,15 +304,17 @@ public class ShareReceiverActivity extends AppCompatActivity {
         for (int i = 0; i < subApps.length(); i++) {
             try {
                 JSONObject subApp = subApps.getJSONObject(i);
-                appNames.add(subApp.optString("etdappAppName", "Unknown App"));
-                subAppList.add(subApp);
+                if (subApp.optBoolean("etdappShareEnabled", false)) {
+                    appNames.add(subApp.optString("etdappAppName", "Unknown App"));
+                    subAppList.add(subApp);
+                }
             } catch (Exception e) {
                 Log.w(TAG, "Error parsing sub-app", e);
             }
         }
 
         if (appNames.isEmpty()) {
-            showErrorAndFinish("No sub-applications available");
+            showErrorAndFinish("No share-enabled sub-applications available");
             return;
         }
 
