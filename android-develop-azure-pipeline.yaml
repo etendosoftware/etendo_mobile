@@ -25,12 +25,8 @@ variables:
   isRoot: 'false'
   runTests: 'false'
   runLint: 'false'
-  keystorePassword: null
-  keyAlias: null
-  keyPassword: null
   keystoreFilename: etendo.keystore
-  keystoreSecureFileId: f6d08442-3aa4-46cb-9a18-44a0fee9605f
-  keystoreSecureFilename: 76f9648e-c8a0-4246-8f1c-907e9c0cc741
+  keystoreSecureFileId: etendo.keystore
   keystoreEncoded: null
   automaticSigning: 'false'
   buildBundle: 'true'
@@ -212,17 +208,4 @@ jobs:
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/mapping
           ArtifactName: mapping
-      - task: AppCenterDistribute@3
-        displayName: Create distribution
-        condition: 'and(succeeded(), ne(variables[''Build.Reason''], ''pullRequest''))'
-        inputs:
-          serverEndpoint: 8920d0ac-3027-424f-ab28-1ca3c1e646f0
-          appSlug: Futit-Services/Etendo-Mobile-Android
-          destinationType: store
-          destinationStoreId: cd43915c-4025-4127-ab97-5803e5db6295
-          isSilent: false
-          releaseNotesInput: $(lastCommitMessage)
-          app: $(build.artifactstagingdirectory)/bundle/**/*.aab
-          symbolsType: Android
-          mappingTxtPath: $(build.artifactstagingdirectory)/mapping/**/mapping.txt
-          nativeLibrariesPath: $(build.sourcesdirectory)/**/*.so
+
