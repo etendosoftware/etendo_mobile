@@ -47,6 +47,14 @@ resources:
       type: git
       ref: refs/heads/develop
 jobs:
+  - job: Phase_0
+    displayName: echo_test
+    pool:
+      name: Default
+    steps:
+      - script: echo "Hello, world!"
+        displayName: Run a one-line script
+  
   - job: Phase_1
     displayName: Build
     cancelTimeoutInMinutes: 0
