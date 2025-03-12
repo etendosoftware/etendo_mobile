@@ -1,5 +1,4 @@
 variables:
-  system.debug: 'false'
   lastCommitMessage: >-
     Merge pull request #31 from etendosoftware/feature/ETP-229  Feature ETP-229:
     Implement Sharing Intent for External Apps
@@ -50,12 +49,10 @@ jobs:
   - job: Phase_1
     displayName: Build
     pool:
-      name: Default
+      vmImage: 'macos-latest'
     steps:
       - checkout: self
-        clean: true
         submodules: recursive
-        lfs: true
       - task: PowerShell@2
         displayName: Install build scripts
         continueOnError: true
