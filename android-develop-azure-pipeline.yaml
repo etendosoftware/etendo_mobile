@@ -46,18 +46,9 @@ resources:
     - repository: self
       type: git
       ref: refs/heads/develop
-jobs:
-  - job: Phase_0
-    displayName: echo_test
-    pool:
-      name: Default
-    steps:
-      - script: echo "Hello, world!"
-        displayName: Run a one-line script
-  
+jobs:  
   - job: Phase_1
     displayName: Build
-    cancelTimeoutInMinutes: 0
     pool:
       name: Default
     steps:
@@ -70,7 +61,6 @@ jobs:
         continueOnError: true
         inputs:
           targetType: inline
-          scriptName: ''
           script: >-
             Set-Location -Path '$(Agent.HomeDirectory)'
 
