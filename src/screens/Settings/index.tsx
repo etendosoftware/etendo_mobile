@@ -23,7 +23,6 @@ import ButtonUI from 'etendo-ui-library/dist-native/components/button/Button';
 import { isTablet } from '../../helpers/IsTablet';
 import { deviceStyles as styles } from './deviceStyles';
 import { NEUTRAL_100, PRIMARY_100 } from '../../styles/colors';
-import Input from 'etendo-ui-library/dist-native/components/input/Input';
 import { UrlItem } from '../../components/UrlItem';
 import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
@@ -95,7 +94,6 @@ const Settings = props => {
   const {
     loadEnviromentsUrl,
     saveEnviromentsUrl,
-    setCurrentLanguage,
   } = useUser();
 
   useEffect(() => {

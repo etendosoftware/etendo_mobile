@@ -88,10 +88,16 @@ export const languageDefault = async () => {
   }
 };
 
-export const changeLanguage = async (input: string) => {
+export const changeLanguage = async (
+  input: string,
+  setCurrentLanguageCallback?: (lang: string) => void
+) => {
   locale.setCurrentLanguage(input);
   languageCurrentInitialize.set(input);
   await saveLanguage(input);
+  if (setCurrentLanguageCallback) {
+    setCurrentLanguageCallback(input);
+  }
 };
 
 export const formatObjectLanguage = (language: string): ILanguage => {
