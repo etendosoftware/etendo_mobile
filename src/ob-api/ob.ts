@@ -18,14 +18,12 @@ const setUrl = async (_url?) => {
   return url;
 };
 
-const formatUrl = (_url?) => {
-  let url = _url;
-  if (url) {
-    if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "http://" + url;
-    }
+const formatUrl = (url: string = ''): string => {
+  const trimmedUrl = url.trim();
+  if (!/^https?:\/\//i.test(trimmedUrl)) {
+    return `http://${trimmedUrl}`;
   }
-  return url;
+  return trimmedUrl;
 };
 
 export const formatEnvironmentUrl = (url: string) => {
