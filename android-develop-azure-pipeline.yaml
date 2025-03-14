@@ -30,7 +30,7 @@ variables:
   keyAlias: $(keyAlias)
   keyPassword: $(keyPassword)
   keystoreFilename: etendo.keystore
-  keystoreSecureFileId: etendo.keystore
+  keystoreSecureFileId: 7530a682-a274-4fe9-bbc8-965742ea09cf
   keystoreEncoded: $(keystoreEncoded)
   automaticSigning: false
   buildBundle: true
