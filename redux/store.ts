@@ -16,6 +16,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   window: windowReducer,
   sharedFiles: sharedFilesReducer,
+  // here we will add more reducers !
 });
 
 const store = configureStore({
