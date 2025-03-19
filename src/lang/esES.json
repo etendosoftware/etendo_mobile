@@ -94,7 +94,11 @@
   "Texto": "Text",
   "WelcomeToEtendoLogin": "Bienvenido a Etendo!",
   "WelcomeToEtendoHome": "Bienvenido a Etendo,",
+  "ErrorCheckingCameraPermissions": "Error al verificar los permisos de la cámara.",
   "EnterCredentials": "Ingresa tus credenciales para acceder a tu cuenta.",
+  "ErrorFetchingInitialData": "Error al obtener los datos iniciales.",
+  "ErrorHandlingSharedFiles": "Error al manejar archivos compartidos.",
+  "ErrorReceivingSharedFiles": "Error al recibir archivos compartidos.",
   "ErrorUserPassword": "Credenciales incorrectos o sin autorización.",
   "UrlFetchFailed": "Falló al renderizar la url '%{url}'",
   "NoInternetConnection": "Sin Conexión a Internet"

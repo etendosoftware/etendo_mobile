@@ -82,10 +82,10 @@ const Profile = props => {
           <View style={styles.getProfilePictureStyle}>
             <ShowProfilePicture
               bindaryData={bindaryImg}
-              username={data.username}
+              username={data?.username}
             />
           </View>
-          <Text style={styles.userNameStyle}>{data.username}</Text>
+          <Text style={styles.userNameStyle}>{data?.username}</Text>
         </View>
       </View>
       <View style={styles.accountDataContainer}>

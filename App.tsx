@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { defaultTheme } from './src/themes';
-
 import HomeStack from './src/navigation/HomeStack';
 import LoginStack from './src/navigation/LoginStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,8 +14,11 @@ import { selectLoadingScreen, setLoadingScreen } from './redux/window';
 import { Camera } from 'react-native-vision-camera';
 import { deviceOrientation } from './src/utils';
 import { Alert } from 'etendo-ui-library';
+import { References } from './src/constants/References';
+import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+import { setSharedFiles } from './redux/shared-files-reducer';
 
-interface Props {}
+interface Props { }
 type RootStackParamList = {
   HomeStack: any;
   LoginStack: any;
@@ -34,47 +36,114 @@ const App: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      deviceOrientation();
-      if (user) {
-        await getImageProfile(data);
+      try {
+        deviceOrientation();
+        if (user) {
+          await getImageProfile(data);
+        }
+        await languageDefault();
+        dispatch(setLoadingScreen(false));
+        // Important: Do not add any other code here, this is for the root component only.
+        // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
+        await atAppInit();
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
       }
-      await languageDefault();
-      dispatch(setLoadingScreen(false));
-      // Important: Do not add any other code here, this is for the root component only.
-      // Add code in the `atAppInit` function below if you need to run any code at app start/restart.
-      await atAppInit();
     };
+
+    const checkPermission = async () => {
+      try {
+        await Camera.requestCameraPermission();
+      } catch (error) {
+        console.error('Error checking camera permissions:', error);
+      }
+    };
+
+    const addFilePrefixIfNeeded = (path: string) => {
+      return path.startsWith("file://") ? path : `file://${path}`;
+    };
+
+    const handleSharedFiles = () => {
+      console.info("handleSharedFiles()");
+      try {
+        ReceiveSharingIntent.getReceivedFiles(
+          (receivedFiles: any[]) => {
+            const adjustedFiles = receivedFiles.map(file => ({
+              filePath: addFilePrefixIfNeeded(file.filePath),
+              fileName: file.filePath.split('/').pop() || '',
+              fileMimeType: getMimeType(file.mimeType)
+            }));
+            dispatch(setSharedFiles([...adjustedFiles]));
+          },
+          (error: any) => {
+            console.error("ReceiveSharingIntent.getReceivedFiles error", error);
+          },
+          References.EtendoReceiveShare,
+        );
+      } catch (error) {
+        console.error('Error handling shared files:', error);
+      }
+    };
+
     fetchInitialData();
     checkPermission();
+    handleSharedFiles();
+
+    return () => {
+      ReceiveSharingIntent.clearReceivedFiles();
+    };
   }, []);
 
-  const checkPermission = async () => {
-    await Camera.requestCameraPermission();
+  const getMimeType = (mimeType: string) => {
+    switch (mimeType) {
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.pdf':
+        return 'application/pdf';
+      default:
+        return 'application/octet-stream';
+    }
+  };
+
+  const renderNavigationContent = () => {
+    if (loadingScreen) {
+      return (
+        <Stack.Screen
+          name="LoadingScreen"
+          component={LoadingScreen}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    if (token) {
+      return (
+        <Stack.Screen
+          name="HomeStack"
+          component={HomeStack}
+          initialParams={{ token }}
+          options={{ headerShown: false }}
+        />
+      );
+    }
+    
+    return (
+      <Stack.Screen
+        name="LoginStack"
+        component={LoginStack}
+        options={{ headerShown: false }}
+      />
+    );
   };
 
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
         <Stack.Navigator>
-          {loadingScreen ? (
-            <Stack.Screen
-              name="LoadingScreen"
-              component={LoadingScreen}
-              options={{ headerShown: false }}
-            />
-          ) : token ? (
-            <Stack.Screen
-              name="HomeStack"
-              component={HomeStack}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name="LoginStack"
-              component={LoginStack}
-              options={{ headerShown: false }}
-            />
-          )}
+          {renderNavigationContent()}
         </Stack.Navigator>
       </NavigationContainer>
       <Alert />

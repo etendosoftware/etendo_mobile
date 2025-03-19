@@ -78,8 +78,11 @@ module.exports = {
     '|react-native-safe-area-context' +
     '|react-native-screens' +
     '|react-native-share' +
+    '|react-native-shared-group-preferences' +
     '|react-native-svg' +
     '|react-native-svg-web' +
+    '|react-native-default-preference' +
+    '|react-native-fs' +
     '|react-native-swipeable-item' +
     '|react-native-swiper' +
     '|react-native-vector-icons' +
@@ -90,7 +93,9 @@ module.exports = {
     '|redux-persist' +
     '|rn-placeholder' +
     '|uuid' +
+    'node_modules/(?!react-native|react-native-default-preference|@react-native|react-navigation)' +
     'node_modules/(?!react-native-device-info)' +
+    'node_modules/(?!(react-native|react-native-fs)/)' +
     ')/)',
   ],
   moduleNameMapper: {

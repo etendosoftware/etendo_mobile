@@ -40,6 +40,7 @@ import {
 import { setUrl } from "../src/ob-api/ob";
 import { eraseItems } from "../src/utils/KeyStorage";
 import { References } from "../src/constants/References";
+import DefaultPreference from 'react-native-default-preference';
 
 export const useUser = () => {
   const dispatch = useAppDispatch();
@@ -89,7 +90,7 @@ export const useUser = () => {
     }
     // Other actions
     await setUrl(selectedUrlStored);
-    await changeLanguage(currentLanguage, setCurrentLanguage(currentLanguage));
+    await changeLanguage(currentLanguage);
   };
 
   const login = async (user, pass) => {
@@ -114,9 +115,7 @@ export const useUser = () => {
       ? currentLanguage
       : languageByDefault();
     const languageFormatted = formatLanguageUnderscore(languageToSet, true);
-    await changeLanguage(languageFormatted, () =>
-      dispatch(setLanguage(languageFormatted))
-    );
+    await changeLanguage(languageFormatted);
   };
 
   const reloadUserData = async (storedToken?: string, username?: string) => {
@@ -181,6 +180,8 @@ export const useUser = () => {
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("selectedLanguage");
     await AsyncStorage.removeItem("isDeveloperMode");
+    await DefaultPreference.set('token', null);
+    await DefaultPreference.set('urlToFetchSubApps', null);
 
     if (isDemo) {
       await AsyncStorage.removeItem("baseUrl");
