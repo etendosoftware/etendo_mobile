@@ -37,7 +37,7 @@ variables:
   destinationSubtype: googleplay
   sonoma.tags: 'continuous,javascript,android,signed,android-app-bundle,distribution'
   artifactVersioning.build.value: '0'
-name: $(artifactVersioning.build.value)
+name: $(Rev:r)
 resources:
   repositories:
     - repository: self
@@ -129,13 +129,19 @@ jobs:
       - script: |
           echo "JAVA_HOME is set to $(JAVA_HOME)"
           java -version
-          echo " ----> Build Number: $(Build.BuildNumber)"
         displayName: Verify Java Installation
-
-      - script: |
-            versionCode=$(echo "$(Build.BuildNumber)" | tr -cd '0-9')
-            echo "##vso[task.setvariable variable=versionCode]$versionCode"
-        displayName: Set versionCode
+        
+      - task: PowerShell@2
+        displayName: 'Set versionCode from Timestamp'
+        inputs:
+          targetType: 'inline'
+          script: |
+            $timestamp = Get-Date -Format "yyyyMMddHH"
+            $versionCode = [int]$timestamp
+            if ($versionCode -gt 2100000000) {
+              Write-Error "versionCode ($versionCode) excede el límite de Google Play (2100000000)"
+            }
+            Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
       - task: Gradle@1
         displayName: Gradle Task
         inputs:
@@ -150,8 +156,8 @@ jobs:
             -DMOBILECENTER_KEY_ALIAS="$(keyAlias)"
             -DAPPCENTER_KEY_PASSWORD="$(keyPassword)"
             -DMOBILECENTER_KEY_PASSWORD="$(keyPassword)"
-            -DAPPCENTER_BUILD_VERSION="$(Build.BuildNumber)"
-            -DMOBILECENTER_BUILD_VERSION="$(Build.BuildNumber)" -p "android"
+            -DAPPCENTER_BUILD_VERSION="$(versionCode)"
+            -DMOBILECENTER_BUILD_VERSION="$(versionCode)" -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
           sqAnalysisBreakBuildIfQualityGateFailed: false
@@ -228,17 +234,12 @@ jobs:
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/mapping
           ArtifactName: mapping
-      - task: AppCenterDistribute@3
-        displayName: Create distribution
-        condition: 'and(succeeded(), ne(variables[''Build.Reason''], ''pullRequest''))'
+      - task: GooglePlayRelease@4
+        displayName: 'Publish to Google Play'
         inputs:
-          serverEndpoint: a4392289-9b7f-4d7a-890b-a1a94a770eaa
-          appSlug: Futit-Services/Etendo-Mobile-Android
-          destinationType: store
-          destinationStoreId: cd43915c-4025-4127-ab97-5803e5db6295
-          isSilent: false
-          releaseNotesInput: $(lastCommitMessage)
-          app: $(build.artifactstagingdirectory)/bundle/**/*.aab
-          symbolsType: Android
-          mappingTxtPath: $(build.artifactstagingdirectory)/mapping/**/mapping.txt
-          nativeLibrariesPath: $(build.sourcesdirectory)/**/*.so
+          serviceConnection: 'playstore'
+          applicationId: 'com.smf.mobile.etendo_app_loader'
+          action: 'SingleBundle'
+          bundleFile: '$(build.artifactstagingdirectory)/bundle/**/*.aab'
+          track: 'production'
+          releaseName: 'Release $(Build.BuildNumber)'
