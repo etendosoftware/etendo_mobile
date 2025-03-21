@@ -20,14 +20,13 @@ variables:
   APPCENTER_REACTNATIVE_PACKAGE: package.json
   SDK: ''
   TestSDK: iphonesimulator
-  P12Password: null
   P12Filename: Certificates.p12
   CertificateType: apple distribution
   MobileProvisionFilename: Etendo_Mobile_Distribution.mobileprovision
-  P12SecureFileId: ba940be2-bea4-486d-86a2-53d8105521f5
-  MobileProvisionSecureFileId: 036150db-8ad8-4825-aa9b-1713ffcac0ac
+  P12SecureFileId: ab637576-6255-4111-881f-9925ef484173
+  MobileProvisionSecureFileId: 91218312-496d-4087-8815-289bd47446be
   AppExtensionProvisionSecureFiles: >-
-    [{"fileId":"9b298cbf-b557-4909-8199-e8b02bd538a8","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
+    [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
     {"expirationDate":"2025-12-16T18:57:43.000Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
   MOBILECENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
@@ -53,7 +52,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-11
+      vmImage: macOS-13
     steps:
       - checkout: self
         clean: true
@@ -147,16 +146,16 @@ jobs:
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
-          certSecureFile: ba940be2-bea4-486d-86a2-53d8105521f5
+          certSecureFile: $(P12SecureFileId)
           certPwd: $(P12Password)
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 036150db-8ad8-4825-aa9b-1713ffcac0ac
+          provProfileSecureFile: $(MobileProvisionSecureFileId)
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 9b298cbf-b557-4909-8199-e8b02bd538a8
+          provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
       - task: CocoaPods@0
         displayName: Pod install
         inputs:
@@ -175,13 +174,22 @@ jobs:
             $(Agent.HomeDirectory)/scripts/determine-signing-style-and-pods-update.sh
           disableAutoCwd: true
           cwd: $(Build.SourcesDirectory)
+      - task: PowerShell@2 
+        displayName: Determine timestamp build numer
+        inputs: 
+          targetType: 'inline'
+          script: |
+            $timestamp = Get-Date -Format "yyyyMMddHH"
+            $versionCode = [int]$timestamp
+            Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
+
       - task: CmdLine@1
         displayName: Set Bundle version
         inputs:
           filename: /usr/bin/find
           arguments: >-
             . -name "*Info.plist" -exec /usr/libexec/PlistBuddy -c "Set
-            :CFBundleVersion $(Build.BuildNumber)" {} ;
+            :CFBundleVersion $(versionCode)" {} ;
       - task: CmdLine@1
         displayName: Update Xcode build settings
         continueOnError: true
@@ -243,15 +251,21 @@ jobs:
           PathtoPublish: $(build.artifactstagingdirectory)/symbols
           ArtifactName: symbols
           TargetPath: \\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)
-      - task: AppCenterDistribute@3
-        displayName: Create distribution
-        condition: 'and(succeeded(), ne(variables[''Build.Reason''], ''pullRequest''))'
+      - script: |
+          echo "New version with updated features and compatibility improvements" > $(System.DefaultWorkingDirectory)/ReleaseNotes.txt
+          echo "Please test compatibility with iOS 15+ and report any issues" > $(System.DefaultWorkingDirectory)/changelog.txt
+        displayName: 'Create Release Notes and Changelog files'
+
+      - task: AppStoreRelease@1
         inputs:
-          serverEndpoint: 733d6e47-ecac-44fe-9514-326fc586efda
-          appSlug: Futit-Services/Etendo-Mobile-iOS
-          destinationType: store
-          destinationStoreId: ac6a3dca-451a-4a07-8699-bdcb7f1d37d0
-          isSilent: false
-          releaseNotesInput: $(lastCommitMessage)
-          dsymPath: $(build.artifactstagingdirectory)/symbols
-          app: $(build.artifactstagingdirectory)/build/**/*.ipa
+          serviceEndpoint: 'app center'
+          releaseTrack: 'TestFlight'
+          ipaPath: '$(build.artifactstagingdirectory)/build/*.ipa'
+          appIdentifier: 'com.etendoapploader.ios'
+          appType: 'iOS'
+          appSpecificId: '6451114033'
+          distributedToExternalTesters: true
+          releaseNotes: '$(System.DefaultWorkingDirectory)/ReleaseNotes.txt'
+          changelog: '$(System.DefaultWorkingDirectory)/changelog.txt'
+          externalTestersGroups: 'external tester'
+        displayName: 'Publish to TestFlight'
