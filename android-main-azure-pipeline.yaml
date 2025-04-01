@@ -234,6 +234,32 @@ jobs:
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/mapping
           ArtifactName: mapping
+      - task: Bash@3
+        displayName: 'Extract versionName from build.gradle'
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Busca la línea con versionName
+            LINE=$(grep "versionName" $(Build.SourcesDirectory)/android/app/build.gradle)
+            echo "Line found: [$LINE]"
+            VERSION_NAME=$(echo "$LINE" | sed 's/^[[:space:]]*versionName[[:space:]]*"\([^"]*\)".*/\1/' | tr -d '\n')
+            if [ -z "$VERSION_NAME" ]; then
+              echo "Error: versionName was not found in build.gradle"
+              exit 1
+            fi
+            echo "Value extracted in square brackets: [$VERSION_NAME]"
+            echo "${VERSION_NAME}" > $(Build.ArtifactStagingDirectory)/version_name.txt
+            echo "File contents: [$(cat $(Build.ArtifactStagingDirectory)/version_name.txt)]"
+          failOnStderr: false
+      - task: Bash@3
+        displayName: 'Set appVersionName from file'
+        inputs:
+          targetType: 'inline'
+          script: |
+            VERSION_NAME=$(cat $(Build.ArtifactStagingDirectory)/version_name.txt)
+            echo "Value read from the file: [$VERSION_NAME]"
+            echo "##vso[task.setvariable variable=appVersionName;isOutput=false]${VERSION_NAME}"
+            echo "Value assigned to appVersionName: [$appVersionName]"
       - task: GooglePlayRelease@4
         displayName: 'Publish to Google Play'
         inputs:
@@ -242,4 +268,4 @@ jobs:
           action: 'SingleBundle'
           bundleFile: '$(build.artifactstagingdirectory)/bundle/**/*.aab'
           track: 'production'
-          releaseName: 'Release $(Build.BuildNumber)'
+          releaseName: '$(appVersionName)'
