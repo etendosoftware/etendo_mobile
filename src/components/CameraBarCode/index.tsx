@@ -1,33 +1,29 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {Camera, CameraDevice} from 'react-native-vision-camera';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import {
+  Camera,
+  CameraDevice,
+  useCodeScanner,
+} from 'react-native-vision-camera';
+import { ICameraBarCodeProps } from './types';
+import { CAMERA_STATUS, CODE_TYPES, SIDE_CAMERA } from './constants';
 
-const CAMERA_STATUS = 'authorized';
-const SIDE_CAMERA = 'back';
-
-interface CameraBarCodeProps {
-  ableToRead: boolean;
-  handleReadCode: (code: string) => void;
-}
-
-const CameraBarCode = ({ableToRead, handleReadCode}: CameraBarCodeProps) => {
+const CameraBarCode = ({ ableToRead, handleReadCode }: ICameraBarCodeProps) => {
   const [cameraPermission, setCameraPermission] = useState(false);
   const [deviceSelected, setDevicesSelected] = useState<CameraDevice | null>(
     null,
   );
-  const [isReading, setIsReading] = useState(true);
 
   const handleCameraPermission = async () => {
     await Camera.requestCameraPermission();
     setCameraPermission(true);
   };
 
-
   useEffect(() => {
     (async () => {
       const cameraPermissions = await Camera.getCameraPermissionStatus();
-      setCameraPermission(cameraPermissions == CAMERA_STATUS);
-      const devicesAvailable = await Camera.getAvailableCameraDevices();
+      setCameraPermission(cameraPermissions === CAMERA_STATUS);
+      const devicesAvailable = Camera.getAvailableCameraDevices();
       const backCamera = devicesAvailable.filter(
         item => item.position == SIDE_CAMERA,
       );
@@ -39,21 +35,21 @@ const CameraBarCode = ({ableToRead, handleReadCode}: CameraBarCodeProps) => {
     handleCameraPermission();
   }, []);
 
-  useEffect(() => {
-    if (ableToRead) {
-      handleBarcode();
-    }
-  }, [ableToRead]);
+  const codeScanner = useCodeScanner({
+    codeTypes: CODE_TYPES,
+    onCodeScanned: codes => {
+      let cleanedCode = codes[0].value.replace(/^0+/, '');
 
-  const handleBarcode = () => {
-   
-  };
+      handleReadCode(cleanedCode);
+    },
+  });
 
-  return isReading && deviceSelected && cameraPermission ? (
+  return deviceSelected && cameraPermission ? (
     <Camera
+      codeScanner={codeScanner}
       style={StyleSheet.absoluteFill}
       device={deviceSelected}
-      isActive={isReading}
+      isActive={ableToRead}
     />
   ) : null;
 };
