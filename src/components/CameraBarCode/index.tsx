@@ -38,9 +38,10 @@ const CameraBarCode = ({ ableToRead, handleReadCode }: ICameraBarCodeProps) => {
   const codeScanner = useCodeScanner({
     codeTypes: CODE_TYPES,
     onCodeScanned: codes => {
-      let cleanedCode = codes[0].value.replace(/^0+/, '');
-
-      handleReadCode(cleanedCode);
+      const firstCode = codes[0]?.value;
+      if (firstCode) {
+        handleReadCode(firstCode);
+      }
     },
   });
 
