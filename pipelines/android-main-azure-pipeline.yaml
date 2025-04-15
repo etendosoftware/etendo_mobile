@@ -1,6 +1,5 @@
 variables:
   system.debug: 'false'
-  lastCommitMessage: '1.8.2 Release :rocket:'
   pr.check.id: ''
   pr.status.id: ''
   MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build

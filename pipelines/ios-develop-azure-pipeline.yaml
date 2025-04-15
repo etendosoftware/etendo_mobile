@@ -1,6 +1,5 @@
 variables:
   system.debug: 'false'
-  lastCommitMessage: 'Upgrade beta version to 1.9.1 :zap:'
   pr.check.id: ''
   pr.status.id: ''
   MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build

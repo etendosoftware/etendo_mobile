@@ -1,8 +1,5 @@
 variables:
   system.debug: 'false'
-  lastCommitMessage: >-
-    Merge pull request #31 from etendosoftware/feature/ETP-229  Feature ETP-229:
-    Implement Sharing Intent for External Apps
   pr.check.id: ''
   pr.status.id: ''
   MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
