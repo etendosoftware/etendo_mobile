@@ -1,7 +1,5 @@
 variables:
   system.debug: 'false'
-  pr.check.id: ''
-  pr.status.id: ''
   MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
   MOBILECENTER_BRANCH: develop
   MOBILECENTER_BUILD_ID: $(Build.BuildNumber)
