@@ -266,5 +266,8 @@ jobs:
           applicationId: 'com.smf.mobile.etendo_app_loader'
           action: 'SingleBundle'
           bundleFile: '$(build.artifactstagingdirectory)/bundle/**/*.aab'
-          track: 'production'
+          track: 'beta'
           releaseName: '$(appVersionName)'
+          userFraction: '1.0'
+          rolloutToUserFraction: false
+          updatePriority: '1'
