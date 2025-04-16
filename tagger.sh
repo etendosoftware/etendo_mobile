@@ -4,9 +4,12 @@
 update_android_version() {
     local new_version=$1
     local gradle_file="android/app/build.gradle"
+    local manifest_file="android/app/src/main/AndroidManifest.xml"
     
     sed -i.bak "s/versionName \".*\"/versionName \"$new_version\"/" "$gradle_file" && rm "${gradle_file}.bak"
     echo "Android version updated to $new_version in $gradle_file"
+    sed -i.bak "s/android:versionName=\"[^\"]*\"/android:versionName=\"$new_version\"/" "$manifest_file" && rm "${manifest_file}.bak"
+    echo "AndroidManifest.xml version updated to $new_version in $manifest_file"
 }
 
 # Function to update the version in iOS
