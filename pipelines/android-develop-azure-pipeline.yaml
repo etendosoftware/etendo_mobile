@@ -1,45 +1,17 @@
 variables:
-  system.debug: 'false'
-  MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
-  MOBILECENTER_BRANCH: develop
-  MOBILECENTER_BUILD_ID: $(Build.BuildNumber)
-  MOBILECENTER_SOURCE_DIRECTORY: $(Build.Repository.LocalPath)
-  MOBILECENTER_TRIGGER: continuous
-  APPCENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
-  APPCENTER_BRANCH: develop
-  APPCENTER_BUILD_ID: $(Build.BuildNumber)
-  APPCENTER_SOURCE_DIRECTORY: $(Build.Repository.LocalPath)
-  APPCENTER_TRIGGER: continuous
-  artifactVersioning.build.format: timestamp
-  buildScripts.toolset: '{"package.json":{"postClone":"appcenter-post-clone.sh"}}'
-  javaScriptRunTests: 'false'
-  MOBILECENTER_REACTNATIVE_PACKAGE: package.json
-  APPCENTER_REACTNATIVE_PACKAGE: package.json
-  moduleName: app
-  buildVariant: release
-  isRoot: 'false'
-  runTests: 'false'
-  runLint: 'false'
   keystoreFilename: etendo.keystore
   keystoreSecureFileId: 7d2283fd-93c9-4e06-940c-afc282c1e105
-  automaticSigning: 'false'
-  buildBundle: 'true'
-  MOBILECENTER_ANDROID_MODULE: app
-  MOBILECENTER_ANDROID_VARIANT: release
-  APPCENTER_ANDROID_MODULE: app
-  APPCENTER_ANDROID_VARIANT: release
-  SONOMA_API_SERVER: 'https://api.appcenter.ms'
-  SONOMA_API_VERSION: v0.1
-  VSMobileCenterUpload.ContinueIfSymbolsNotFound: 'true'
-  destinationSubtype: googleplay
   sonoma.tags: 'continuous,javascript,android,signed,android-app-bundle,distribution'
-  artifactVersioning.build.value: '0'
 name: $(Rev:r)
 resources:
   repositories:
     - repository: self
       type: git
-      ref: refs/heads/develop
+      ref: refs/heads/$(Build.SourceBranch)
+trigger:
+  branches:
+    include:
+      - develop
 jobs:
   - job: Phase_1
     displayName: Build
@@ -95,7 +67,6 @@ jobs:
         displayName: Run Jetify
         inputs:
           script: |2-
-
                         if [ -f node_modules/jetifier/bin/jetify ]; then
                             node node_modules/jetifier/bin/jetify
                         else
