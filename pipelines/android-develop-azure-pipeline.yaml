@@ -12,6 +12,7 @@ trigger:
   branches:
     include:
       - develop
+      - main
 jobs:
   - job: Phase_1
     displayName: Build

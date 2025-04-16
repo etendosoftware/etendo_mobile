@@ -1,42 +1,12 @@
 variables:
-  system.debug: 'false'
-  pr.check.id: ''
-  pr.status.id: ''
-  MOBILECENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
-  MOBILECENTER_BRANCH: develop
-  MOBILECENTER_BUILD_ID: $(Build.BuildNumber)
-  MOBILECENTER_SOURCE_DIRECTORY: $(Build.Repository.LocalPath)
-  MOBILECENTER_TRIGGER: continuous
-  APPCENTER_OUTPUT_DIRECTORY: $(Build.ArtifactStagingDirectory)/build
-  APPCENTER_BRANCH: develop
-  APPCENTER_BUILD_ID: $(Build.BuildNumber)
-  APPCENTER_SOURCE_DIRECTORY: $(Build.Repository.LocalPath)
-  APPCENTER_TRIGGER: continuous
-  artifactVersioning.build.format: timestamp
-  buildScripts.toolset: '{"package.json":{"postClone":"appcenter-post-clone.sh"}}'
-  javaScriptRunTests: 'false'
-  MOBILECENTER_REACTNATIVE_PACKAGE: package.json
-  APPCENTER_REACTNATIVE_PACKAGE: package.json
-  SDK: ''
-  TestSDK: iphonesimulator
-  P12Filename: Certificates.p12
-  CertificateType: apple distribution
-  MobileProvisionFilename: Etendo_Mobile_Distribution.mobileprovision
   P12SecureFileId: ab637576-6255-4111-881f-9925ef484173
   MobileProvisionSecureFileId: 91218312-496d-4087-8815-289bd47446be
   AppExtensionProvisionSecureFiles: >-
     [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
     {"expirationDate":"2025-12-16T18:57:43.000Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
-  MOBILECENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
-  MOBILECENTER_XCODE_SCHEME: Etendo_Mobile
   APPCENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
-  APPCENTER_XCODE_SCHEME: Etendo_Mobile
-  SONOMA_API_SERVER: 'https://api.appcenter.ms'
-  SONOMA_API_VERSION: v0.1
-  VSMobileCenterUpload.ContinueIfSymbolsNotFound: 'true'
-  destinationSubtype: apple
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
 name: $(artifactVersioning.build.value)
@@ -44,7 +14,11 @@ resources:
   repositories:
     - repository: self
       type: git
-      ref: refs/heads/develop
+      ref: refs/heads/$(Build.SourceBranch)
+trigger:
+  branches:
+    include:
+      - develop
 jobs:
   - job: Phase_1
     displayName: Build
