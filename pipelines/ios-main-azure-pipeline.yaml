@@ -19,6 +19,11 @@ trigger:
   branches:
     include:
       - main
+  paths:
+    exclude:
+      - README.md
+      - .gitignore
+pr: none
 jobs:
   - job: Phase_1
     displayName: Build
