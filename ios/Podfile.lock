@@ -75,9 +75,9 @@ PODS:
   - hermes-engine/Pre-built (0.72.14)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - Permission-LocationAlways (3.10.1):
+  - Permission-LocationAlways (3.8.1):
     - RNPermissions
-  - Permission-LocationWhenInUse (3.10.1):
+  - Permission-LocationWhenInUse (3.8.1):
     - RNPermissions
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -381,23 +381,21 @@ PODS:
     - glog
   - react-native-blob-util (0.19.4):
     - React-Core
-  - react-native-date-picker (4.4.2):
+  - react-native-date-picker (4.2.14):
     - React-Core
-  - react-native-document-picker (9.3.1):
-    - RCT-Folly (= 2021.07.22.00)
+  - react-native-document-picker (9.1.0):
     - React-Core
-  - react-native-netinfo (9.5.0):
+  - react-native-netinfo (9.4.1):
     - React-Core
-  - react-native-orientation-locker (1.7.0):
+  - react-native-orientation-locker (1.5.0):
     - React-Core
   - react-native-pdf (6.7.1):
     - React-Core
   - react-native-receive-sharing-intent (2.0.0):
     - React-Core
-  - react-native-safe-area-context (4.11.0):
+  - react-native-safe-area-context (4.10.1):
     - React-Core
-  - react-native-slider (4.5.3):
-    - RCT-Folly (= 2021.07.22.00)
+  - react-native-slider (4.2.1):
     - React-Core
   - react-native-worklets-core (1.1.1):
     - React
@@ -513,11 +511,11 @@ PODS:
     - React-jsi (= 0.72.14)
     - React-logger (= 0.72.14)
     - React-perflogger (= 0.72.14)
-  - RNCAsyncStorage (1.24.0):
-    - React-Core
+  - RNCAsyncStorage (1.13.2):
+    - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.16.8):
+  - RNCPicker (1.9.12):
     - React-Core
   - RNDateTimePicker (5.1.0):
     - React-Core
@@ -525,37 +523,36 @@ PODS:
     - React-Core
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.19.0):
-    - RCT-Folly (= 2021.07.22.00)
+  - RNGestureHandler (2.12.1):
     - React-Core
-  - RNPermissions (3.10.1):
+  - RNPermissions (3.8.1):
     - React-Core
   - RNReanimated (3.8.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNScreens (3.34.0):
+  - RNScreens (3.31.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
-  - RNSentry (5.36.0):
+  - RNSentry (5.32.0):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-hermes
-    - Sentry/HybridSDK (= 8.41.0)
-  - RNShare (10.2.1):
+    - Sentry/HybridSDK (= 8.36.0)
+  - RNShare (10.0.2):
     - React-Core
   - RNSound (0.11.2):
     - React-Core
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (13.14.1):
+  - RNSVG (13.9.0):
     - React-Core
   - RNVectorIcons (9.2.0):
     - React-Core
-  - Sentry/HybridSDK (8.41.0)
+  - Sentry/HybridSDK (8.36.0)
   - SocketRocket (0.6.1)
   - VisionCamera (4.0.1):
     - VisionCamera/Core (= 4.0.1)
@@ -839,8 +836,8 @@ SPEC CHECKSUMS:
   hermes-engine: b213bace5f31766ad1434d2d9b2cbf04cf92a2b6
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  Permission-LocationAlways: 0a0de4637662cfdf3603d6933779da2bdd657306
-  Permission-LocationWhenInUse: 31f52ebddef50c306a585b5a82ca16c8ff582dec
+  Permission-LocationAlways: 787b4661822618be7ce58071a70213e16a639516
+  Permission-LocationWhenInUse: 100eaf457c8eede236e62af0d17b7e49c0292e62
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 264adaca1d8b1a9c078761891898d4142df05313
   RCTTypeSafety: 279a89da7058a69899778a127be73fab38b84499
@@ -857,14 +854,14 @@ SPEC CHECKSUMS:
   React-jsinspector: 275d9f80210f15f0af9a4b7fd5683fab9738e28e
   React-logger: 8da4802de77a0eb62512396ad6bb1769904c2f0e
   react-native-blob-util: 30a6c9fd067aadf9177e61a998f2c7efb670598d
-  react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
-  react-native-document-picker: 516b1ec6a1fdf178af8fc478eb3abb4c20ae54e6
-  react-native-netinfo: 48c5f79a84fbc3ba1d28a8b0d04adeda72885fa8
-  react-native-orientation-locker: 5819fd23ca89cbac0d736fb4314745f62716d517
+  react-native-date-picker: 8847cb359cf259ddae5ed165217e15573a654519
+  react-native-document-picker: b4f4a23b73f864ce17965b284c0757648993805b
+  react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
+  react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-pdf: 7c0e91ada997bac8bac3bb5bea5b6b81f5a3caae
   react-native-receive-sharing-intent: 62ab28c50e6ae56d32b9e841d7452091312a0bc7
-  react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
-  react-native-slider: c38ad73e9c65742acba6510fea929f36db8e2b9a
+  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
+  react-native-slider: 241935e3ea8e47599c317f512f96ee8de607d4cb
   react-native-worklets-core: ff2156b19b8f4a979fa0db52659e39a755b1454b
   React-NativeModulesApple: 3107f777453f953906d9ba9dc5f8cbd91a6ef913
   React-perflogger: daabc494c6328efc1784a4b49b8b74fca305d11c
@@ -883,22 +880,22 @@ SPEC CHECKSUMS:
   React-runtimescheduler: f284b4fdad43fe811041129099f1339b54783135
   React-utils: 22a77b05da25ce49c744faa82e73856dcae1734e
   ReactCommon: ff94462e007c568d8cdebc32e3c97af86ec93bb5
-  RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
+  RNCAsyncStorage: 05bae7ecfab1cbd5441993f1ca098f7c3b3f8d0e
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: 0991c56da7815c0cf946d6f63cf920b25296e5f6
+  RNCPicker: b1e22287e5feb38fb10cac877753b924ba1c05d1
   RNDateTimePicker: 1dd15d7ed1ab7d999056bc77879a42920d139c12
   RNDefaultPreference: 08bdb06cfa9188d5da97d4642dac745218d7fb31
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 22d513d69ddc0b80430375c11f7c7cb4fabd8ffe
-  RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
+  RNGestureHandler: c0d04458598fcb26052494ae23dda8f8f5162b13
+  RNPermissions: b471c990fd2bc1c5550af807d9f4e0313ee0b081
   RNReanimated: fc36806836aca984b797f01432abe31689663421
-  RNScreens: 284fcee9d8d4648851fdb85dd0e200daebedcc14
-  RNSentry: 70aef1a4405eae756c7e3dda380f187cbd7ad43d
-  RNShare: 0fad69ae2d71de9d1f7b9a43acf876886a6cb99c
+  RNScreens: b8d370282cdeae9df85dd5eab20c88eb5181243b
+  RNSentry: 3e667c2c6ea5d35ea292c7f262c6b44e43842cc1
+  RNShare: 859ff710211285676b0bcedd156c12437ea1d564
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: af3907ac5d4fa26a862b75a16d8f15bc74f2ceda
+  RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
-  Sentry: 54d0fe6c0df448497c8ed4cce66ccf7027e1823e
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   VisionCamera: 8e00df84a76cf26ca70ecd3b6ed05dc0d3b60beb
   Yoga: c32e0be1a17f8f1f0e633a3122f7666441f52c82
@@ -906,4 +903,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 71cdb8cf06c8ab0726f74ccc3286a1b2326887f6
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
