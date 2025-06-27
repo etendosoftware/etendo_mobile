@@ -23,7 +23,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-13
+      vmImage: macOS-14
     steps:
       - checkout: self
         clean: true
@@ -111,7 +111,7 @@ jobs:
           filename: /bin/bash
           arguments: >-
             -c "sudo xcode-select --switch
-            /Applications/Xcode_15.0.1.app/Contents/Developer"
+            /Applications/Xcode_16.app/Contents/Developer"
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
@@ -181,10 +181,10 @@ jobs:
         inputs:
           actions: clean
           configuration: ''
-          sdk: ''
+          sdk: 'iphoneos18.5'
           xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
           scheme: Etendo_Mobile
-          xcodeDeveloperDir: /Applications/Xcode_15.0.1.app/Contents/Developer
+          xcodeDeveloperDir: /Applications/Xcode_16.app/Contents/Developer
           packageApp: true
           archivePath: $(agent.builddirectory)/output/build/archive
           exportPath: $(agent.builddirectory)/output/build/export
