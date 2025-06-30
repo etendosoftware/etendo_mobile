@@ -1,12 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 
 export class EtendoUtil {
   private _state: any;
   private _dispatch: any;
   private _screens: any = [];
   private _Stack: any;
-  private _url: string = "";
-  private _token: string = "token";
+  private _url: string = '';
+  private _token: string = 'token';
   private _navigation = [];
   private _globalNav: any;
 
@@ -48,8 +48,8 @@ export class EtendoUtil {
         url: string;
         isDev: boolean;
         component: any;
-      }
-    ]
+      },
+    ],
   ) {
     const add: any[] = [];
     menuItems.map(menuItem => {
@@ -80,7 +80,7 @@ export class EtendoUtil {
     return <Component />;
   }
 
-  public screen = "Screen2";
+  public screen = 'Screen2';
 
   public createStackNavigator() {
     return this._Stack;
