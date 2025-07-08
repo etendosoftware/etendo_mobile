@@ -23,7 +23,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-13
+      vmImage: macOS-latest
     steps:
       - checkout: self
         clean: true
@@ -105,13 +105,34 @@ jobs:
         inputs:
           scriptPath: $(Agent.HomeDirectory)/scripts/emit-tags.sh
           args: $(sonoma.tags)
-      - task: CmdLine@1
-        displayName: Set Xcode path
+      - task: Bash@3
+        displayName: "Select Latest Xcode Version"
         inputs:
-          filename: /bin/bash
-          arguments: >-
-            -c "sudo xcode-select --switch
-            /Applications/Xcode_15.0.1.app/Contents/Developer"
+          targetType: 'inline'
+          script: |
+              echo "Mac OS version:"
+              sw_vers -productVersion
+
+              echo "Installed Xcode versions:"
+              ls /Applications | grep 'Xcode'
+
+              echo "Currently selected Xcode:"
+              xcrun xcode-select --print-path
+
+              echo "Finding the latest Xcode version..."
+              latest_xcode=$(ls /Applications | grep 'Xcode' | sort -Vr | head -n 1)
+
+              echo "Latest Xcode version is: $latest_xcode"
+
+              echo "Selecting the latest Xcode version..."
+              sudo xcode-select -s "/Applications/$latest_xcode"
+
+              echo "Currently selected Xcode:"
+              xcrun xcode-select --print-path
+
+              echo "Xcode version details:"
+              xcodebuild -version
+
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
@@ -184,7 +205,7 @@ jobs:
           sdk: ''
           xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
           scheme: Etendo_Mobile
-          xcodeDeveloperDir: /Applications/Xcode_15.0.1.app/Contents/Developer
+          xcodeDeveloperDir: /Applications/Xcode_$latest_xcode.app/Contents/Developer
           packageApp: true
           archivePath: $(agent.builddirectory)/output/build/archive
           exportPath: $(agent.builddirectory)/output/build/export
