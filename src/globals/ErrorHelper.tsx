@@ -19,15 +19,9 @@ class ErrorHelper {
     if (response.config.q) {
       eventData["q"] = response.config.params.q;
     }
-    const scope = new Sentry.Scope();
-    scope.setTag("rsql", true);
-    scope.setTag("ERROR_TYPE", eventName);
-    scope.setTag("url", response.config.url);
-    if (response.config.q) {
-      scope.setTag("q", response.config.params.q);
-    }
-    Sentry.captureException(error, () => scope);
+
     return error;
+  
   };
   static handleError = (type, error) => {
     let handled = false;
@@ -45,9 +39,11 @@ class ErrorHelper {
             let message = null;
             switch (type) {
               default:
-                console.error("Error type miss message localization", type);
+                console.error('Error type miss message localization', type);
             }
-            if (message != null) error.message = message;
+            if (message != null) {
+              error.message = message;
+            }
             ErrorHelper.responseReport(type, error);
             handled = true;
           }
@@ -74,4 +70,5 @@ class ErrorHelper {
     return handled;
   };
 }
+
 export { ErrorHelper, ERROR_TYPE };
