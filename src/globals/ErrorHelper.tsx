@@ -1,5 +1,4 @@
 import locale from "../i18n/locale";
-import * as Sentry from "@sentry/react-native";
 
 const ERROR_TYPE = {
   CREATE_CRITERIA: "CREATE_CRITERIA",
@@ -11,6 +10,20 @@ const ERROR_TYPE = {
 };
 
 class ErrorHelper {
+  static logDevResponse(response) {
+    console.log("RSQL Parse", response.config);
+    console.log("RSQL Parse", response.data);
+    console.log("RSQL Parse", response.headers);
+    console.log("RSQL Parse", response.status);
+  }
+
+  static handleSaveError(error) {
+    console.info("Error on save", error.message);
+    if (error.message && error.message.indexOf("Failing row contains") > -1) {
+      error.message = locale.t("Tab:RSQL_MissingRequiredValues");
+    }
+  }
+
   static responseReport = (eventName, error) => {
     const response = error.response;
     const eventData = {
@@ -19,49 +32,35 @@ class ErrorHelper {
     if (response.config.q) {
       eventData["q"] = response.config.params.q;
     }
-    const scope = new Sentry.Scope();
-    scope.setTag("rsql", true);
-    scope.setTag("ERROR_TYPE", eventName);
-    scope.setTag("url", response.config.url);
-    if (response.config.q) {
-      scope.setTag("q", response.config.params.q);
-    }
-    Sentry.captureException(error, () => scope);
+
     return error;
+  
   };
+  
   static handleError = (type, error) => {
     let handled = false;
     try {
       if (error.response) {
         const response = error.response;
-        if (response) {
-          if ((response.status = 500)) {
-            if (__DEV__) {
-              console.log("RSQL Parse", response.config);
-              console.log("RSQL Parse", response.data);
-              console.log("RSQL Parse", response.headers);
-              console.log("RSQL Parse", response.status);
-            }
-            let message = null;
-            switch (type) {
-              default:
-                console.error("Error type miss message localization", type);
-            }
-            if (message != null) error.message = message;
-            ErrorHelper.responseReport(type, error);
-            handled = true;
+        if (response?.status === 500) {
+          if (__DEV__) {
+            ErrorHelper.logDevResponse(response);
           }
+          let message = null;
+          switch (type) {
+            default:
+              console.error('Error type miss message localization', type);
+          }
+          if (message != null) {
+            error.message = message;
+          }
+          ErrorHelper.responseReport(type, error);
+          handled = true;
         }
       } else {
         switch (type) {
           case ERROR_TYPE.SAVE:
-            console.info("Error on save", error.message);
-            if (
-              error.message &&
-              error.message.indexOf("Failing row contains") > -1
-            ) {
-              error.message = locale.t("Tab:RSQL_MissingRequiredValues");
-            }
+            ErrorHelper.handleSaveError(error);
             break;
         }
       }
@@ -74,4 +73,5 @@ class ErrorHelper {
     return handled;
   };
 }
+
 export { ErrorHelper, ERROR_TYPE };

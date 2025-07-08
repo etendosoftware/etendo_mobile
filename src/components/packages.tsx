@@ -42,7 +42,6 @@ import * as ReactNavigationStack from '@react-navigation/stack';
 import * as RnPlaceholder from 'rn-placeholder';
 import * as SafeAreaContext from 'react-native-safe-area-context';
 import * as Screens from 'react-native-screens';
-import * as Sentry from '@sentry/react-native';
 import * as SwipeableItem from 'react-native-swipeable-item';
 import * as Swiper from 'react-native-swiper';
 import * as TsLib from 'tslib';
@@ -66,7 +65,6 @@ const Packages = {
   '@react-navigation/native-stack': () => ReactNavigationNativeStack,
   '@react-navigation/native': () => ReactNavigationNative,
   '@react-navigation/stack': () => ReactNavigationStack,
-  '@sentry/react-native': () => Sentry,
   'base-64': () => Base64,
   'date-fns': () => DateFns,
   'etendo-ui-library': () => EtendoUiLibrary,
