@@ -69,17 +69,23 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion "25.1.8937393"
-
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.smf.mobile.etendo_app_loader"
+
+    ndkVersion "25.1.8937393"
+
     defaultConfig {
         applicationId "com.smf.mobile.etendo_app_loader"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.12.1"
+        versionName "1.12.0"
+
+        // ⚡ Soporte 16 kB memory pages
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
     }
     signingConfigs {
         debug {
@@ -107,6 +113,7 @@ android {
             //signingConfig signingConfigs.release removed, read https://docs.microsoft.com/en-us/appcenter/build/android/code-signing
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -131,4 +138,6 @@ dependencies {
     }
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+// React Native native modules
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)
