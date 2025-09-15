@@ -48,12 +48,14 @@ jobs:
         displayName: Post Clone Script
         inputs:
           scriptPath: appcenter-post-clone.sh
-      - task: Bash@3
-        displayName: Select Node.js Version v2
+      - task: NodeTool@0
+        displayName: Use Node.js 18.x
         inputs:
-          filePath: $(Agent.HomeDirectory)/scripts/select-node-version.sh
-          arguments: node18
-          failOnStderr: true
+          versionSpec: '18.x'
+      - script: |
+          node -v
+          npm -v
+        displayName: Verify Node.js
       - task: CmdLine@1
         displayName: yarn/npm install
         inputs:
