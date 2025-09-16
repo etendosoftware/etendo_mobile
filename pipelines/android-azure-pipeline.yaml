@@ -75,16 +75,43 @@ jobs:
                         fi
                         
           failOnStderr: true
-      - task: ShellScript@2
+      - task: Bash@3
         displayName: Tag build
         inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/emit-tags.sh
-          args: $(sonoma.tags)
-      - task: ShellScript@2
+          targetType: 'inline'
+          script: |
+            IFS=',' read -ra TAGS <<< "$(sonoma.tags)"
+            for tag in "${TAGS[@]}"; do
+              tag_trimmed=$(echo "$tag" | xargs)
+              if [ -n "$tag_trimmed" ]; then
+                echo "Adding build tag: $tag_trimmed"
+                echo "##vso[build.addbuildtag]$tag_trimmed"
+              fi
+            done
+      - task: DownloadSecureFile@1
+        name: earlyKeystore
+        displayName: Download Android keystore (early)
+        inputs:
+          secureFile: '$(keystoreSecureFileId)'
+      - task: Bash@3
         displayName: Install Android keystore
         inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/install-keystore.sh
-          args: $(keystoreEncoded)
+          targetType: 'inline'
+          script: |
+            set -euo pipefail
+            ANDROID_APP_DIR="$(Build.SourcesDirectory)/android/app"
+            KEYSTORE_FILENAME="$(keystoreFilename)"
+            TARGET_PATH="$ANDROID_APP_DIR/$KEYSTORE_FILENAME"
+            mkdir -p "$ANDROID_APP_DIR"
+            if [ -n "${keystoreEncoded:-}" ]; then
+              echo "Decoding keystore from keystoreEncoded into $TARGET_PATH"
+              echo "${keystoreEncoded}" | base64 --decode > "$TARGET_PATH"
+            else
+              echo "keystoreEncoded not set; copying from downloaded secure file"
+              cp "$(earlyKeystore.secureFilePath)" "$TARGET_PATH"
+            fi
+            chmod 600 "$TARGET_PATH"
+            echo "Keystore installed at: $TARGET_PATH"
       # Instalar Java 17
       - task: JavaToolInstaller@0
         displayName: Install Java 17
@@ -125,38 +152,33 @@ jobs:
             -DAPPCENTER_KEY_PASSWORD="$(keyPassword)"
             -DMOBILECENTER_KEY_PASSWORD="$(keyPassword)"
             -DAPPCENTER_BUILD_VERSION="$(versionCode)"
-            -DMOBILECENTER_BUILD_VERSION="$(versionCode)" -p "android"
+            -DMOBILECENTER_BUILD_VERSION="$(versionCode)" 
+            -PMYAPP_UPLOAD_STORE_FILE="$(Build.SourcesDirectory)/android/app/$(keystoreFilename)"
+            -PMYAPP_UPLOAD_STORE_PASSWORD="$(keystorePassword)"
+            -PMYAPP_UPLOAD_KEY_ALIAS="$(keyAlias)"
+            -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)" 
+            -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
           sqAnalysisBreakBuildIfQualityGateFailed: false
-      - task: ShellScript@2
+      - task: Bash@3
         name: appcenter_android_postprocess_output
         displayName: Android Postprocess
         inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/android-postprocess.sh
-          args: $(build.sourcesdirectory)/android/app/build/outputs/apk
-      - task: AndroidSigning@3
-        displayName: Sign APK
-        inputs:
-          files: $(build.sourcesdirectory)/android/app/build/**/*.apk
-          keystoreFile: $(keystoreSecureFileId)
-          keystorePass: $(keystorePassword)
-          keystoreAlias: $(keyAlias)
-          keyPass: $(keyPassword)
-          apksignerArguments: '-verbose'
-      - task: DownloadSecureFile@1
-        name: keystore
-        inputs:
-          secureFile: '7d2283fd-93c9-4e06-940c-afc282c1e105'
-      - task: AndroidSigning@1
-        displayName: Sign Android App Bundle
-        inputs:
-          files: $(build.sourcesdirectory)/android/app/build/**/*.aab
-          keystoreFile: '$(keystore.secureFilePath)'
-          keystorePass: $(keystorePassword)
-          keystoreAlias: $(keyAlias)
-          keyPass: $(keyPassword)
-          jarsignerArguments: '-verbose -sigalg SHA256withRSA -digestalg SHA-256'
+          targetType: 'inline'
+          script: |
+            set -euo pipefail
+            OUTPUT_DIR="$(build.sourcesdirectory)/android/app/build/outputs"
+            echo "Scanning for mapping files in: $OUTPUT_DIR"
+            if compgen -G "$OUTPUT_DIR/mapping/**/mapping.txt" > /dev/null; then
+              echo "Mapping file found. Enabling mapping artifact publication."
+              echo "##vso[task.setvariable variable=appcenter_android_postprocess_output.mapping]true"
+            else
+              echo "No mapping file found."
+              echo "##vso[task.setvariable variable=appcenter_android_postprocess_output.mapping]false"
+            fi
+      # Signing is performed by Gradle using signingConfigs.release
+      # Removed post-build signing to avoid mismatched signatures
       - task: CopyFiles@2
         displayName: Copy build files to staging
         inputs:
@@ -224,10 +246,11 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            VERSION_NAME=$(cat $(Build.ArtifactStagingDirectory)/version_name.txt)
+            set -euo pipefail
+            VERSION_NAME=$(cat $(Build.ArtifactStagingDirectory)/version_name.txt | tr -d '\n' | tr -d '\r')
             echo "Value read from the file: [$VERSION_NAME]"
-            echo "##vso[task.setvariable variable=appVersionName;isOutput=false]${VERSION_NAME}"
-            echo "Value assigned to appVersionName: [$appVersionName]"
+            echo "##vso[task.setvariable variable=appVersionName]$VERSION_NAME"
+            echo "appVersionName just set to: [$VERSION_NAME]"
       - task: GooglePlayRelease@4
         displayName: 'Publish to Google Play'
         inputs:
@@ -237,6 +260,4 @@ jobs:
           bundleFile: '$(build.artifactstagingdirectory)/bundle/**/*.aab'
           track: 'beta'
           releaseName: '$(appVersionName)'
-          userFraction: '1.0'
-          rolloutToUserFraction: false
           updatePriority: '1'
