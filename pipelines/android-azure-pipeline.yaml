@@ -22,100 +22,31 @@ jobs:
         clean: true
         submodules: recursive
         lfs: true
-
-      # Instala scripts de AppCenter
-      - task: PowerShell@2
-        displayName: Install build scripts
-        continueOnError: true
+      - task: UseNode@1
+        displayName: "Select Node.js Version"
         inputs:
-          targetType: inline
-          script: |
-            Set-Location -Path '$(Agent.HomeDirectory)'
-            Invoke-WebRequest -Uri 'https://appcenterbuildassets.azureedge.net/buildscripts/appcenter-build-assets-latest.zip' -OutFile 'appcenter-build-assets-latest.zip'
-            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force -Recurse }
-            New-Item -ItemType directory -Path 'scripts' | Out-Null
-            unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
-            Invoke-Expression 'bash ./scripts/init.sh'
-          failOnStderr: true
-
-      - task: ShellScript@2
-        displayName: Post Clone Script
-        inputs:
-          scriptPath: appcenter-post-clone.sh
-
-      # Node.js
-      - task: NodeTool@0
-        displayName: Use Node.js 18.x
-        inputs:
-          versionSpec: '18.x'
-
-      - script: |
-          node -v
-          npm -v
-        displayName: Verify Node.js
-
+          version: '18.x'
       - task: CmdLine@1
         displayName: yarn/npm install
         inputs:
           filename: sh
           arguments: >-
-            -c "if [ -f yarn.lock ]; then { yarn install --network-timeout=600000; } else npm install; fi"
-
+            -c "if [ -f yarn.lock ]; then { yarn install
+            --network-timeout=600000; } else npm install; fi"
       - task: CmdLine@2
         displayName: Run Jetify
         inputs:
-          script: |
-            if [ -f node_modules/jetifier/bin/jetify ]; then
-              node node_modules/jetifier/bin/jetify
-            else
-              echo "Warning: node_modules/jetifier/bin/jetify does not exist"
-              echo "         source code will not be upgraded to AndroidX"
-            fi
+          script: |2-
+                        if [ -f node_modules/jetifier/bin/jetify ]; then
+                            node node_modules/jetifier/bin/jetify
+                        else
+                            echo "Warning: node_modules/jetifier/bin/jetify does not exist"
+                            echo "         source code will not be upgraded to AndroidX"
+                        fi
+                        
           failOnStderr: true
 
-      # Tags
-      - task: Bash@3
-        displayName: Tag build
-        inputs:
-          targetType: 'inline'
-          script: |
-            IFS=',' read -ra TAGS <<< "$(sonoma.tags)"
-            for tag in "${TAGS[@]}"; do
-              tag_trimmed=$(echo "$tag" | xargs)
-              if [ -n "$tag_trimmed" ]; then
-                echo "Adding build tag: $tag_trimmed"
-                echo "##vso[build.addbuildtag]$tag_trimmed"
-              fi
-            done
-
-      # Keystore
-      - task: DownloadSecureFile@1
-        name: earlyKeystore
-        displayName: Download Android keystore (early)
-        inputs:
-          secureFile: '$(keystoreSecureFileId)'
-
-      - task: Bash@3
-        displayName: Install Android keystore
-        inputs:
-          targetType: 'inline'
-          script: |
-            set -euo pipefail
-            ANDROID_APP_DIR="$(Build.SourcesDirectory)/android/app"
-            KEYSTORE_FILENAME="$(keystoreFilename)"
-            TARGET_PATH="$ANDROID_APP_DIR/$KEYSTORE_FILENAME"
-            mkdir -p "$ANDROID_APP_DIR"
-            if [ -n "${keystoreEncoded:-}" ]; then
-              echo "Decoding keystore from keystoreEncoded into $TARGET_PATH"
-              echo "${keystoreEncoded}" | base64 --decode > "$TARGET_PATH"
-            else
-              echo "keystoreEncoded not set; copying from downloaded secure file"
-              cp "$(earlyKeystore.secureFilePath)" "$TARGET_PATH"
-            fi
-            chmod 600 "$TARGET_PATH"
-            echo "Keystore installed at: $TARGET_PATH"
-
-      # Java
+      # Instalar Java 17
       - task: JavaToolInstaller@0
         displayName: Install Java 17
         inputs:
@@ -123,140 +54,187 @@ jobs:
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
 
+      # Verificar JAVA_HOME
       - script: |
           echo "JAVA_HOME is set to $(JAVA_HOME)"
           java -version
         displayName: Verify Java Installation
-
+        
       - task: PowerShell@2
-        displayName: 'Set versionCode from Timestamp'
+        displayName: 'Calculate monotonically increasing versionCode'
         inputs:
           targetType: 'inline'
           script: |
-            $timestamp = Get-Date -Format "yyyyMMddHH"
-            $versionCode = [int]$timestamp
-            if ($versionCode -gt 2100000000) {
-              Write-Error "versionCode ($versionCode) excede el límite de Google Play (2100000000)"
-            }
-            Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
+            $maxVersionCode = 2100000000
+            $baseVersionCode = 2030000000
 
+            [long]$buildId = 0
+            [long]$calculatedVersionCode = 0
+            $buildIdRaw = $env:BUILD_BUILDID
+
+            if (![string]::IsNullOrEmpty($buildIdRaw) -and [long]::TryParse($buildIdRaw, [ref]$buildId) -and $buildId -gt 0) {
+              $calculatedVersionCode = $baseVersionCode + $buildId
+              if ($calculatedVersionCode -gt $maxVersionCode) {
+                Write-Warning "Calculated versionCode ($calculatedVersionCode) is greater than the Google Play limit ($maxVersionCode). Falling back to timestamp based versionCode."
+                $calculatedVersionCode = 0
+              }
+            } else {
+              Write-Warning "BUILD_BUILDID is not available or invalid. Falling back to timestamp based versionCode."
+            }
+
+            if ($calculatedVersionCode -le 0) {
+              $timestamp = Get-Date -Format "yyyyMMddHH"
+              [long]$timestampValue = 0
+              if ([long]::TryParse($timestamp, [ref]$timestampValue)) {
+                $minimumFallback = $baseVersionCode + 1
+                $calculatedVersionCode = [long]([Math]::Max([double]$timestampValue, [double]$minimumFallback))
+              } else {
+                $calculatedVersionCode = $baseVersionCode + 1
+              }
+            }
+            if ($calculatedVersionCode -gt $maxVersionCode) {
+              Write-Error "versionCode ($calculatedVersionCode) excede el límite de Google Play ($maxVersionCode)"
+            }
+
+            Write-Host "Calculated versionCode: $calculatedVersionCode"
+            Write-Host "##vso[task.setvariable variable=versionCode]$calculatedVersionCode"
+            Write-Host "##vso[task.setvariable variable=VERSION_CODE]$calculatedVersionCode"
       - task: Gradle@1
         displayName: Gradle Task
         inputs:
           wrapperScript: android/gradlew
-          tasks: 'clean :app:assembleRelease :app:bundleRelease '
-          options: >-
-            -DAPPCENTER_KEYSTORE_PASSWORD="$(keystorePassword)"
-            -DMOBILECENTER_KEYSTORE_PASSWORD="$(keystorePassword)"
-            -DAPPCENTER_KEYSTORE_FILE_ID="$(keystoreFilename)"
-            -DMOBILECENTER_KEYSTORE_FILE_ID="$(keystoreFilename)"
-            -DAPPCENTER_KEY_ALIAS="$(keyAlias)"
-            -DMOBILECENTER_KEY_ALIAS="$(keyAlias)"
-            -DAPPCENTER_KEY_PASSWORD="$(keyPassword)"
-            -DMOBILECENTER_KEY_PASSWORD="$(keyPassword)"
-            -DAPPCENTER_BUILD_VERSION="$(versionCode)"
-            -DMOBILECENTER_BUILD_VERSION="$(versionCode)" 
-            -PMYAPP_UPLOAD_STORE_FILE="$(Build.SourcesDirectory)/android/app/$(keystoreFilename)"
+          tasks: 'clean :app:assembleRelease :app:bundleRelease'
+          options: >
+            -PMYAPP_UPLOAD_STORE_FILE="$(keystore.secureFilePath)"
             -PMYAPP_UPLOAD_STORE_PASSWORD="$(keystorePassword)"
             -PMYAPP_UPLOAD_KEY_ALIAS="$(keyAlias)"
-            -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)" 
+            -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)"
+            -PVERSION_CODE="$(versionCode)"
             -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
+          sqAnalysisBreakBuildIfQualityGateFailed: false
 
-      # Mapping files
-      - task: Bash@3
-        name: appcenter_android_postprocess_output
-        displayName: Android Postprocess
+      - task: AndroidSigning@3
+        displayName: Sign APK
         inputs:
-          targetType: 'inline'
-          script: |
-            set -euo pipefail
-            OUTPUT_DIR="$(Build.SourcesDirectory)/android/app/build/outputs"
-            echo "Scanning for mapping files in: $OUTPUT_DIR"
-            if compgen -G "$OUTPUT_DIR/mapping/**/mapping.txt" > /dev/null; then
-              echo "Mapping file found. Enabling mapping artifact publication."
-              echo "##vso[task.setvariable variable=appcenter_android_postprocess_output.mapping]true"
-            else
-              echo "No mapping file found."
-              echo "##vso[task.setvariable variable=appcenter_android_postprocess_output.mapping]false"
-            fi
-
-      # Copy artifacts
+          files: $(build.sourcesdirectory)/android/app/build/**/*.apk
+          keystoreFile: $(keystoreSecureFileId)
+          keystorePass: $(keystorePassword)
+          keystoreAlias: $(keyAlias)
+          keyPass: $(keyPassword)
+          apksignerArguments: '-verbose'
+      - task: DownloadSecureFile@1
+        name: keystore
+        inputs:
+          secureFile: '7d2283fd-93c9-4e06-940c-afc282c1e105'
+      - task: AndroidSigning@1
+        displayName: Sign Android App Bundle
+        inputs:
+          files: $(build.sourcesdirectory)/android/app/build/outputs/bundle/release/app-release.aab
+          keystoreFile: '$(keystore.secureFilePath)'
+          keystorePass: $(keystorePassword)
+          keystoreAlias: $(keyAlias)
+          keyPass: $(keyPassword)
+          jarsignerArguments: '-verbose -sigalg SHA256withRSA -digestalg SHA-256'
       - task: CopyFiles@2
         displayName: Copy build files to staging
         inputs:
-          SourceFolder: $(Build.SourcesDirectory)/android/app/build/outputs
+          SourceFolder: $(build.sourcesdirectory)/android/app/build/outputs
           Contents: apk/**/*.apk
-          TargetFolder: $(Build.ArtifactStagingDirectory)/build
+          TargetFolder: $(build.artifactstagingdirectory)/build
           OverWrite: true
           flattenFolders: true
-
       - task: CopyFiles@2
         displayName: Copy bundle files to staging
         inputs:
-          SourceFolder: $(Build.SourcesDirectory)/android/app/build/outputs
+          SourceFolder: $(build.sourcesdirectory)/android/app/build/outputs
           Contents: bundle/**/*.aab
-          TargetFolder: $(Build.ArtifactStagingDirectory)/bundle
+          TargetFolder: $(build.artifactstagingdirectory)/bundle
           OverWrite: true
           flattenFolders: true
-
       - task: CopyFiles@2
         displayName: Copy mapping files to staging
         inputs:
-          SourceFolder: $(Build.SourcesDirectory)/android/app/build/outputs
+          SourceFolder: $(build.sourcesdirectory)/android/app/build/outputs
           Contents: mapping/**/mapping.txt
-          TargetFolder: $(Build.ArtifactStagingDirectory)/mapping
+          TargetFolder: $(build.artifactstagingdirectory)/mapping
           OverWrite: true
           flattenFolders: true
-
-      # Publish artifacts
       - task: PublishBuildArtifacts@1
         displayName: Publish build
         inputs:
-          PathtoPublish: $(Build.ArtifactStagingDirectory)/build
+          PathtoPublish: $(build.artifactstagingdirectory)/build
           ArtifactName: build
-
       - task: PublishBuildArtifacts@1
         displayName: Publish bundle
         continueOnError: true
         inputs:
-          PathtoPublish: $(Build.ArtifactStagingDirectory)/bundle
+          PathtoPublish: $(build.artifactstagingdirectory)/bundle
           ArtifactName: bundle
-
       - task: PublishBuildArtifacts@1
         displayName: Publish mapping
-        condition: and(succeeded(), eq(variables['appcenter_android_postprocess_output.mapping'], 'true'))
+        condition: >-
+          and(succeeded(),
+          startsWith(variables['appcenter_android_postprocess_output.mapping'],
+          true))
         continueOnError: true
         inputs:
-          PathtoPublish: $(Build.ArtifactStagingDirectory)/mapping
+          PathtoPublish: $(build.artifactstagingdirectory)/mapping
           ArtifactName: mapping
-
-      # versionName -> variable
       - task: Bash@3
         displayName: 'Extract versionName from build.gradle'
         inputs:
           targetType: 'inline'
           script: |
-            LINE=$(grep "versionName" $(Build.SourcesDirectory)/android/app/build.gradle || true)
+            # Busca la línea con versionName
+            LINE=$(grep "versionName" $(Build.SourcesDirectory)/android/app/build.gradle)
             echo "Line found: [$LINE]"
             VERSION_NAME=$(echo "$LINE" | sed 's/^[[:space:]]*versionName[[:space:]]*"\([^"]*\)".*/\1/' | tr -d '\n')
             if [ -z "$VERSION_NAME" ]; then
               echo "Error: versionName was not found in build.gradle"
               exit 1
             fi
-            echo "Value extracted: [$VERSION_NAME]"
+            echo "Value extracted in square brackets: [$VERSION_NAME]"
             echo "${VERSION_NAME}" > $(Build.ArtifactStagingDirectory)/version_name.txt
-
+            echo "File contents: [$(cat $(Build.ArtifactStagingDirectory)/version_name.txt)]"
+          failOnStderr: false
       - task: Bash@3
         displayName: 'Set appVersionName from file'
         inputs:
           targetType: 'inline'
           script: |
-            set -euo pipefail
-            VERSION_NAME=$(cat $(Build.ArtifactStagingDirectory)/version_name.txt | tr -d '\n' | tr -d '\r')
-            echo "##vso[task.setvariable variable=appVersionName]$VERSION_NAME"
-            echo "appVersionName set to: [$VERSION_NAME]"
+            VERSION_NAME=$(cat $(Build.ArtifactStagingDirectory)/version_name.txt)
+            echo "Value read from the file: [$VERSION_NAME]"
+            echo "##vso[task.setvariable variable=appVersionName;isOutput=false]${VERSION_NAME}"
+            echo "Value assigned to appVersionName: [$appVersionName]"
+      
+      - task: Bash@3
+        displayName: 'List generated files'
+        inputs:
+          targetType: 'inline'
+          script: |
+            ls -R $(build.sourcesdirectory)/android/app/build/outputs
+
+      - task: Bash@3
+        displayName: 'Inspect AAB file'
+        inputs:
+          targetType: 'inline'
+          script: |
+            AAB_FILE=$(find $(build.artifactstagingdirectory)/bundle -name "*.aab" | head -n 1)
+            if [ -z "$AAB_FILE" ]; then
+              echo "Error: No .aab file found in $(build.artifactstagingdirectory)/bundle"
+              exit 1
+            fi
+            echo "Inspecting AAB file: $AAB_FILE"
+            unzip -p "$AAB_FILE" base/manifest/AndroidManifest.xml | grep version
+
+      - task: Bash@3
+        displayName: 'List files in staging directory'
+        inputs:
+          targetType: 'inline'
+          script: |
+            ls -R $(build.artifactstagingdirectory)/bundle  
 
       - task: GooglePlayRelease@4
         displayName: 'Publish to Google Play'
@@ -264,7 +242,9 @@ jobs:
           serviceConnection: 'playstore'
           applicationId: 'com.smf.mobile.etendo_app_loader'
           action: 'SingleBundle'
-          bundleFile: '$(Build.ArtifactStagingDirectory)/bundle/**/*.aab'
+          bundleFile: '$(build.artifactstagingdirectory)/bundle/**/*.aab'
           track: 'beta'
           releaseName: '$(appVersionName)'
+          userFraction: '1.0'
+          rolloutToUserFraction: false
           updatePriority: '1'

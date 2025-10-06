@@ -80,6 +80,7 @@ android {
         def candidates = []
         if (project.hasProperty('APPCENTER_BUILD_VERSION')) { candidates << APPCENTER_BUILD_VERSION }
         if (project.hasProperty('MOBILECENTER_BUILD_VERSION')) { candidates << MOBILECENTER_BUILD_VERSION }
+        if (project.hasProperty('VERSION_CODE')) { candidates << project.findProperty('VERSION_CODE') }
         if (System.getenv('versionCode')) { candidates << System.getenv('versionCode') }
         if (System.getenv('VERSION_CODE')) { candidates << System.getenv('VERSION_CODE') }
         if (System.getenv('BUILD_BUILDID')) { candidates << System.getenv('BUILD_BUILDID') }
@@ -98,11 +99,20 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode resolveVersionCode()
-        versionName "1.12.0"
+        versionName "1.11.1"
 
-        // ⚡ Soporte 16 kB memory pages
+        // ⚡ Soporte 16 kB memory pages - Mantener compatibilidad con versiones anteriores
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+        
+        // Asegurar compatibilidad con versiones anteriores
+        multiDexEnabled true
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
     signingConfigs {
@@ -128,16 +138,32 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            //signingConfig signingConfigs.release removed, read https://docs.microsoft.com/en-us/appcenter/build/android/code-signing
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
+            
+            // Asegurar compatibilidad con versiones anteriores
+            matchingFallbacks = ['release']
         }
+    }
+    
+    // Configuración de compatibilidad para evitar errores de actualización
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
 dependencies {
     implementation 'org.jetbrains:annotations:16.0.2'
+
+    // Force Material Design compatible with Android 15
+    implementation 'com.google.android.material:material:1.12.0'
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
