@@ -99,14 +99,13 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode resolveVersionCode()
-        versionName "1.11.1"
+        versionName "1.12.2"
 
-        // ⚡ Soporte 16 kB memory pages - Mantener compatibilidad con versiones anteriores
+        // ⚡ Support 16 kB memory pages 
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
         
-        // Asegurar compatibilidad con versiones anteriores
         multiDexEnabled true
     }
 
@@ -142,12 +141,10 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
             
-            // Asegurar compatibilidad con versiones anteriores
             matchingFallbacks = ['release']
         }
     }
     
-    // Configuración de compatibilidad para evitar errores de actualización
     packagingOptions {
         pickFirst '**/libc++_shared.so'
         pickFirst '**/libjsc.so'

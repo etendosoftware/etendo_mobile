@@ -355,14 +355,39 @@ jobs:
             fi
           failOnStderr: false
       
-      - task: PowerShell@2 
-        displayName: Determine timestamp build number
+      - task: PowerShell@2
+        displayName: Determine monotonically increasing build number
         inputs: 
           targetType: 'inline'
           script: |
+            $maxBundleVersion = 2147483647
             $timestamp = Get-Date -Format "yyyyMMddHH"
-            $versionCode = [int]$timestamp
+            [long]$timestampValue = 0
+            if (-not [long]::TryParse($timestamp, [ref]$timestampValue)) {
+              throw "Unable to parse timestamp '$timestamp' into a numeric build number"
+            }
+            $increment = 1
+            $buildIdRaw = $env:BUILD_BUILDID
+
+            if (![string]::IsNullOrWhiteSpace($buildIdRaw)) {
+              [long]$buildId = 0
+              if ([long]::TryParse($buildIdRaw, [ref]$buildId) -and $buildId -gt 0) {
+                $increment = (($buildId - 1) % 1000) + 1
+              } else {
+                Write-Warning "BUILD_BUILDID value '$buildIdRaw' is invalid. Falling back to timestamp-based increment."
+              }
+            } else {
+              Write-Warning "BUILD_BUILDID is not available. Falling back to timestamp-based increment."
+            }
+
+            $versionCode = $timestampValue + $increment
+
+            if ($versionCode -gt $maxBundleVersion) {
+              throw "Calculated bundle version '$versionCode' exceeds the App Store Connect limit '$maxBundleVersion'"
+            }
+            Write-Host "Calculated bundle version: $versionCode"
             Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
+            Write-Host "##vso[task.setvariable variable=BUNDLE_VERSION]$versionCode"
       
       - task: CmdLine@1
         displayName: Set Bundle version
