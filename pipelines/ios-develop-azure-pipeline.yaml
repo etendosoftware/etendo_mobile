@@ -9,6 +9,8 @@ variables:
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
+  # Variables adicionales requeridas
+  APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
 name: $(artifactVersioning.build.value)
 resources:
   repositories:
@@ -23,12 +25,24 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-latest
+      vmImage: macOS-14  # Usar macOS-13 que tiene Xcode estable, o macOS-12 si está disponible
     steps:
       - checkout: self
         clean: true
         submodules: recursive
         lfs: true
+      
+      # Verificar y crear directorio de scripts si no existe
+      - task: Bash@3
+        displayName: Create scripts directory
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Creating scripts directory..."
+            mkdir -p $(Agent.HomeDirectory)/scripts
+            ls -la $(Agent.HomeDirectory)/
+          failOnStderr: false
+      
       - task: PowerShell@2
         displayName: Install build scripts
         continueOnError: true
@@ -49,18 +63,61 @@ jobs:
 
             unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
 
+            # Verificar que los archivos se extrajeron correctamente
+            Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
+
             Invoke-Expression 'bash ./scripts/init.sh'
-          failOnStderr: true
+          failOnStderr: false
+      
+      # Verificar que los scripts estén disponibles
+      - task: Bash@3
+        displayName: Verify scripts installation
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Checking scripts directory:"
+            ls -la $(Agent.HomeDirectory)/scripts/
+            echo "Looking for select-node-version.sh:"
+            find $(Agent.HomeDirectory)/scripts/ -name "*node*" -type f || echo "No node-related scripts found"
+            find $(Agent.HomeDirectory)/scripts/ -name "select-node-version.sh" -type f || echo "select-node-version.sh not found"
+          failOnStderr: false
+      
       - task: ShellScript@2
         displayName: Post Clone Script
+        condition: succeeded()
         inputs:
           scriptPath: appcenter-post-clone.sh
-      - task: Bash@3
-        displayName: Select Node.js Version v2
+      
+      # Alternativa 1: Usar NodeTool task en lugar del script personalizado
+      - task: NodeTool@0
+        displayName: 'Use Node 18.x'
         inputs:
-          filePath: $(Agent.HomeDirectory)/scripts/select-node-version.sh
-          arguments: node18
-          failOnStderr: true
+          versionSpec: '18.x'
+      
+      # Alternativa 2: Si necesitas usar el script, verificar su existencia primero
+      - task: Bash@3
+        displayName: Select Node.js Version v2 (Alternative)
+        condition: false  # Deshabilitado por defecto, habilitar si es necesario
+        inputs:
+          targetType: 'inline'
+          script: |
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/select-node-version.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running select-node-version.sh..."
+              bash "$SCRIPT_PATH" node18
+            else
+              echo "Script not found at $SCRIPT_PATH, using direct node setup..."
+              # Configurar Node.js directamente usando nvm o similar
+              if command -v nvm &> /dev/null; then
+                nvm use 18 || nvm install 18
+              elif command -v nodenv &> /dev/null; then
+                nodenv global 18.19.0 || nodenv install 18.19.0
+              else
+                echo "Node.js setup completed via NodeTool task"
+              fi
+            fi
+          failOnStderr: false
+      
       - task: CmdLine@1
         displayName: yarn/npm install
         inputs:
@@ -68,6 +125,7 @@ jobs:
           arguments: >-
             -c "if [ -f yarn.lock ]; then { yarn install
             --network-timeout=600000; } else npm install; fi"
+      
       - task: CmdLine@2
         displayName: Generate source map
         inputs:
@@ -83,7 +141,7 @@ jobs:
             echo "Found $INDEX_FILE for ReactNative index."
 
             if [ ! -f ./node_modules/react-native/local-cli/cli.js ]; then
-              mkdir ./node_modules/react-native/local-cli
+              mkdir -p ./node_modules/react-native/local-cli
              echo "require('@react-native-community/cli').run();" >> ./node_modules/react-native/local-cli/cli.js
             fi
 
@@ -92,6 +150,7 @@ jobs:
             $INDEX_FILE --platform ios --dev false --reset-cache --bundle-output
             dummy-sourcemap-main.jsbundle --sourcemap-output index.ios.map
           failOnStandardError: false
+      
       - task: CmdLine@1
         displayName: Copy source map file to staging
         inputs:
@@ -100,78 +159,236 @@ jobs:
             -c "mkdir -p $(build.artifactstagingdirectory)/symbols && cp
             index.ios.map $(build.artifactstagingdirectory)/symbols/"
           failOnStandardError: true
-      - task: ShellScript@2
-        displayName: Tag build
-        inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/emit-tags.sh
-          args: $(sonoma.tags)
+      
+      # Verificar que emit-tags.sh exista antes de ejecutarlo
       - task: Bash@3
-        displayName: "Select Latest Xcode Version"
+        displayName: Tag build (with verification)
         inputs:
           targetType: 'inline'
           script: |
-              echo "Mac OS version:"
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/emit-tags.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running emit-tags.sh..."
+              bash "$SCRIPT_PATH" $(sonoma.tags)
+            else
+              echo "emit-tags.sh not found, creating tags manually..."
+              echo "##vso[build.addbuildtag]continuous"
+              echo "##vso[build.addbuildtag]javascript"
+              echo "##vso[build.addbuildtag]xcode"
+              echo "##vso[build.addbuildtag]signed"
+              echo "##vso[build.addbuildtag]distribution"
+            fi
+          failOnStderr: false
+      
+      - task: Bash@3
+        displayName: "Select Xcode 16 (iOS 18 SDK)"
+        inputs:
+          targetType: 'inline'
+          script: |
+              echo "macOS version:"
               sw_vers -productVersion
 
-              echo "Installed Xcode versions:"
-              ls /Applications | grep 'Xcode'
+              echo "=== Available Xcode installations ==="
+              ls -la /Applications | grep 'Xcode' || true
 
-              echo "Currently selected Xcode:"
+              # Prefer explicit Xcode 16.*
+              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
+
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "ERROR: Xcode 16 not found on this agent."
+                echo "Available versions:"
+                ls /Applications | grep 'Xcode' || true
+                exit 1
+              fi
+
+              echo "Selected Xcode: $XCODE_CANDIDATE"
+              XCODE_PATH="/Applications/$XCODE_CANDIDATE/Contents/Developer"
+              echo "##vso[task.setvariable variable=XCODE_DEVELOPER_DIR]$XCODE_PATH"
+
+              echo "Selecting Xcode..."
+              sudo xcode-select -s "$XCODE_PATH"
+
+              echo "Verification:"
               xcrun xcode-select --print-path
-
-              echo "Finding the latest Xcode version..."
-              latest_xcode=$(ls /Applications | grep 'Xcode' | sort -Vr | head -n 1)
-
-              echo "Latest Xcode version is: $latest_xcode"
-
-              echo "Selecting the latest Xcode version..."
-              sudo xcode-select -s "/Applications/$latest_xcode"
-
-              echo "Currently selected Xcode:"
-              xcrun xcode-select --print-path
-
-              echo "Xcode version details:"
               xcodebuild -version
+              echo "Expecting iOS SDK 18 or later:"
+              xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
           certSecureFile: $(P12SecureFileId)
           certPwd: $(P12Password)
+      
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
           provProfileSecureFile: $(MobileProvisionSecureFileId)
+      
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
           provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
+      
+      # Verificar que los certificados y provisioning profiles estén correctamente instalados
+      - task: Bash@3
+        displayName: Verify certificates and provisioning profiles
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "=== Verificando certificados instalados ==="
+            security find-identity -v -p codesigning
+            
+            echo "=== Verificando provisioning profiles ==="
+            ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+            
+            echo "=== Verificando keychain ==="
+            security list-keychains
+            security default-keychain
+            
+            echo "=== Verificando configuración de Xcode ==="
+            xcodebuild -showsdks
+          failOnStderr: false
+      
+      # Crear post_install hook para Podfile
+      - task: Bash@3
+        displayName: Add Podfile post_install hook
+        inputs:
+          targetType: 'inline'
+          script: |
+                  echo "Adding post_install hook to Podfile..."
+                  if [ -f "ios/Podfile" ]; then
+                    # Verificar si ya existe el post_install hook
+                    if ! grep -q "post_install" ios/Podfile; then
+                      echo "Adding post_install hook to fix deployment targets..."
+                      cat >> ios/Podfile << 'EOF'
+      
+                  post_install do |installer|
+                    installer.pods_project.targets.each do |target|
+                      target.build_configurations.each do |config|
+                        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                        config.build_settings['ENABLE_BITCODE'] = 'NO'
+                        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
+                      end
+                    end
+                  end
+                  EOF
+                    else
+                      echo "post_install hook already exists, updating deployment target..."
+                      # Actualizar el deployment target en el post_install existente
+                      sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
+                    fi
+                  fi
+      
+                  echo "Current Podfile content:"
+                  cat ios/Podfile
+
+      # Actualizar iOS Deployment Target antes de CocoaPods
+      - task: Bash@3
+        displayName: Update iOS Deployment Target
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Updating iOS Deployment Target to 12.0..."
+
+                  echo "Updating iOS Deployment Target to 12.0..."
+      
+                  # Actualizar en el proyecto principal
+                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
+                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+      
+                  # Actualizar en Podfile si existe
+                  if [ -f "ios/Podfile" ]; then
+                    echo "Updating Podfile..."
+                    sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
+                    sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
+                    # Si no hay platform definido, agregarlo
+                    if ! grep -q "platform :ios" ios/Podfile; then
+                      echo "Adding iOS platform to Podfile..."
+                      sed -i '' '1i\
+                    platform :ios, '\''12.0'\''
+                    ' ios/Podfile
+                    fi
+                  fi
+      
+                  # Verificar cambios
+                  echo "Checking current deployment targets:"
+                  grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       - task: CocoaPods@0
         displayName: Pod install
         inputs:
           cwd: ios
           forceRepoUpdate: true
+
+      # Verificar que detect-autogenerated-workspace.sh exista
       - task: Bash@3
-        displayName: Determine project file path
+        displayName: Determine project file path (with verification)
         inputs:
-          filePath: $(Agent.HomeDirectory)/scripts/detect-autogenerated-workspace.sh
-          arguments: ios Etendo_Mobile
+          targetType: 'inline'
+          script: |
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/detect-autogenerated-workspace.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running detect-autogenerated-workspace.sh..."
+              bash "$SCRIPT_PATH" ios Etendo_Mobile
+            else
+              echo "detect-autogenerated-workspace.sh not found, setting default workspace..."
+              echo "##vso[task.setvariable variable=APPCENTER_XCODE_PROJECT]ios/Etendo_Mobile.xcworkspace"
+            fi
           workingDirectory: $(Build.SourcesDirectory)
-      - task: ShellScript@2
-        displayName: Determine signing style and pods update
+          failOnStderr: false
+
+      
+      # Verificar que determine-signing-style-and-pods-update.sh exista
+      - task: Bash@3
+        displayName: Determine signing style and pods update (with verification)
         inputs:
-          scriptPath: >-
-            $(Agent.HomeDirectory)/scripts/determine-signing-style-and-pods-update.sh
-          disableAutoCwd: true
-          cwd: $(Build.SourcesDirectory)
-      - task: PowerShell@2 
-        displayName: Determine timestamp build numer
+          targetType: 'inline'
+          script: |
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/determine-signing-style-and-pods-update.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running determine-signing-style-and-pods-update.sh..."
+              cd $(Build.SourcesDirectory)
+              bash "$SCRIPT_PATH"
+            else
+              echo "determine-signing-style-and-pods-update.sh not found, setting manual signing..."
+              echo "##vso[task.setvariable variable=SIGNING_OPTION]manual"
+            fi
+          failOnStderr: false
+      
+      - task: PowerShell@2
+        displayName: Determine monotonically increasing build number
         inputs: 
           targetType: 'inline'
           script: |
+            $maxBundleVersion = 2147483647
             $timestamp = Get-Date -Format "yyyyMMddHH"
-            $versionCode = [int]$timestamp
+            [long]$timestampValue = 0
+            if (-not [long]::TryParse($timestamp, [ref]$timestampValue)) {
+              throw "Unable to parse timestamp '$timestamp' into a numeric build number"
+            }
+            $increment = 1
+            $buildIdRaw = $env:BUILD_BUILDID
+
+            if (![string]::IsNullOrWhiteSpace($buildIdRaw)) {
+              [long]$buildId = 0
+              if ([long]::TryParse($buildIdRaw, [ref]$buildId) -and $buildId -gt 0) {
+                $increment = (($buildId - 1) % 1000) + 1
+              } else {
+                Write-Warning "BUILD_BUILDID value '$buildIdRaw' is invalid. Falling back to timestamp-based increment."
+              }
+            } else {
+              Write-Warning "BUILD_BUILDID is not available. Falling back to timestamp-based increment."
+            }
+
+            $versionCode = $timestampValue + $increment
+
+            if ($versionCode -gt $maxBundleVersion) {
+              throw "Calculated bundle version '$versionCode' exceeds the App Store Connect limit '$maxBundleVersion'"
+            }
+            Write-Host "Calculated bundle version: $versionCode"
             Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
+            Write-Host "##vso[task.setvariable variable=BUNDLE_VERSION]$versionCode"
+      
       - task: CmdLine@1
         displayName: Set Bundle version
         inputs:
@@ -179,9 +396,11 @@ jobs:
           arguments: >-
             . -name "*Info.plist" -exec /usr/libexec/PlistBuddy -c "Set
             :CFBundleVersion $(versionCode)" {} ;
+      
       - task: CmdLine@1
         displayName: Update Xcode build settings
         continueOnError: true
+        condition: false  # Deshabilitado temporalmente para evitar errores
         inputs:
           filename: node
           arguments: >-
@@ -197,20 +416,28 @@ jobs:
             --development-team="B4T44MT553"
             --app-bundle-identifier="com.etendoapploader.ios"
           workingFolder: $(Build.SourcesDirectory)
+      
       - task: Xcode@4
         displayName: Xcode build (signed)
         inputs:
-          actions: clean
-          configuration: ''
-          sdk: ''
+          actions: clean build
+          configuration: Release
+          sdk: iphoneos
           xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
           scheme: Etendo_Mobile
-          xcodeDeveloperDir: /Applications/Xcode_$latest_xcode.app/Contents/Developer
+          xcodeDeveloperDir: $(XCODE_DEVELOPER_DIR)
           packageApp: true
           archivePath: $(agent.builddirectory)/output/build/archive
           exportPath: $(agent.builddirectory)/output/build/export
-          signingOption: $(SIGNING_OPTION)
+          signingOption: manual
+          signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
+          provisioningProfileUuid: '9dcc02fc-0024-46fe-b528-5126536be0b3'
+          teamId: 'B4T44MT553'
+          args: '-allowProvisioningUpdates -destination generic/platform=iOS'
           outputPattern: $(agent.builddirectory)/output/build
+        continueOnError: false
+        timeoutInMinutes: 60
+      
       - task: CopyFiles@2
         displayName: Copy build files to staging
         inputs:
@@ -219,6 +446,7 @@ jobs:
           TargetFolder: $(build.artifactstagingdirectory)/build
           OverWrite: true
           flattenFolders: true
+      
       - task: CopyFiles@2
         displayName: Copy symbol files to staging
         inputs:
@@ -227,12 +455,14 @@ jobs:
           Contents: '**/*.dSYM/**'
           TargetFolder: $(build.artifactstagingdirectory)/symbols
           OverWrite: true
+      
       - task: PublishBuildArtifacts@1
         displayName: Publish build
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/build
           ArtifactName: build
           TargetPath: \\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)
+      
       - task: PublishBuildArtifacts@1
         displayName: Publish symbols
         continueOnError: true
@@ -240,20 +470,18 @@ jobs:
           PathtoPublish: $(build.artifactstagingdirectory)/symbols
           ArtifactName: symbols
           TargetPath: \\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)
+      
       - script: |
           echo "New version with updated features and compatibility improvements" > $(System.DefaultWorkingDirectory)/ReleaseNotes.txt
           echo "Please test compatibility with iOS 15+ and report any issues" > $(System.DefaultWorkingDirectory)/changelog.txt
         displayName: 'Create Release Notes and Changelog files'
+      
       - task: AppStoreRelease@1
         inputs:
           serviceEndpoint: 'app center'
-          releaseTrack: 'TestFlight'
+          releaseTrack: 'Production'
           ipaPath: '$(build.artifactstagingdirectory)/build/*.ipa'
           appIdentifier: 'com.etendoapploader.ios'
           appType: 'iOS'
           appSpecificId: '6451114033'
-          distributedToExternalTesters: true
-          releaseNotes: '$(System.DefaultWorkingDirectory)/ReleaseNotes.txt'
-          changelog: '$(System.DefaultWorkingDirectory)/changelog.txt'
-          externalTestersGroups: 'external tester'
-        displayName: 'Publish to TestFlight'
+        displayName: 'Publish to App Store'

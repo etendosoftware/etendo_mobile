@@ -57,7 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   @Override
   public Intent registerReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
-    if (Build.VERSION.SDK_INT >= 34 && getApplicationInfo().targetSdkVersion >= 34) {
+    if (Build.VERSION.SDK_INT >= 35 && getApplicationInfo().targetSdkVersion >= 35) {
       return super.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
     } else {
       return super.registerReceiver(receiver, filter);

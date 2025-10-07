@@ -22,38 +22,10 @@ jobs:
         clean: true
         submodules: recursive
         lfs: true
-      - task: PowerShell@2
-        displayName: Install build scripts
-        continueOnError: true
+      - task: UseNode@1
+        displayName: "Select Node.js Version"
         inputs:
-          targetType: inline
-          scriptName: ''
-          script: >-
-            Set-Location -Path '$(Agent.HomeDirectory)'
-
-            Invoke-WebRequest -Uri
-            'https://appcenterbuildassets.azureedge.net/buildscripts/appcenter-build-assets-latest.zip'
-            -OutFile 'appcenter-build-assets-latest.zip'
-
-            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force
-            -Recurse }
-
-            New-Item -ItemType directory -Path 'scripts' | Out-Null
-
-            unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
-
-            Invoke-Expression 'bash ./scripts/init.sh'
-          failOnStderr: true
-      - task: ShellScript@2
-        displayName: Post Clone Script
-        inputs:
-          scriptPath: appcenter-post-clone.sh
-      - task: Bash@3
-        displayName: Select Node.js Version v2
-        inputs:
-          filePath: $(Agent.HomeDirectory)/scripts/select-node-version.sh
-          arguments: node18
-          failOnStderr: true
+          version: '18.x'
       - task: CmdLine@1
         displayName: yarn/npm install
         inputs:
@@ -73,16 +45,7 @@ jobs:
                         fi
                         
           failOnStderr: true
-      - task: ShellScript@2
-        displayName: Tag build
-        inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/emit-tags.sh
-          args: $(sonoma.tags)
-      - task: ShellScript@2
-        displayName: Install Android keystore
-        inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/install-keystore.sh
-          args: $(keystoreEncoded)
+
       # Instalar Java 17
       - task: JavaToolInstaller@0
         displayName: Install Java 17
@@ -98,41 +61,60 @@ jobs:
         displayName: Verify Java Installation
         
       - task: PowerShell@2
-        displayName: 'Set versionCode from Timestamp'
+        displayName: 'Calculate monotonically increasing versionCode'
         inputs:
           targetType: 'inline'
           script: |
-            $timestamp = Get-Date -Format "yyyyMMddHH"
-            $versionCode = [int]$timestamp
-            if ($versionCode -gt 2100000000) {
-              Write-Error "versionCode ($versionCode) excede el límite de Google Play (2100000000)"
+            $maxVersionCode = 2100000000
+            $baseVersionCode = 2030000000
+
+            [long]$buildId = 0
+            [long]$calculatedVersionCode = 0
+            $buildIdRaw = $env:BUILD_BUILDID
+
+            if (![string]::IsNullOrEmpty($buildIdRaw) -and [long]::TryParse($buildIdRaw, [ref]$buildId) -and $buildId -gt 0) {
+              $calculatedVersionCode = $baseVersionCode + $buildId
+              if ($calculatedVersionCode -gt $maxVersionCode) {
+                Write-Warning "Calculated versionCode ($calculatedVersionCode) is greater than the Google Play limit ($maxVersionCode). Falling back to timestamp based versionCode."
+                $calculatedVersionCode = 0
+              }
+            } else {
+              Write-Warning "BUILD_BUILDID is not available or invalid. Falling back to timestamp based versionCode."
             }
-            Write-Host "##vso[task.setvariable variable=versionCode]$versionCode"
+
+            if ($calculatedVersionCode -le 0) {
+              $timestamp = Get-Date -Format "yyyyMMddHH"
+              [long]$timestampValue = 0
+              if ([long]::TryParse($timestamp, [ref]$timestampValue)) {
+                $minimumFallback = $baseVersionCode + 1
+                $calculatedVersionCode = [long]([Math]::Max([double]$timestampValue, [double]$minimumFallback))
+              } else {
+                $calculatedVersionCode = $baseVersionCode + 1
+              }
+            }
+            if ($calculatedVersionCode -gt $maxVersionCode) {
+              Write-Error "versionCode ($calculatedVersionCode) excede el límite de Google Play ($maxVersionCode)"
+            }
+
+            Write-Host "Calculated versionCode: $calculatedVersionCode"
+            Write-Host "##vso[task.setvariable variable=versionCode]$calculatedVersionCode"
+            Write-Host "##vso[task.setvariable variable=VERSION_CODE]$calculatedVersionCode"
       - task: Gradle@1
         displayName: Gradle Task
         inputs:
           wrapperScript: android/gradlew
-          tasks: 'clean :app:assembleRelease :app:bundleRelease '
-          options: >-
-            -DAPPCENTER_KEYSTORE_PASSWORD="$(keystorePassword)"
-            -DMOBILECENTER_KEYSTORE_PASSWORD="$(keystorePassword)"
-            -DAPPCENTER_KEYSTORE_FILE_ID="$(keystoreFilename)"
-            -DMOBILECENTER_KEYSTORE_FILE_ID="$(keystoreFilename)"
-            -DAPPCENTER_KEY_ALIAS="$(keyAlias)"
-            -DMOBILECENTER_KEY_ALIAS="$(keyAlias)"
-            -DAPPCENTER_KEY_PASSWORD="$(keyPassword)"
-            -DMOBILECENTER_KEY_PASSWORD="$(keyPassword)"
-            -DAPPCENTER_BUILD_VERSION="$(versionCode)"
-            -DMOBILECENTER_BUILD_VERSION="$(versionCode)" -p "android"
+          tasks: 'clean :app:assembleRelease :app:bundleRelease'
+          options: >
+            -PMYAPP_UPLOAD_STORE_FILE="$(keystore.secureFilePath)"
+            -PMYAPP_UPLOAD_STORE_PASSWORD="$(keystorePassword)"
+            -PMYAPP_UPLOAD_KEY_ALIAS="$(keyAlias)"
+            -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)"
+            -PVERSION_CODE="$(versionCode)"
+            -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
           sqAnalysisBreakBuildIfQualityGateFailed: false
-      - task: ShellScript@2
-        name: appcenter_android_postprocess_output
-        displayName: Android Postprocess
-        inputs:
-          scriptPath: $(Agent.HomeDirectory)/scripts/android-postprocess.sh
-          args: $(build.sourcesdirectory)/android/app/build/outputs/apk
+
       - task: AndroidSigning@3
         displayName: Sign APK
         inputs:
@@ -149,7 +131,7 @@ jobs:
       - task: AndroidSigning@1
         displayName: Sign Android App Bundle
         inputs:
-          files: $(build.sourcesdirectory)/android/app/build/**/*.aab
+          files: $(build.sourcesdirectory)/android/app/build/outputs/bundle/release/app-release.aab
           keystoreFile: '$(keystore.secureFilePath)'
           keystorePass: $(keystorePassword)
           keystoreAlias: $(keyAlias)
@@ -226,6 +208,34 @@ jobs:
             echo "Value read from the file: [$VERSION_NAME]"
             echo "##vso[task.setvariable variable=appVersionName;isOutput=false]${VERSION_NAME}"
             echo "Value assigned to appVersionName: [$appVersionName]"
+      
+      - task: Bash@3
+        displayName: 'List generated files'
+        inputs:
+          targetType: 'inline'
+          script: |
+            ls -R $(build.sourcesdirectory)/android/app/build/outputs
+
+      - task: Bash@3
+        displayName: 'Inspect AAB file'
+        inputs:
+          targetType: 'inline'
+          script: |
+            AAB_FILE=$(find $(build.artifactstagingdirectory)/bundle -name "*.aab" | head -n 1)
+            if [ -z "$AAB_FILE" ]; then
+              echo "Error: No .aab file found in $(build.artifactstagingdirectory)/bundle"
+              exit 1
+            fi
+            echo "Inspecting AAB file: $AAB_FILE"
+            unzip -p "$AAB_FILE" base/manifest/AndroidManifest.xml | grep version
+
+      - task: Bash@3
+        displayName: 'List files in staging directory'
+        inputs:
+          targetType: 'inline'
+          script: |
+            ls -R $(build.artifactstagingdirectory)/bundle  
+
       - task: GooglePlayRelease@4
         displayName: 'Publish to Google Play'
         inputs:
