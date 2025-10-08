@@ -479,9 +479,13 @@ jobs:
       - task: AppStoreRelease@1
         inputs:
           serviceEndpoint: 'app center'
-          releaseTrack: 'Production'
+          releaseTrack: 'TestFlight'
           ipaPath: '$(build.artifactstagingdirectory)/build/*.ipa'
           appIdentifier: 'com.etendoapploader.ios'
           appType: 'iOS'
           appSpecificId: '6451114033'
-        displayName: 'Publish to App Store'
+          distributedToExternalTesters: true
+          releaseNotes: '$(System.DefaultWorkingDirectory)/ReleaseNotes.txt'
+          changelog: '$(System.DefaultWorkingDirectory)/changelog.txt'
+          externalTestersGroups: 'external tester'
+        displayName: 'Publish to TestFlight'
