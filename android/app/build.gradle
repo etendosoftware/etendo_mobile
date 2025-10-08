@@ -69,17 +69,50 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion "25.1.8937393"
-
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.smf.mobile.etendo_app_loader"
+
+    ndkVersion "25.1.8937393"
+
+    def resolveVersionCode = {
+        // Prefer project properties passed via -D, fall back to environment variables
+        def candidates = []
+        if (project.hasProperty('APPCENTER_BUILD_VERSION')) { candidates << APPCENTER_BUILD_VERSION }
+        if (project.hasProperty('MOBILECENTER_BUILD_VERSION')) { candidates << MOBILECENTER_BUILD_VERSION }
+        if (project.hasProperty('VERSION_CODE')) { candidates << project.findProperty('VERSION_CODE') }
+        if (System.getenv('versionCode')) { candidates << System.getenv('versionCode') }
+        if (System.getenv('VERSION_CODE')) { candidates << System.getenv('VERSION_CODE') }
+        if (System.getenv('BUILD_BUILDID')) { candidates << System.getenv('BUILD_BUILDID') }
+
+        for (def vc : candidates) {
+            try {
+                def parsed = Integer.parseInt(vc.toString())
+                if (parsed > 0) { return parsed }
+            } catch (Exception ignored) { }
+        }
+        return 1
+    }
+
     defaultConfig {
         applicationId "com.smf.mobile.etendo_app_loader"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.12.0"
+        versionCode resolveVersionCode()
+        versionName "1.13.0"
+
+        // ⚡ Support 16 kB memory pages 
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+        
+        multiDexEnabled true
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
     signingConfigs {
         debug {
@@ -104,15 +137,30 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            //signingConfig signingConfigs.release removed, read https://docs.microsoft.com/en-us/appcenter/build/android/code-signing
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            
+            matchingFallbacks = ['release']
         }
+    }
+    
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
 dependencies {
     implementation 'org.jetbrains:annotations:16.0.2'
+
+    // Force Material Design compatible with Android 15
+    implementation 'com.google.android.material:material:1.12.0'
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
@@ -131,4 +179,6 @@ dependencies {
     }
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+// React Native native modules
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)
