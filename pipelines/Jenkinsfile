@@ -156,7 +156,7 @@ pipeline {
     stage('Compare Coverage Results') { // MARK: - Compare Coverage Results
       when {
         expression {
-          currentBuild.result == SUCCESS && !(env.GIT_BRANCH == env.MAIN_BRANCH)
+          currentBuild.result == SUCCESS && !(env.GIT_BRANCH == 'main')
         }
       }
       steps {
