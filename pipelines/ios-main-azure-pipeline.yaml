@@ -9,9 +9,10 @@ variables:
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
-  # Additional variables required
   APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
+  
 name: $(artifactVersioning.build.value)
+
 resources:
   repositories:
     - repository: self
@@ -19,6 +20,7 @@ resources:
       ref: refs/heads/$(Build.SourceBranch)
 
 pr: none
+
 jobs:
   - job: Phase_1
     displayName: Build
@@ -26,13 +28,13 @@ jobs:
     pool:
       name: Azure Pipelines
       vmImage: macOS-14
+    
     steps:
       - checkout: self
         clean: true
         submodules: recursive
         lfs: true
-      
-      # Check and create script directory if it does not exist
+            
       - task: Bash@3
         displayName: Create scripts directory
         inputs:
@@ -48,7 +50,6 @@ jobs:
         continueOnError: true
         inputs:
           targetType: inline
-          scriptName: ''
           script: >-
             Set-Location -Path '$(Agent.HomeDirectory)'
 
@@ -56,30 +57,25 @@ jobs:
             'https://build-assets.appcenter.ms/buildscripts/appcenter-build-assets-latest.zip'
             -OutFile 'appcenter-build-assets-latest.zip'
 
-            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force
-            -Recurse }
+            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force -Recurse }
 
             New-Item -ItemType directory -Path 'scripts' | Out-Null
 
             unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
 
-            # Verificar que los archivos se extrajeron correctamente
             Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
 
             Invoke-Expression 'bash ./scripts/init.sh'
           failOnStderr: false
       
-      # Verify that the scripts are available
       - task: Bash@3
         displayName: Verify scripts installation
         inputs:
           targetType: 'inline'
           script: |
             echo "Checking scripts directory:"
-            ls -la $(Agent.HomeDirectory)/scripts/
-            echo "Looking for select-node-version.sh:"
+            ls -la $(Agent.HomeDirectory)/scripts/ || true
             find $(Agent.HomeDirectory)/scripts/ -name "*node*" -type f || echo "No node-related scripts found"
-            find $(Agent.HomeDirectory)/scripts/ -name "select-node-version.sh" -type f || echo "select-node-version.sh not found"
           failOnStderr: false
       
       - task: ShellScript@2
@@ -88,52 +84,51 @@ jobs:
         inputs:
           scriptPath: appcenter-post-clone.sh
       
-      # Alternative 1: Use NodeTool task instead of custom script
       - task: NodeTool@0
         displayName: 'Use Node 18.x'
         inputs:
           versionSpec: '18.x'
       
-      # Alternative 2: If you need to use the script, verify its existence first.
-      - task: Bash@3
-        displayName: Select Node.js Version v2 (Alternative)
-        condition: false  # Disabled by default, enable if necessary
+      - task: Cache@2
+        displayName: Cache node modules
         inputs:
-          targetType: 'inline'
-          script: |
-            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/select-node-version.sh"
-            if [ -f "$SCRIPT_PATH" ]; then
-              echo "Running select-node-version.sh..."
-              bash "$SCRIPT_PATH" node18
-            else
-              echo "Script not found at $SCRIPT_PATH, using direct node setup..."
-              # Configurar Node.js directamente usando nvm o similar
-              if command -v nvm &> /dev/null; then
-                nvm use 18 || nvm install 18
-              elif command -v nodenv &> /dev/null; then
-                nodenv global 18.19.0 || nodenv install 18.19.0
-              else
-                echo "Node.js setup completed via NodeTool task"
-              fi
-            fi
-          failOnStderr: false
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
+          path: $(System.DefaultWorkingDirectory)/node_modules
+      
+      - task: Cache@2
+        displayName: Cache CocoaPods
+        inputs:
+          key: 'pods | "$(Agent.OS)" | ios/Podfile.lock'
+          restoreKeys: |
+            pods | "$(Agent.OS)"
+            pods
+          path: $(System.DefaultWorkingDirectory)/ios/Pods
+      
+      - task: Cache@2
+        displayName: Cache DerivedData
+        inputs:
+          key: 'deriveddata | "$(Agent.OS)" | ios/Podfile.lock'
+          restoreKeys: |
+            deriveddata | "$(Agent.OS)"
+            deriveddata
+          path: $(Pipeline.Workspace)/DerivedData
       
       - task: CmdLine@1
         displayName: yarn/npm install
         inputs:
           filename: sh
           arguments: >-
-            -c "if [ -f yarn.lock ]; then { yarn install
-            --network-timeout=600000; } else npm install; fi"
+            -c "if [ -f yarn.lock ]; then { yarn install --network-timeout=600000 --frozen-lockfile; } else npm ci; fi"
       
       - task: CmdLine@2
-        displayName: Generate source map
+        displayName: Generate source map (optimized)
         inputs:
-          script: >-
+          script: |
             #!/bin/sh
-
             INDEX_FILE="index.ios.js"
-
             if [ -f "index.js" ]; then
               INDEX_FILE="index.js"
             fi
@@ -142,13 +137,19 @@ jobs:
 
             if [ ! -f ./node_modules/react-native/local-cli/cli.js ]; then
               mkdir -p ./node_modules/react-native/local-cli
-             echo "require('@react-native-community/cli').run();" >> ./node_modules/react-native/local-cli/cli.js
+              echo "require('@react-native-community/cli').run();" >> ./node_modules/react-native/local-cli/cli.js
             fi
 
-            node --max_old_space_size=8192
-            node_modules/react-native/local-cli/cli.js bundle --entry-file
-            $INDEX_FILE --platform ios --dev false --reset-cache --bundle-output
-            dummy-sourcemap-main.jsbundle --sourcemap-output index.ios.map
+            # Optimized bundle generation with parallel processing
+            node --max_old_space_size=12288 \
+              node_modules/react-native/local-cli/cli.js bundle \
+              --entry-file $INDEX_FILE \
+              --platform ios \
+              --dev false \
+              --reset-cache \
+              --bundle-output dummy-sourcemap-main.jsbundle \
+              --sourcemap-output index.ios.map \
+              --minify true
           failOnStandardError: false
       
       - task: CmdLine@1
@@ -160,18 +161,15 @@ jobs:
             index.ios.map $(build.artifactstagingdirectory)/symbols/"
           failOnStandardError: true
       
-      # Verify that emit-tags.sh exists before running it.
       - task: Bash@3
-        displayName: Tag build (with verification)
+        displayName: Tag build
         inputs:
           targetType: 'inline'
           script: |
             SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/emit-tags.sh"
             if [ -f "$SCRIPT_PATH" ]; then
-              echo "Running emit-tags.sh..."
               bash "$SCRIPT_PATH" $(sonoma.tags)
             else
-              echo "emit-tags.sh not found, creating tags manually..."
               echo "##vso[build.addbuildtag]continuous"
               echo "##vso[build.addbuildtag]javascript"
               echo "##vso[build.addbuildtag]xcode"
@@ -185,35 +183,31 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-              echo "macOS version:"
-              sw_vers -productVersion
+            echo "macOS version:"
+            sw_vers -productVersion
 
-              echo "=== Available Xcode installations ==="
-              ls -la /Applications | grep 'Xcode' || true
+            echo "=== Available Xcode installations ==="
+            ls -la /Applications | grep 'Xcode' || true
 
-              # Prefer explicit Xcode 16.*
-              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
+            XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
 
-              if [ -z "$XCODE_CANDIDATE" ]; then
-                echo "ERROR: Xcode 16 not found on this agent."
-                echo "Available versions:"
-                ls /Applications | grep 'Xcode' || true
-                exit 1
-              fi
+            if [ -z "$XCODE_CANDIDATE" ]; then
+              echo "ERROR: Xcode 16 not found on this agent."
+              ls /Applications | grep 'Xcode' || true
+              exit 1
+            fi
 
-              echo "Selected Xcode: $XCODE_CANDIDATE"
-              XCODE_PATH="/Applications/$XCODE_CANDIDATE/Contents/Developer"
-              echo "##vso[task.setvariable variable=XCODE_DEVELOPER_DIR]$XCODE_PATH"
+            echo "Selected Xcode: $XCODE_CANDIDATE"
+            XCODE_PATH="/Applications/$XCODE_CANDIDATE/Contents/Developer"
+            echo "##vso[task.setvariable variable=XCODE_DEVELOPER_DIR]$XCODE_PATH"
 
-              echo "Selecting Xcode..."
-              sudo xcode-select -s "$XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH"
 
-              echo "Verification:"
-              xcrun xcode-select --print-path
-              xcodebuild -version
-              echo "Expecting iOS SDK 18 or later:"
-              xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
-
+            echo "Verification:"
+            xcrun xcode-select --print-path
+            xcodebuild -version
+            xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
+      
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
@@ -221,134 +215,174 @@ jobs:
           certPwd: $(P12Password)
       
       - task: InstallAppleProvisioningProfile@0
-        displayName: Install Apple provisioning profile
+        displayName: Install main provisioning profile
         inputs:
           provProfileSecureFile: $(MobileProvisionSecureFileId)
       
       - task: InstallAppleProvisioningProfile@0
-        displayName: Install Apple provisioning profile
+        displayName: Install extension provisioning profile
         inputs:
           provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
       
-      # Verify that certificates and provisioning profiles are correctly installed.
       - task: Bash@3
         displayName: Verify certificates and provisioning profiles
         inputs:
           targetType: 'inline'
           script: |
-            echo "=== Verificando certificados instalados ==="
+            echo "=== Installed certificates ==="
             security find-identity -v -p codesigning
             
-            echo "=== Verificando provisioning profiles ==="
-            ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+            echo "=== Provisioning profiles ==="
+            ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || true
             
-            echo "=== Verificando keychain ==="
+            echo "=== Keychain configuration ==="
             security list-keychains
-            security default-keychain
-            
-            echo "=== Verificando configuración de Xcode ==="
-            xcodebuild -showsdks
           failOnStderr: false
       
-      # Create post_install hook for Podfile
       - task: Bash@3
-        displayName: Add Podfile post_install hook
+        displayName: Optimize Podfile configuration
         inputs:
           targetType: 'inline'
           script: |
-                  echo "Adding post_install hook to Podfile..."
-                  if [ -f "ios/Podfile" ]; then
-                    # Verificar si ya existe el post_install hook
-                    if ! grep -q "post_install" ios/Podfile; then
-                      echo "Adding post_install hook to fix deployment targets..."
-                      cat >> ios/Podfile << 'EOF'
-      
-                  post_install do |installer|
-                    installer.pods_project.targets.each do |target|
-                      target.build_configurations.each do |config|
-                        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-                        config.build_settings['ENABLE_BITCODE'] = 'NO'
-                        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
-                      end
-                    end
-                  end
-                  EOF
-                    else
-                      echo "post_install hook already exists, updating deployment target..."
-                      # Actualizar el deployment target en el post_install existente
-                      sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
-                    fi
-                  fi
-      
-                  echo "Current Podfile content:"
-                  cat ios/Podfile
+            echo "Optimizing Podfile..."
+            if [ -f "ios/Podfile" ]; then
+              # Update platform version
+              sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile 2>/dev/null || true
+              sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile 2>/dev/null || true
+              
+              if ! grep -q "platform :ios" ios/Podfile; then
+                sed -i '' '1i\
+            platform :ios, '\''12.0'\''
+            ' ios/Podfile
+              fi
+              
+              # Remove existing post_install hook if present using Python
+              if grep -q "post_install" ios/Podfile; then
+                echo "Removing existing post_install hook..."
+                python3 << 'PYTHON_SCRIPT'
+            with open('ios/Podfile', 'r') as f:
+                lines = f.readlines()
+            
+            output = []
+            in_post_install = False
+            block_depth = 0
+            
+            for line in lines:
+                if 'post_install do' in line:
+                    in_post_install = True
+                    block_depth = 1
+                    continue
+                
+                if in_post_install:
+                    if line.strip().startswith('end'):
+                        block_depth -= 1
+                        if block_depth == 0:
+                            in_post_install = False
+                        continue
+                    elif ' do ' in line or line.strip().endswith(' do'):
+                        block_depth += 1
+                        continue
+                    else:
+                        continue
+                
+                output.append(line)
+            
+            with open('ios/Podfile', 'w') as f:
+                f.writelines(output)
+            PYTHON_SCRIPT
+              fi
+              
+              # Remove any existing SWIFT_OPTIMIZATION_LEVEL settings from Podfile
+              if grep -q "SWIFT_OPTIMIZATION_LEVEL" ios/Podfile; then
+                echo "Removing existing SWIFT_OPTIMIZATION_LEVEL settings..."
+                sed -i '' '/SWIFT_OPTIMIZATION_LEVEL/d' ios/Podfile 2>/dev/null || true
+              fi
+              
+              # Add comprehensive post_install hook
+              cat >> ios/Podfile << 'PODFILE_EOF'
 
-      # Update iOS Deployment Target before CocoaPods
+            post_install do |installer|
+              installer.pods_project.targets.each do |target|
+                target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                  config.build_settings['ENABLE_BITCODE'] = 'NO'
+                  config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
+                  config.build_settings['COMPILER_INDEX_STORE_ENABLE'] = 'NO'
+                  config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf'
+                  # Remove SWIFT_OPTIMIZATION_LEVEL to use Xcode's default Release settings
+                  config.build_settings.delete('SWIFT_OPTIMIZATION_LEVEL')
+                end
+              end
+              installer.generated_projects.each do |project|
+                project.targets.each do |target|
+                  target.build_configurations.each do |config|
+                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                    # Remove SWIFT_OPTIMIZATION_LEVEL to use Xcode's default Release settings
+                    config.build_settings.delete('SWIFT_OPTIMIZATION_LEVEL')
+                  end
+                end
+              end
+            end
+            PODFILE_EOF
+              
+              echo "Current Podfile content:"
+              cat ios/Podfile
+            fi
+      
       - task: Bash@3
-        displayName: Update iOS Deployment Target
+        displayName: Update iOS Deployment Target in project files
         inputs:
           targetType: 'inline'
           script: |
             echo "Updating iOS Deployment Target to 12.0..."
-
-                  echo "Updating iOS Deployment Target to 12.0..."
+            
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \; 2>/dev/null || true
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \; 2>/dev/null || true
+            
+            echo "Checking current deployment targets:"
+            grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       
-                  # Actualizar en el proyecto principal
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+      - task: Bash@3
+        displayName: Clean Pods for fresh install
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Cleaning Pods directory..."
+            cd ios
+            rm -rf Pods
+            rm -rf Podfile.lock
+            echo "✅ Pods cleaned - will be reinstalled with correct deployment target"
       
-                  # Actualizar en Podfile si existe
-                  if [ -f "ios/Podfile" ]; then
-                    echo "Updating Podfile..."
-                    sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
-                    sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
-                    # Si no hay platform definido, agregarlo
-                    if ! grep -q "platform :ios" ios/Podfile; then
-                      echo "Adding iOS platform to Podfile..."
-                      sed -i '' '1i\
-                    platform :ios, '\''12.0'\''
-                    ' ios/Podfile
-                    fi
-                  fi
-      
-                  # Verificar cambios
-                  echo "Checking current deployment targets:"
-                  grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       - task: CocoaPods@0
-        displayName: Pod install
+        displayName: Pod install (optimized)
         inputs:
           cwd: ios
-          forceRepoUpdate: true
-
-      # Verify that detect-autogenerated-workspace.sh exists
+          forceRepoUpdate: false
+      
       - task: Bash@3
-        displayName: Determine project file path (with verification)
+        displayName: Determine project file path
         inputs:
           targetType: 'inline'
           script: |
             SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/detect-autogenerated-workspace.sh"
             if [ -f "$SCRIPT_PATH" ]; then
-              echo "Running detect-autogenerated-workspace.sh..."
               bash "$SCRIPT_PATH" ios Etendo_Mobile
             else
-              echo "detect-autogenerated-workspace.sh not found, setting default workspace..."
               echo "##vso[task.setvariable variable=APPCENTER_XCODE_PROJECT]ios/Etendo_Mobile.xcworkspace"
             fi
           workingDirectory: $(Build.SourcesDirectory)
           failOnStderr: false
 
       - task: Bash@3
-        displayName: Determine signing style and pods update (with verification)
+        displayName: Determine signing style
         inputs:
           targetType: 'inline'
           script: |
             SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/determine-signing-style-and-pods-update.sh"
             if [ -f "$SCRIPT_PATH" ]; then
-              echo "Running determine-signing-style-and-pods-update.sh..."
               cd $(Build.SourcesDirectory)
               bash "$SCRIPT_PATH"
             else
-              echo "determine-signing-style-and-pods-update.sh not found, setting manual signing..."
               echo "##vso[task.setvariable variable=SIGNING_OPTION]manual"
             fi
           failOnStderr: false
@@ -371,11 +405,7 @@ jobs:
               [long]$buildId = 0
               if ([long]::TryParse($buildIdRaw, [ref]$buildId) -and $buildId -gt 0) {
                 $increment = (($buildId - 1) % 1000) + 1
-              } else {
-                Write-Warning "BUILD_BUILDID value '$buildIdRaw' is invalid. Falling back to timestamp-based increment."
               }
-            } else {
-              Write-Warning "BUILD_BUILDID is not available. Falling back to timestamp-based increment."
             }
 
             $versionCode = $timestampValue + $increment
@@ -395,46 +425,119 @@ jobs:
             . -name "*Info.plist" -exec /usr/libexec/PlistBuddy -c "Set
             :CFBundleVersion $(versionCode)" {} ;
       
-      - task: CmdLine@1
-        displayName: Update Xcode build settings
-        continueOnError: true
-        condition: false  # Disabled by default, enable if necessary
+      - task: Bash@3
+        displayName: Optimize Xcode build with parallel compilation
         inputs:
-          filename: node
-          arguments: >-
-            $(Agent.HomeDirectory)/scripts/build-xcproject-analyzer/node_modules/@build/xcproject-analyzer-script/script/bin.js
-            --app-id="7c22e934-4599-477a-9f23-5c58b1500e79"
-            --app-insights-key="$(AppInsightsKey)"
-            --xc-workspace-path="$(APPCENTER_XCODE_WORKSPACE)"
-            --scheme="Etendo_Mobile" --code-sign-style="$(SIGNING_OPTION)"
-            --app-provisioning-profile-uuid="9dcc02fc-0024-46fe-b528-5126536be0b3"
-            --app-extension-provisioning-profile-uuids="422a41d1-b62d-469e-b7d3-fd81030487bb"
-            --app-extension-target-bundle-identifiers="com.etendoapploader.ios.EtendoRecieveShare"
-            --code-sign-identity="$(APPLE_CERTIFICATE_SIGNING_IDENTITY)"
-            --development-team="B4T44MT553"
-            --app-bundle-identifier="com.etendoapploader.ios"
-          workingFolder: $(Build.SourcesDirectory)
-      
-      - task: Xcode@4
-        displayName: Xcode build (signed)
-        inputs:
-          actions: clean build
-          configuration: Release
-          sdk: iphoneos
-          xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
-          scheme: Etendo_Mobile
-          xcodeDeveloperDir: $(XCODE_DEVELOPER_DIR)
-          packageApp: true
-          archivePath: $(agent.builddirectory)/output/build/archive
-          exportPath: $(agent.builddirectory)/output/build/export
-          signingOption: manual
-          signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
-          provisioningProfileUuid: '9dcc02fc-0024-46fe-b528-5126536be0b3'
-          teamId: 'B4T44MT553'
-          args: '-allowProvisioningUpdates -destination generic/platform=iOS'
-          outputPattern: $(agent.builddirectory)/output/build
+          targetType: 'inline'
+          script: |
+            #!/bin/bash
+            set -e
+            
+            # Create output directories
+            echo "Creating output directories..."
+            mkdir -p "$(agent.builddirectory)/output/build/archive"
+            mkdir -p "$(agent.builddirectory)/output/build/export"
+            
+            # Get number of CPU cores for parallel builds
+            NCPU=$(sysctl -n hw.ncpu)
+            echo "Building with $NCPU parallel jobs"
+            
+            # Build with optimizations
+            echo "Starting archive build..."
+            xcodebuild \
+              -workspace "$(APPCENTER_XCODE_PROJECT)" \
+              -scheme "Etendo_Mobile" \
+              -configuration Release \
+              -sdk iphoneos \
+              -destination 'generic/platform=iOS' \
+              -archivePath "$(agent.builddirectory)/output/build/archive/Etendo_Mobile.xcarchive" \
+              -derivedDataPath "$(Pipeline.Workspace)/DerivedData" \
+              -parallelizeTargets \
+              -jobs $NCPU \
+              -UseModernBuildSystem=YES \
+              -allowProvisioningUpdates \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY="$(APPLE_CERTIFICATE_SIGNING_IDENTITY)" \
+              PROVISIONING_PROFILE_SPECIFIER="" \
+              PROVISIONING_PROFILE="9dcc02fc-0024-46fe-b528-5126536be0b3" \
+              DEVELOPMENT_TEAM="B4T44MT553" \
+              COMPILER_INDEX_STORE_ENABLE=NO \
+              DEBUG_INFORMATION_FORMAT=dwarf \
+              SWIFT_COMPILATION_MODE=wholemodule \
+              GCC_OPTIMIZATION_LEVEL=s \
+              ENABLE_BITCODE=NO \
+              CLANG_ENABLE_MODULE_DEBUGGING=NO \
+              ONLY_ACTIVE_ARCH=NO \
+              archive 2>&1 | tee xcodebuild.log
+            
+            # Check if archive was created
+            if [ ! -d "$(agent.builddirectory)/output/build/archive/Etendo_Mobile.xcarchive" ]; then
+              echo "ERROR: Archive was not created"
+              echo "Last 50 lines of build log:"
+              tail -50 xcodebuild.log
+              exit 1
+            fi
+            
+            echo "✅ Archive created successfully"
+            
+            # Export IPA
+            echo "Exporting IPA..."
+            
+            # Create export options plist
+            cat > /tmp/ExportOptions.plist <<EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>B4T44MT553</string>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>compileBitcode</key>
+              <false/>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                <key>com.etendoapploader.ios</key>
+                <string>9dcc02fc-0024-46fe-b528-5126536be0b3</string>
+                <key>com.etendoapploader.ios.EtendoRecieveShare</key>
+                <string>105406af-28ef-4246-8494-e1db2b52ab3e</string>
+              </dict>
+            </dict>
+            </plist>
+            EOF
+            
+            xcodebuild \
+              -exportArchive \
+              -archivePath "$(agent.builddirectory)/output/build/archive/Etendo_Mobile.xcarchive" \
+              -exportPath "$(agent.builddirectory)/output/build/export" \
+              -exportOptionsPlist /tmp/ExportOptions.plist \
+              -allowProvisioningUpdates 2>&1 | tee -a xcodebuild.log
+            
+            # Check if IPA was created
+            if [ ! -f "$(agent.builddirectory)/output/build/export/"*.ipa ]; then
+              echo "ERROR: IPA was not created"
+              echo "Contents of export directory:"
+              ls -la "$(agent.builddirectory)/output/build/export/"
+              echo "Last 50 lines of build log:"
+              tail -50 xcodebuild.log
+              exit 1
+            fi
+            
+            echo "✅ IPA exported successfully"
+            ls -lh "$(agent.builddirectory)/output/build/export/"*.ipa
+            
+            echo "Build and export completed successfully"
+          workingDirectory: $(Build.SourcesDirectory)
+          failOnStderr: false
+        env:
+          XCODE_DEVELOPER_DIR: $(XCODE_DEVELOPER_DIR)
         continueOnError: false
-        timeoutInMinutes: 60
+        timeoutInMinutes: 45
+      
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
