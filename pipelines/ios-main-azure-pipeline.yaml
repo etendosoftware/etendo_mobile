@@ -1,21 +1,18 @@
 variables:
   NO_FLIPPER: '1'
-  P12SecureFileId: ab637576-6255-4111-881f-9925ef484173
-  MobileProvisionSecureFileId: 91218312-496d-4087-8815-289bd47446be
+  P12SecureFileId: 1e09e163-5f2f-4e69-b11d-04047b37668b
+  MobileProvisionSecureFileId: ca1a75cd-d8c7-4b66-b43c-c1f976309e37
   AppExtensionProvisionSecureFiles: >-
-    [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
+    [{"fileId":"cfa9cd9a-3b43-4a7e-827b-fa4f66bbdf50","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
-    {"expirationDate":"2025-12-16T18:57:43.000Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
+    {"expirationDate":"2026-12-17T13:34:03Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
   APPCENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
   # Additional variables required
   APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
-  # Cache keys for optimization
-  XCODE_CACHE_KEY: 'xcode-deriveddata-v1 | "$(Agent.OS)" | ios/Podfile.lock'
-  PODS_CACHE_KEY: 'cocoapods-v1 | "$(Agent.OS)" | ios/Podfile.lock'
-  NODE_CACHE_KEY: 'node-modules-v1 | "$(Agent.OS)" | yarn.lock, package-lock.json'
+
 name: $(artifactVersioning.build.value)
 resources:
   repositories:
@@ -50,17 +47,11 @@ jobs:
         inputs:
           versionSpec: '18.x'
       
-      # Cache node_modules for faster builds
-      - task: Cache@2
-        displayName: Cache node_modules
-        inputs:
-          key: $(NODE_CACHE_KEY)
-          path: node_modules
-          cacheHitVar: NODE_MODULES_RESTORED
+
       
       - task: CmdLine@1
         displayName: yarn/npm install
-        condition: ne(variables.NODE_MODULES_RESTORED, 'true')
+
         inputs:
           filename: sh
           arguments: >-
@@ -151,11 +142,36 @@ jobs:
               echo "Expecting iOS SDK 18 or later:"
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
-      - task: InstallAppleCertificate@2
-        displayName: Install Apple certificate
+      - task: DownloadSecureFile@1
+        name: certificateSecureFile
+        displayName: Download Apple Certificate
         inputs:
-          certSecureFile: $(P12SecureFileId)
-          certPwd: $(P12Password)
+          secureFile: '$(P12SecureFileId)'
+
+      - task: Bash@3
+        displayName: Install Apple Certificate
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Create a temporary keychain
+            KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
+            KEYCHAIN_PASSWORD=$(uuidgen)
+            
+            echo "Creating temporary keychain..."
+            security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+            security default-keychain -s "$KEYCHAIN_PATH"
+            security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+            
+            echo "Importing certificate..."
+            security import "$(certificateSecureFile.secureFilePath)" -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign
+            
+            echo "Setting key partition list..."
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+            
+            echo "##vso[task.setvariable variable=KEYCHAIN_PATH]$KEYCHAIN_PATH"
+            echo "##vso[task.setvariable variable=KEYCHAIN_PASSWORD]$KEYCHAIN_PASSWORD"
+        env:
+          P12_PASSWORD: $(P12Password)
       
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
@@ -165,7 +181,7 @@ jobs:
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
+          provProfileSecureFile: cfa9cd9a-3b43-4a7e-827b-fa4f66bbdf50
       
       # Verify that certificates and provisioning profiles are correctly installed (only when debugging)
       - task: Bash@3
@@ -253,13 +269,7 @@ jobs:
                   echo "Checking current deployment targets:"
                   grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       
-      # Cache CocoaPods for faster builds
-      - task: Cache@2
-        displayName: Cache CocoaPods
-        inputs:
-          key: $(PODS_CACHE_KEY)
-          path: ios/Pods
-          cacheHitVar: PODS_RESTORED
+
       
       - task: CocoaPods@0
         displayName: Pod install
@@ -340,13 +350,7 @@ jobs:
             echo "##vso[task.setvariable variable=CPU_COUNT]$CPU_COUNT"
           failOnStderr: false
       
-      # Cache Xcode DerivedData for significantly faster builds
-      - task: Cache@2
-        displayName: Cache Xcode DerivedData
-        inputs:
-          key: $(XCODE_CACHE_KEY)
-          path: ~/Library/Developer/Xcode/DerivedData
-          cacheHitVar: DERIVED_DATA_RESTORED
+
       
       - task: Xcode@4
         displayName: Xcode build (signed, optimized)
