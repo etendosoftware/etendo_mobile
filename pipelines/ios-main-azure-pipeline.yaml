@@ -1,6 +1,5 @@
 variables:
-  NO_FLIPPER: '1'
-  P12SecureFileId: 1e09e163-5f2f-4e69-b11d-04047b37668b
+  P12SecureFileId: f5ebc007-cdc0-4c03-9e7d-a7e0c5de5efc
   MobileProvisionSecureFileId: ca1a75cd-d8c7-4b66-b43c-c1f976309e37
   AppExtensionProvisionSecureFiles: >-
     [{"fileId":"cfa9cd9a-3b43-4a7e-827b-fa4f66bbdf50","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
@@ -11,8 +10,7 @@ variables:
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
   # Additional variables required
-  APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
-
+  APPLE_CERTIFICATE_SIGNING_IDENTITY: 'iPhone Distribution: FUTIT SERVICES SRL (B4T44MT553)'
 name: $(artifactVersioning.build.value)
 resources:
   repositories:
@@ -34,9 +32,58 @@ jobs:
         submodules: recursive
         lfs: true
       
+      # Check and create script directory if it does not exist
+      - task: Bash@3
+        displayName: Create scripts directory
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Creating scripts directory..."
+            mkdir -p $(Agent.HomeDirectory)/scripts
+            ls -la $(Agent.HomeDirectory)/
+          failOnStderr: false
+      
+      - task: PowerShell@2
+        displayName: Install build scripts
+        continueOnError: true
+        inputs:
+          targetType: inline
+          scriptName: ''
+          script: >-
+            Set-Location -Path '$(Agent.HomeDirectory)'
+
+            Invoke-WebRequest -Uri
+            'https://build-assets.appcenter.ms/buildscripts/appcenter-build-assets-latest.zip'
+            -OutFile 'appcenter-build-assets-latest.zip'
+
+            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force
+            -Recurse }
+
+            New-Item -ItemType directory -Path 'scripts' | Out-Null
+
+            unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
+
+            # Verificar que los archivos se extrajeron correctamente
+            Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
+
+            Invoke-Expression 'bash ./scripts/init.sh'
+          failOnStderr: false
+      
+      # Verify that the scripts are available
+      - task: Bash@3
+        displayName: Verify scripts installation
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Checking scripts directory:"
+            ls -la $(Agent.HomeDirectory)/scripts/
+            echo "Looking for select-node-version.sh:"
+            find $(Agent.HomeDirectory)/scripts/ -name "*node*" -type f || echo "No node-related scripts found"
+            find $(Agent.HomeDirectory)/scripts/ -name "select-node-version.sh" -type f || echo "select-node-version.sh not found"
+          failOnStderr: false
+      
       - task: ShellScript@2
         displayName: Post Clone Script
-        continueOnError: true
         condition: succeeded()
         inputs:
           scriptPath: appcenter-post-clone.sh
@@ -47,21 +94,40 @@ jobs:
         inputs:
           versionSpec: '18.x'
       
-
+      # Alternative 2: If you need to use the script, verify its existence first.
+      - task: Bash@3
+        displayName: Select Node.js Version v2 (Alternative)
+        condition: false  # Disabled by default, enable if necessary
+        inputs:
+          targetType: 'inline'
+          script: |
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/select-node-version.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running select-node-version.sh..."
+              bash "$SCRIPT_PATH" node18
+            else
+              echo "Script not found at $SCRIPT_PATH, using direct node setup..."
+              # Configurar Node.js directamente usando nvm o similar
+              if command -v nvm &> /dev/null; then
+                nvm use 18 || nvm install 18
+              elif command -v nodenv &> /dev/null; then
+                nodenv global 18.19.0 || nodenv install 18.19.0
+              else
+                echo "Node.js setup completed via NodeTool task"
+              fi
+            fi
+          failOnStderr: false
       
       - task: CmdLine@1
         displayName: yarn/npm install
-
         inputs:
           filename: sh
           arguments: >-
             -c "if [ -f yarn.lock ]; then { yarn install
-            --network-timeout=600000 --frozen-lockfile; } else npm ci; fi"
-      
+            --network-timeout=600000; } else npm install; fi"
       
       - task: CmdLine@2
         displayName: Generate source map
-        condition: or(eq(variables['Build.Reason'], 'Manual'), eq(variables['FORCE_SOURCEMAP'], 'true'))
         inputs:
           script: >-
             #!/bin/sh
@@ -87,7 +153,6 @@ jobs:
       
       - task: CmdLine@1
         displayName: Copy source map file to staging
-        condition: or(eq(variables['Build.Reason'], 'Manual'), eq(variables['FORCE_SOURCEMAP'], 'true'))
         inputs:
           filename: sh
           arguments: >-
@@ -95,17 +160,24 @@ jobs:
             index.ios.map $(build.artifactstagingdirectory)/symbols/"
           failOnStandardError: true
       
-      # Tag build
+      # Verify that emit-tags.sh exists before running it.
       - task: Bash@3
-        displayName: Tag build
+        displayName: Tag build (with verification)
         inputs:
           targetType: 'inline'
           script: |
-            echo "##vso[build.addbuildtag]continuous"
-            echo "##vso[build.addbuildtag]javascript"
-            echo "##vso[build.addbuildtag]xcode"
-            echo "##vso[build.addbuildtag]signed"
-            echo "##vso[build.addbuildtag]distribution"
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/emit-tags.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running emit-tags.sh..."
+              bash "$SCRIPT_PATH" $(sonoma.tags)
+            else
+              echo "emit-tags.sh not found, creating tags manually..."
+              echo "##vso[build.addbuildtag]continuous"
+              echo "##vso[build.addbuildtag]javascript"
+              echo "##vso[build.addbuildtag]xcode"
+              echo "##vso[build.addbuildtag]signed"
+              echo "##vso[build.addbuildtag]distribution"
+            fi
           failOnStderr: false
       
       - task: Bash@3
@@ -143,50 +215,42 @@ jobs:
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
       - task: DownloadSecureFile@1
-        name: certificateSecureFile
-        displayName: Download Apple Certificate
+        name: caCert
         inputs:
-          secureFile: '$(P12SecureFileId)'
+          secureFile: $(P12SecureFileId)
 
+      - task: InstallAppleCertificate@2
+        displayName: 'Install Apple Certificate'
+        inputs:
+          certSecureFile: $(P12SecureFileId)
+          certPwd: $(P12Password)
+            
       - task: Bash@3
-        displayName: Install Apple Certificate
+        displayName: 'Verify Signing Identity'
         inputs:
           targetType: 'inline'
           script: |
-            # Create a temporary keychain
-            KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
-            KEYCHAIN_PASSWORD=$(uuidgen)
+            echo "=== Identities in keychain ==="
+            security find-identity -v -p codesigning
             
-            echo "Creating temporary keychain..."
-            security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            security default-keychain -s "$KEYCHAIN_PATH"
-            security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            
-            echo "Importing certificate..."
-            security import "$(certificateSecureFile.secureFilePath)" -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign
-            
-            echo "Setting key partition list..."
-            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            
-            echo "##vso[task.setvariable variable=KEYCHAIN_PATH]$KEYCHAIN_PATH"
-            echo "##vso[task.setvariable variable=KEYCHAIN_PASSWORD]$KEYCHAIN_PASSWORD"
-        env:
-          P12_PASSWORD: $(P12Password)
+            echo "=== Verifying certificate and private key ==="
+            security find-certificate -a -c "$(APPLE_CERTIFICATE_SIGNING_IDENTITY)" -Z
       
       - task: InstallAppleProvisioningProfile@0
-        displayName: Install Apple provisioning profile
+        name: mainAppProv
+        displayName: Install Main App Provisioning Profile
         inputs:
           provProfileSecureFile: $(MobileProvisionSecureFileId)
       
       - task: InstallAppleProvisioningProfile@0
-        displayName: Install Apple provisioning profile
+        name: extensionProv
+        displayName: Install Extension Provisioning Profile
         inputs:
           provProfileSecureFile: cfa9cd9a-3b43-4a7e-827b-fa4f66bbdf50
       
-      # Verify that certificates and provisioning profiles are correctly installed (only when debugging)
+      # Verify that certificates and provisioning profiles are correctly installed.
       - task: Bash@3
         displayName: Verify certificates and provisioning profiles
-        condition: eq(variables['VERIFY_SIGNING'], 'true')
         inputs:
           targetType: 'inline'
           script: |
@@ -195,6 +259,11 @@ jobs:
             
             echo "=== Verificando provisioning profiles ==="
             ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+            for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
+              echo "Profile: $f"
+              security cms -D -i "$f" | grep -A 1 "Name" | grep "string"
+              security cms -D -i "$f" | grep -A 1 "UUID" | grep "string"
+            done
             
             echo "=== Verificando keychain ==="
             security list-keychains
@@ -204,38 +273,29 @@ jobs:
             xcodebuild -showsdks
           failOnStderr: false
       
-      # Create post_install hook for Podfile
       - task: Bash@3
-        displayName: Add Podfile post_install hook
+        displayName: 'Fix Podfile and Deployment Target'
         inputs:
           targetType: 'inline'
           script: |
-                  echo "Adding post_install hook to Podfile..."
-                  if [ -f "ios/Podfile" ]; then
-                    # Verificar si ya existe el post_install hook
-                    if ! grep -q "post_install" ios/Podfile; then
-                      echo "Adding post_install hook to fix deployment targets..."
-                      cat >> ios/Podfile << 'EOF'
-      
-                  post_install do |installer|
-                    installer.pods_project.targets.each do |target|
-                      target.build_configurations.each do |config|
-                        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-                        config.build_settings['ENABLE_BITCODE'] = 'NO'
-                        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
-                      end
-                    end
-                  end
-                  EOF
-                    else
-                      echo "post_install hook already exists, updating deployment target..."
-                      # Actualizar el deployment target en el post_install existente
-                      sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
-                    fi
-                  fi
-      
-                  echo "Current Podfile content:"
-                  cat ios/Podfile
+            echo "Updating Podfile post_install hook..."
+            # Use ruby to safely inject the deployment target fix into the existing post_install block
+            ruby -i -pe '
+              if $_ =~ /post_install do \|installer\|/
+                $in_post_install = true
+              elsif $in_post_install && $_ =~ /^  end/
+                puts "    installer.pods_project.targets.each do |target|"
+                puts "      target.build_configurations.each do |config|"
+                puts "        config.build_settings[\"IPHONEOS_DEPLOYMENT_TARGET\"] = \"12.0\""
+                puts "        config.build_settings[\"ENABLE_BITCODE\"] = \"NO\""
+                puts "      end"
+                puts "    end"
+                $in_post_install = false
+              end
+            ' ios/Podfile
+            
+            echo "Updated Podfile content:"
+            cat ios/Podfile
 
       # Update iOS Deployment Target before CocoaPods
       - task: Bash@3
@@ -268,33 +328,63 @@ jobs:
                   # Verificar cambios
                   echo "Checking current deployment targets:"
                   grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
-      
-
-      
-      - task: CocoaPods@0
-        displayName: Pod install
-        inputs:
-          cwd: ios
-          forceRepoUpdate: false
-
-      # Determine project file path
       - task: Bash@3
-        displayName: Set Xcode workspace path
+        displayName: 'Fix glog URL and Pod Install Retry'
         inputs:
           targetType: 'inline'
           script: |
-            echo "Setting default workspace path..."
-            echo "##vso[task.setvariable variable=APPCENTER_XCODE_PROJECT]ios/Etendo_Mobile.xcworkspace"
+            echo "Applying glog URL fix..."
+            # Some versions of RN have a problematic URL for glog
+            find node_modules -name "glog.podspec" -exec sed -i '' 's/https:\/\/github.com\/google\/glog.git/https:\/\/github.com\/google\/glog/g' {} + || true
+            
+            echo "Running pod install with retries..."
+            cd ios
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            until [ $RETRY_COUNT -ge $MAX_RETRIES ]
+            do
+               pod install && break
+               RETRY_COUNT=$[$RETRY_COUNT+1]
+               echo "Pod install failed. Retry $RETRY_COUNT/$MAX_RETRIES in 10 seconds..."
+               sleep 10
+            done
+            
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+              echo "Pod install failed after $MAX_RETRIES attempts."
+              exit 1
+            fi
+
+      # Verify that detect-autogenerated-workspace.sh exists
+      - task: Bash@3
+        displayName: Determine project file path (with verification)
+        inputs:
+          targetType: 'inline'
+          script: |
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/detect-autogenerated-workspace.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running detect-autogenerated-workspace.sh..."
+              bash "$SCRIPT_PATH" ios Etendo_Mobile
+            else
+              echo "detect-autogenerated-workspace.sh not found, setting default workspace..."
+              echo "##vso[task.setvariable variable=APPCENTER_XCODE_PROJECT]ios/Etendo_Mobile.xcworkspace"
+            fi
           workingDirectory: $(Build.SourcesDirectory)
           failOnStderr: false
 
       - task: Bash@3
-        displayName: Set signing style
+        displayName: Determine signing style and pods update (with verification)
         inputs:
           targetType: 'inline'
           script: |
-            echo "Setting manual signing..."
-            echo "##vso[task.setvariable variable=SIGNING_OPTION]manual"
+            SCRIPT_PATH="$(Agent.HomeDirectory)/scripts/determine-signing-style-and-pods-update.sh"
+            if [ -f "$SCRIPT_PATH" ]; then
+              echo "Running determine-signing-style-and-pods-update.sh..."
+              cd $(Build.SourcesDirectory)
+              bash "$SCRIPT_PATH"
+            else
+              echo "determine-signing-style-and-pods-update.sh not found, setting manual signing..."
+              echo "##vso[task.setvariable variable=SIGNING_OPTION]manual"
+            fi
           failOnStderr: false
       
       - task: PowerShell@2
@@ -339,23 +429,54 @@ jobs:
             . -name "*Info.plist" -exec /usr/libexec/PlistBuddy -c "Set
             :CFBundleVersion $(versionCode)" {} ;
       
-      # Calculate number of CPUs for parallel compilation
       - task: Bash@3
-        displayName: Calculate CPU count
+        displayName: 'Update Provisioning Profiles in Project'
         inputs:
           targetType: 'inline'
           script: |
-            CPU_COUNT=$(sysctl -n hw.ncpu)
-            echo "Available CPUs: $CPU_COUNT"
-            echo "##vso[task.setvariable variable=CPU_COUNT]$CPU_COUNT"
-          failOnStderr: false
-      
-
+            echo "Updating provisioning profile names in project.pbxproj..."
+            # Replace placeholder names with actual names from installed profiles
+            # Main App
+            sed -i '' "s/Etendo Mobile Distribution/$(mainAppProv.provisioningProfileName)/g" ios/Etendo_Mobile.xcodeproj/project.pbxproj
+            # Extension
+            sed -i '' "s/Etendo Recieve Share/$(extensionProv.provisioningProfileName)/g" ios/Etendo_Mobile.xcodeproj/project.pbxproj
+            sed -i '' "s/Etendo Distribution/$(extensionProv.provisioningProfileName)/g" ios/Etendo_Mobile.xcodeproj/project.pbxproj
+            
+            echo "Creating exportOptions.plist..."
+            cat <<EOF > $(Agent.TempDirectory)/exportOptions.plist
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+                <key>method</key>
+                <string>app-store</string>
+                <key>teamID</key>
+                <string>B4T44MT553</string>
+                <key>provisioningProfiles</key>
+                <dict>
+                    <key>com.etendoapploader.ios</key>
+                    <string>$(mainAppProv.provisioningProfileName)</string>
+                    <key>com.etendoapploader.ios.EtendoRecieveShare</key>
+                    <string>$(extensionProv.provisioningProfileName)</string>
+                </dict>
+                <key>signingCertificate</key>
+                <string>iPhone Distribution</string>
+                <key>signingStyle</key>
+                <string>manual</string>
+                <key>destination</key>
+                <string>export</string>
+            </dict>
+            </plist>
+            EOF
+            
+            echo "Project updated and exportOptions.plist created."
+            echo "Verifying PROVISIONING_PROFILE_SPECIFIER in project.pbxproj:"
+            grep "PROVISIONING_PROFILE_SPECIFIER" ios/Etendo_Mobile.xcodeproj/project.pbxproj || echo "No specifiers found"
       
       - task: Xcode@4
-        displayName: Xcode build (signed, optimized)
+        displayName: Xcode build (signed)
         inputs:
-          actions: build
+          actions: clean archive
           configuration: Release
           sdk: iphoneos
           xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
@@ -366,30 +487,21 @@ jobs:
           exportPath: $(agent.builddirectory)/output/build/export
           signingOption: manual
           signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
-          provisioningProfileUuid: '9dcc02fc-0024-46fe-b528-5126536be0b3'
           teamId: 'B4T44MT553'
-          args: '-allowProvisioningUpdates -destination generic/platform=iOS -jobs $(CPU_COUNT) -parallelizeTargets -showBuildTimingSummary COMPILER_INDEX_STORE_ENABLE=NO SWIFT_COMPILATION_MODE=wholemodule CLANG_ENABLE_MODULE_DEBUGGING=NO DEBUG_INFORMATION_FORMAT=dwarf ENABLE_BITCODE=NO ONLY_ACTIVE_ARCH=NO GCC_OPTIMIZATION_LEVEL=s'
-          outputPattern: $(agent.builddirectory)/output/build
+          exportOptions: 'plist'
+          exportOptionsPlist: '$(Agent.TempDirectory)/exportOptions.plist'
+          args: >-
+            -verbose
+            -allowProvisioningUpdates 
+            -destination generic/platform=iOS 
+            PROVISIONING_PROFILE=$(mainAppProv.provisioningProfileUuid)
+            PROVISIONING_PROFILE_SPECIFIER=$(mainAppProv.provisioningProfileName)
+            PROVISIONING_PROFILE[com.etendoapploader.ios.EtendoRecieveShare]=$(extensionProv.provisioningProfileUuid)
+            PROVISIONING_PROFILE_SPECIFIER[com.etendoapploader.ios.EtendoRecieveShare]=$(extensionProv.provisioningProfileName)
+            ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS=NO
+            COMPILER_INDEX_STORE_ENABLE=NO
         continueOnError: false
-        timeoutInMinutes: 75  # First build without cache may take longer; subsequent builds with cache will be much faster (~20-30 min)
-      
-      # Generate dSYM files for crash reporting (post-build to avoid slowing down compilation)
-      - task: Bash@3
-        displayName: Generate dSYM files
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Generating dSYM files from archive..."
-            ARCHIVE_PATH="$(agent.builddirectory)/output/build/archive/Etendo_Mobile.xcarchive"
-            if [ -d "$ARCHIVE_PATH" ]; then
-              # dSYMs are automatically generated during archive
-              echo "dSYM files location: $ARCHIVE_PATH/dSYMs"
-              ls -la "$ARCHIVE_PATH/dSYMs" || echo "No dSYMs found"
-            else
-              echo "Archive not found at $ARCHIVE_PATH"
-              exit 1
-            fi
-          failOnStderr: false
+        timeoutInMinutes: 60
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
