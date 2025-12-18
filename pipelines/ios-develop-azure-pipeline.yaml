@@ -4,7 +4,7 @@ variables:
   AppExtensionProvisionSecureFiles: >-
     [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
-    {"expirationDate":"2025-12-16T18:57:43.000Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
+    {"expirationDate":"2026-12-17T13:34:03Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"26b648c5-9580-43c7-8056-0fffdaf5585d"}
   APPCENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
@@ -409,8 +409,8 @@ jobs:
             --app-insights-key="$(AppInsightsKey)"
             --xc-workspace-path="$(APPCENTER_XCODE_WORKSPACE)"
             --scheme="Etendo_Mobile" --code-sign-style="$(SIGNING_OPTION)"
-            --app-provisioning-profile-uuid="9dcc02fc-0024-46fe-b528-5126536be0b3"
-            --app-extension-provisioning-profile-uuids="422a41d1-b62d-469e-b7d3-fd81030487bb"
+            --app-provisioning-profile-uuid="26b648c5-9580-43c7-8056-0fffdaf5585d"
+            --app-extension-provisioning-profile-uuids="080f18d3-512f-4055-995c-8a8a89aa52ec"
             --app-extension-target-bundle-identifiers="com.etendoapploader.ios.EtendoRecieveShare"
             --code-sign-identity="$(APPLE_CERTIFICATE_SIGNING_IDENTITY)"
             --development-team="B4T44MT553"
@@ -431,7 +431,7 @@ jobs:
           exportPath: $(agent.builddirectory)/output/build/export
           signingOption: manual
           signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
-          provisioningProfileUuid: '9dcc02fc-0024-46fe-b528-5126536be0b3'
+          provisioningProfileUuid: '26b648c5-9580-43c7-8056-0fffdaf5585d'
           teamId: 'B4T44MT553'
           args: '-allowProvisioningUpdates -destination generic/platform=iOS'
           outputPattern: $(agent.builddirectory)/output/build
