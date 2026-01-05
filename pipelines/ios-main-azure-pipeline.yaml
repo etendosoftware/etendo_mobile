@@ -1,10 +1,10 @@
 variables:
-  P12SecureFileId: ab637576-6255-4111-881f-9925ef484173
-  MobileProvisionSecureFileId: 91218312-496d-4087-8815-289bd47446be
+  P12SecureFileId: f5ebc007-cdc0-4c03-9e7d-a7e0c5de5efc
+  MobileProvisionSecureFileId: ca1a75cd-d8c7-4b66-b43c-c1f976309e37
   AppExtensionProvisionSecureFiles: >-
-    [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
+    [{"fileId":"44a314c3-d9dc-4f77-8f1a-e1c90aa9cbeb","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
-    {"expirationDate":"2025-12-16T18:57:43.000Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"9dcc02fc-0024-46fe-b528-5126536be0b3"}
+    {"expirationDate":"2026-12-17T13:34:03Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"26b648c5-9580-43c7-8056-0fffdaf5585d"}
   APPCENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
@@ -63,7 +63,7 @@ jobs:
 
             unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
 
-            # Verificar que los archivos se extrajeron correctamente
+            # Verify that files were extracted correctly
             Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
 
             Invoke-Expression 'bash ./scripts/init.sh'
@@ -107,7 +107,7 @@ jobs:
               bash "$SCRIPT_PATH" node18
             else
               echo "Script not found at $SCRIPT_PATH, using direct node setup..."
-              # Configurar Node.js directamente usando nvm o similar
+              # Configure Node.js directly using nvm or similar
               if command -v nvm &> /dev/null; then
                 nvm use 18 || nvm install 18
               elif command -v nodenv &> /dev/null; then
@@ -228,7 +228,7 @@ jobs:
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
+          provProfileSecureFile: 44a314c3-d9dc-4f77-8f1a-e1c90aa9cbeb
       
       # Verify that certificates and provisioning profiles are correctly installed.
       - task: Bash@3
@@ -236,17 +236,17 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            echo "=== Verificando certificados instalados ==="
+            echo "=== Verifying installed certificates ==="
             security find-identity -v -p codesigning
             
-            echo "=== Verificando provisioning profiles ==="
+            echo "=== Verifying provisioning profiles ==="
             ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
             
-            echo "=== Verificando keychain ==="
+            echo "=== Verifying keychain ==="
             security list-keychains
             security default-keychain
             
-            echo "=== Verificando configuración de Xcode ==="
+            echo "=== Verifying Xcode configuration ==="
             xcodebuild -showsdks
           failOnStderr: false
       
@@ -256,32 +256,32 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-                  echo "Adding post_install hook to Podfile..."
-                  if [ -f "ios/Podfile" ]; then
-                    # Verificar si ya existe el post_install hook
-                    if ! grep -q "post_install" ios/Podfile; then
-                      echo "Adding post_install hook to fix deployment targets..."
-                      cat >> ios/Podfile << 'EOF'
-      
-                  post_install do |installer|
-                    installer.pods_project.targets.each do |target|
-                      target.build_configurations.each do |config|
-                        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-                        config.build_settings['ENABLE_BITCODE'] = 'NO'
-                        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
-                      end
-                    end
-                  end
-                  EOF
-                    else
-                      echo "post_install hook already exists, updating deployment target..."
-                      # Actualizar el deployment target en el post_install existente
-                      sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
-                    fi
-                  fi
-      
-                  echo "Current Podfile content:"
-                  cat ios/Podfile
+            echo "Adding post_install hook to Podfile..."
+            if [ -f "ios/Podfile" ]; then
+              # Check if post_install hook already exists
+              if ! grep -q "post_install" ios/Podfile; then
+                echo "Adding post_install hook to fix deployment targets..."
+                cat >> ios/Podfile << 'EOF'
+
+            post_install do |installer|
+              installer.pods_project.targets.each do |target|
+                target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                  config.build_settings['ENABLE_BITCODE'] = 'NO'
+                  config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
+                end
+              end
+            end
+            EOF
+              else
+                echo "post_install hook already exists, updating deployment target..."
+                # Update the deployment target in the existing post_install
+                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
+              fi
+            fi
+
+            echo "Current Podfile content:"
+            cat ios/Podfile
 
       # Update iOS Deployment Target before CocoaPods
       - task: Bash@3
@@ -291,29 +291,27 @@ jobs:
           script: |
             echo "Updating iOS Deployment Target to 12.0..."
 
-                  echo "Updating iOS Deployment Target to 12.0..."
-      
-                  # Actualizar en el proyecto principal
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
-      
-                  # Actualizar en Podfile si existe
-                  if [ -f "ios/Podfile" ]; then
-                    echo "Updating Podfile..."
-                    sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
-                    sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
-                    # Si no hay platform definido, agregarlo
-                    if ! grep -q "platform :ios" ios/Podfile; then
-                      echo "Adding iOS platform to Podfile..."
-                      sed -i '' '1i\
-                    platform :ios, '\''12.0'\''
-                    ' ios/Podfile
-                    fi
-                  fi
-      
-                  # Verificar cambios
-                  echo "Checking current deployment targets:"
-                  grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
+            # Update in the main project
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+
+            # Update in Podfile if it exists
+            if [ -f "ios/Podfile" ]; then
+              echo "Updating Podfile..."
+              sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
+              sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
+              # If no platform is defined, add it
+              if ! grep -q "platform :ios" ios/Podfile; then
+                echo "Adding iOS platform to Podfile..."
+                sed -i '' '1i\
+            platform :ios, '\''12.0'\''
+            ' ios/Podfile
+              fi
+            fi
+
+            # Verify changes
+            echo "Checking current deployment targets:"
+            grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       - task: CocoaPods@0
         displayName: Pod install
         inputs:
@@ -398,7 +396,7 @@ jobs:
       - task: CmdLine@1
         displayName: Update Xcode build settings
         continueOnError: true
-        condition: false  # Disabled by default, enable if necessary
+        condition: succeeded()
         inputs:
           filename: node
           arguments: >-
@@ -407,8 +405,8 @@ jobs:
             --app-insights-key="$(AppInsightsKey)"
             --xc-workspace-path="$(APPCENTER_XCODE_WORKSPACE)"
             --scheme="Etendo_Mobile" --code-sign-style="$(SIGNING_OPTION)"
-            --app-provisioning-profile-uuid="9dcc02fc-0024-46fe-b528-5126536be0b3"
-            --app-extension-provisioning-profile-uuids="422a41d1-b62d-469e-b7d3-fd81030487bb"
+            --app-provisioning-profile-uuid="26b648c5-9580-43c7-8056-0fffdaf5585d"
+            --app-extension-provisioning-profile-uuids="080f18d3-512f-4055-995c-8a8a89aa52ec"
             --app-extension-target-bundle-identifiers="com.etendoapploader.ios.EtendoRecieveShare"
             --code-sign-identity="$(APPLE_CERTIFICATE_SIGNING_IDENTITY)"
             --development-team="B4T44MT553"
@@ -429,7 +427,7 @@ jobs:
           exportPath: $(agent.builddirectory)/output/build/export
           signingOption: manual
           signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
-          provisioningProfileUuid: '9dcc02fc-0024-46fe-b528-5126536be0b3'
+          provisioningProfileUuid: '26b648c5-9580-43c7-8056-0fffdaf5585d'
           teamId: 'B4T44MT553'
           args: '-allowProvisioningUpdates -destination generic/platform=iOS'
           outputPattern: $(agent.builddirectory)/output/build
