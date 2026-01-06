@@ -1,15 +1,15 @@
 variables:
-  P12SecureFileId: ab637576-6255-4111-881f-9925ef484173
-  MobileProvisionSecureFileId: 91218312-496d-4087-8815-289bd47446be
+  P12SecureFileId: f5ebc007-cdc0-4c03-9e7d-a7e0c5de5efc
+  MobileProvisionSecureFileId: ca1a75cd-d8c7-4b66-b43c-c1f976309e37
   AppExtensionProvisionSecureFiles: >-
-    [{"fileId":"105406af-28ef-4246-8494-e1db2b52ab3e","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
+    [{"fileId":"44a314c3-d9dc-4f77-8f1a-e1c90aa9cbeb","fileName":"Etendo_Recieve_Share.mobileprovision","targetBundleIdentifier":"com.etendoapploader.ios.EtendoRecieveShare"}]
   MobileProvision: >-
     {"expirationDate":"2026-12-17T13:34:03Z","teamIdentifier":"B4T44MT553","type":"app-store","bundleIdentifier":"com.etendoapploader.ios","UUID":"26b648c5-9580-43c7-8056-0fffdaf5585d"}
   APPCENTER_XCODE_PROJECT: ios/Etendo_Mobile.xcworkspace
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
-  # Variables adicionales requeridas
+  # Additional required variables
   APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
 name: $(artifactVersioning.build.value)
 resources:
@@ -25,14 +25,13 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-14  # Usar macOS-13 que tiene Xcode estable, o macOS-12 si está disponible
+      vmImage: macOS-14  
     steps:
       - checkout: self
         clean: true
         submodules: recursive
         lfs: true
       
-      # Verificar y crear directorio de scripts si no existe
       - task: Bash@3
         displayName: Create scripts directory
         inputs:
@@ -63,13 +62,12 @@ jobs:
 
             unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
 
-            # Verificar que los archivos se extrajeron correctamente
+            # Verify that files were extracted correctly
             Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
 
             Invoke-Expression 'bash ./scripts/init.sh'
           failOnStderr: false
       
-      # Verificar que los scripts estén disponibles
       - task: Bash@3
         displayName: Verify scripts installation
         inputs:
@@ -88,16 +86,14 @@ jobs:
         inputs:
           scriptPath: appcenter-post-clone.sh
       
-      # Alternativa 1: Usar NodeTool task en lugar del script personalizado
       - task: NodeTool@0
         displayName: 'Use Node 18.x'
         inputs:
           versionSpec: '18.x'
       
-      # Alternativa 2: Si necesitas usar el script, verificar su existencia primero
       - task: Bash@3
         displayName: Select Node.js Version v2 (Alternative)
-        condition: false  # Deshabilitado por defecto, habilitar si es necesario
+        condition: false
         inputs:
           targetType: 'inline'
           script: |
@@ -107,7 +103,6 @@ jobs:
               bash "$SCRIPT_PATH" node18
             else
               echo "Script not found at $SCRIPT_PATH, using direct node setup..."
-              # Configurar Node.js directamente usando nvm o similar
               if command -v nvm &> /dev/null; then
                 nvm use 18 || nvm install 18
               elif command -v nodenv &> /dev/null; then
@@ -145,7 +140,7 @@ jobs:
              echo "require('@react-native-community/cli').run();" >> ./node_modules/react-native/local-cli/cli.js
             fi
 
-            node --max_old_space_size=8192
+            node --max_old_space_size=4096
             node_modules/react-native/local-cli/cli.js bundle --entry-file
             $INDEX_FILE --platform ios --dev false --reset-cache --bundle-output
             dummy-sourcemap-main.jsbundle --sourcemap-output index.ios.map
@@ -160,7 +155,6 @@ jobs:
             index.ios.map $(build.artifactstagingdirectory)/symbols/"
           failOnStandardError: true
       
-      # Verificar que emit-tags.sh exista antes de ejecutarlo
       - task: Bash@3
         displayName: Tag build (with verification)
         inputs:
@@ -228,62 +222,54 @@ jobs:
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
         inputs:
-          provProfileSecureFile: 105406af-28ef-4246-8494-e1db2b52ab3e
+          provProfileSecureFile: 44a314c3-d9dc-4f77-8f1a-e1c90aa9cbeb
       
-      # Verificar que los certificados y provisioning profiles estén correctamente instalados
       - task: Bash@3
         displayName: Verify certificates and provisioning profiles
         inputs:
           targetType: 'inline'
           script: |
-            echo "=== Verificando certificados instalados ==="
             security find-identity -v -p codesigning
             
-            echo "=== Verificando provisioning profiles ==="
             ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
             
-            echo "=== Verificando keychain ==="
             security list-keychains
             security default-keychain
             
-            echo "=== Verificando configuración de Xcode ==="
             xcodebuild -showsdks
           failOnStderr: false
       
-      # Crear post_install hook para Podfile
       - task: Bash@3
         displayName: Add Podfile post_install hook
         inputs:
           targetType: 'inline'
           script: |
-                  echo "Adding post_install hook to Podfile..."
-                  if [ -f "ios/Podfile" ]; then
-                    # Verificar si ya existe el post_install hook
-                    if ! grep -q "post_install" ios/Podfile; then
-                      echo "Adding post_install hook to fix deployment targets..."
-                      cat >> ios/Podfile << 'EOF'
-      
-                  post_install do |installer|
-                    installer.pods_project.targets.each do |target|
-                      target.build_configurations.each do |config|
-                        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-                        config.build_settings['ENABLE_BITCODE'] = 'NO'
-                        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
-                      end
-                    end
-                  end
-                  EOF
-                    else
-                      echo "post_install hook already exists, updating deployment target..."
-                      # Actualizar el deployment target en el post_install existente
-                      sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
-                    fi
-                  fi
-      
-                  echo "Current Podfile content:"
-                  cat ios/Podfile
+            echo "Adding post_install hook to Podfile..."
+            if [ -f "ios/Podfile" ]; then
+              if ! grep -q "post_install" ios/Podfile; then
+                echo "Adding post_install hook to fix deployment targets..."
+                cat >> ios/Podfile << 'EOF'
 
-      # Actualizar iOS Deployment Target antes de CocoaPods
+            post_install do |installer|
+              installer.pods_project.targets.each do |target|
+                target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                  config.build_settings['ENABLE_BITCODE'] = 'NO'
+                  config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
+                end
+              end
+            end
+            EOF
+              else
+                echo "post_install hook already exists, updating deployment target..."
+                # Update the deployment target in the existing post_install
+                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
+              fi
+            fi
+
+            echo "Current Podfile content:"
+            cat ios/Podfile
+
       - task: Bash@3
         displayName: Update iOS Deployment Target
         inputs:
@@ -291,36 +277,42 @@ jobs:
           script: |
             echo "Updating iOS Deployment Target to 12.0..."
 
-                  echo "Updating iOS Deployment Target to 12.0..."
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
+            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+
+            if [ -f "ios/Podfile" ]; then
+              echo "Updating Podfile..."
+              sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
+              sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
+              # If no platform is defined, add it
+              if ! grep -q "platform :ios" ios/Podfile; then
+                echo "Adding iOS platform to Podfile..."
+                sed -i '' '1i\
+            platform :ios, '\''12.0'\''
+            ' ios/Podfile
+              fi
+            fi
+
+            echo "Checking current deployment targets:"
+            grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       
-                  # Actualizar en el proyecto principal
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
-                  find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+      - task: Bash@3
+        displayName: Disable Flipper for CI
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Disabling Flipper for CI build..."
+            export NO_FLIPPER=1
+            echo "NO_FLIPPER=1" >> $BASH_ENV
+            echo "Flipper disabled successfully"
+          failOnStderr: false
       
-                  # Actualizar en Podfile si existe
-                  if [ -f "ios/Podfile" ]; then
-                    echo "Updating Podfile..."
-                    sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
-                    sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
-                    # Si no hay platform definido, agregarlo
-                    if ! grep -q "platform :ios" ios/Podfile; then
-                      echo "Adding iOS platform to Podfile..."
-                      sed -i '' '1i\
-                    platform :ios, '\''12.0'\''
-                    ' ios/Podfile
-                    fi
-                  fi
-      
-                  # Verificar cambios
-                  echo "Checking current deployment targets:"
-                  grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
       - task: CocoaPods@0
         displayName: Pod install
         inputs:
           cwd: ios
-          forceRepoUpdate: true
+          forceRepoUpdate: false
 
-      # Verificar que detect-autogenerated-workspace.sh exista
       - task: Bash@3
         displayName: Determine project file path (with verification)
         inputs:
@@ -338,7 +330,6 @@ jobs:
           failOnStderr: false
 
       
-      # Verificar que determine-signing-style-and-pods-update.sh exista
       - task: Bash@3
         displayName: Determine signing style and pods update (with verification)
         inputs:
@@ -400,7 +391,7 @@ jobs:
       - task: CmdLine@1
         displayName: Update Xcode build settings
         continueOnError: true
-        condition: false  # Deshabilitado temporalmente para evitar errores
+        condition: succeeded()
         inputs:
           filename: node
           arguments: >-
@@ -416,11 +407,44 @@ jobs:
             --development-team="B4T44MT553"
             --app-bundle-identifier="com.etendoapploader.ios"
           workingFolder: $(Build.SourcesDirectory)
-      
+  
+      - task: Bash@3
+        displayName: Create exportOptions.plist
+        inputs:
+          targetType: 'inline'
+          script: |
+            cat > $(Build.SourcesDirectory)/exportOptions.plist << 'EOF'
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key>
+              <string>app-store-connect</string>
+              <key>teamID</key>
+              <string>B4T44MT553</string>
+              <key>uploadSymbols</key>
+              <false/>
+              <key>compileBitcode</key>
+              <false/>
+              <key>provisioningProfiles</key>
+              <dict>
+                <key>com.etendoapploader.ios</key>
+                <string>26b648c5-9580-43c7-8056-0fffdaf5585d</string>
+                <key>com.etendoapploader.ios.EtendoRecieveShare</key>
+                <string>080f18d3-512f-4055-995c-8a8a89aa52ec</string>
+              </dict>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+            </dict>
+            </plist>
+            EOF
+
       - task: Xcode@4
         displayName: Xcode build (signed)
         inputs:
-          actions: clean build
+          actions: build
           configuration: Release
           sdk: iphoneos
           xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
@@ -433,10 +457,10 @@ jobs:
           signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
           provisioningProfileUuid: '26b648c5-9580-43c7-8056-0fffdaf5585d'
           teamId: 'B4T44MT553'
-          args: '-allowProvisioningUpdates -destination generic/platform=iOS'
-          outputPattern: $(agent.builddirectory)/output/build
-        continueOnError: false
-        timeoutInMinutes: 60
+          exportOptions: plist
+          exportOptionsPlist: '$(Build.SourcesDirectory)/exportOptions.plist'
+          args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
+        timeoutInMinutes: 45
       
       - task: CopyFiles@2
         displayName: Copy build files to staging

@@ -99,7 +99,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode resolveVersionCode()
-        versionName "1.14.0"
+        versionName "1.15.0"
 
         // ⚡ Support 16 kB memory pages 
         ndk {
