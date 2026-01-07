@@ -16,7 +16,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-13
+      vmImage: macOS-14
     steps:
       - checkout: self
         clean: true
