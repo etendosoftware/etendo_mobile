@@ -74,6 +74,52 @@ const ComponentTestScreen = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
 
+  const renderCameraContent = () => {
+    if (!hasPermission) {
+      return (
+        <Button
+          typeStyle="primary"
+          text="Request Camera Permission"
+          onPress={requestPermission}
+        />
+      );
+    }
+    if (!device) {
+      return <Text style={styles.hint}>No camera device found</Text>;
+    }
+    if (!cameraActive) {
+      return (
+        <Button
+          typeStyle="primary"
+          text="Open Camera"
+          onPress={() => setCameraActive(true)}
+        />
+      );
+    }
+    return (
+      <View>
+        <Camera
+          ref={cameraRef}
+          style={styles.camera}
+          device={device}
+          isActive={cameraActive}
+          photo
+        />
+        <View style={styles.cameraControls}>
+          <TouchableOpacity style={styles.captureBtn} onPress={takePhoto} />
+          <Button
+            typeStyle="secondary"
+            text="Close"
+            onPress={() => setCameraActive(false)}
+          />
+        </View>
+        {!!lastPhoto && (
+          <Text style={styles.hint}>Last photo: {lastPhoto}</Text>
+        )}
+      </View>
+    );
+  };
+
   const takePhoto = useCallback(async () => {
     try {
       const photo = await cameraRef.current?.takePhoto();
@@ -81,8 +127,9 @@ const ComponentTestScreen = () => {
         setLastPhoto(photo.path);
         show('Photo taken!', 'success');
       }
-    } catch (e) {
-      show('Failed to take photo', 'error');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to take photo';
+      show(message, 'error');
     }
   }, []);
 
@@ -308,45 +355,7 @@ const ComponentTestScreen = () => {
 
         {/* ── CAMERA ──────────────────────────────────────────────────────── */}
         <Section title="Camera (react-native-vision-camera)">
-          {!hasPermission ? (
-            <Button
-              typeStyle="primary"
-              text="Request Camera Permission"
-              onPress={requestPermission}
-            />
-          ) : !device ? (
-            <Text style={styles.hint}>No camera device found</Text>
-          ) : !cameraActive ? (
-            <Button
-              typeStyle="primary"
-              text="Open Camera"
-              onPress={() => setCameraActive(true)}
-            />
-          ) : (
-            <View>
-              <Camera
-                ref={cameraRef}
-                style={styles.camera}
-                device={device}
-                isActive={cameraActive}
-                photo
-              />
-              <View style={styles.cameraControls}>
-                <TouchableOpacity
-                  style={styles.captureBtn}
-                  onPress={takePhoto}
-                />
-                <Button
-                  typeStyle="secondary"
-                  text="Close"
-                  onPress={() => setCameraActive(false)}
-                />
-              </View>
-              {lastPhoto && (
-                <Text style={styles.hint}>Last photo: {lastPhoto}</Text>
-              )}
-            </View>
-          )}
+          {renderCameraContent()}
         </Section>
 
         <View style={styles.bottomSpacer} />
