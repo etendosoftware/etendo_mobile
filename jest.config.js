@@ -42,7 +42,8 @@ module.exports = {
     '<rootDir>/jest.setup.js',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native' +
+    'node_modules/(?!(' +
+    'react-native' +
     '|@react-native' +
     '|@react-navigation' +
     '|@react-native-async-storage/async-storage' +
@@ -50,10 +51,15 @@ module.exports = {
     '|@react-native-community/masked-view' +
     '|@react-native-community/netinfo' +
     '|@react-native-community/slider' +
+    '|@react-native-documents/picker' +
     '|@react-native-picker/picker' +
     '|@reduxjs/toolkit' +
     '|@sentry/react-native' +
     '|axios' +
+    '|color' +
+    '|color-convert' +
+    '|color-string' +
+    '|color-name' +
     '|date-fns' +
     '|etendo-ui-library' +
     '|etrest' +
@@ -93,9 +99,6 @@ module.exports = {
     '|redux-persist' +
     '|rn-placeholder' +
     '|uuid' +
-    'node_modules/(?!react-native|react-native-default-preference|@react-native|react-navigation)' +
-    'node_modules/(?!react-native-device-info)' +
-    'node_modules/(?!(react-native|react-native-fs)/)' +
     ')/)',
   ],
   moduleNameMapper: {

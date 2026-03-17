@@ -121,7 +121,7 @@ describe('DynamicComponent', () => {
         testProp: 'test',
         url: 'https://test.com',
       }),
-      {}
+      undefined
     );
 
     unmount();
