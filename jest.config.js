@@ -68,6 +68,7 @@ module.exports = {
     '|mobx-persist' +
     '|mobx-react' +
     '|react-native-blob-util' +
+    '|react-native-drawer-layout' +
     '|react-native-codegen' +
     '|react-native-date-picker' +
     '|react-native-document-picker' +
@@ -101,8 +102,27 @@ module.exports = {
     '|uuid' +
     ')/)',
   ],
+  resolver: '<rootDir>/jest.resolver.js',
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|svg)$': '<rootDir>/__mocks__/fileMock.js',
     'react-native-gesture-handler': '<rootDir>/__mocks__/react-native-gesture-handler.js',
+    // @react-navigation/drawer v7 uses "source" export condition which resolves to
+    // TypeScript src/ files. Force the compiled JS to avoid ESM parse errors in Jest.
+    '^@react-navigation/drawer$': '<rootDir>/node_modules/@react-navigation/drawer/lib/module/index.js',
+    '^@react-navigation/native-stack$': '<rootDir>/node_modules/@react-navigation/native-stack/lib/module/index.js',
+    // etendo-ui-library's index.js loads both dist-web and dist-native unconditionally.
+    // In Jest, dist-web crashes because react-native-web tries to access the DOM.
+    // Redirect to the native-only build.
+    '^etendo-ui-library$': '<rootDir>/__mocks__/etendo-ui-library.js',
+    // packages.tsx imports every native module at load time (TurboModuleRegistry,
+    // codegenNativeComponent) — they all crash in Jest. Mock the whole registry.
+    '.*/components/packages$': '<rootDir>/__mocks__/packages.js',
+    // react-native-worklets-core has a top-level "source" field in package.json that
+    // the react-native jest resolver picks up, resolving to src/index.ts (TypeScript).
+    // Force the compiled CommonJS build instead.
+    '^react-native-worklets-core$': '<rootDir>/__mocks__/react-native-worklets-core.js',
+    // react-native-screens uses codegenNativeComponent (Fabric API) at module load time.
+    // Old Architecture / Jest environment does not provide this — mock the whole package.
+    '^react-native-screens$': '<rootDir>/__mocks__/react-native-screens.js',
   },
 };
