@@ -21,6 +21,8 @@ module.exports = {
     "!src/**/constants/*",
     "!src/**/constants.ts*",
     "!src/**/references.ts",
+    "!src/screens/ComponentTestScreen.tsx",
+    "!src/components/packages.tsx",
     "App.tsx",
   ],
   // Fixed patterns to ignore files in coverage

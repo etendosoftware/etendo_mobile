@@ -4,7 +4,7 @@ buildscript {
     ext {
         buildToolsVersion = "35.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 36
+        compileSdkVersion = 35
         targetSdkVersion = 35
         ndkVersion = "27.1.12297006"
         kotlinVersion = "1.9.24"
@@ -19,6 +19,4 @@ buildscript {
     }
 }
 
-plugins {
-    id("com.facebook.react.rootproject")
-}
+apply plugin: "com.facebook.react.rootproject"
