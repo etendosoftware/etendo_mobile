@@ -41,8 +41,8 @@ describe('Profile Screen Data Transformation Test', () => {
   });
 
   it('should render profile with transformed data', async () => {
-    const { container } = render(<Profile navigation={mockNavigation} />);
-    expect(container).toBeTruthy();
+    const { root } = render(<Profile navigation={mockNavigation} />);
+    expect(root).toBeTruthy();
 
     const transformedData = {
       username: mockData.username,
@@ -65,13 +65,13 @@ describe('Profile Screen Data Transformation Test', () => {
       return null;
     });
 
-    const { container } = render(<Profile navigation={mockNavigation} />);
-    expect(container).toBeTruthy();
+    const { root } = render(<Profile navigation={mockNavigation} />);
+    expect(root).toBeTruthy();
   });
 
   it('should handle API errors without breaking rendering', async () => {
     mockGetFunctions.getRoleName.mockRejectedValueOnce(new Error('Error fetching role'));
-    const { container } = render(<Profile navigation={mockNavigation} />);
-    expect(container).toBeTruthy();
+    const { root } = render(<Profile navigation={mockNavigation} />);
+    expect(root).toBeTruthy();
   });
 });
