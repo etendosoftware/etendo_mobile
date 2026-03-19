@@ -26,13 +26,15 @@ jobs:
         displayName: "Select Node.js Version"
         inputs:
           version: '18.x'
-      - task: CmdLine@1
-        displayName: yarn/npm install
-        inputs:
-          filename: sh
-          arguments: >-
-            -c "if [ -f yarn.lock ]; then { yarn install
-            --network-timeout=600000; } else npm install; fi"
+      - script: |
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --network-timeout=600000
+          else
+            npm install
+          fi
+        displayName: 'Install Node dependencies'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStderr: false
       - task: CmdLine@2
         displayName: Run Jetify
         inputs:
@@ -104,10 +106,11 @@ jobs:
         inputs:
           secureFile: '7d2283fd-93c9-4e06-940c-afc282c1e105'
 
-      - task: Gradle@1
+      - task: Gradle@3
         displayName: Gradle Task
         inputs:
-          wrapperScript: android/gradlew
+          gradleWrapperFile: 'android/gradlew'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/android'
           tasks: ':app:bundleRelease'
           options: >
             -PMYAPP_UPLOAD_STORE_FILE="$(keystore.secureFilePath)"
@@ -115,7 +118,6 @@ jobs:
             -PMYAPP_UPLOAD_KEY_ALIAS="$(keyAlias)"
             -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)"
             -PVERSION_CODE="$(versionCode)"
-            -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
           sqAnalysisBreakBuildIfQualityGateFailed: false
