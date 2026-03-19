@@ -253,7 +253,7 @@ jobs:
             post_install do |installer|
               installer.pods_project.targets.each do |target|
                 target.build_configurations.each do |config|
-                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
                   config.build_settings['ENABLE_BITCODE'] = 'NO'
                   config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
                 end
@@ -282,13 +282,13 @@ jobs:
 
             if [ -f "ios/Podfile" ]; then
               echo "Updating Podfile..."
-              sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
-              sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
+              sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
+              sed -i '' "s/platform :ios, \"[0-9.]*\"/platform :ios, \"15.1\"/g" ios/Podfile
               # If no platform is defined, add it
               if ! grep -q "platform :ios" ios/Podfile; then
                 echo "Adding iOS platform to Podfile..."
                 sed -i '' '1i\
-            platform :ios, '\''12.0'\''
+            platform :ios, '\''15.1'\''
             ' ios/Podfile
               fi
             fi
@@ -307,11 +307,37 @@ jobs:
             echo "Flipper disabled successfully"
           failOnStderr: false
       
-      - task: CocoaPods@0
+      - task: Bash@3
+        displayName: Clean CocoaPods cache
+        inputs:
+          targetType: 'inline'
+          script: |
+            rm -rf Pods Podfile.lock
+          workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
+
+      - task: Bash@3
+        displayName: Pre-download Hermes engine
+        inputs:
+          targetType: 'inline'
+          script: |
+            RN_VERSION=$(node -e "console.log(require('./node_modules/react-native/package.json').version)")
+            HERMES_URL="https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${RN_VERSION}/react-native-artifacts-${RN_VERSION}-hermes-ios-debug.tar.gz"
+            echo "Downloading Hermes ${RN_VERSION} from Maven Central..."
+            mkdir -p /tmp/hermes-cache
+            curl -f -L --retry 5 --retry-delay 5 --retry-max-time 120 \
+              -o /tmp/hermes-cache/hermes-ios-debug.tar.gz \
+              "$HERMES_URL"
+            echo "HERMES_ENGINE_TARBALL_PATH=/tmp/hermes-cache/hermes-ios-debug.tar.gz" >> $BASH_ENV
+            echo "Hermes downloaded successfully."
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+      - task: Bash@3
         displayName: Pod install
         inputs:
-          cwd: ios
-          forceRepoUpdate: false
+          targetType: 'inline'
+          script: |
+            pod install --no-repo-update
+          workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
 
       - task: Bash@3
         displayName: Determine project file path (with verification)

@@ -5,7 +5,9 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, '14.0'
+require_relative '../node_modules/react-native-permissions/scripts/setup'
+
+platform :ios, '15.1'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 prepare_react_native_project!
 
@@ -23,10 +25,13 @@ target 'Etendo_Mobile' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
-  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
+  setup_permissions([
+    'Camera',
+    'LocationAlways',
+    'LocationWhenInUse',
+    'Microphone',
+  ])
 
   target 'Etendo_MobileTests' do
     inherit! :complete
@@ -40,6 +45,5 @@ target 'Etendo_Mobile' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
