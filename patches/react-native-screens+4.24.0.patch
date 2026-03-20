@@ -26,6 +26,45 @@ index cf17047..f3f4a28 100644
  
   private:
    static inline bool _screenSizeChanged(
+diff --git a/node_modules/react-native-screens/ios/RNSConvert.h b/node_modules/react-native-screens/ios/RNSConvert.h
+index 7d6e354..c793291 100644
+--- a/node_modules/react-native-screens/ios/RNSConvert.h
++++ b/node_modules/react-native-screens/ios/RNSConvert.h
+@@ -20,9 +20,6 @@ namespace react = facebook::react;
+ + (UINavigationItemBackButtonDisplayMode)UINavigationItemBackButtonDisplayModeFromCppEquivalent:
+     (react::RNSScreenStackHeaderConfigBackButtonDisplayMode)backButtonDisplayMode;
+ 
+-+ (RNSOptionalBoolean)RNSOptionalBooleanFromRNSFullScreenSwipeEnabledCppEquivalent:
+-    (react::RNSScreenFullScreenSwipeEnabled)fullScreenSwipeEnabled;
+-
+ + (RNSScreenStackPresentation)RNSScreenStackPresentationFromCppEquivalent:
+     (react::RNSScreenStackPresentation)stackPresentation;
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSConvert.mm b/node_modules/react-native-screens/ios/RNSConvert.mm
+index 905a03b..e3ef636 100644
+--- a/node_modules/react-native-screens/ios/RNSConvert.mm
++++ b/node_modules/react-native-screens/ios/RNSConvert.mm
+@@ -36,20 +36,6 @@
+   }
+ }
+ 
+-+ (RNSOptionalBoolean)RNSOptionalBooleanFromRNSFullScreenSwipeEnabledCppEquivalent:
+-    (react::RNSScreenFullScreenSwipeEnabled)fullScreenSwipeEnabled
+-{
+-  switch (fullScreenSwipeEnabled) {
+-    using enum react::RNSScreenFullScreenSwipeEnabled;
+-    case Undefined:
+-      return RNSOptionalBooleanUndefined;
+-    case True:
+-      return RNSOptionalBooleanTrue;
+-    case False:
+-      return RNSOptionalBooleanFalse;
+-  }
+-}
+-
+ + (RNSScreenStackPresentation)RNSScreenStackPresentationFromCppEquivalent:
+     (react::RNSScreenStackPresentation)stackPresentation
+ {
 diff --git a/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts b/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts
 index 4906480..4b232a8 100644
 --- a/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts
