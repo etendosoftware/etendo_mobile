@@ -9,6 +9,10 @@ require_relative '../node_modules/react-native-permissions/scripts/setup'
 
 platform :ios, '15.1'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
+
+# Disable New Architecture to match Android (newArchEnabled=false)
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']

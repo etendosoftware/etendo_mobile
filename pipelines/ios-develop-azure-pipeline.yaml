@@ -121,6 +121,25 @@ jobs:
             -c "if [ -f yarn.lock ]; then { yarn install
             --network-timeout=600000; } else npm install; fi"
       
+      - task: Bash@3
+        displayName: Verify patch-package applied
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Verifying react-native-screens patch..."
+            if grep -q "ShadowTreeCommitOptions" node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNodeCommitHook.cpp 2>/dev/null; then
+              echo "ERROR: patch NOT applied - ShadowTreeCommitOptions still present"
+              exit 1
+            else
+              echo "OK: ShadowTreeCommitOptions patch applied"
+            fi
+            if grep -q "RNSFullScreenSwipeEnabled" node_modules/react-native-screens/ios/RNSConvert.h 2>/dev/null; then
+              echo "ERROR: patch NOT applied - RNSFullScreenSwipeEnabled still present in RNSConvert.h"
+              exit 1
+            else
+              echo "OK: fullScreenSwipeEnabled patch applied"
+            fi
+
       - task: CmdLine@2
         displayName: Generate source map
         inputs:
