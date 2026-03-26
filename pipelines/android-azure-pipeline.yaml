@@ -16,7 +16,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-13
+      vmImage: macOS-14
     steps:
       - checkout: self
         clean: true
@@ -26,13 +26,15 @@ jobs:
         displayName: "Select Node.js Version"
         inputs:
           version: '18.x'
-      - task: CmdLine@1
-        displayName: yarn/npm install
-        inputs:
-          filename: sh
-          arguments: >-
-            -c "if [ -f yarn.lock ]; then { yarn install
-            --network-timeout=600000; } else npm install; fi"
+      - script: |
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --network-timeout=600000
+          else
+            npm install
+          fi
+        displayName: 'Install Node dependencies'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStderr: false
       - task: CmdLine@2
         displayName: Run Jetify
         inputs:
@@ -99,35 +101,27 @@ jobs:
             Write-Host "Calculated versionCode: $calculatedVersionCode"
             Write-Host "##vso[task.setvariable variable=versionCode]$calculatedVersionCode"
             Write-Host "##vso[task.setvariable variable=VERSION_CODE]$calculatedVersionCode"
-      - task: Gradle@1
+      - task: DownloadSecureFile@1
+        name: keystore
+        inputs:
+          secureFile: '7d2283fd-93c9-4e06-940c-afc282c1e105'
+
+      - task: Gradle@3
         displayName: Gradle Task
         inputs:
-          wrapperScript: android/gradlew
-          tasks: 'clean :app:assembleRelease :app:bundleRelease'
+          gradleWrapperFile: 'android/gradlew'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/android'
+          tasks: ':app:bundleRelease'
           options: >
             -PMYAPP_UPLOAD_STORE_FILE="$(keystore.secureFilePath)"
             -PMYAPP_UPLOAD_STORE_PASSWORD="$(keystorePassword)"
             -PMYAPP_UPLOAD_KEY_ALIAS="$(keyAlias)"
             -PMYAPP_UPLOAD_KEY_PASSWORD="$(keyPassword)"
             -PVERSION_CODE="$(versionCode)"
-            -p "android"
           jdkArchitecture: x64
           publishJUnitResults: false
           sqAnalysisBreakBuildIfQualityGateFailed: false
 
-      - task: AndroidSigning@3
-        displayName: Sign APK
-        inputs:
-          files: $(build.sourcesdirectory)/android/app/build/**/*.apk
-          keystoreFile: $(keystoreSecureFileId)
-          keystorePass: $(keystorePassword)
-          keystoreAlias: $(keyAlias)
-          keyPass: $(keyPassword)
-          apksignerArguments: '-verbose'
-      - task: DownloadSecureFile@1
-        name: keystore
-        inputs:
-          secureFile: '7d2283fd-93c9-4e06-940c-afc282c1e105'
       - task: AndroidSigning@1
         displayName: Sign Android App Bundle
         inputs:
@@ -137,14 +131,6 @@ jobs:
           keystoreAlias: $(keyAlias)
           keyPass: $(keyPassword)
           jarsignerArguments: '-verbose -sigalg SHA256withRSA -digestalg SHA-256'
-      - task: CopyFiles@2
-        displayName: Copy build files to staging
-        inputs:
-          SourceFolder: $(build.sourcesdirectory)/android/app/build/outputs
-          Contents: apk/**/*.apk
-          TargetFolder: $(build.artifactstagingdirectory)/build
-          OverWrite: true
-          flattenFolders: true
       - task: CopyFiles@2
         displayName: Copy bundle files to staging
         inputs:
@@ -162,11 +148,6 @@ jobs:
           OverWrite: true
           flattenFolders: true
       - task: PublishBuildArtifacts@1
-        displayName: Publish build
-        inputs:
-          PathtoPublish: $(build.artifactstagingdirectory)/build
-          ArtifactName: build
-      - task: PublishBuildArtifacts@1
         displayName: Publish bundle
         continueOnError: true
         inputs:
@@ -174,10 +155,7 @@ jobs:
           ArtifactName: bundle
       - task: PublishBuildArtifacts@1
         displayName: Publish mapping
-        condition: >-
-          and(succeeded(),
-          startsWith(variables['appcenter_android_postprocess_output.mapping'],
-          true))
+        condition: succeeded()
         continueOnError: true
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/mapping

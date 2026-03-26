@@ -75,7 +75,7 @@ describe('HomePage', () => {
         isDemoTry: false,
         contextPathUrl: '/test',
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -92,7 +92,7 @@ describe('HomePage', () => {
       expect.objectContaining({
         __id: 'test-id?v=0.123',
       }),
-      expect.anything()
+      undefined
     );
 
     randomSpy.mockRestore();
@@ -137,7 +137,7 @@ describe('HomePage', () => {
         isDemoTry: false,
         contextPathUrl: '',
       }),
-      expect.anything()
+      undefined
     );
   });
 
@@ -159,7 +159,7 @@ describe('HomePage', () => {
         isDev: false,
         isDemoTry: true,
       }),
-      expect.anything()
+      undefined
     );
   });
 

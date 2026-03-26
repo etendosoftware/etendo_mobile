@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import {
   NavigationContainer,
+  NavigationIndependentTree,
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import DynamicComponent from './DynamicComponent';
@@ -38,27 +39,28 @@ const HomePage = ({ route, navigation }: any) => {
     return (
       <>
         <View style={{ flex: 1 }} testID='dynamic-component-container'>
-          <NavigationContainer
-            independent={true}
-            onReady={() => { }}
-            ref={childNavigation}
-          >
-            <DynamicComponent
-              __id={appId}
-              url={selectedEnvironmentUrl}
-              sharedFiles={sharedFiles}
-              children={childNavigation}
-              navigationContainer={navigation}
-              token={token}
-              user={data.username}
-              language={language}
-              dataUser={data}
-              isDev={!!route.params.isDev}
-              isDemoTry={isDemoTry}
-              Camera={Camera}
-              contextPathUrl={contextPathUrl}
-            />
-          </NavigationContainer>
+          <NavigationIndependentTree>
+            <NavigationContainer
+              onReady={() => { }}
+              ref={childNavigation}
+            >
+              <DynamicComponent
+                __id={appId}
+                url={selectedEnvironmentUrl}
+                sharedFiles={sharedFiles}
+                children={childNavigation}
+                navigationContainer={navigation}
+                token={token}
+                user={data.username}
+                language={language}
+                dataUser={data}
+                isDev={!!route.params.isDev}
+                isDemoTry={isDemoTry}
+                Camera={Camera}
+                contextPathUrl={contextPathUrl}
+              />
+            </NavigationContainer>
+          </NavigationIndependentTree>
         </View>
       </>
     );

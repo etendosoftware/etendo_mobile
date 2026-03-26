@@ -1,0 +1,51 @@
+03-16 16:13:16.265  5616  5673 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 5673 (mqt_v_js), pid 5616 (endo_app_loader)
+03-16 16:13:16.297  1097  1097 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.clearcut.bootcount.service.START pkg=com.google.android.gms }
+03-16 16:13:16.349  5739  5739 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdTombstoneProto
+03-16 16:13:16.352   240   240 I tombstoned: received crash request for pid 5673
+03-16 16:13:16.353  5739  5739 I crash_dump64: performing dump of process 5616 (target tid = 5673)
+03-16 16:13:16.361  5739  5739 E DEBUG   : failed to read /proc/uptime: Permission denied
+03-16 16:13:16.364  5616  5616 W [RNScreens]: backTitleFontFamily prop is not available on Android
+03-16 16:13:16.364  5616  5616 W [RNScreens]: disableBackButtonMenu prop is not available on Android
+03-16 16:13:16.364  5616  5616 W [RNScreens]: backTitleVisible prop is not available on Android
+03-16 16:13:16.364  5616  5616 W [RNScreens]: topInsetEnabled prop is not available on Android
+03-16 16:13:16.364  5616  5616 W [RNScreens]: largeTitleHideShadow prop is not available on Android
+03-16 16:13:16.364  5616  5616 W [RNScreens]: largeTitleFontWeight prop is not available on Android
+03-16 16:13:16.365  5616  5616 W [RNScreens]: userInterfaceStyle prop is not available on Android
+03-16 16:13:16.365  5616  5616 W [RNScreens]: largeTitleFontFamily prop is not available on Android
+03-16 16:13:16.561  5739  5739 W unwind  : Failed to initialize DEX file support: dlopen failed: library "libdexfile.so" not found
+03-16 16:13:16.701  1097  1097 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+03-16 16:13:17.023  1097  1097 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.gmscompliance.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentBoundBrokerService }
+03-16 16:13:17.365  5616  5742 D ProfileInstaller: Installing profile for com.smf.mobile.etendo_app_loader
+03-16 16:13:17.390  5739  5739 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+03-16 16:13:17.390  5739  5739 F DEBUG   : Build fingerprint: 'google/sdk_gphone64_x86_64/emulator64_x86_64_arm64:12/SE1A.211212.001.B1/8023802:user/release-keys'
+03-16 16:13:17.390  5739  5739 F DEBUG   : Revision: '0'
+03-16 16:13:17.390  5739  5739 F DEBUG   : ABI: 'x86_64'
+03-16 16:13:17.390  5739  5739 F DEBUG   : Timestamp: 2026-03-16 16:13:16.361151093+0000
+03-16 16:13:17.390  5739  5739 F DEBUG   : Process uptime: 0s
+03-16 16:13:17.390  5739  5739 F DEBUG   : Cmdline: com.smf.mobile.etendo_app_loader
+03-16 16:13:17.390  5739  5739 F DEBUG   : pid: 5616, tid: 5673, name: mqt_v_js  >>> com.smf.mobile.etendo_app_loader <<<
+03-16 16:13:17.390  5739  5739 F DEBUG   : uid: 10152
+03-16 16:13:17.390  5739  5739 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+03-16 16:13:17.390  5739  5739 F DEBUG   :     rax 0000000000000000  rbx 00000000000015f0  rcx 00007654453225cf  rdx 0000000000000006
+03-16 16:13:17.390  5739  5739 F DEBUG   :     r8  00007651361d5110  r9  00007651361d5110  r10 00007651361d5100  r11 0000000000000203
+03-16 16:13:17.390  5739  5739 F DEBUG   :     r12 00007651361d63d0  r13 00007651361d63d0  r14 00007651361d50f8  r15 0000000000001629
+03-16 16:13:17.390  5739  5739 F DEBUG   :     rdi 00000000000015f0  rsi 0000000000001629
+03-16 16:13:17.390  5739  5739 F DEBUG   :     rbp 00007651361d5220  rsp 00007651361d50f0  rip 00007654453225cf
+03-16 16:13:17.390  5739  5739 F DEBUG   : backtrace:
+03-16 16:13:17.390  5739  5739 F DEBUG   :       #00 pc 000000000005e5cf  /apex/com.android.runtime/lib64/bionic/libc.so (abort+191) (BuildId: 5db8d317d3741b337ef046540bbdd0f7)
+03-16 16:13:17.390  5739  5739 F DEBUG   :       #01 pc 000000000030d911  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreact_codegen_rnscreens.so (BuildId: df1d17ff51a8500376d02a86abb00136bcba13f1)
+03-16 16:13:17.390  5739  5739 F DEBUG   :       #02 pc 00000000002dce87  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreact_codegen_rnscreens.so (facebook::react::RNSScreenFullScreenSwipeEnabled facebook::react::convertRawProp<facebook::react::RNSScreenFullScreenSwipeEnabled, facebook::react::RNSScreenFullScreenSwipeEnabled>(facebook::react::PropsParserContext const&, facebook::react::RawProps const&, char const*, facebook::react::RNSScreenFullScreenSwipeEnabled const&, facebook::react::RNSScreenFullScreenSwipeEnabled const&, char const*, char const*)+167) (BuildId: df1d17ff51a8500376d02a86abb00136bcba13f1)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #03 pc 00000000002df0e1  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreact_codegen_rnscreens.so (facebook::react::RNSScreenProps::RNSScreenProps(facebook::react::PropsParserContext const&, facebook::react::RNSScreenProps const&, facebook::react::RawProps const&)+1697) (BuildId: df1d17ff51a8500376d02a86abb00136bcba13f1)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #04 pc 0000000000465548  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #05 pc 00000000004654fc  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #06 pc 0000000000465340  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (void std::__ndk1::allocator_traits<std::__ndk1::allocator<facebook::react::RNSScreenProps> >::construct[abi:ne180000]<facebook::react::RNSScreenProps, facebook::react::PropsParserContext const&, facebook::react::RNSScreenProps const&, facebook::react::RawProps const&, void, void>(std::__ndk1::allocator<facebook::react::RNSScreenProps>&, facebook::react::RNSScreenProps*, facebook::react::PropsParserContext const&, facebook::react::RNSScreenProps const&, facebook::react::RawProps const&)+48) (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #07 pc 0000000000465087  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (_ZNSt6__ndk120__shared_ptr_emplaceIN8facebook5react14RNSScreenPropsENS_9allocatorIS3_EEEC2B8ne180000IJRKNS2_18PropsParserContextERKS3_RKNS2_8RawPropsEES5_TnNS_9enable_ifIXntsr7is_sameINT0_10value_typeENS_19__for_overwrite_tagEEE5valueEiE4typeELi0EEES5_DpOT_+135) (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #08 pc 0000000000464ea5  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #09 pc 0000000000464df5  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #10 pc 00000000004643a8  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (_ZN8facebook5react18ConcreteShadowNodeIXadsoKcL_ZNS0_22RNSScreenComponentNameEEEENS0_24YogaLayoutableShadowNodeENS0_14RNSScreenPropsENS0_21RNSScreenEventEmitterENS0_14RNSScreenStateELb0EE5PropsERKNS0_18PropsParserContextERKNS0_8RawPropsERKNSt6__ndk110shared_ptrIKNS0_5PropsEEE+120) (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #11 pc 0000000000461c04  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libappmodules.so (facebook::react::ConcreteComponentDescriptor<facebook::react::RNSScreenShadowNode>::cloneProps(facebook::react::PropsParserContext const&, std::__ndk1::shared_ptr<facebook::react::Props const> const&, facebook::react::RawProps) const+836) (BuildId: 2c459bba80da4eeb732461d99db15202083c2e99)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #12 pc 0000000001038ba6  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreactnative.so (facebook::react::UIManager::createNode(int, std::__ndk1::basic_string<char, std::__ndk1::char_traits<char>, std::__ndk1::allocator<char> > const&, int, facebook::react::RawProps, std::__ndk1::shared_ptr<facebook::react::InstanceHandle const>) const+486) (BuildId: bc83af01ee8f6025)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #13 pc 000000000106365f  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreactnative.so (BuildId: bc83af01ee8f6025)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #14 pc 0000000001063435  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreactnative.so (BuildId: bc83af01ee8f6025)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #15 pc 00000000010633bf  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreactnative.so (BuildId: bc83af01ee8f6025)
+03-16 16:13:17.391  5739  5739 F DEBUG   :       #16 pc 000000000106336f  /data/app/~~FKX4mYyZehxBeohbmSh8hA==/com.smf.mobile.etendo_app_loader-ux1Ctw4Lg1HJe_DUh4MBOA==/base.apk!libreactnative.so (BuildId: bc83af01ee8f6025)
