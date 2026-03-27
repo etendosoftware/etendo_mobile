@@ -30,6 +30,7 @@ import {
 import { generateUniqueId } from '../../utils';
 import { SettingIcon } from 'etendo-ui-library';
 import { setSharedFiles } from '../../../redux/shared-files-reducer';
+import { homeInnerNavRef } from '../navigationRef';
 
 type RootStackParamList = {
   Home: any;
@@ -295,7 +296,11 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
               currentIndex?: DrawerCurrentIndexType,
             ) => {
               setCurrentIndex(currentIndex);
-              navigation.navigate(route as keyof RootStackParamList);
+              if (homeInnerNavRef.current) {
+                homeInnerNavRef.current.navigate(route);
+              } else {
+                navigation.navigate(route as keyof RootStackParamList);
+              }
               setShowDrawer(false);
               dispatch(setIsSubapp(true));
               dispatch(setSharedFiles([]))

@@ -64,6 +64,7 @@ beforeAll(() => {
 
 describe('Settings Screen Component', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     store = mockStore({
       user: {
         token: 'token',
@@ -85,5 +86,54 @@ describe('Settings Screen Component', () => {
     );
 
     expect(getByText('Settings')).toBeTruthy();
+  });
+
+  test('blur event does nothing when selectedUrl is null', async () => {
+    const nullUrlStore = mockStore({
+      user: {
+        token: 'token',
+        selectedUrl: null,
+        storedEnviromentsUrl: [],
+      },
+      window: { isDemo: false },
+    });
+
+    let blurCallback: (() => Promise<void>) | undefined;
+    const mockNavigation = {
+      addListener: jest.fn((event, cb) => {
+        if (event === 'blur') blurCallback = cb;
+        return jest.fn();
+      }),
+    };
+
+    render(
+      <Provider store={nullUrlStore}>
+        <Settings navigation={mockNavigation} />
+      </Provider>
+    );
+
+    await blurCallback?.();
+
+    expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+  });
+
+  test('blur event saves contextPathUrl when selectedUrl is set', async () => {
+    let blurCallback: (() => Promise<void>) | undefined;
+    const mockNavigation = {
+      addListener: jest.fn((event, cb) => {
+        if (event === 'blur') blurCallback = cb;
+        return jest.fn();
+      }),
+    };
+
+    render(
+      <Provider store={store}>
+        <Settings navigation={mockNavigation} />
+      </Provider>
+    );
+
+    await blurCallback?.();
+
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('contextPathUrl', '');
   });
 });
