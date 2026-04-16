@@ -318,6 +318,7 @@ const Settings = props => {
     if (!props?.navigation?.addListener) return;
 
     const unsubscribe = props.navigation.addListener("blur", async () => {
+      if (!selectedUrl) return;
       try {
         const extractedContextPath = getContextPath(selectedUrl);
         await AsyncStorage.setItem("contextPathUrl", extractedContextPath);

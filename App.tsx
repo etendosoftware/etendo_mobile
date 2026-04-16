@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import ComponentTestScreen from './src/screens/ComponentTestScreen';
+
+// ─── Set to true to render the component test screen instead of the real app ──
+const SHOW_COMPONENT_TEST = false;
+
 import { LoadingScreen } from './src/components';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,7 +23,7 @@ import { References } from './src/constants/References';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import { setSharedFiles } from './redux/shared-files-reducer';
 
-interface Props { }
+interface Props {}
 type RootStackParamList = {
   HomeStack: any;
   LoginStack: any;
@@ -60,23 +65,26 @@ const App: React.FC<Props> = () => {
     };
 
     const addFilePrefixIfNeeded = (path: string) => {
-      return path.startsWith("file://") ? path : `file://${path}`;
+      return path.startsWith('file://') ? path : `file://${path}`;
     };
 
     const handleSharedFiles = () => {
-      console.info("handleSharedFiles()");
+      console.info('handleSharedFiles()');
       try {
         ReceiveSharingIntent.getReceivedFiles(
           (receivedFiles: any[]) => {
             const adjustedFiles = receivedFiles.map(file => ({
               filePath: addFilePrefixIfNeeded(file.filePath),
               fileName: file.filePath.split('/').pop() || '',
-              fileMimeType: getMimeType(file.mimeType)
+              fileMimeType: getMimeType(file.mimeType),
             }));
             dispatch(setSharedFiles([...adjustedFiles]));
           },
           (error: any) => {
-            console.error("ReceiveSharingIntent.getReceivedFiles error", error);
+            console.warn(
+              'ReceiveSharingIntent.getReceivedFiles error (expected on normal launch)',
+              error,
+            );
           },
           References.EtendoReceiveShare,
         );
@@ -118,7 +126,7 @@ const App: React.FC<Props> = () => {
         />
       );
     }
-    
+
     if (token) {
       return (
         <Stack.Screen
@@ -129,7 +137,7 @@ const App: React.FC<Props> = () => {
         />
       );
     }
-    
+
     return (
       <Stack.Screen
         name="LoginStack"
@@ -139,12 +147,14 @@ const App: React.FC<Props> = () => {
     );
   };
 
+  if (SHOW_COMPONENT_TEST) {
+    return <ComponentTestScreen />;
+  }
+
   return (
     <PaperProvider theme={defaultTheme}>
       <NavigationContainer>
-        <Stack.Navigator>
-          {renderNavigationContent()}
-        </Stack.Navigator>
+        <Stack.Navigator>{renderNavigationContent()}</Stack.Navigator>
       </NavigationContainer>
       <Alert />
     </PaperProvider>

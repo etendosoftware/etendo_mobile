@@ -1,5 +1,4 @@
-import { configureFonts, DefaultTheme } from "react-native-paper";
-import { Theme } from "react-native-paper/lib/typescript/types";
+import { MD2LightTheme, MD2Theme } from "react-native-paper";
 import { Platform, StyleSheet } from "react-native";
 
 const fontConfig = {
@@ -34,7 +33,7 @@ const fontConfig = {
 };
 
 
-interface AppDefaultTheme extends Theme {
+interface AppDefaultTheme extends MD2Theme {
   colors: {
     primary: string;
     background: string;
@@ -57,10 +56,10 @@ interface AppDefaultTheme extends Theme {
 }
 
 export const defaultTheme: AppDefaultTheme = {
-  ...DefaultTheme,
+  ...MD2LightTheme,
   roundness: 5,
   colors: {
-    ...DefaultTheme.colors,
+    ...MD2LightTheme.colors,
     primary: "#202452",
     accent: "#fad614",
     background: "#ffffff",
@@ -78,7 +77,7 @@ export const defaultTheme: AppDefaultTheme = {
 };
 
 export interface ITheme {
-  theme: ReactNativePaper.Theme;
+  theme: MD2Theme;
 }
 
 export const componentsStyle = StyleSheet.create<{

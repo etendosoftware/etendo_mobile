@@ -32,6 +32,7 @@ import { generateUniqueId, getContextPath } from "../../utils";
 import { References } from "../../constants/References";
 import DefaultPreference from "react-native-default-preference";
 import { setSharedFiles } from "../../../redux/shared-files-reducer";
+import { homeInnerNavRef } from "../../navigation/navigationRef";
 
 // Local Assets
 const etendoBoyImg = require("../../../assets/etendo-bk-tablet.png");
@@ -242,6 +243,7 @@ const Home = (props: any) => {
   const navigation = useNavigation();
   const selectedLanguage = useAppSelector(selectSelectedLanguage);
   Etendo.globalNav = navigation;
+  homeInnerNavRef.current = navigation;
   // Force to re-render when language changes at login
   useEffect(() => { }, [locale, selectedLanguage]);
 

@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 /**
@@ -48,6 +49,8 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -73,7 +76,7 @@ android {
 
     namespace "com.smf.mobile.etendo_app_loader"
 
-    ndkVersion "25.1.8937393"
+    ndkVersion rootProject.ext.ndkVersion
 
     def resolveVersionCode = {
         // Prefer project properties passed via -D, fall back to environment variables
@@ -99,7 +102,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode resolveVersionCode()
-        versionName "1.15.0"
+        versionName "1.15.1"
 
         // ⚡ Support 16 kB memory pages 
         ndk {
@@ -109,11 +112,6 @@ android {
         multiDexEnabled true
     }
 
-    packagingOptions {
-        jniLibs {
-            useLegacyPackaging = false
-        }
-    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -146,32 +144,26 @@ android {
     }
     
     packagingOptions {
-        pickFirst '**/libc++_shared.so'
-        pickFirst '**/libjsc.so'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
+        jniLibs {
+            useLegacyPackaging = false
+            pickFirst '**/libc++_shared.so'
+            pickFirst '**/libjsc.so'
+        }
+        resources {
+            exclude 'META-INF/DEPENDENCIES'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'META-INF/NOTICE.txt'
+        }
     }
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:16.0.2'
-
-    // Force Material Design compatible with Android 15
-    implementation 'com.google.android.material:material:1.12.0'
-
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-vector-icons')
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
-
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
@@ -179,6 +171,4 @@ dependencies {
     }
 }
 
-// React Native native modules
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
-applyNativeModulesAppBuildGradle(project)
+

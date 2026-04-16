@@ -4,7 +4,7 @@ import * as Axios from 'axios';
 import * as Base64 from 'base-64';
 import * as BottomTabs from '@react-navigation/bottom-tabs';
 import * as Color from 'color';
-import * as Compat from '@react-navigation/compat';
+
 import * as DateFns from 'date-fns';
 import * as DatetimePicker from '@react-native-community/datetimepicker';
 import * as Drawer from '@react-navigation/drawer';
@@ -31,9 +31,11 @@ import * as ReactNativeOrientationLocker from 'react-native-orientation-locker';
 import * as ReactNativePaper from 'react-native-paper';
 import * as ReactNativePdf from 'react-native-pdf';
 import * as ReactNativePermissions from 'react-native-permissions';
+import * as ReactNativeReanimated from 'react-native-reanimated';
 import * as ReactNativeShare from 'react-native-share';
 import * as ReactNativeSVG from 'react-native-svg';
 import * as ReactNativeVisionCamera from 'react-native-vision-camera';
+import * as ReactNativeWorkletsCore from 'react-native-worklets-core';
 import * as RnMarkdownDisplay from 'react-native-markdown-display';
 import * as ReactNavigationCore from '@react-navigation/core';
 import * as ReactNavigationNative from '@react-navigation/native';
@@ -47,10 +49,11 @@ import * as Swiper from 'react-native-swiper';
 import * as TsLib from 'tslib';
 import * as Unmock from 'unmock';
 import * as VectorIcons from 'react-native-vector-icons';
-import * as ReactNativeDocumentPicker from 'react-native-document-picker';
+import * as ReactNativeDocumentPicker from '@react-native-documents/picker';
 import * as ReactNativeDefaultPreference from 'react-native-default-preference';
 import * as ReactNativeFS from 'react-native-fs';
-import ReactNativeSound from 'react-native-sound';
+import * as ReactNativeSound from 'react-native-sound';
+import * as Uuid from 'uuid';
 import { Etendo } from '../helpers/Etendo';
 
 const Packages = {
@@ -59,7 +62,7 @@ const Packages = {
   '@react-native-community/masked-view': () => MaskedView,
   '@react-native-picker/picker': () => Picker,
   '@react-navigation/bottom-tabs': () => BottomTabs,
-  '@react-navigation/compat': () => Compat,
+
   '@react-navigation/core': () => ReactNavigationCore,
   '@react-navigation/drawer': () => Drawer,
   '@react-navigation/native-stack': () => ReactNavigationNativeStack,
@@ -87,6 +90,7 @@ const Packages = {
   'react-native-sound': () => ReactNativeSound,
   'react-native-default-preference': () => ReactNativeDefaultPreference,
   'react-native-fs': () => ReactNativeFS,
+  'react-native-reanimated': () => ReactNativeReanimated,
   'react-native-share': () => ReactNativeShare,
   'react-native-svg': () => ReactNativeSVG,
   'react-native-swipeable-item': () => SwipeableItem,
@@ -98,10 +102,12 @@ const Packages = {
   'react-native-vector-icons/MaterialCommunityIcons': () =>
     MaterialCommunityIcons,
   'react-native-vision-camera': () => ReactNativeVisionCamera,
+  'react-native-worklets-core': () => ReactNativeWorkletsCore,
   'react-native-markdown-display': () => RnMarkdownDisplay,
   'react-native-document-picker': () => ReactNativeDocumentPicker,
   'react-native': () => ReactNative,
   'rn-placeholder': () => RnPlaceholder,
+  uuid: () => Uuid,
   axios: () => Axios,
   color: () => Color,
   Etendo: () => Etendo,
