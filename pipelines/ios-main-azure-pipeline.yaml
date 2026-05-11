@@ -9,7 +9,7 @@ variables:
   APPCENTER_XCODE_WORKSPACE: ios/Etendo_Mobile.xcworkspace
   sonoma.tags: 'continuous,javascript,xcode,signed,distribution'
   artifactVersioning.build.value: '0'
-  # Additional required variables
+  # Additional variables required
   APPLE_CERTIFICATE_SIGNING_IDENTITY: 'Apple Distribution: FUTIT SERVICES SRL (B4T44MT553)'
 name: $(artifactVersioning.build.value)
 resources:
@@ -32,6 +32,7 @@ jobs:
         submodules: recursive
         lfs: true
       
+      # Check and create script directory if it does not exist
       - task: Bash@3
         displayName: Create scripts directory
         inputs:
@@ -68,6 +69,7 @@ jobs:
             Invoke-Expression 'bash ./scripts/init.sh'
           failOnStderr: false
       
+      # Verify that the scripts are available
       - task: Bash@3
         displayName: Verify scripts installation
         inputs:
@@ -86,14 +88,16 @@ jobs:
         inputs:
           scriptPath: appcenter-post-clone.sh
       
+      # Alternative 1: Use NodeTool task instead of custom script
       - task: NodeTool@0
         displayName: 'Use Node 18.x'
         inputs:
           versionSpec: '18.x'
       
+      # Alternative 2: If you need to use the script, verify its existence first.
       - task: Bash@3
         displayName: Select Node.js Version v2 (Alternative)
-        condition: false
+        condition: false  # Disabled by default, enable if necessary
         inputs:
           targetType: 'inline'
           script: |
@@ -103,6 +107,7 @@ jobs:
               bash "$SCRIPT_PATH" node18
             else
               echo "Script not found at $SCRIPT_PATH, using direct node setup..."
+              # Configure Node.js directly using nvm or similar
               if command -v nvm &> /dev/null; then
                 nvm use 18 || nvm install 18
               elif command -v nodenv &> /dev/null; then
@@ -159,7 +164,7 @@ jobs:
              echo "require('@react-native-community/cli').run();" >> ./node_modules/react-native/local-cli/cli.js
             fi
 
-            node --max_old_space_size=4096
+            node --max_old_space_size=8192
             node_modules/react-native/local-cli/cli.js bundle --entry-file
             $INDEX_FILE --platform ios --dev false --reset-cache --bundle-output
             dummy-sourcemap-main.jsbundle --sourcemap-output index.ios.map
@@ -174,6 +179,7 @@ jobs:
             index.ios.map $(build.artifactstagingdirectory)/symbols/"
           failOnStandardError: true
       
+      # Verify that emit-tags.sh exists before running it.
       - task: Bash@3
         displayName: Tag build (with verification)
         inputs:
@@ -249,21 +255,27 @@ jobs:
         inputs:
           provProfileSecureFile: 44a314c3-d9dc-4f77-8f1a-e1c90aa9cbeb
       
+      # Verify that certificates and provisioning profiles are correctly installed.
       - task: Bash@3
         displayName: Verify certificates and provisioning profiles
         inputs:
           targetType: 'inline'
           script: |
+            echo "=== Verifying installed certificates ==="
             security find-identity -v -p codesigning
             
+            echo "=== Verifying provisioning profiles ==="
             ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
             
+            echo "=== Verifying keychain ==="
             security list-keychains
             security default-keychain
             
+            echo "=== Verifying Xcode configuration ==="
             xcodebuild -showsdks
           failOnStderr: false
       
+      # Create post_install hook for Podfile
       - task: Bash@3
         displayName: Add Podfile post_install hook
         inputs:
@@ -271,6 +283,7 @@ jobs:
           script: |
             echo "Adding post_install hook to Podfile..."
             if [ -f "ios/Podfile" ]; then
+              # Check if post_install hook already exists
               if ! grep -q "post_install" ios/Podfile; then
                 echo "Adding post_install hook to fix deployment targets..."
                 cat >> ios/Podfile << 'EOF'
@@ -288,13 +301,14 @@ jobs:
               else
                 echo "post_install hook already exists, updating deployment target..."
                 # Update the deployment target in the existing post_install
-                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
+                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'/g" ios/Podfile
               fi
             fi
 
             echo "Current Podfile content:"
             cat ios/Podfile
 
+      # Update iOS Deployment Target before CocoaPods
       - task: Bash@3
         displayName: Update iOS Deployment Target
         inputs:
@@ -308,6 +322,7 @@ jobs:
             find . -name "*.pbxproj" -exec sed -i '' \
               's/IPHONEOS_DEPLOYMENT_TARGET = "[0-9][0-9.]*"/IPHONEOS_DEPLOYMENT_TARGET = "15.1"/g' {} \;
 
+            # Update in Podfile if it exists
             if [ -f "ios/Podfile" ]; then
               echo "Updating Podfile..."
               sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
@@ -320,52 +335,27 @@ jobs:
               fi
             fi
 
+            # Verify changes
             echo "Checking current deployment targets:"
             grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
-      
       - task: Bash@3
-        displayName: Disable Flipper for CI
+        displayName: Disable Flipper for production build
         inputs:
           targetType: 'inline'
           script: |
-            echo "Disabling Flipper for CI build..."
+            echo "Disabling Flipper for production build..."
             export NO_FLIPPER=1
             echo "NO_FLIPPER=1" >> $BASH_ENV
             echo "Flipper disabled successfully"
           failOnStderr: false
-      
-      - task: Bash@3
-        displayName: Clean CocoaPods cache
-        inputs:
-          targetType: 'inline'
-          script: |
-            rm -rf Pods Podfile.lock
-          workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
 
-      - task: Bash@3
-        displayName: Pre-download Hermes engine
-        inputs:
-          targetType: 'inline'
-          script: |
-            RN_VERSION=$(node -e "console.log(require('./node_modules/react-native/package.json').version)")
-            HERMES_URL="https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${RN_VERSION}/react-native-artifacts-${RN_VERSION}-hermes-ios-debug.tar.gz"
-            echo "Downloading Hermes ${RN_VERSION} from Maven Central..."
-            mkdir -p /tmp/hermes-cache
-            curl -f -L --retry 5 --retry-delay 5 --retry-max-time 120 \
-              -o /tmp/hermes-cache/hermes-ios-debug.tar.gz \
-              "$HERMES_URL"
-            echo "HERMES_ENGINE_TARBALL_PATH=/tmp/hermes-cache/hermes-ios-debug.tar.gz" >> $BASH_ENV
-            echo "Hermes downloaded successfully."
-          workingDirectory: '$(System.DefaultWorkingDirectory)'
-
-      - task: Bash@3
+      - task: CocoaPods@0
         displayName: Pod install
         inputs:
-          targetType: 'inline'
-          script: |
-            pod install --no-repo-update
-          workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
+          cwd: ios
+          forceRepoUpdate: false
 
+      # Verify that detect-autogenerated-workspace.sh exists
       - task: Bash@3
         displayName: Determine project file path (with verification)
         inputs:
@@ -382,7 +372,6 @@ jobs:
           workingDirectory: $(Build.SourcesDirectory)
           failOnStderr: false
 
-      
       - task: Bash@3
         displayName: Determine signing style and pods update (with verification)
         inputs:
@@ -460,7 +449,7 @@ jobs:
             --development-team="B4T44MT553"
             --app-bundle-identifier="com.etendoapploader.ios"
           workingFolder: $(Build.SourcesDirectory)
-  
+      
       - task: Bash@3
         displayName: Create exportOptions.plist
         inputs:
@@ -513,7 +502,9 @@ jobs:
           exportOptions: plist
           exportOptionsPlist: '$(Build.SourcesDirectory)/exportOptions.plist'
           args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
-        timeoutInMinutes: 45
+          outputPattern: $(agent.builddirectory)/output/build
+        continueOnError: false
+        timeoutInMinutes: 60
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
@@ -556,13 +547,9 @@ jobs:
       - task: AppStoreRelease@1
         inputs:
           serviceEndpoint: 'app center'
-          releaseTrack: 'TestFlight'
+          releaseTrack: 'Production'
           ipaPath: '$(build.artifactstagingdirectory)/build/*.ipa'
           appIdentifier: 'com.etendoapploader.ios'
           appType: 'iOS'
           appSpecificId: '6451114033'
-          distributedToExternalTesters: true
-          releaseNotes: '$(System.DefaultWorkingDirectory)/ReleaseNotes.txt'
-          changelog: '$(System.DefaultWorkingDirectory)/changelog.txt'
-          externalTestersGroups: 'external tester'
-        displayName: 'Publish to TestFlight'
+        displayName: 'Publish to App Store'
