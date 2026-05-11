@@ -158,10 +158,14 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
     // Find the subApp using the screenName
     const subAppToNavigate = subApps.find(app => app.screenName === route);
 
-    if (subAppToNavigate) {
-      navigation.navigate(subAppToNavigate.screenName);
+    if (homeInnerNavRef.current) {
+      homeInnerNavRef.current.navigate(
+        subAppToNavigate ? subAppToNavigate.screenName : route,
+      );
     } else {
-      navigation.navigate(route);
+      navigation.navigate(
+        subAppToNavigate ? subAppToNavigate.screenName : route,
+      );
     }
   };
 

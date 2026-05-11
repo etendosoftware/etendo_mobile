@@ -25,7 +25,11 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
+<<<<<<< Updated upstream
       vmImage: macOS-14
+=======
+      vmImage: macOS-16
+>>>>>>> Stashed changes
     steps:
       - checkout: self
         clean: true
@@ -200,7 +204,11 @@ jobs:
           failOnStderr: false
       
       - task: Bash@3
+<<<<<<< Updated upstream
         displayName: "Select Xcode 16 (iOS 18 SDK)"
+=======
+        displayName: "Select Xcode 26 (iOS 26 SDK)"
+>>>>>>> Stashed changes
         inputs:
           targetType: 'inline'
           script: |
@@ -210,12 +218,27 @@ jobs:
               echo "=== Available Xcode installations ==="
               ls -la /Applications | grep 'Xcode' || true
 
+<<<<<<< Updated upstream
               # Prefer explicit Xcode 16.*
               XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
 
               if [ -z "$XCODE_CANDIDATE" ]; then
                 echo "ERROR: Xcode 16 not found on this agent."
                 echo "Available versions:"
+=======
+              # Prefer explicit Xcode 26.*
+              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | grep -vi beta | head -n 1)
+
+              # Fallback to highest available Xcode
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "Xcode 26 not found, falling back to highest available version..."
+                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_|Xcode )' | grep -vi beta | sort -V | tail -n 1)
+              fi
+
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "ERROR: No Xcode installation found on this agent."
+                echo "Available apps:"
+>>>>>>> Stashed changes
                 ls /Applications | grep 'Xcode' || true
                 exit 1
               fi
@@ -230,7 +253,11 @@ jobs:
               echo "Verification:"
               xcrun xcode-select --print-path
               xcodebuild -version
+<<<<<<< Updated upstream
               echo "Expecting iOS SDK 18 or later:"
+=======
+              echo "Available SDKs:"
+>>>>>>> Stashed changes
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
       - task: InstallAppleCertificate@2
@@ -285,7 +312,11 @@ jobs:
             post_install do |installer|
               installer.pods_project.targets.each do |target|
                 target.build_configurations.each do |config|
+<<<<<<< Updated upstream
                   config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+=======
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+>>>>>>> Stashed changes
                   config.build_settings['ENABLE_BITCODE'] = 'NO'
                   config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
                 end
@@ -295,7 +326,11 @@ jobs:
               else
                 echo "post_install hook already exists, updating deployment target..."
                 # Update the deployment target in the existing post_install
+<<<<<<< Updated upstream
                 sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
+=======
+                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'/g" ios/Podfile
+>>>>>>> Stashed changes
               fi
             fi
 
@@ -308,15 +343,26 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
+<<<<<<< Updated upstream
             echo "Updating iOS Deployment Target to 12.0..."
 
             # Update in the main project
             find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
             find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+=======
+            echo "Updating iOS Deployment Target to 15.1..."
+
+            # Replace any existing deployment target in pbxproj with 15.1
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = "[0-9][0-9.]*"/IPHONEOS_DEPLOYMENT_TARGET = "15.1"/g' {} \;
+>>>>>>> Stashed changes
 
             # Update in Podfile if it exists
             if [ -f "ios/Podfile" ]; then
               echo "Updating Podfile..."
+<<<<<<< Updated upstream
               sed -i '' "s/platform :ios, '11.0'/platform :ios, '12.0'/g" ios/Podfile
               sed -i '' "s/platform :ios, \"11.0\"/platform :ios, \"12.0\"/g" ios/Podfile
               # If no platform is defined, add it
@@ -324,6 +370,14 @@ jobs:
                 echo "Adding iOS platform to Podfile..."
                 sed -i '' '1i\
             platform :ios, '\''12.0'\''
+=======
+              sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
+              sed -i '' "s/platform :ios, \"[0-9.]*\"/platform :ios, \"15.1\"/g" ios/Podfile
+              if ! grep -q "platform :ios" ios/Podfile; then
+                echo "Adding iOS platform to Podfile..."
+                sed -i '' '1i\
+            platform :ios, '\''15.1'\''
+>>>>>>> Stashed changes
             ' ios/Podfile
               fi
             fi

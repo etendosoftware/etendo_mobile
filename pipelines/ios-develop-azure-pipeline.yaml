@@ -25,7 +25,7 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-14  
+      vmImage: macOS-16
     steps:
       - checkout: self
         clean: true
@@ -194,7 +194,7 @@ jobs:
           failOnStderr: false
       
       - task: Bash@3
-        displayName: "Select Xcode 16 (iOS 18 SDK)"
+        displayName: "Select Xcode 26 (iOS 26 SDK)"
         inputs:
           targetType: 'inline'
           script: |
@@ -204,12 +204,18 @@ jobs:
               echo "=== Available Xcode installations ==="
               ls -la /Applications | grep 'Xcode' || true
 
-              # Prefer explicit Xcode 16.*
-              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
+              # Prefer explicit Xcode 26.*
+              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | grep -vi beta | head -n 1)
+
+              # Fallback to highest available Xcode
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "Xcode 26 not found, falling back to highest available version..."
+                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_|Xcode )' | grep -vi beta | sort -V | tail -n 1)
+              fi
 
               if [ -z "$XCODE_CANDIDATE" ]; then
-                echo "ERROR: Xcode 16 not found on this agent."
-                echo "Available versions:"
+                echo "ERROR: No Xcode installation found on this agent."
+                echo "Available apps:"
                 ls /Applications | grep 'Xcode' || true
                 exit 1
               fi
@@ -224,7 +230,7 @@ jobs:
               echo "Verification:"
               xcrun xcode-select --print-path
               xcodebuild -version
-              echo "Expecting iOS SDK 18 or later:"
+              echo "Available SDKs:"
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
       - task: InstallAppleCertificate@2
@@ -294,16 +300,18 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            echo "Updating iOS Deployment Target to 12.0..."
+            echo "Updating iOS Deployment Target to 15.1..."
 
-            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
-            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+            # Replace any existing deployment target in pbxproj with 15.1
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = "[0-9][0-9.]*"/IPHONEOS_DEPLOYMENT_TARGET = "15.1"/g' {} \;
 
             if [ -f "ios/Podfile" ]; then
               echo "Updating Podfile..."
               sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
               sed -i '' "s/platform :ios, \"[0-9.]*\"/platform :ios, \"15.1\"/g" ios/Podfile
-              # If no platform is defined, add it
               if ! grep -q "platform :ios" ios/Podfile; then
                 echo "Adding iOS platform to Podfile..."
                 sed -i '' '1i\
