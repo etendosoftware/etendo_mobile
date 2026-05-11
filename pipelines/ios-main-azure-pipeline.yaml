@@ -504,7 +504,7 @@ jobs:
           args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
           outputPattern: $(agent.builddirectory)/output/build
         continueOnError: false
-        timeoutInMinutes: 120
+        timeoutInMinutes: 150
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
