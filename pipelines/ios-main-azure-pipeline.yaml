@@ -28,7 +28,7 @@ jobs:
 <<<<<<< Updated upstream
       vmImage: macOS-14
 =======
-      vmImage: macOS-16
+      vmImage: macOS-latest
 >>>>>>> Stashed changes
     steps:
       - checkout: self
