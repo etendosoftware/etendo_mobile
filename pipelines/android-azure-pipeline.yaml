@@ -141,12 +141,24 @@ jobs:
           flattenFolders: true
       - task: CopyFiles@2
         displayName: Copy mapping files to staging
+        continueOnError: true
         inputs:
           SourceFolder: $(build.sourcesdirectory)/android/app/build/outputs
           Contents: mapping/**/mapping.txt
           TargetFolder: $(build.artifactstagingdirectory)/mapping
           OverWrite: true
           flattenFolders: true
+      - task: Bash@3
+        displayName: Check mapping file exists
+        inputs:
+          targetType: inline
+          script: |
+            if find "$(build.artifactstagingdirectory)/mapping" -name "*.txt" 2>/dev/null | grep -q .; then
+              echo "##vso[task.setvariable variable=hasMapping]true"
+            else
+              echo "##vso[task.setvariable variable=hasMapping]false"
+              echo "No mapping.txt found (minifyEnabled=false) — skipping publish"
+            fi
       - task: PublishBuildArtifacts@1
         displayName: Publish bundle
         continueOnError: true
@@ -155,8 +167,7 @@ jobs:
           ArtifactName: bundle
       - task: PublishBuildArtifacts@1
         displayName: Publish mapping
-        condition: succeeded()
-        continueOnError: true
+        condition: and(succeeded(), eq(variables['hasMapping'], 'true'))
         inputs:
           PathtoPublish: $(build.artifactstagingdirectory)/mapping
           ArtifactName: mapping
