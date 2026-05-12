@@ -513,7 +513,7 @@ jobs:
           exportOptions: plist
           exportOptionsPlist: '$(Build.SourcesDirectory)/exportOptions.plist'
           args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
-        timeoutInMinutes: 45
+        timeoutInMinutes: 180
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
