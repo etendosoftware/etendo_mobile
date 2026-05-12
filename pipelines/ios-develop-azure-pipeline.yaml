@@ -25,60 +25,12 @@ jobs:
     cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-14  
+      vmImage: macOS-latest
     steps:
       - checkout: self
         clean: true
         submodules: recursive
         lfs: true
-      
-      - task: Bash@3
-        displayName: Create scripts directory
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Creating scripts directory..."
-            mkdir -p $(Agent.HomeDirectory)/scripts
-            ls -la $(Agent.HomeDirectory)/
-          failOnStderr: false
-      
-      - task: PowerShell@2
-        displayName: Install build scripts
-        continueOnError: true
-        inputs:
-          targetType: inline
-          scriptName: ''
-          script: >-
-            Set-Location -Path '$(Agent.HomeDirectory)'
-
-            Invoke-WebRequest -Uri
-            'https://build-assets.appcenter.ms/buildscripts/appcenter-build-assets-latest.zip'
-            -OutFile 'appcenter-build-assets-latest.zip'
-
-            if (Test-Path ./scripts) { Remove-Item -Path ./scripts -Force
-            -Recurse }
-
-            New-Item -ItemType directory -Path 'scripts' | Out-Null
-
-            unzip -q -d 'scripts' 'appcenter-build-assets-latest.zip'
-
-            # Verify that files were extracted correctly
-            Get-ChildItem -Path './scripts' -Recurse | Select-Object Name, FullName
-
-            Invoke-Expression 'bash ./scripts/init.sh'
-          failOnStderr: false
-      
-      - task: Bash@3
-        displayName: Verify scripts installation
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Checking scripts directory:"
-            ls -la $(Agent.HomeDirectory)/scripts/
-            echo "Looking for select-node-version.sh:"
-            find $(Agent.HomeDirectory)/scripts/ -name "*node*" -type f || echo "No node-related scripts found"
-            find $(Agent.HomeDirectory)/scripts/ -name "select-node-version.sh" -type f || echo "select-node-version.sh not found"
-          failOnStderr: false
       
       - task: ShellScript@2
         displayName: Post Clone Script
@@ -194,7 +146,7 @@ jobs:
           failOnStderr: false
       
       - task: Bash@3
-        displayName: "Select Xcode 16 (iOS 18 SDK)"
+        displayName: "Select Xcode 26 (iOS 26 SDK)"
         inputs:
           targetType: 'inline'
           script: |
@@ -204,12 +156,18 @@ jobs:
               echo "=== Available Xcode installations ==="
               ls -la /Applications | grep 'Xcode' || true
 
-              # Prefer explicit Xcode 16.*
-              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_16|Xcode 16)' | grep -vi beta | head -n 1)
+              # Prefer explicit Xcode 26.*
+              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | grep -vi beta | head -n 1)
+
+              # Fallback to highest available Xcode
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "Xcode 26 not found, falling back to highest available version..."
+                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_|Xcode )' | grep -vi beta | sort -V | tail -n 1)
+              fi
 
               if [ -z "$XCODE_CANDIDATE" ]; then
-                echo "ERROR: Xcode 16 not found on this agent."
-                echo "Available versions:"
+                echo "ERROR: No Xcode installation found on this agent."
+                echo "Available apps:"
                 ls /Applications | grep 'Xcode' || true
                 exit 1
               fi
@@ -224,7 +182,7 @@ jobs:
               echo "Verification:"
               xcrun xcode-select --print-path
               xcodebuild -version
-              echo "Expecting iOS SDK 18 or later:"
+              echo "Available SDKs:"
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
 
       - task: InstallAppleCertificate@2
@@ -294,16 +252,18 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            echo "Updating iOS Deployment Target to 12.0..."
+            echo "Updating iOS Deployment Target to 15.1..."
 
-            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 11.0/IPHONEOS_DEPLOYMENT_TARGET = 12.0/g' {} \;
-            find . -name "*.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = "11.0"/IPHONEOS_DEPLOYMENT_TARGET = "12.0"/g' {} \;
+            # Replace any existing deployment target in pbxproj with 15.1
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
+            find . -name "*.pbxproj" -exec sed -i '' \
+              's/IPHONEOS_DEPLOYMENT_TARGET = "[0-9][0-9.]*"/IPHONEOS_DEPLOYMENT_TARGET = "15.1"/g' {} \;
 
             if [ -f "ios/Podfile" ]; then
               echo "Updating Podfile..."
               sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
               sed -i '' "s/platform :ios, \"[0-9.]*\"/platform :ios, \"15.1\"/g" ios/Podfile
-              # If no platform is defined, add it
               if ! grep -q "platform :ios" ios/Podfile; then
                 echo "Adding iOS platform to Podfile..."
                 sed -i '' '1i\
@@ -433,26 +393,6 @@ jobs:
             . -name "*Info.plist" -exec /usr/libexec/PlistBuddy -c "Set
             :CFBundleVersion $(versionCode)" {} ;
       
-      - task: CmdLine@1
-        displayName: Update Xcode build settings
-        continueOnError: true
-        condition: succeeded()
-        inputs:
-          filename: node
-          arguments: >-
-            $(Agent.HomeDirectory)/scripts/build-xcproject-analyzer/node_modules/@build/xcproject-analyzer-script/script/bin.js
-            --app-id="7c22e934-4599-477a-9f23-5c58b1500e79"
-            --app-insights-key="$(AppInsightsKey)"
-            --xc-workspace-path="$(APPCENTER_XCODE_WORKSPACE)"
-            --scheme="Etendo_Mobile" --code-sign-style="$(SIGNING_OPTION)"
-            --app-provisioning-profile-uuid="26b648c5-9580-43c7-8056-0fffdaf5585d"
-            --app-extension-provisioning-profile-uuids="080f18d3-512f-4055-995c-8a8a89aa52ec"
-            --app-extension-target-bundle-identifiers="com.etendoapploader.ios.EtendoRecieveShare"
-            --code-sign-identity="$(APPLE_CERTIFICATE_SIGNING_IDENTITY)"
-            --development-team="B4T44MT553"
-            --app-bundle-identifier="com.etendoapploader.ios"
-          workingFolder: $(Build.SourcesDirectory)
-  
       - task: Bash@3
         displayName: Create exportOptions.plist
         inputs:
@@ -505,7 +445,7 @@ jobs:
           exportOptions: plist
           exportOptionsPlist: '$(Build.SourcesDirectory)/exportOptions.plist'
           args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
-        timeoutInMinutes: 45
+        timeoutInMinutes: 180
       
       - task: CopyFiles@2
         displayName: Copy build files to staging
