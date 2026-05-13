@@ -23,6 +23,7 @@ jobs:
   - job: Phase_1
     displayName: Build
     cancelTimeoutInMinutes: 0
+    timeoutInMinutes: 300
     pool:
       name: Azure Pipelines
       vmImage: macOS-latest
@@ -65,8 +66,18 @@ jobs:
             fi
           failOnStderr: false
       
+      - task: Cache@2
+        displayName: Cache node_modules
+        inputs:
+          key: '"node-v1" | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            "node-v1" | "$(Agent.OS)"
+          path: $(System.DefaultWorkingDirectory)/node_modules
+          cacheHitVar: YARN_CACHE_HIT
+
       - task: CmdLine@1
         displayName: yarn/npm install
+        condition: ne(variables.YARN_CACHE_HIT, 'true')
         inputs:
           filename: sh
           arguments: >-
@@ -217,81 +228,42 @@ jobs:
           failOnStderr: false
       
       - task: Bash@3
-        displayName: Add Podfile post_install hook
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Adding post_install hook to Podfile..."
-            if [ -f "ios/Podfile" ]; then
-              if ! grep -q "post_install" ios/Podfile; then
-                echo "Adding post_install hook to fix deployment targets..."
-                cat >> ios/Podfile << 'EOF'
-
-            post_install do |installer|
-              installer.pods_project.targets.each do |target|
-                target.build_configurations.each do |config|
-                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
-                  config.build_settings['ENABLE_BITCODE'] = 'NO'
-                  config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
-                end
-              end
-            end
-            EOF
-              else
-                echo "post_install hook already exists, updating deployment target..."
-                # Update the deployment target in the existing post_install
-                sed -i '' "/post_install/,/end/s/IPHONEOS_DEPLOYMENT_TARGET.*=.*/IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'/g" ios/Podfile
-              fi
-            fi
-
-            echo "Current Podfile content:"
-            cat ios/Podfile
-
-      - task: Bash@3
-        displayName: Update iOS Deployment Target
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Updating iOS Deployment Target to 15.1..."
-
-            # Replace any existing deployment target in pbxproj with 15.1
-            find . -name "*.pbxproj" -exec sed -i '' \
-              's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
-            find . -name "*.pbxproj" -exec sed -i '' \
-              's/IPHONEOS_DEPLOYMENT_TARGET = "[0-9][0-9.]*"/IPHONEOS_DEPLOYMENT_TARGET = "15.1"/g' {} \;
-
-            if [ -f "ios/Podfile" ]; then
-              echo "Updating Podfile..."
-              sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.1'/g" ios/Podfile
-              sed -i '' "s/platform :ios, \"[0-9.]*\"/platform :ios, \"15.1\"/g" ios/Podfile
-              if ! grep -q "platform :ios" ios/Podfile; then
-                echo "Adding iOS platform to Podfile..."
-                sed -i '' '1i\
-            platform :ios, '\''15.1'\''
-            ' ios/Podfile
-              fi
-            fi
-
-            echo "Checking current deployment targets:"
-            grep -r "IPHONEOS_DEPLOYMENT_TARGET" ios/ || echo "No deployment targets found"
-      
-      - task: Bash@3
         displayName: Disable Flipper for CI
         inputs:
           targetType: 'inline'
           script: |
             echo "Disabling Flipper for CI build..."
             export NO_FLIPPER=1
-            echo "NO_FLIPPER=1" >> $BASH_ENV
+            echo "##vso[task.setvariable variable=NO_FLIPPER]1"
             echo "Flipper disabled successfully"
           failOnStderr: false
       
+      - task: Cache@2
+        displayName: Cache CocoaPods Pods
+        inputs:
+          key: '"pods-v2" | "$(Agent.OS)" | ios/Podfile.lock'
+          restoreKeys: |
+            "pods-v1" | "$(Agent.OS)"
+          path: $(System.DefaultWorkingDirectory)/ios/Pods
+          cacheHitVar: PODS_CACHE_HIT
+
       - task: Bash@3
         displayName: Clean CocoaPods cache
+        condition: ne(variables.PODS_CACHE_HIT, 'true')
         inputs:
           targetType: 'inline'
           script: |
             rm -rf Pods Podfile.lock
+          workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
+
+      - task: Bash@3
+        displayName: Invalidate Pods Manifest to force post_install on cache hit
+        condition: eq(variables.PODS_CACHE_HIT, 'true')
+        inputs:
+          targetType: 'inline'
+          script: |
+            rm -f Pods/Manifest.lock
+            echo "Cleared Manifest.lock — pod install will regenerate project and run post_install hook"
           workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
 
       - task: Bash@3
@@ -300,14 +272,18 @@ jobs:
           targetType: 'inline'
           script: |
             RN_VERSION=$(node -e "console.log(require('./node_modules/react-native/package.json').version)")
-            HERMES_URL="https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${RN_VERSION}/react-native-artifacts-${RN_VERSION}-hermes-ios-debug.tar.gz"
-            echo "Downloading Hermes ${RN_VERSION} from Maven Central..."
             mkdir -p /tmp/hermes-cache
-            curl -f -L --retry 5 --retry-delay 5 --retry-max-time 120 \
-              -o /tmp/hermes-cache/hermes-ios-debug.tar.gz \
-              "$HERMES_URL"
-            echo "HERMES_ENGINE_TARBALL_PATH=/tmp/hermes-cache/hermes-ios-debug.tar.gz" >> $BASH_ENV
-            echo "Hermes downloaded successfully."
+            if [ ! -f /tmp/hermes-cache/hermes-ios-debug.tar.gz ]; then
+              HERMES_URL="https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${RN_VERSION}/react-native-artifacts-${RN_VERSION}-hermes-ios-debug.tar.gz"
+              echo "Downloading Hermes ${RN_VERSION} from Maven Central..."
+              curl -f -L --retry 5 --retry-delay 5 --retry-max-time 120 \
+                -o /tmp/hermes-cache/hermes-ios-debug.tar.gz \
+                "$HERMES_URL"
+              echo "Hermes downloaded successfully."
+            else
+              echo "Hermes already present in cache, skipping download."
+            fi
+            echo "##vso[task.setvariable variable=HERMES_ENGINE_TARBALL_PATH]/tmp/hermes-cache/hermes-ios-debug.tar.gz"
           workingDirectory: '$(System.DefaultWorkingDirectory)'
 
       - task: Bash@3
@@ -317,6 +293,34 @@ jobs:
           script: |
             pod install --no-repo-update
           workingDirectory: '$(System.DefaultWorkingDirectory)/ios'
+
+      - task: Bash@3
+        displayName: Patch Pods deployment targets (pbxproj + xcconfig)
+        inputs:
+          targetType: 'inline'
+          script: |
+            PODS_DIR="$(System.DefaultWorkingDirectory)/ios/Pods"
+
+            # 1. Patch Pods.xcodeproj/project.pbxproj
+            PBXPROJ="$PODS_DIR/Pods.xcodeproj/project.pbxproj"
+            if [ -f "$PBXPROJ" ]; then
+              sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' "$PBXPROJ"
+              echo "pbxproj unique values after patch:"
+              grep "IPHONEOS_DEPLOYMENT_TARGET" "$PBXPROJ" | sort -u
+            else
+              echo "ERROR: Pods.xcodeproj not found"
+              exit 1
+            fi
+
+            # 2. Patch xcconfig base configuration files — podspecs like
+            #    react-native-document-picker (11.0) and VisionCamera (12.4)
+            #    hardcode deployment targets here and override pbxproj settings
+            XCCONFIG_COUNT=$(find "$PODS_DIR" -name "*.xcconfig" | xargs grep -l "IPHONEOS_DEPLOYMENT_TARGET" 2>/dev/null | wc -l | tr -d ' ')
+            echo "Patching $XCCONFIG_COUNT xcconfig files..."
+            find "$PODS_DIR" -name "*.xcconfig" \
+              -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
+            echo "Done. Remaining unique deployment targets in xcconfig files:"
+            find "$PODS_DIR" -name "*.xcconfig" | xargs grep "IPHONEOS_DEPLOYMENT_TARGET" 2>/dev/null | awk -F'=' '{print $2}' | sort -u
 
       - task: Bash@3
         displayName: Determine project file path (with verification)
