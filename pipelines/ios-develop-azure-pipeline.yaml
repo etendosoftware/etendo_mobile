@@ -22,17 +22,29 @@ pr: none
 jobs:
   - job: Phase_1
     displayName: Build
-    cancelTimeoutInMinutes: 0
     timeoutInMinutes: 300
+    cancelTimeoutInMinutes: 0
     pool:
       name: Azure Pipelines
-      vmImage: macOS-latest
+      vmImage: macOS-26
     steps:
       - checkout: self
         clean: true
         submodules: recursive
         lfs: true
       
+      - task: Bash@3
+        displayName: Verify checkout
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Working directory: $(pwd)"
+            echo "Build.SourcesDirectory: $(Build.SourcesDirectory)"
+            ls -la $(Build.SourcesDirectory)/
+            echo "=== yarn.lock exists? ==="
+            test -f $(Build.SourcesDirectory)/yarn.lock && echo "YES" || echo "NO"
+          failOnStderr: false
+
       - task: ShellScript@2
         displayName: Post Clone Script
         condition: succeeded()
@@ -157,7 +169,7 @@ jobs:
           failOnStderr: false
       
       - task: Bash@3
-        displayName: "Select Xcode 26 (iOS 26 SDK)"
+        displayName: "Select Xcode 26"
         inputs:
           targetType: 'inline'
           script: |
@@ -167,18 +179,19 @@ jobs:
               echo "=== Available Xcode installations ==="
               ls -la /Applications | grep 'Xcode' || true
 
-              # Prefer explicit Xcode 26.*
-              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | grep -vi beta | head -n 1)
-
-              # Fallback to highest available Xcode
+              # Prefer stable Xcode 26.x, then beta, then fallback
+              XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | grep -vi beta | sort -V | tail -n 1)
               if [ -z "$XCODE_CANDIDATE" ]; then
-                echo "Xcode 26 not found, falling back to highest available version..."
-                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_|Xcode )' | grep -vi beta | sort -V | tail -n 1)
+                echo "No stable Xcode 26 found, trying beta..."
+                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_26|Xcode 26)' | sort -V | tail -n 1)
+              fi
+              if [ -z "$XCODE_CANDIDATE" ]; then
+                echo "No Xcode 26 found, falling back to highest available version..."
+                XCODE_CANDIDATE=$(ls /Applications | grep -E '^(Xcode_|Xcode )' | sort -V | tail -n 1)
               fi
 
               if [ -z "$XCODE_CANDIDATE" ]; then
-                echo "ERROR: No Xcode installation found on this agent."
-                echo "Available apps:"
+                echo "ERROR: No compatible Xcode installation found (need Xcode 26+)."
                 ls /Applications | grep 'Xcode' || true
                 exit 1
               fi
@@ -187,20 +200,53 @@ jobs:
               XCODE_PATH="/Applications/$XCODE_CANDIDATE/Contents/Developer"
               echo "##vso[task.setvariable variable=XCODE_DEVELOPER_DIR]$XCODE_PATH"
 
-              echo "Selecting Xcode..."
               sudo xcode-select -s "$XCODE_PATH"
 
               echo "Verification:"
-              xcrun xcode-select --print-path
               xcodebuild -version
               echo "Available SDKs:"
               xcodebuild -showsdks | grep -E 'iphoneos|iphonesimulator' || true
+
+      - task: Bash@3
+        displayName: "Setup Xcode and install iOS platform"
+        inputs:
+          targetType: 'inline'
+          script: |
+              set -x
+              echo "=== Accept license ==="
+              sudo xcodebuild -license accept || true
+
+              echo "=== Run first launch ==="
+              sudo xcodebuild -runFirstLaunch || true
+
+              echo "=== Download iOS platform ==="
+              sudo xcodebuild -downloadPlatform iOS 2>&1
+              echo "Download exit code: $?"
+
+              echo "=== Available SDKs ==="
+              xcodebuild -showsdks
+
+              echo "=== Available destinations for scheme ==="
+              xcodebuild -showdestinations \
+                -workspace ios/Etendo_Mobile.xcworkspace \
+                -scheme Etendo_Mobile 2>&1 || true
+
+              echo "=== Check if Xcode is symlink ==="
+              ls -la /Applications/ | grep Xcode_26 || true
+              file /Applications/Xcode_26.5.0.app || true
+              echo "=== Platform directories ==="
+              ls -la "$(xcode-select -p)/Platforms/" || true
+              ls -la "$(xcode-select -p)/Platforms/iPhoneOS.platform/" || true
+              ls -la "$(xcode-select -p)/Platforms/iPhoneOS.platform/Developer/SDKs/" || true
+          workingDirectory: '$(Build.SourcesDirectory)'
+        timeoutInMinutes: 30
 
       - task: InstallAppleCertificate@2
         displayName: Install Apple certificate
         inputs:
           certSecureFile: $(P12SecureFileId)
           certPwd: $(P12Password)
+          opensslPkcsArgs: '-legacy'
       
       - task: InstallAppleProvisioningProfile@0
         displayName: Install Apple provisioning profile
@@ -241,9 +287,9 @@ jobs:
       - task: Cache@2
         displayName: Cache CocoaPods Pods
         inputs:
-          key: '"pods-v2" | "$(Agent.OS)" | ios/Podfile.lock'
+          key: '"pods-v3" | "$(Agent.OS)" | ios/Podfile.lock'
           restoreKeys: |
-            "pods-v1" | "$(Agent.OS)"
+            "pods-v3" | "$(Agent.OS)"
           path: $(System.DefaultWorkingDirectory)/ios/Pods
           cacheHitVar: PODS_CACHE_HIT
 
@@ -321,6 +367,20 @@ jobs:
               -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9][0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.1/g' {} \;
             echo "Done. Remaining unique deployment targets in xcconfig files:"
             find "$PODS_DIR" -name "*.xcconfig" | xargs grep "IPHONEOS_DEPLOYMENT_TARGET" 2>/dev/null | awk -F'=' '{print $2}' | sort -u
+
+            # 3. Patch fmt source to fix consteval errors with Xcode 26+ Clang
+            #    Xcode 26 Clang rejects consteval in fmt 11.0.2.
+            #    Directly patch the header so the macro resolves to constexpr.
+            FMT_BASE="$PODS_DIR/fmt/include/fmt/base.h"
+            if [ -f "$FMT_BASE" ]; then
+              echo "Patching fmt base.h to force FMT_CONSTEVAL=constexpr..."
+              # Note: fmt uses "#  define" (with spaces after #) inside #ifdef blocks
+              sed -i '' 's/define FMT_CONSTEVAL consteval/define FMT_CONSTEVAL constexpr/' "$FMT_BASE"
+              echo "Result:"
+              grep -n "FMT_CONSTEVAL" "$FMT_BASE" | head -5
+            else
+              echo "WARNING: $FMT_BASE not found — fmt pod may not be installed"
+            fi
 
       - task: Bash@3
         displayName: Determine project file path (with verification)
@@ -430,25 +490,47 @@ jobs:
             </plist>
             EOF
 
-      - task: Xcode@4
-        displayName: Xcode build (signed)
+      - task: Bash@3
+        displayName: Xcode archive (signed)
         inputs:
-          actions: build
-          configuration: Release
-          sdk: iphoneos
-          xcWorkspacePath: $(APPCENTER_XCODE_PROJECT)
-          scheme: Etendo_Mobile
-          xcodeDeveloperDir: $(XCODE_DEVELOPER_DIR)
-          packageApp: true
-          archivePath: $(agent.builddirectory)/output/build/archive
-          exportPath: $(agent.builddirectory)/output/build/export
-          signingOption: manual
-          signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
-          provisioningProfileUuid: '26b648c5-9580-43c7-8056-0fffdaf5585d'
-          teamId: 'B4T44MT553'
-          exportOptions: plist
-          exportOptionsPlist: '$(Build.SourcesDirectory)/exportOptions.plist'
-          args: '-allowProvisioningUpdates -destination generic/platform=iOS -parallelizeTargets -jobs 4'
+          targetType: 'inline'
+          script: |
+            set -euo pipefail
+            export DEVELOPER_DIR="$(xcode-select -p)"
+            XCODEBUILD="$DEVELOPER_DIR/usr/bin/xcodebuild"
+            echo "Using Xcode at: $DEVELOPER_DIR"
+            echo "xcodebuild: $XCODEBUILD"
+            "$XCODEBUILD" -version
+
+            # Ensure iOS platform is registered for THIS Xcode
+            echo "=== Ensuring iOS platform is available ==="
+            "$XCODEBUILD" -downloadPlatform iOS 2>&1 || true
+            "$XCODEBUILD" -showsdks | grep -i iphoneos || true
+
+            ARCHIVE_PATH="$(agent.builddirectory)/output/build/archive/Etendo_Mobile.xcarchive"
+            EXPORT_PATH="$(agent.builddirectory)/output/build/export"
+
+            echo "=== Archiving ==="
+            "$XCODEBUILD" archive \
+              -workspace ios/Etendo_Mobile.xcworkspace \
+              -scheme Etendo_Mobile \
+              -configuration Release \
+              -destination "generic/platform=iOS" \
+              -archivePath "$ARCHIVE_PATH" \
+              -allowProvisioningUpdates \
+              -parallelizeTargets -jobs 4 \
+              CODE_SIGN_STYLE=Manual \
+              "CODE_SIGN_IDENTITY=$(APPLE_CERTIFICATE_SIGNING_IDENTITY)" \
+              PROVISIONING_PROFILE=26b648c5-9580-43c7-8056-0fffdaf5585d \
+              DEVELOPMENT_TEAM=B4T44MT553
+
+            echo "=== Exporting IPA ==="
+            "$XCODEBUILD" -exportArchive \
+              -archivePath "$ARCHIVE_PATH" \
+              -exportPath "$EXPORT_PATH" \
+              -exportOptionsPlist "$(Build.SourcesDirectory)/exportOptions.plist" \
+              -allowProvisioningUpdates
+          workingDirectory: '$(Build.SourcesDirectory)'
         timeoutInMinutes: 180
       
       - task: CopyFiles@2
