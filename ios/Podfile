@@ -57,6 +57,14 @@ target 'Etendo_Mobile' do
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
+
+      # Fix fmt consteval errors with Xcode 26+ Clang — downgrade consteval to constexpr
+      if target.name == 'fmt'
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_CONSTEVAL=constexpr'
+        end
+      end
     end
   end
 end
