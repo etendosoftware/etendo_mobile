@@ -49,5 +49,22 @@ target 'Etendo_Mobile' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+
+    # Force deployment target on every pod target, including resource bundles.
+    # Required for Xcode 15+ SDK (iOS 26 SDK dropped libswiftCompatibility56,
+    # which is emitted by the Swift compiler when IPHONEOS_DEPLOYMENT_TARGET < 15.0)
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+      end
+
+      # Fix fmt consteval errors with Xcode 26+ Clang — downgrade consteval to constexpr
+      if target.name == 'fmt'
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_CONSTEVAL=constexpr'
+        end
+      end
+    end
   end
 end

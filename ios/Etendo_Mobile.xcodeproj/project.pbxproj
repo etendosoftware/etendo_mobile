@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* Etendo_MobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* Etendo_MobileTests.m */; };
+		0171BB4715DDE4CCAD1C9F15 /* libPods-Etendo_Mobile-Etendo_MobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A75636FD5D8A0267E9072D0 /* libPods-Etendo_Mobile-Etendo_MobileTests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		3DAB75A856B426536E199882 /* libPods-Etendo_Mobile-Etendo_MobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC5A38EBF540D03572F8F5FC /* libPods-Etendo_Mobile-Etendo_MobileTests.a */; };
 		6132EF182BDFF13200BBE14D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */; };
-		7548624E149E25D9043AC5C8 /* libPods-Etendo_Mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A372F25FC1351FD742688D93 /* libPods-Etendo_Mobile.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		96C7048EC4CFB7EB7DBCC516 /* libPods-Etendo_Mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58968C0C92A95E14BBF221A5 /* libPods-Etendo_Mobile.a */; };
 		C263474E2D01B22100B413A0 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C263474D2D01B22100B413A0 /* ShareViewController.swift */; };
 		C26347512D01B22100B413A0 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C263474F2D01B22100B413A0 /* MainInterface.storyboard */; };
 		C26347552D01B22100B413A0 /* EtendoRecieveShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C263474B2D01B22100B413A0 /* EtendoRecieveShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -62,12 +62,14 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Etendo_Mobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Etendo_Mobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Etendo_Mobile/main.m; sourceTree = "<group>"; };
+		58463EC227976C6916813A9C /* Pods-Etendo_Mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile.release.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile.release.xcconfig"; sourceTree = "<group>"; };
+		58968C0C92A95E14BBF221A5 /* libPods-Etendo_Mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Etendo_Mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Etendo_Mobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		713C5F0AB1262F1190F0C282 /* Pods-Etendo_Mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile.release.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile.release.xcconfig"; sourceTree = "<group>"; };
+		7CA00B68D15F067EC48B3C1C /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Etendo_Mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9BB3BDD6FD112A20DB018972 /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		A372F25FC1351FD742688D93 /* libPods-Etendo_Mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Etendo_Mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AC5A38EBF540D03572F8F5FC /* libPods-Etendo_Mobile-Etendo_MobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Etendo_Mobile-Etendo_MobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A75636FD5D8A0267E9072D0 /* libPods-Etendo_Mobile-Etendo_MobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Etendo_Mobile-Etendo_MobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AD00ED35DA03550D9C448ED /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig"; sourceTree = "<group>"; };
+		B2A0A19CF2B74F1E9A2569BC /* Pods-Etendo_Mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile.debug.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		C263474B2D01B22100B413A0 /* EtendoRecieveShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EtendoRecieveShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C263474D2D01B22100B413A0 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		C26347502D01B22100B413A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -75,9 +77,7 @@
 		C263475A2D01C7A600B413A0 /* EtendoRecieveShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EtendoRecieveShare.entitlements; sourceTree = "<group>"; };
 		C263475B2D01C82B00B413A0 /* Etendo_Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Etendo_Mobile.entitlements; path = Etendo_Mobile/Etendo_Mobile.entitlements; sourceTree = "<group>"; };
 		C2BD23A52C4E9543006FB80E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
-		E4C724AA66F1D1634472CADC /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F1266FE032585D38172AE95E /* Pods-Etendo_Mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Etendo_Mobile.debug.xcconfig"; path = "Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,7 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DAB75A856B426536E199882 /* libPods-Etendo_Mobile-Etendo_MobileTests.a in Frameworks */,
+				0171BB4715DDE4CCAD1C9F15 /* libPods-Etendo_Mobile-Etendo_MobileTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7548624E149E25D9043AC5C8 /* libPods-Etendo_Mobile.a in Frameworks */,
+				96C7048EC4CFB7EB7DBCC516 /* libPods-Etendo_Mobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,8 +143,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				A372F25FC1351FD742688D93 /* libPods-Etendo_Mobile.a */,
-				AC5A38EBF540D03572F8F5FC /* libPods-Etendo_Mobile-Etendo_MobileTests.a */,
+				58968C0C92A95E14BBF221A5 /* libPods-Etendo_Mobile.a */,
+				8A75636FD5D8A0267E9072D0 /* libPods-Etendo_Mobile-Etendo_MobileTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -186,10 +186,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F1266FE032585D38172AE95E /* Pods-Etendo_Mobile.debug.xcconfig */,
-				713C5F0AB1262F1190F0C282 /* Pods-Etendo_Mobile.release.xcconfig */,
-				E4C724AA66F1D1634472CADC /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */,
-				9BB3BDD6FD112A20DB018972 /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */,
+				B2A0A19CF2B74F1E9A2569BC /* Pods-Etendo_Mobile.debug.xcconfig */,
+				58463EC227976C6916813A9C /* Pods-Etendo_Mobile.release.xcconfig */,
+				7CA00B68D15F067EC48B3C1C /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */,
+				8AD00ED35DA03550D9C448ED /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -212,12 +212,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "Etendo_MobileTests" */;
 			buildPhases = (
-				F1420BF09D6DFC6757603DDB /* [CP] Check Pods Manifest.lock */,
+				7AF25FC3DBFA741EAD6A6320 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				1BF195ED9DBB10941425527C /* [CP] Embed Pods Frameworks */,
-				B0C16A53DE50347EFBEE3EE8 /* [CP] Copy Pods Resources */,
+				EFD731482FEDC17D115D4FF7 /* [CP] Embed Pods Frameworks */,
+				F5878CBFB6CF8F28860B8F2B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -233,15 +233,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Etendo_Mobile" */;
 			buildPhases = (
-				6556A253599A1F80AE04FD1E /* [CP] Check Pods Manifest.lock */,
+				8A704B171CF8FD761A43998F /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				C26347562D01B22100B413A0 /* Embed Foundation Extensions */,
-				C2F52CDD16695DB84FB9EF6E /* [CP] Embed Pods Frameworks */,
-				4B4D4EF0DBB45A96D9CC888E /* [CP] Copy Pods Resources */,
+				4A3D4624216A09C463479F1D /* [CP] Embed Pods Frameworks */,
+				43BC32D29C6E76A3CB786136 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -357,24 +357,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		1BF195ED9DBB10941425527C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4B4D4EF0DBB45A96D9CC888E /* [CP] Copy Pods Resources */ = {
+		43BC32D29C6E76A3CB786136 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -391,7 +374,46 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6556A253599A1F80AE04FD1E /* [CP] Check Pods Manifest.lock */ = {
+		4A3D4624216A09C463479F1D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7AF25FC3DBFA741EAD6A6320 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Etendo_Mobile-Etendo_MobileTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8A704B171CF8FD761A43998F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -413,7 +435,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B0C16A53DE50347EFBEE3EE8 /* [CP] Copy Pods Resources */ = {
+		EFD731482FEDC17D115D4FF7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5878CBFB6CF8F28860B8F2B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -428,45 +467,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile-Etendo_MobileTests/Pods-Etendo_Mobile-Etendo_MobileTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C2F52CDD16695DB84FB9EF6E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Etendo_Mobile/Pods-Etendo_Mobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F1420BF09D6DFC6757603DDB /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Etendo_Mobile-Etendo_MobileTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -545,7 +545,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4C724AA66F1D1634472CADC /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */;
+			baseConfigurationReference = 7CA00B68D15F067EC48B3C1C /* Pods-Etendo_Mobile-Etendo_MobileTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -553,7 +553,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Etendo_MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -572,12 +572,12 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9BB3BDD6FD112A20DB018972 /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */;
+			baseConfigurationReference = 8AD00ED35DA03550D9C448ED /* Pods-Etendo_Mobile-Etendo_MobileTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = Etendo_MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -596,7 +596,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F1266FE032585D38172AE95E /* Pods-Etendo_Mobile.debug.xcconfig */;
+			baseConfigurationReference = B2A0A19CF2B74F1E9A2569BC /* Pods-Etendo_Mobile.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -634,7 +634,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 713C5F0AB1262F1190F0C282 /* Pods-Etendo_Mobile.release.xcconfig */;
+			baseConfigurationReference = 58463EC227976C6916813A9C /* Pods-Etendo_Mobile.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -673,7 +673,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -718,7 +718,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -740,6 +740,8 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -748,7 +750,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -789,7 +791,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -810,6 +812,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
