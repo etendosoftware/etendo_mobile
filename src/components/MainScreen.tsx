@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import {
   NavigationContainer,
   NavigationIndependentTree,
@@ -66,10 +66,21 @@ const HomePage = ({ route, navigation }: any) => {
     );
   };
 
+  // Android handles the IME inset natively (see MainActivity.kt) since
+  // windowSoftInputMode="adjustResize" stops resizing the window under
+  // edge-to-edge. Adding KeyboardAvoidingView here too would double-compensate.
+  if (Platform.OS === 'android') {
+    return (
+      <View style={{ flex: 1 }}>
+        <RenderDynamicComponents />
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <RenderDynamicComponents />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
