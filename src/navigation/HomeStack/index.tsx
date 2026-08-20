@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DrawerCurrentIndexType } from 'etendo-ui-library/dist-native/components/navbar/Navbar.types';
-import { SafeAreaView, StatusBar, View, Image, Linking } from 'react-native';
+import { StatusBar, View, Image, Linking } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PRIMARY_100 } from '../../styles/colors';
 import Navbar from 'etendo-ui-library/dist-native/components/navbar/Navbar';
 import locale from '../../i18n/locale';
@@ -46,6 +47,7 @@ type HomeStackProps = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const data = useAppSelector(selectData);
   const menuItems = useAppSelector(selectMenuItems);
   const bindaryImg = useAppSelector(selectBindaryImg);
@@ -217,9 +219,9 @@ const HomeStack: React.FC<HomeStackProps> = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView style={styles.containerBackground} />
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_100} />
+      <View style={[styles.containerBackground, { height: insets.top }]} />
+      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        <StatusBar barStyle="light-content" backgroundColor={PRIMARY_100} translucent />
         {showNavbar && (
           <Navbar
             title={locale.t('WelcomeToEtendoHome')}
