@@ -131,6 +131,12 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            // Local x86_64/x86 emulators can't run arm64-only builds via SoLoader
+            // (couldn't find DSO to load: libreactnative.so). Release keeps the
+            // arm-only abiFilters from defaultConfig for 16 KB page size support.
+            ndk {
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            }
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

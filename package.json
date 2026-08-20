@@ -35,7 +35,7 @@
     "base-64": "1.0.0",
     "color": "^5.0.3",
     "date-fns": "2.10.0",
-    "etendo-ui-library": "1.11.2",
+    "etendo-ui-library": "1.11.4",
     "etrest": "1.2.0",
     "i18n-js": "3.5.1",
     "mobx": "^5.15.4",

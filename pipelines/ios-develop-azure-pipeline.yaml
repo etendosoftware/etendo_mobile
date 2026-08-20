@@ -81,9 +81,9 @@ jobs:
       - task: Cache@2
         displayName: Cache node_modules
         inputs:
-          key: '"node-v1" | "$(Agent.OS)" | yarn.lock'
+          key: '"node-v2" | "$(Agent.OS)" | yarn.lock'
           restoreKeys: |
-            "node-v1" | "$(Agent.OS)"
+            "node-v2" | "$(Agent.OS)"
           path: $(System.DefaultWorkingDirectory)/node_modules
           cacheHitVar: YARN_CACHE_HIT
 
@@ -287,9 +287,9 @@ jobs:
       - task: Cache@2
         displayName: Cache CocoaPods Pods
         inputs:
-          key: '"pods-v3" | "$(Agent.OS)" | ios/Podfile.lock'
+          key: '"pods-v4" | "$(Agent.OS)" | ios/Podfile.lock'
           restoreKeys: |
-            "pods-v3" | "$(Agent.OS)"
+            "pods-v4" | "$(Agent.OS)"
           path: $(System.DefaultWorkingDirectory)/ios/Pods
           cacheHitVar: PODS_CACHE_HIT
 
