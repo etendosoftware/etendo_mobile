@@ -26,7 +26,6 @@ import { NEUTRAL_100, PRIMARY_100 } from '../../styles/colors';
 import { UrlItem } from '../../components/UrlItem';
 import { useAppSelector, useAppDispatch } from '../../../redux';
 import {
-  selectData,
   selectSelectedEnvironmentUrl,
   selectSelectedLanguage as selectSelectedLanguageRedux,
   selectSelectedUrl,
@@ -44,7 +43,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { References } from '../../constants/References';
 import { selectIsDemo } from '../../../redux/window';
-import { useEtrest } from '../../../hook/useEtrest';
 import { getContextPath } from '../../utils';
 import {
   CornerUpLeftIcon,
@@ -72,16 +70,11 @@ const Settings = props => {
   const selectedUrl = useAppSelector(selectSelectedUrl);
   const selectedEnvironmentUrl = useAppSelector(selectSelectedEnvironmentUrl);
   const isDemoTry = useAppSelector(selectIsDemo);
-  const data = useAppSelector(selectData);
-
-  const { getRoleName } = useEtrest(selectedUrl, token);
-
   // local states
   const [url, setUrl] = useState<string>('');
   const [modalUrl, setModalUrl] = useState<string>('');
   const [showChangeURLModal, setShowChangeURLModal] = useState<boolean>(false);
   const [hasErrorLogo, setHasErrorLogo] = useState<boolean>(false);
-  const [role, setRole] = useState<string>('');
   const [displayLanguage, setDisplayLanguage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [storedDataUrl, setStoredDataUrl] = useState([]);
@@ -280,19 +273,6 @@ const Settings = props => {
     dispatch(setSelectedEnvironmentUrl(formattedUrl));
     setShowChangeURLModal(false);
   };
-
-  useEffect(() => {
-    if (data?.roleId && token) {
-      Promise.all([getRoleName(data)])
-        .then(values => {
-          const [role] = values;
-          setRole(role);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    }
-  }, [data, token]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
