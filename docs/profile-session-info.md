@@ -27,9 +27,11 @@ tables), so every call returns `401 Entity ADRole is not readable by the user �
 Only the error handling is fixed; no backend change is required.
 
 - When a profile request fails with `401`/`403` (the role cannot read the
-  data), the profile shows one toast, *"No access to this data. Check the role
-  on the server."* (`RoleWithoutAccess` in `src/lang/*.json`), and then logs
-  the user out, so the role can be fixed on the server.
+  data), the profile shows one toast, *"Signed out: your role lacks the
+  required permissions."* / *"Sesión cerrada: tu rol no tiene permisos
+  suficientes."* (`RoleWithoutAccess` in `src/lang/*.json`), and then logs
+  the user out, so the role can be fixed on the server. The toast shows at
+  most two lines (`etendo-ui-library`), so the message must stay short.
 - Any other error (network, `500`, …) does not log the user out: the field
   shows `*`.
 - Settings no longer queries the role name: it never displayed it, and for

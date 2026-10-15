@@ -102,5 +102,5 @@
   "ErrorUserPassword": "Credenciales incorrectos o sin autorización.",
   "UrlFetchFailed": "Falló al renderizar la url '%{url}'",
   "NoInternetConnection": "Sin Conexión a Internet",
-  "RoleWithoutAccess": "Sin acceso a estos datos. Revise el rol en el servidor."
+  "RoleWithoutAccess": "Sesión cerrada: tu rol no tiene permisos suficientes."
 }

@@ -102,5 +102,5 @@
   "ErrorUserPassword": "Credentials are incorrect or unauthorized.",
   "UrlFetchFailed": "Failed to Render url '%{url}'",
   "NoInternetConnection": "No Internet Connection",
-  "RoleWithoutAccess": "No access to this data. Check the role on the server."
+  "RoleWithoutAccess": "Signed out: your role lacks the required permissions."
 }
