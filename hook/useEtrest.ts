@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { OBRest, Restrictions } from "etrest";
 import { IData } from "../src/interfaces";
 import { IRecord } from "../src/types";
-import { useUser } from "./useUser";
+
+// The server rejects reads of entities the role cannot access (e.g. a role
+// without Window Access) with 401/403.
+export const isAccessDeniedError = (error: any): boolean => {
+  const status = error?.response?.status;
+  return status === 401 || status === 403;
+};
 
 export const useEtrest = (selectedUrl: string, token: string) => {
-  const { logout } = useUser();
-  const [error, setError] = useState<Error | null>(null);
-
   useEffect(() => {
     if (selectedUrl && token) {
       OBRest.init(new URL(selectedUrl), token);
@@ -15,12 +18,8 @@ export const useEtrest = (selectedUrl: string, token: string) => {
     }
   }, [selectedUrl, token]);
 
-  useEffect(() => {
-    if (error) {
-      logout();
-    }
-  }, [error]);
-
+  // Failures here (e.g. a role without read access to an entity) must not end
+  // the session: errors are propagated so each screen can fall back gracefully.
   const getOrganizationName = async (data: IData): Promise<string> => {
     try {
       let criteria = OBRest.getInstance().createCriteria("Organization");
@@ -28,8 +27,7 @@ export const useEtrest = (selectedUrl: string, token: string) => {
       let org: IRecord = await criteria.uniqueResult();
       return org.name;
     } catch (error) {
-      console.error("error", error);
-      setError(new Error(`Failed to fetch organizationName: ${error.message}`));
+      console.error("Failed to fetch organizationName", error);
       throw error;
     }
   };
@@ -41,8 +39,7 @@ export const useEtrest = (selectedUrl: string, token: string) => {
       let client: IRecord = await criteria.uniqueResult();
       return client.name;
     } catch (error) {
-      console.error("error", error);
-      setError(new Error(`Failed to fetch getClientName: ${error.message}`));
+      console.error("Failed to fetch clientName", error);
       throw error;
     }
   };
@@ -54,8 +51,7 @@ export const useEtrest = (selectedUrl: string, token: string) => {
       let warehouse: IRecord = await criteria.uniqueResult();
       return warehouse?.name;
     } catch (error) {
-      console.error("error", error);
-      setError(new Error(`Failed to fetch getWarehouseName: ${error.message}`));
+      console.error("Failed to fetch warehouseName", error);
       throw error;
     }
   };
@@ -67,8 +63,7 @@ export const useEtrest = (selectedUrl: string, token: string) => {
       let role: IRecord = await criteria.uniqueResult();
       return role.name;
     } catch (error) {
-      console.error("error", error);
-      setError(new Error(`Failed to fetch getRoleName: ${error.message}`));
+      console.error("Failed to fetch roleName", error);
       throw error;
     }
   };
