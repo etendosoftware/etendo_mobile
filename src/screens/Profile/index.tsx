@@ -13,8 +13,10 @@ import {
   selectToken,
 } from '../../../redux/user';
 import { useAppSelector } from '../../../redux';
-import { useEtrest } from '../../../hook/useEtrest';
+import { isAccessDeniedError, useEtrest } from '../../../hook/useEtrest';
+import { useUser } from '../../../hook/useUser';
 import { CornerUpLeftIcon } from 'etendo-ui-library';
+import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManager';
 
 const Profile = props => {
   //States
@@ -33,25 +35,36 @@ const Profile = props => {
     getWarehouseName,
     getClientName,
   } = useEtrest(selectedUrl, token);
+  const { logout } = useUser();
 
   useEffect(() => {
     if (data) {
-      Promise.all([
-        getOrganizationName(data),
-        getRoleName(data),
-        getWarehouseName(data),
-        getClientName(data),
-      ])
-        .then(values => {
-          const [org, role, warehouse, client] = values;
-          setOrg(org);
-          setRole(role);
-          setWarehouse(warehouse);
-          setClient(client);
-        })
-        .catch(function (err) {
-          console.error(err);
+      // Each field is resolved independently: if the role cannot read one of
+      // these entities, only that field falls back to '*'.
+      let accessDenied = false;
+      const orNull = (promise: Promise<string>) =>
+        promise.catch(error => {
+          accessDenied = accessDenied || isAccessDeniedError(error);
+          return null;
         });
+      Promise.all([
+        orNull(getOrganizationName(data)),
+        orNull(getRoleName(data)),
+        orNull(getWarehouseName(data)),
+        orNull(getClientName(data)),
+      ]).then(values => {
+        const [org, role, warehouse, client] = values;
+        setOrg(org);
+        setRole(role);
+        setWarehouse(warehouse);
+        setClient(client);
+        if (accessDenied) {
+          // The role cannot read its own profile data: tell the user why and
+          // end the session so the role can be fixed on the server.
+          show(locale.t('RoleWithoutAccess'), 'error');
+          logout();
+        }
+      });
     }
   }, [data]);
 
@@ -98,7 +111,7 @@ const Profile = props => {
           <View style={styles.individualInfoContainerStyle}>
             <Text style={styles.titleStyle}>{locale.t('Profile:Role')}</Text>
             <Text style={styles.getDescriptionStyle} numberOfLines={3}>
-              {role === null || org === ' ' ? '*' : role}
+              {role === null || role === ' ' ? '*' : role}
             </Text>
           </View>
           <View style={styles.individualInfoContainerStyle}>
@@ -110,7 +123,7 @@ const Profile = props => {
           <View style={styles.individualInfoContainerStyle}>
             <Text style={styles.titleStyle}>{locale.t('Profile:Client')}</Text>
             <Text style={styles.getDescriptionStyle} numberOfLines={3}>
-              {client === null || client === ' ' ? '*' : org}
+              {client === null || client === ' ' ? '*' : client}
             </Text>
           </View>
           <View style={styles.lastInfoContainerStyle}>
@@ -118,7 +131,7 @@ const Profile = props => {
               {locale.t('Profile:warehouse')}
             </Text>
             <Text style={styles.descriptionStyleLast} numberOfLines={3}>
-              {warehouse === null || org === ' ' ? '*' : warehouse}
+              {warehouse === null || warehouse === ' ' ? '*' : warehouse}
             </Text>
           </View>
         </View>
