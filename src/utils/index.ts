@@ -40,16 +40,6 @@ export async function fetchComponent(id, url, navigation) {
   setAlertDefaultDuration(7000);
   const fullUrl = `${url}/${id}`;
 
-  // Check internet connection
-  async function isConnected() {
-    try {
-      const response = await fetch(fullUrl);
-      return response.ok;
-    } catch {
-      return false;
-    }
-  }
-
   // Download component from server
   async function downloadComponent() {
     const response = await fetch(fullUrl, {
@@ -78,20 +68,17 @@ export async function fetchComponent(id, url, navigation) {
     show(locale.t('LoginScreen:NetworkError'), 'error');
   }
 
-  // Main logic
+  // Main logic. Every failure path (offline, HTTP error, empty body, parse
+  // error) notifies the user and rejects, so React.lazy gets a rejected promise
+  // that the error boundary in DynamicComponent can handle instead of crashing.
   try {
-    if (!(await isConnected())) return handleFetchFailure;
-
-    let component = await downloadAndReturnComponent();
-
-    if (component) {
-      return component;
-    }
-
-    return handleFetchFailure;
+    const component = await downloadAndReturnComponent();
+    if (!component) throw new Error('Component could not be loaded');
+    return component;
   } catch (error) {
     console.error('Failed to fetch component:', error);
-    return handleFetchFailure;
+    handleFetchFailure();
+    throw error;
   }
 }
 
