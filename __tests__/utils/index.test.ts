@@ -16,7 +16,8 @@ import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManage
 jest.mock('../../hook/isTablet');
 jest.mock('react-native-orientation-locker', () => ({
   lockToLandscape: jest.fn(),
-  lockToPortrait: jest.fn()
+  lockToPortrait: jest.fn(),
+  unlockAllOrientations: jest.fn()
 }));
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn()
@@ -98,10 +99,11 @@ describe('deviceOrientation', () => {
     jest.clearAllMocks();
   });
 
-  it('should lock to landscape for tablet', () => {
+  it('should unlock all orientations for tablet', () => {
     (isTablet as jest.Mock).mockReturnValue(true);
     deviceOrientation();
-    expect(Orientation.lockToLandscape).toHaveBeenCalled();
+    expect(Orientation.unlockAllOrientations).toHaveBeenCalled();
+    expect(Orientation.lockToLandscape).not.toHaveBeenCalled();
     expect(Orientation.lockToPortrait).not.toHaveBeenCalled();
   });
 
@@ -109,6 +111,7 @@ describe('deviceOrientation', () => {
     (isTablet as jest.Mock).mockReturnValue(false);
     deviceOrientation();
     expect(Orientation.lockToPortrait).toHaveBeenCalled();
+    expect(Orientation.unlockAllOrientations).not.toHaveBeenCalled();
     expect(Orientation.lockToLandscape).not.toHaveBeenCalled();
   });
 });
