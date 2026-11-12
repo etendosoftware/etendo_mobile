@@ -34,58 +34,62 @@ describe('fetchComponent', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('should fetch and parse component successfully', async () => {
-    const mockCode = 'module.exports = { test: true }';
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        text: () => Promise.resolve(mockCode)
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    expect(result).not.toBe(mockNavigation.navigate);
-    expect(typeof result).toBe('object');
-  });
-
-  it('should handle network error and navigate to home', async () => {
-    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('Network error')));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
+  // Every failure path must notify the user and reject, so React.lazy gets a
+  // rejected promise (handled by the error boundary) instead of a function.
+  const expectHandledFailure = async () => {
+    await expect(
+      fetchComponent('testId', 'http://test.com', mockNavigation)
+    ).rejects.toBeDefined();
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     expect(show).toHaveBeenCalledWith('LoginScreen:NetworkError', 'error');
+  };
+
+  it('should fetch and parse component successfully with a single request', async () => {
+    const mockCode = 'module.exports = { test: true }';
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(mockCode)
+      })
+    );
+
+    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
+    expect(typeof result).toBe('object');
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });
 
-  it('should handle empty response and navigate to home', async () => {
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
+  it('should handle network error, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('Network error')));
+    await expectHandledFailure();
+  });
+
+  it('should handle HTTP error, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.resolve({ ok: false }));
+    await expectHandledFailure();
+  });
+
+  it('should handle empty response, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
         ok: true,
         text: () => Promise.resolve('')
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+      })
+    );
+    await expectHandledFailure();
   });
 
-  it('should handle invalid JavaScript code gracefully', async () => {
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
+  it('should handle invalid JavaScript code, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
         ok: true,
         text: () => Promise.resolve('invalid JS code')
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+      })
+    );
+    await expectHandledFailure();
   });
 });
 
