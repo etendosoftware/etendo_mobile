@@ -82,9 +82,11 @@ export async function fetchComponent(id, url, navigation) {
   }
 }
 
+// Phones are locked to portrait. Tablets are left unlocked so they follow the
+// device rotation, which lets sub-apps designed for portrait be used vertically.
 export const deviceOrientation = () => {
   if (isTablet()) {
-    Orientation.lockToLandscape();
+    Orientation.unlockAllOrientations();
   } else {
     Orientation.lockToPortrait();
   }

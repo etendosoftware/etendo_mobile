@@ -1,6 +1,12 @@
 // Importing required modules and libraries
 import React, { useEffect, useState } from 'react';
-import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  useWindowDimensions,
+} from 'react-native';
 import locale from '../../i18n/locale';
 import { Dialog, Text, Button } from 'react-native-paper';
 import { Snackbar } from '../../globals';
@@ -50,6 +56,8 @@ const backgroundMobileImg = require('../../img/background.png');
 
 // Main functional component of the Login screen
 const LoginFunctional = props => {
+  // Live window height: tablets can rotate, so it must update on rotation
+  const { height: windowHeight } = useWindowDimensions();
   // Initializing the state variables
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -319,7 +327,7 @@ const LoginFunctional = props => {
       <View
         style={[
           styles.generalContainer,
-          { height: Dimensions.get('window').height },
+          { height: windowHeight },
         ]}
       >
         <View style={styles.container}>
