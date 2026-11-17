@@ -16,7 +16,8 @@ import { show } from 'etendo-ui-library/dist-native/components/alert/AlertManage
 jest.mock('../../hook/isTablet');
 jest.mock('react-native-orientation-locker', () => ({
   lockToLandscape: jest.fn(),
-  lockToPortrait: jest.fn()
+  lockToPortrait: jest.fn(),
+  unlockAllOrientations: jest.fn()
 }));
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn()
@@ -34,58 +35,62 @@ describe('fetchComponent', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('should fetch and parse component successfully', async () => {
-    const mockCode = 'module.exports = { test: true }';
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        text: () => Promise.resolve(mockCode)
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    expect(result).not.toBe(mockNavigation.navigate);
-    expect(typeof result).toBe('object');
-  });
-
-  it('should handle network error and navigate to home', async () => {
-    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('Network error')));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
+  // Every failure path must notify the user and reject, so React.lazy gets a
+  // rejected promise (handled by the error boundary) instead of a function.
+  const expectHandledFailure = async () => {
+    await expect(
+      fetchComponent('testId', 'http://test.com', mockNavigation)
+    ).rejects.toBeDefined();
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     expect(show).toHaveBeenCalledWith('LoginScreen:NetworkError', 'error');
+  };
+
+  it('should fetch and parse component successfully with a single request', async () => {
+    const mockCode = 'module.exports = { test: true }';
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(mockCode)
+      })
+    );
+
+    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
+    expect(typeof result).toBe('object');
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });
 
-  it('should handle empty response and navigate to home', async () => {
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
+  it('should handle network error, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('Network error')));
+    await expectHandledFailure();
+  });
+
+  it('should handle HTTP error, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.resolve({ ok: false }));
+    await expectHandledFailure();
+  });
+
+  it('should handle empty response, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
         ok: true,
         text: () => Promise.resolve('')
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+      })
+    );
+    await expectHandledFailure();
   });
 
-  it('should handle invalid JavaScript code gracefully', async () => {
-    (global.fetch as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve({ ok: true }))
-      .mockImplementationOnce(() => Promise.resolve({
+  it('should handle invalid JavaScript code, navigate to home and reject', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
         ok: true,
         text: () => Promise.resolve('invalid JS code')
-      }));
-
-    const result = await fetchComponent('testId', 'http://test.com', mockNavigation);
-    result();
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+      })
+    );
+    await expectHandledFailure();
   });
 });
 
@@ -94,10 +99,11 @@ describe('deviceOrientation', () => {
     jest.clearAllMocks();
   });
 
-  it('should lock to landscape for tablet', () => {
+  it('should unlock all orientations for tablet', () => {
     (isTablet as jest.Mock).mockReturnValue(true);
     deviceOrientation();
-    expect(Orientation.lockToLandscape).toHaveBeenCalled();
+    expect(Orientation.unlockAllOrientations).toHaveBeenCalled();
+    expect(Orientation.lockToLandscape).not.toHaveBeenCalled();
     expect(Orientation.lockToPortrait).not.toHaveBeenCalled();
   });
 
@@ -105,6 +111,7 @@ describe('deviceOrientation', () => {
     (isTablet as jest.Mock).mockReturnValue(false);
     deviceOrientation();
     expect(Orientation.lockToPortrait).toHaveBeenCalled();
+    expect(Orientation.unlockAllOrientations).not.toHaveBeenCalled();
     expect(Orientation.lockToLandscape).not.toHaveBeenCalled();
   });
 });

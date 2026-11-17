@@ -40,6 +40,8 @@
   "LoginScreen:URLNotFound": "Server Error. Check your URL in Settings.",
   "LoginScreen:LogoNotFound": "Atention: Logo was not found.",
   "LoginScreen:NetworkError": "Server access issue. Network error.",
+  "SubAppErrorBoundary:Title": "The application could not be loaded",
+  "SubAppErrorBoundary:Retry": "Retry",
   "LoginScreen:ServerError": "Server error. Check configurations.",
   "Drawer:Applications": "Applications",
   "Home:ChooseFromTheMenu": "Choose an entry from the menu.",
